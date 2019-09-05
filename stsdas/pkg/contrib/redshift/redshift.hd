@@ -1,0 +1,11 @@
+# Help directory for the contrib.redshift package
+
+$doc      = "stsdas$pkg/contrib/redshift/doc/"
+$redshift = "stsdas$pkg/contrib/redshift/"
+
+fquot		hlp = doc$fquot.hlp,
+		src = redshift$fquot.x
+
+xcor		hlp = doc$xcor.hlp,
+		src = redshift$xcor.x
+ 

@@ -1,0 +1,144 @@
+.help wdestreak Mar10 stsdas.hst_calib.wfpc
+.ih
+NAME
+wdestreak -- Remove horizontal streaks from a low-bias WFPC2 image.
+
+.ih
+USAGE
+wdestreak infile
+.ih 
+DESCRIPTION
+
+This tool is designed to eliminate the horizontal streaks seen in WFPC2 images
+with low bias values, and should be used after all other corrections for bias, dark, 
+flat field and gain have been performed. The algorithm uses the data in the
+entire image to compute the correction to be applied to the streaks. A description of the 
+algorithm can be found in ISR ACS 2008-03, "Correcting Background Streaks in WFPC2 Data", by Aparna Maybhate, 
+David Grumm, Matt McMaster, and Marco Sirianni.
+
+Low bias is presumed to result in small gain changes (on the order of 0.02%)
+causing the streaks via a multiplicative effect in all
+pixels within a given row. Although strictly a multiplicative effect, it can be treated as an
+additive effect due to the large offset value in the amplifier. The correction for each row is
+estimated using only 'good' pixels - those not affected by cosmic rays or sources. The pixels
+used define a mask image that is output to a file.
+
+
+The masking of cosmic rays and sources consists of two steps. First, extreme outliers
+caused by cosmic ray hits or bright sources are masked. We conceptually split the image into
+two halves: we then take the median of the top half and the median of the bottom half.
+These two points define a straight line. The scatter about this line is estimated by the
+median of the absolute values (known as the MAD) of the deviations of the image values; for
+a normal distribution the MAD is approximately 2/3 of the standard deviation. The slope
+and intercept of this line define a plane that is constant in the x-direction. Values in the
+image that exceed this plane by more than 15 MAD (10 sigma) are flagged as bad and will not 
+be used for subsequent processing. Because the purpose is to identify cosmic rays, only
+positive outliers are rejected.  Now that the most extreme outliers have been flagged, the 
+second step is to fit a plane (using least-squares) to the image data, ignoring the previously
+rejected outliers. The scatter is estimated by the standard deviation of the differences between
+the fit and the image data. Values in the image that exceed the scatter by more than 4 sigma are 
+flagged as outliers.  When a cosmic ray or bright source is identied in one pixel as a 
+positive outlier, neighboring pixels are screened for large positive values using a lower
+threshold than that used for identifying the initial bright pixel, allowing additional pixels to be 
+flagged as outliers. This iterative procedure of fitting and rejecting is repeated several times,
+with the rejection criterion (specified by the number of standard deviations) reduced with each
+iteration. After the last iteration the fit is done once more, with all previously identified
+outliers excluded from the fit.
+
+
+Now that the mask has been created, the corrections can be calculated. For a given
+image, the correction for each row is calculated based on the mean value of unmasked pixels
+within the row, and the global mean of all unmasked pixels within the image. The correction
+for the row is the deviation of this row mean from this global mean, so can be either positive
+or negative, and is added to all pixels in the row.
+
+There are parameters the user can optionally set:
+
+(1)  The user can optionally supply the mask with the 'input_mask' parameter, instead of having 
+the program calculate a mask. This option allows the user to ne-tune the process, by first 
+running the program and allowing it to create a mask which the user can edit; the user can then rerun the program
+using the edited mask as input.
+
+(2) The 'group' parameter sets the group within the input image to access.
+
+(3) The row threshold parameter 'row_thresh' sets the minimum absolute value of the
+allowed correction, so if a calculated correction is less than this value for a given row, no
+correction will be applied for that row. 
+
+(4) The parameter 'bias_thresh' sets a value for comparison with the unmasked image mean.
+If the bias threshold is exceeded by the image mean, no correction will be applied to the
+image. The default value for this parameter exceeds any dataset's bias
+value, so by default the task will calculate and apply the corrections. This optional parameter
+is provided to allow the user the ability of applying the task to multiple input files from
+within his/her higher level script.
+
+(5)  The parameter 'niter' sets the number of iterations to use in the source masking step.
+ A greater (lesser) value generally results in more (less) pixels being masked surrounding 
+bright pixels.
+
+Like other wfpc2 tasks, wdestreak accepts an input file that is multi-extension fits, waiver fits, 
+single extension fits, or geis.  In all cases the output is a multi-extension fits file.
+
+ 
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Input file.
+.le
+
+.ls input_mask = "" [string]
+Name of the imput mask.  See (2) above.
+.le
+
+.ls group = 4 [int]
+Number of the group of wfpc2 data to process. See (2) above.
+.le
+
+.ls row_thresh = 0.1 [real]
+Threshold for row corrections. See (3) above.
+.le
+
+.ls bias_thresh = 10^5 [real], maximum = 10
+Threshold for bias. See (4) above.
+.le
+
+.ls niter = 5 [int]
+Number of iterations for source masking. See (5) above.
+.le
+
+.ih
+
+EXAMPLES
+
+1. For a dataset with multiple groups, process group 4 using a bias threshold=280, row threshold=0.2, 
+input_mask "mask_u8zq0104.fits", and specifing 8 iterations for the CR rejection
+
+.nf
+wdestreak "u8zq0104m_c0h.fits"  -g 4 -b 280. -r 0.2  -m "mask_u8zq0104.fits" -i 8
+.fi
+
+.ih
+
+
+
+REFERENCES
+
+Authors:
+David Grumm, Aparna Maybhate, Matt McMaster,and Marco Sirianni (STScI)
+
+For further discussion of the streaks in WFPC2 due to low bias see:
+
+Biretta, J. & Gonzaga, S. 2005, Early Assessment of the WF4 Anomaly
+(ISR WFPC2 2005-02)
+
+Dixon, V., Biretta, J., Gonzaga, S. & McMaster, M. 2007, Temperature Reductions to
+Mitigate the WF4 Anomaly (ISR WFPC2 2007-01)
+
+
+.ih
+BUGS
+
+.ih
+SEE ALSO
+
+.endhelp

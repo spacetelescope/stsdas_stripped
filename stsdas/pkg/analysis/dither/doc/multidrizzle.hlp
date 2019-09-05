@@ -1,0 +1,793 @@
+.help multidrizzle Nov09 stsdas.analysis.dither
+.ih
+NAME
+MultiDrizzle -- Automated dithered image combination and cleaning
+.ih
+USAGE 
+multidrizzle input
+.ih
+PARAMETERS
+.ls input = "" [string]
+The input for MultiDrizzle can be provided in any of several forms:
+.nf
+ - filename of a single image
+ - filename of an association (ASN)table
+ - wild-card specification for files in directory (using *, ? etc)
+ - comma-separated list of filenames
+ - '@file' filelist containing list of desired input filenames (and
+   optionally also the corresponding inverse variance filenames, if needed
+   for the 'final_wht_type' parameter described further below).
+.fi
+The '@file' filelist needs to be provided as an ASCII text file containing
+a list of filenames for all input images, with one filename on each line
+of the file. If inverse variance maps have also been created by the user
+and are to be used (by specifying 'IVM' to the parameter 'final_wht_type'
+described further below), then these are simply provided as a second
+column in the filelist, with each IVM filename listed on the same line
+as a second entry, after its corresponding exposure filename. If the user
+specifies 'IVM' for the 'final_wht_type' but does not provide the names of
+IVM files, Multidrizzle will automatically generate the IVM files itself for each input exposure.
+.le
+.ls (output = "")[string]
+The rootname for the output drizzled products. If an association file has
+been given as input, this name will be used instead of the product name
+specified in the ASN file.  Similarly, if a single exposure is provided,
+this rootname will be used for the output product instead of relying on
+input rootname. If no value is provided when a filelist or wild-card
+specification is given as input, then a rootname of 'final' will be used.
+.le
+.ls (mdriztab = "yes") [boolean]
+Specifies whether or not to use an MDRIZTAB reference table filename found in
+the image header to specify the remaining MultiDrizzle parameter settings.
+If 'yes', the values in that table will override the settings for the
+remainder of the parameters.
+.le
+.ls (refimage = "") [file name]
+Optional "reference image" that can be provided, in which case MultiDrizzle
+will create a final product with the same WCS. This reference image should be
+a simple FITS file (single-group, no multiple extensions), and should have
+been already drizzled so that all its distortion has been removed, and its
+WCS is completely rectified. This is not intended to provide shifts
+information.
+.le
+.ls (runfile = "") [file name]
+This log file will contain the IRAF CL commands necessary for performing
+the final combination manually using the "drizzle" task directly.  If no
+name is provided, a file will be created using the rootname of the output
+file (rootname.run).
+.le
+.ls (workinplace = "no") [boolean]
+This parameter specifies whether to perform all processing, including sky
+subtraction and update of the DQ array, on the original input or not. If set to
+'yes', then no copy of the input will be created for processing, and the
+original input will be modified directly by MultiDrizzle.
+.le
+.ls (updatewcs = "yes") [boolean]
+This parameter specifies whether the WCS keywords are to be updated by
+running 'makewcs' on the input data, or left alone.  This should usually
+be set to 'yes', unless the WCS keywords have been carefully set by some
+other method, and need to be passed through to drizzle 'as is'.
+.le
+.ls (proc_unit = "native") [string]
+The source of the distortion coefficients is specified using:
+.nf
+  'native'       - Output DRZ product and input 'values' given in the native units
+                   of the input image.
+  'electrons'    - Output DRZ product and input 'values' given in units of electrons. 
+.fi
+.le
+.ls (coeffs = "header") [string]
+The source of the distortion coefficients is specified using:
+.nf
+  'header'  - Look in the image header for the name of the IDCTAB
+              and other distortion information to use. Note that
+              if the IDCTAB file is not found on disk, then the
+              task will exit for ACS data, while for WFPC2 data
+              it will default to the older "Trauger" model.
+  'cubic'   - use 'cubic' solutions originally provided with 'drizzle'
+  'trauger' - use 'trauger' solutions originally provided with 'drizzle'
+  'None'    - Do not apply any distortion correction to the images
+.fi
+Alternatively, an arbitrary distortion coefficients
+file can be specified (including optionally the full pathname). This
+distortion file is used in computing the WCS of the header.
+.le
+.ls (context = no) [boolean]
+Create a context image during the final drizzle combination?
+.le
+.ls (clean = no) [boolean]
+Remove the temporary files created by MultiDrizzle?  The affected files would
+include the coefficients files and static mask files created by PyDrizzle,
+along with other intermediate files created by MultiDrizzle.  It is often
+useful to retain the intermediate files and examine them when first learning
+how to run MultiDrizzle. But when running it routinely, these files can be
+removed to save space.
+.le
+.ls (group = "") [string]
+Single FITS Extension or group to be drizzled. If a section is provided,
+then only that chip will be drizzled onto the output frame. Either a
+FITS extension number or GEIS group number (such as '1'), or a FITS
+extension name (such as 'sci,1') can be provided. Sets of extensions can also
+be provided as a comma-separated list of integers (such as '2,3,4'). 
+These values will be 
+interpreted as FITS extension numbers (EXTVER keyword values) of extensions 
+which should be drizzled together. 
+.le
+.ls (ra) [real]
+Right ascension (in decimal degrees) of the center of the output image.
+If this is not specified, the code will calculate the center automatically
+based on the distribution of image dither positions.
+.le
+.ls (dec) [real]
+Declination (in decimal degrees) of the center of the output image.
+If this is not specified, the code will calculate the center automatically
+based on the distribution of image dither positions.
+.le
+.ls (build = yes) [boolean]
+Should PyDrizzle should combine the separate 'drizzle' output
+files into a single multi-extension format FITS file?  This combined output
+file will contain a SCI (science), a WHT (weight), and a CTX (context)
+extension.
+.le
+.ls (shiftfile = "") [file name]
+Name of optional input file containing the shifts to be applied to the input
+images to improve the registration of the images. These shifts will be
+added to those calculated automatically from the image headers. The
+specification for this file can be found in Section 5.5.1 of the 
+MultiDrizzle Handbook, available online at:
+http://www.stsci.edu/hst/HST_overview/documents/multidrizzle/multidrizzle.pdf
+.le
+.ls (staticfile = "") [file name]
+Name of (optional) input static bad-pixel mask. This mask will be applied
+to all input images. The static bad-pixel mask file must contain extensions
+with EXTNAMEs of "MASK".  For example, an ACS WFC static bad-pixl mask would
+need a FITS file with two "MASK" extensions.  A NICMOS CAL file would need
+only one "MASK" extension.
+
+For users who created static-bad pixel mask files prior to the release of
+Multidrizzle version 2.3.6, the conversion of those files to the appropriate
+format is trivial.  The following IRAF command is all that is necessary to
+convert those files to the appropriate format:
+
+-> hedit filename.fits[SCI,1] extname 'MASK'update+ verify-
+
+.le
+.ls (static = yes) [boolean]
+Create a static bad-pixel mask from the data?
+This mask flags all pixels that deviate by more than 'static_sig' sigma below
+the image median, since these pixels usually result from oversubtraction
+of bad pixels in the dark image during calibration.
+.le
+.ls (static_sig = 4.0) [real]
+Number of sigma below the RMS to use as the clipping limit for creating the
+static mask.
+.le
+.ls (skysub = yes) [boolean]
+Perform sky subtraction on the input data?
+.le
+.ls (skywidth = 0.1) [real]
+Bin width, in sigma, used to sample the distribution of pixel flux values in
+order to compute the sky background statistics.
+.le
+.ls (skystat = "median|mode|mean") [string]
+Statistical method for determining the sky value from the image pixel values.
+.le
+.ls (skylower = INDEF) [real]
+Lower limit of usable pixel values for computing the sky.  This value
+should be specified in units of electrons.
+.le
+.ls (skyupper = INDEF) [real]
+Upper limit of usable pixel values for computing the sky.  This value
+should be specified in units of electrons.
+.le
+.ls (skyclip = 5) [integer]
+Number of clipping iterations to use when computing the sky value.
+.le
+.ls (skylsigma = 4.0) [real]
+Lower clipping limit, in sigma, used when computing the sky value.
+.le
+.ls (skyusigma = 4.0) [real]
+Upper clipping limit, in sigma, used when computing the sky value.
+.le
+.ls (skyuser = "") [string]
+Name of header keyword which records the sky value already subtracted from the
+image by the user.
+.le
+.ls (driz_separate = yes) [boolean]
+Drizzle each input image onto separate output images? These images are used
+to create the median image, needed for the cosmic ray rejection step further on.
+.le
+.ls (driz_sep_outnx) [real]
+Size of the X axis of the output images (in pixels) which each input image will
+be drizzled onto. If no value is specified, it will use the smallest size that
+can accommodate the full image.
+.le
+.ls (driz_sep_outny) [real]
+Size of the Y axis of the output images (in pixels) which each input image will
+be drizzled onto. If no value is specified, it will use the smallest size that
+can accommodate the full image.
+.le
+.ls (driz_sep_kernel = "turbo") [string]
+For the initial separate drizzling operation only, this specifies the form
+of the kernel function used to distribute flux onto the separate output
+images. The options are currently:
+.nf
+    square | point | gaussian | turbo | tophat | lanczos3
+.fi
+The default for this step is "turbo" since it is much faster than "square",
+and it is quite satisfactory for the purposes of generating the median image.
+More information about the different kernels can be found in the help for the
+task 'drizzle'.
+.le
+.ls (driz_sep_wt_scl = "exptime") [real]
+Weighting factor for input image. If driz_sep_wt_scl=exptime then the scaling
+value will be set equal to the exposure time found in the image header.
+This is the default behavior and is recommended. It is also possible to give
+wt_scl=expsq for weighting by the square of exposure time. The latter is
+optimal for read-noise dominated images.
+.le
+.ls (driz_sep_scale = INDEF) [real]
+Linear size of output pixels in arcseconds/pixel for each separate drizzled
+image (to be used in creating the median for cosmic ray rejection).
+The default value of INDEF specifies that the undistorted pixel scale for
+the first input image, as computed by PyDrizzle,  will be used as the pixel
+scale for all the output images.
+.le
+.ls (driz_sep_pixfrac = 1) [real]
+Fraction by which input pixels are "shrunk" before being drizzled onto the
+output image grid, given  as a real number between 0 and 1. This specifies the
+size of the footprint, or "dropsize", of a pixel in units of the input pixel
+size. If pixfrac is set to less than 0.001, the kernel is reset to 'point'
+for more efficient processing. For the step of drizzling each input image onto
+a separate output image, the default value of 1 is best in order to ensure
+that each output drizzled image is fully populated with pixels from the input
+image. For more information, see the help for the task 'drizzle'.
+.le
+.ls (driz_sep_rot = INDEF) [real]
+Position Angle of output image's Y-axis relative to North. A value of 0.0 would
+orient the final output image with North up. The default of INDEF specifies
+that the images will not be rotated, but will instead be drizzled in the
+default orientation for the camera, with the x and y axes of the drizzled
+image corresponding approximately to the detector axes. This conserves
+disk space, since these single drizzled images are only used in the intermediate
+step of creating a median image.
+.le
+.ls (driz_sep_fillval = "INDEF") [string]
+Value to be assigned to output pixels that have zero weight or did not receive
+flux from any input pixels during drizzling. This parameter corresponds to the
+'fillval' parameter of the 'drizzle' task. If the default of 'INDEF' is used and
+if the weight in both the input and output images for a given pixel are zero,
+then the output pixel will be set to the value it would have had if the input
+had a non-zero weight. Otherwise, if a numerical value is provided (eg. 0),
+then these pixels will be set to that value.
+.le
+.ls (driz_sep_bits = 0) [integer]
+Integer sum of all the DQ bit values from the input image's DQ array
+that should be considered 'good' when building the weighting mask. This can
+also be used to reset pixels to good if they had been flagged as cosmic rays
+during a previous run of MultiDrizzle, by adding the value 4096 for ACS and
+WFPC2 data.
+.le
+.ls (median = yes) [boolean]
+Create a median image? This median image will be used as the comparison 'truth'
+image in the cosmic ray rejection step.
+.le
+.ls (median_newmasks = yes) [boolean]
+Create new mask files when creating the median?
+These masks are generated from the weight files produced
+previously by the "driz_separate" step, and would contain all the bad
+pixel information. These pixels will be excluded when calculating
+the median. Generally this step should be set to "yes", unless it is
+desired to include bad pixels in generating the median.
+.le
+.ls (combine_maskpt = 0.7) [real]
+Percentage of the weight image below which a pixel is considered
+a bad pixel when creating a new mask.
+.le
+.ls (combine_type = "minmed") [string]
+This parameter allows the user to choose what method should be used
+to create the median image.  Valid options are:
+.nf
+   median| sum | minmed | minimum
+.fi
+ The "minmed" option will produce an image that is generally the same
+as the median, except in cases where the median is significantly
+higher than the minimum good pixel value, in which case it will choose
+the minimum. The sigma thresholds for this decision are provided
+by the "combine_nsigma" parameter.  The grow value for this decision
+is provided by the combine_grow parameter.
+.le
+.ls (combine_nsigma = "4 3") [string]
+Sigmas used for accepting minimum values instead of median values when
+using the 'minmed' combination method. If two values are specified, then
+the first value will be used in the initial choice between median and
+minimum, while the second value will be used in the "growing" step to
+reject additional pixels around those identified in the first step. If
+only one value is specified, then it is used in both steps.
+.le
+.ls (combine_nlow) [integer]
+This parameter sets the number of low value pixels to reject when the 'combine_type'
+has been set to 'median'.  In this usage, the specified number of low value pixels
+is discarded prior to the computation of the median image. If set to 0, then no
+low value clipping gets done when computing the median values for 'combine_type=median'.
+.le
+.ls (combine_nhigh) [integer]
+This parameter sets the number of high value pixels to reject when the 'combine_type'
+has been set to 'median'.  In this usage, the specified number of high value pixels
+is discarded prior to the computation of the median image . If set to 0, then no
+high value clipping gets done when computing the median values for 'combine_type=median'.
+.le
+.ls (combine_lthresh = "INDEF") [string]
+This parameter sets the minimum value considered to be good pixels when the 'combine_type'
+has been set to 'median'.  In this usage, the pixels with values below the specified
+threshold are discarded prior to the computation of the median image .If set to INDEF,
+then no lower value clipping gets done when computing the median values
+for 'combine_type=median'.  These values should be in units consistent with the proc_unit
+parameter setting.
+.le
+.ls (combine_hthresh = "INDEF") [string]
+This parameter sets the maximum value considered to be good pixels when the 'combine_type'
+has been set to 'median'.  In this usage, the pixels with values above the specified
+threshold are discarded prior to the computation of the median image .If set to INDEF,
+then no upper value clipping gets done when computing the median values
+for 'combine_type=median'.  These values should be in units consistent with the proc_unit
+parameter setting.
+.le
+.ls (combine_grow = 1) [real]
+Radius (pixels) from flagged pixel for neighbor rejection.  This parameter is only
+applicable when 'combine_type=minmed'.
+.le
+.ls (blot = yes) [boolean]
+Perform the blot operation on the median image? The output will be
+median smoothed images which match each input chip's image, and are
+used in the cosmic ray rejection step.
+.le
+.ls (blot_interp = "poly5") [string]
+Type of interpolation to use when blotting drizzled images back to their
+original WCS.  Valid options are:
+.nf
+   nearest    - Nearest neighbor
+   linear     - Bilinear interpolation in x and y
+   poly3      - Third order interior polynomial in x and y
+   poly5      - Fifth order interior polynomial in x and y
+   sinc       - Sinc interpolation - accurate but slow
+.fi
+The poly5 interpolation method has been chosen as the default because it
+is relatively fast and accurate.
+If 'sinc' interpolation has been selected, then it will use the value of the
+parameter 'blot_sinscl' to specify the size of the sinc interpolation kernel.
+.le
+.ls (blot_sinscl = 1.0) [real]
+Size of the sinc interpolation kernel in pixels.
+.le
+.ls (driz_cr = yes) [boolean]
+Perform cosmic-ray detection? If set to "yes", it will detect cosmic-rays and
+create cosmic-ray masks using the algorithms from 'deriv' and 'driz_cr'.
+.le
+.ls (driz_cr_corr = no) [boolean]
+Create a cosmic-ray cleaned input image? The cosmic-ray cleaned _cor image will be
+generated directly from the input image, and a corresponding _crmask file will
+be written to document the pixels detected as affected by cosmic-rays.
+.le
+.ls (driz_cr_snr = "3.5 3.0") [string]
+These values specify the signal-to-noise ratios for the
+'driz_cr' task to use in detecting cosmic rays. This parameter value
+gets passed directly to 'driz_cr'; see the help file for 'driz_cr' for
+further discussion of this parameter.
+.le
+.ls (driz_cr_scale = "1.2 0.7")
+Scaling factor applied to the derivative in 'driz_cr' when detecting
+cosmic-rays.  This parameter gets passed directly to 'driz_cr'; see the
+help file for 'driz_cr' for  further discussion of this parameter.
+.le
+.ls (driz_combine = yes) [boolean]
+Perform the final drizzle image combination?
+This applies the generated cosmic-ray masks to the input images and
+create a final, cleaned, distortion-corrected product.
+.le
+.ls (final_wht_type = "EXP") [string]
+Specify the type of weighting image to apply with the bad pixel mask
+for the final drizzle step.  The options are:
+.nf
+      EXP  |  ERR  |  IVM
+.fi
+The default of 'EXP' indicates that the images will be weighted according
+to their exposure time, which is the standard behavior for drizzle. This
+weighting is a good approximation in the regime where the noise is dominated
+by photon counts from the sources, while contributions from sky background,
+read-noise and dark current are negligible. This option is provided as the
+default since it produces reliable weighting for all types of data, including
+older instruments (eg., WFPC2) where more sophisticated options may not be
+available.
+
+Specifying 'ERR' is an alternative for ACS and STIS data, in which case the
+final drizzled images will be weighted according to the inverse variance
+of each pixel in the input exposure files, calculated from the error array
+data extension that is in each calibrated input exposure file. This array
+encapsulates all the noise sources in each exposure, including read-noise,
+dark current and sky background, as well as Poisson noise from the sources
+themselves, and this also includes a dependence upon exposure time. For
+WFPC2, the ERR array is not produced during calibration, therefore this
+option is not available. We advise extreme caution when selecting the "ERR"
+option, since the nature of this weighting scheme can introduce photometric
+discrepancies in sharp unresolved sources, although these effects are
+minimized for sources with gradual variations between pixels. The "EXP"
+weighting option does not suffer from these effects and is therefore the
+recommended option.
+
+Finally, 'IVM' can be specified, in which case the user can either
+supply their own inverse-variance weighting map or let Multidrizzle
+generate one on-the-fly automatically during the final drizzle
+step. This may be necessary for specific purposes, for example to
+create a drizzled weight file for software such as Sextractor, which
+expects a weight image that contains all the background noise sources
+(sky level, read-noise, dark current, etc) but not the Poisson noise
+from the objects themselves. The user can create the inverse variance
+images and then specify their names using the 'input' parameter for
+MultiDrizzle to specify an '@file'. This would be a single ASCII
+file containing the list of input calibrated exposure filenames (one
+per line), with a second column containing the name of the IVM file
+corresponding to each calibrated exposure. Each IVM file must have the
+same file format as the input file, and if given as multi-extension
+FITS files (for example, ACS or STIS data) then the IVM extension must
+have the EXTNAME of 'IVM'. If no IVM files are specified on input,
+then Multidrizzle will rely on the flat-field reference file and
+computed dark value from the image header to automatically generate
+an IVM file specific to each exposure.
+.le
+.ls (final_outnx) [real]
+Size of the X axis of the final drizzled image (in pixels). If no value is
+specified, it will use the smallest size that can accommodate the full image.
+.le
+.ls (final_outny) [real]
+Size of the Y axis of the final drizzled image (in pixels). If no value is
+specified, it will use the smallest size that can accommodate the full image.
+.le
+.ls (final_kernel = "square") [string]
+Shape of the kernel used by 'drizzle' in the final image combination.
+With 'drizzle' Version 3.0 and greater, the supported choices are:
+.nf
+    square | point | gaussian | turbo | tophat | lanczos3
+.fi
+.le
+.ls (final_wt_scl = "exptime") [real]
+Weighting factor for input image. If final_wt_scl=exptime then the scaling
+value will be set equal to the exposure time found in the image header.
+This is the default behavior and is recommended. It is also possible to give
+wt_scl=expsq for weighting by the square of exposure time. The latter is
+optimal for read-noise dominated images.
+.le
+.ls (final_scale = INDEF) [real]
+Linear size of the output pixels in arcseconds/pixel for the final combined
+product. The default value of INDEF specifies that the undistorted pixel
+scale for the first input image, as computed by PyDrizzle,  will be used as
+the pixel scale for the final output image.
+.le
+.ls (final_pixfrac = 1.) [real]
+Fraction by which input pixels are "shrunk" before being drizzled onto the
+output image grid, given  as a real number between 0 and 1. This specifies the
+size of the footprint, or "dropsize", of a pixel in units of the input pixel
+size. If pixfrac is set to less than 0.001, the kernel is reset to 'point'
+for more efficient processing. If more than a few images are being combined,
+values smaller than 1 (eg 0.7 or 0.8) can be specified, which result in a
+slightly sharper output image. For more information, read the help for
+the task 'drizzle'.
+.le
+.ls (final_rot = 0.) [real]
+Position Angle of output image's Y-axis relative to North. The default of 0.0
+would orient the final output image with North up. A value of INDEF would
+specify that the images will not be rotated, but will instead be drizzled in
+the default orientation for the camera, with the x and y axes of the drizzled
+image corresponding approximately to the detector axes.
+.le
+.ls (final_fillval = "INDEF") [string]
+Value to be assigned to output pixels that have zero weight or did not receive
+flux from any input pixels during drizzling. This parameter corresponds to the
+'fillval' parameter of the 'drizzle' task. If the default of 'INDEF' is used and
+if the weight in both the input and output images for a given pixel are zero,
+then the output pixel will be set to the value it would have had if the input
+had a non-zero weight. Otherwise, if a numerical value is provided (eg. 0),
+then these pixels will be set to that value.
+.le
+.ls (final_bits = 0) [integer]
+Integer sum of all the DQ bit values from the input image's DQ array
+that should be considered 'good' when building the weighting mask. This can
+also be used to reset pixels to good if they had been flagged as cosmic rays
+during a previous run of MultiDrizzle, by adding the value 4096 for ACS and
+WFPC2 data.
+.le
+.ls (final_units = 'cps') [string]
+This parameter determines the units of the final drizzle-combined image,
+and can either be 'counts' or 'cps'.  It is passed through to 'drizzle' in
+the final drizzle step.
+.le
+.ls (gain = "") [real]
+Value used to override instrument specific default gain values.  The value is
+assumed to be in units of electrons/count.  This parameter should not be populated
+if the gainkeyword parameter is in use.
+.le
+.ls (gainkeyword = "") [string]
+Keyword used to specify a value to be used to override instrument specific
+default gain values.  The value is assumed to be in units of electrons/count.
+This parameter should not be populated if the gain parameter is in use.
+.le
+.ls (rdnoise = "") [real]
+Value used to override instrument specific default readnoise values.  The value is
+assumed to be in units of electrons.  This parameter should not be populated
+if the rnkeyword parameter is in use.
+.le
+.ls (rnkeyword = "") [string]
+Keyword used to specify a value to be used to override instrument specific
+default readnoise values.  The value is assumed to be in units of electrons.
+This parameter should not be populated if the rdnoise parameter is in use.
+.le
+.ls (exptime = "") [real]
+Value used to override default exposure time image header values.  The value is
+assumed to be in units of seconds.  This parameter should not be populated
+if the expkeyword parameter is in use.
+.le
+.ls (expkeyword = "") [string]
+Keyword used to specify a value to be used to override default exposure time
+image header values.  The value is assumed to be in units of seconds.
+This parameter should not be populated if the exptime parameter is in use.
+.le
+.ls (crbit = "") [integer]
+Integer used to override instrument specific cosmic ray bit values. This value is
+used by Multidrizzle to update data quality arrays when cosmic rays or other image
+defects are identified as "bad" in the DRIZ_CR step.  To prevent the image's data
+quality array from being updated set the crbit value to 0.
+.le
+.ih
+DESCRIPTION
+MultiDrizzle is provided as a "one-touch" interface for performing all the
+tasks necessary for registering dithered HST images, performing cosmic ray
+rejection, removing geometric distortion and performing the final image
+combination using "drizzle". The task is designed so that it can be run
+in a single step on most common datasets with minimal or no adjustment to
+any of the default parameters, which are chosen to provide good results
+for a wide range of different types of datasets. It was written using Python
+and relies on the Python interface to the IRAF environment, PyRAF, for its
+operation. As a result, this task needs to be run under PyRAF.
+
+In its simplest form, it can simply be run on all calibrated ACS images in a
+directory by typing:
+
+--> multidrizzle *flt.fits output='final'
+
+
+The various steps and parameters for the task are best viewed by typing:
+
+--> epar multidrizzle
+
+The task is divided into a series of steps, as follows:
+.nf
+ 1. Bad pixel mask creation
+ 2. Sky subtraction
+ 3. Drizzle onto separate, registered output images
+ 4. Combine the separate drizzled images into a median
+ 5. "blot", or transform back the median to each input image
+ 6. Compare the median with original images to make cosmic ray masks
+ 7. Drizzle all images onto a final image using the cosmic ray masks
+.fi
+
+The principal parameters for each step can be modified to control the
+behavior of the script for other types of datasets that are not well
+handled by the default values. It is generally recommended to try
+running the script first with the default parameters, which should
+allow the task to process nearly any set of images for an initial review.
+The script can then be re-run, or restarted at a particular step, with
+modified parameters if this is necessary.
+
+This task understands how to work with single images, sub-array images,
+dither associations and mosaic associations. It has been tested predominantly
+on a wide range of ACS and WFPC2 datasets, but is also intended for use on
+STIS imaging data. It makes use of image combination method known formally
+as  variable-pixel linear reconstruction and informally as "drizzling"
+(Fruchter and Hook, 2002, PASP, 114:144). A more detailed
+explanation of 'drizzle' can be found in the help file for that task.
+
+MultiDrizzle accepts specification of the set of input images in many
+ways: by specifying a pattern through the 'suffix' parameter to be
+matched against all images in the  current directory, by providing a text
+file which contains the list of input images,  the name of
+an association table, or a comma-separated list of input
+images in the 'filelist' parameter.  This allows the user to process
+any subset of images found in the current working directory.
+
+Association tables provide the name of the output product as a row in the table,
+and MultiDrizzle uses this as the definition of the output product's name.
+Similarly, the output filename for a single exposure would be automatically
+built using the rootname of the given filename.  However, any other method of
+specifying the input file would require the specification of the output
+product's name through the use of the 'output' parameter. If none is provided, a
+default output filename will be 'final_drz.fits'.
+
+Processing dithered or mosaiced data with PyDrizzle gets handled through the use
+of ACS/NICMOS-style association tables.  These tables are simple binary FITS
+tables with a few columns to specify the input exposures and the rootname of the
+output exposure, along with any residual offset or rotation relative to the
+headers WCS information necessary to get precise alignment when drizzling
+the data together. MultiDrizzle relies on the PyDrizzle task 'buildasn' to build the
+input association table from the set of observations specified by either
+the 'suffix' or 'filelist' parameters and uses that table
+as the primary input to PyDrizzle.
+
+If a filename is provided for the 'shiftfile' parameter, then that file
+will be read in and the shifts will be incorporated into the ASN table
+when it gets built by Multidrizzzle.  This allows the user to refine the
+image registration.
+
+.ih
+INSTRUMENT SPECIFIC NOTES
+
+ACS
+---
+.nf
+ - Multidrizzle is optimized for the processing of ACS data.
+.fi
+
+WFPC2
+-----
+.nf
+ - Only the most common types of WFPC2 observing modes have been tested and are
+   supported by Multidrizzle.  Full support for WFPC2 is currently in development
+
+ - Multidrizzle is able to accept GEIS format files as input. However,
+   these files are automatically converted to multi extension FITS format
+   files.  When file conversion occurs, an association file is created containing the
+   names of the new files.
+
+ - In the case of WFPC2,  plate scale differences are taken into account during the sky
+   subtraction step. The 'MDRIZSKY' header value for WFPC2 is taken to be on the
+   WF3 plate scale.
+.fi
+
+
+STIS
+----
+.nf
+ - Support for STIS imaging data is limited at this time.  Full support for STIS is
+   under development.
+
+ - Until the PA_V3 keyword is automatically included in the header of STIS science
+   exposures, the dataset's spt files should be kept in the same directory as the input
+   images.  This will allow Multidrizzle to copy the PA_V3 value from the primary header
+   of the spt files and add it to the primary header of the science exposures.  This can
+   also be done manually by the user prior to running Multidrizzle.
+.fi
+
+
+NICMOS
+------
+.nf
+ - Support for NICMOS imaging is only preliminary at this time.  Full support for
+   NICMOS is under development.
+
+ - Until the PA_V3 keyword is automatically included in the header of NICMOS science
+   exposures, the dataset's spt files should be kept in the same directory as the input
+   images.  This will allow Multidrizzle to copy the PA_V3 value from the primary header
+   of the spt files and add it to the primary header of the science exposures.  This can
+   also be done manually by the user prior to running Multidrizzle.
+.fi
+
+.ih
+UNITS
+
+Internally to Multidrizzle, all computations occur in units of electrons. In all
+cases, the units of the Multidrizzle output product will be in electrons per
+second.
+
+If the "workinplace" parameter is set to yes, the 'sci' extensions of the
+input files will be in units of electrons upon the completion of Multidrizzle.
+If the "workinplace" parameter is set to no, the 'sci' extensions will be
+unchanged at the completion of Multidrizzle.
+
+The sky subtraction algorithm now updates a primary header keyword, 'MDRIZSKY',
+of the input image with the value computed for that image.  The units of 'MDRIZSKY'
+are the native units of the input image.  The MDRIZSKY values for each input image
+are also report in the HISTORY cards of the *_drz.fits file.
+
+
+.ih
+REFERENCES
+
+The MultiDrizzle script was initially written by Anton Koekemoer (STScI)
+and was implemented in Python under PyRAF by Warren Hack, Chris Hanley,
+Ivo Busko and Robert Jedrzejewski (STScI), based on extensive discussions
+with Andy Fruchter (STScI), Richard Hook (ST-ECF) and other members of the
+Dither Working Group at STScI. Considerable testing, design review support
+and code contribution was provided by: Richard Hook (ST-ECF), Jennifer Mack,
+Shireen Gonzaga, Vera Platais-Kozhurina, and Max Mutchler (STScI).
+
+A description of the use of MultiDrizzle on ACS data in the pipeline can be
+found in the ACS Data Handbook, available online through the  ACS Instrument
+WWW page at:
+.nf
+
+    http://www.stsci.edu/hst/acs/documents/
+
+.fi
+and the WWW page describing the use of MultiDrizzle in the HST ACS Pipeline:
+.nf
+
+    http://www.stsci.edu/hst/acs/analysis/multidrizzle/
+
+.fi
+Further examples on how to use MultiDrizzle are documented in the Dither
+Handbook (Koekemoer et al.), available from the STScI documentation website:
+.nf
+
+    http://www.stsci.edu/hst/HST_overview/documents/
+
+.fi
+In addition, software-related documentation for PyDrizzle and MultiDrizzle,
+along with the latest versions, can be found at:
+.nf
+
+    http://stsdas.stsci.edu/pydrizzle
+    http://stsdas.stsci.edu/multidrizzle
+
+.fi
+
+MultiDrizzle can be referenced in publications by citing:
+.nf
+
+    A. Koekemoer, A. Fruchter, R. Hook, W. Hack, 2002 HST Calibration
+        Workshop, p. 337
+
+.fi
+Additional references for PyDrizzle and Drizzle are provided in the help
+files for those tasks.
+
+.ih
+EXAMPLES
+.nf
+
+1: Combine all the calibrated ACS _flt.fits observations to create the
+output whose rootname is 'test_mdriz'.
+
+--> multidrizzle *flt.fits output='test_mdriz'
+
+This will find all the files with suffix of 'flt.fits' in the current
+directory, build an ASN table named 'test_mdriz_asn.fits', perform all
+processing steps to find and remove cosmic-rays and produce the final,
+cleaned, distortion-free image 'test_mdriz_drz.fits'.
+
+2. Process the ACS association table 'j8cw01010_asn.fits' with
+MultiDrizzle:
+
+--> multidrizzle j8cw01010_asn.fits
+
+This will find all the calibrated _flt.fits files listed for all the
+input exposures in the association table and generate the product listed
+as the product member. The input images will always be the calibrated
+_flt.fits files generated for each input exposure, rather than any
+cosmic-ray cleaned product or repeat-obs summed product generated
+by CALACS.
+
+3: Create a listfile containing the names of a subset of the ACS images
+in this directory, and combine them into a final image. For example,
+if the directory contains both F814W and F606W images, and we only want
+to combine the F606W images:
+
+--> multidrizzle "@files_f606w.lis" output='test_f606w'
+
+4: Combine a set of WFPC2 images. Note that it is best to convert these
+from FITS to GEIS format first (thus creating the *.c0h files). In
+addition, be sure to have the *.c1h files (which contain the badpixel
+information). In this case, the task could be run by specifying:
+
+--> multidrizzle *.c0h output='test_wfpc2'
+
+Further examples on how to use MultiDrizzle are documented in the Dither
+Handbook (Koekemoer et al.), available from the STScI documentation
+website:
+
+    http://www.stsci.edu/hst/HST_overview/documents/
+.fi
+
+SEE ALSO
+
+pydrizzle, drizzle, blot, dither package
+
+.endhelp

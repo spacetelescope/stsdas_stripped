@@ -1,0 +1,5 @@
+# Root help directory for the STPOA packages.  This dummy package is necessary
+# in order to have `stpoa' appear as a module in some package, so that the user
+# can type "help stpoa" (with the `stpoa' given as a task).
+
+_stpoa           pkg = stpoa$lib/rootstpoa.hd

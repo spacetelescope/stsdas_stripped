@@ -1,0 +1,46 @@
+ACS
+
+The ACS keywords consist of a list of detectors, filters, and grism or prism.
+There are a total of 4 detectors selectable: The Wide Field Channel chips
+1 and 2 (wfc1, wfc2), the High Resolution Channel (hrc), and the Solar
+Blind Channel (sbc). The HRC channel also has a coronographic mode
+available (coron). In addition to standard narrow, medium, and wide filters,
+there is a selection of ramp filters available for use with both the WFC
+and HRC. A parameterized keyword (aper) is available to specify the encircled 
+energy radius in arcseconds. A typical ACS observation mode string would be 
+"ACS,WFC1,F555W".
+
+Detectors: wfc1 wfc2 hrc sbc
+
+Miscellaneous: coron (HRC only)
+
+WFC Filters: f435w f475w f502n f550m f555w f606w f625w f658n f660n f775w
+             f814w f850lp f892n
+             fr388n# fr423n# fr459m# fr462n# fr505n# fr551n# fr601n# fr647m#
+             fr656n# fr716n# fr782n# fr853n# fr914m# fr931n# fr1016n#
+             pol_v pol_uv g800l
+
+HRC Filters: f220w f250w f330w f344n f435w f475w f502n f550m f555w f606w
+             f625w f658n f660n f775w f814w f850lp f892n
+             fr388n# fr423n# fr459m# fr462n# fr505n# fr551n# fr601n# fr647m#
+             fr656n# fr716n# fr782n# fr853n# fr914m# fr931n# fr1016n#
+             pol_v pol_uv g800l pr200l
+
+SBC Filters: f115lp f122m f125lp f140lp f150lp f165lp pr110l pr130l
+
+Encircled energy  aper#0.0 aper#0.1 aper#0.2 aper#0.3 aper#0.4 
+radius values:    aper#0.5 aper#0.6 aper#0.8 aper#1.0 aper#1.5 
+	          aper#2.0 aper#4.0
+
+
+The ramp filter throughputs are stored in "parameterized" throughput tables,
+where the parameterization is by central wavelength. To use this capability
+in simulations use the keyword syntax "fr[xxx]n#wwwww" in your obsmode
+specification, where wwwww is the desired central wavelength value in units
+of Angstroms (which can be given as either an integer or floating-point value).
+For example, to use the fr1016n filter at a central wavelength of 10100 A,
+you would use the filter keyword "fr1016n#10100". The synphot expression
+evaluator interpolates between the wavelengths for which data exist in
+the throughput table to arrive at an estimate of the throughput at the
+requested central wavelength.
+

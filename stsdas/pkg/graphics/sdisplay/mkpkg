@@ -1,0 +1,44 @@
+# Make the sdisplay package
+# Author: R. Williamson 13-Jul-1993
+#
+# 28 July 1993 Change source file for overlap to t_overlap.x  ZGL
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	sdisplay.a
+	$call	sdisplay
+	;
+
+install:
+	$move	xx_sdisplay.e stsdasbin$x_sdisplay.e
+	;
+
+sdisplay:
+linkonly:
+	$omake	x_sdisplay.x
+	$set	LIBS = "-lds -lstg"
+	$link	x_sdisplay.o sdisplay.a $(LIBS) -o xx_sdisplay.e
+	;
+
+sdisplay.a:
+        @compass
+	@im2gki
+	@mklut
+	t_hltorgb.x	<imhdr.h> <mach.h>
+	t_imdisp_pos.x	<imhdr.h>
+	t_overlap.x	<imhdr.h>
+        ;

@@ -1,0 +1,14 @@
+# Parameter file for the n2gaussfit task.
+#
+input,s,a,,,,>image(s) to fit
+output,s,a,,,,>output table
+rt,b,h,no,,,>get initial guess from table ?
+tablein,s,h,"",,,>table with initial guess
+row,i,h,1,1,,>row from which to take initial guess
+tgausspars,pset,h,,,,>pset for 2-d Gaussian
+errorpars,pset,h,,,,pset for error-related parameters
+controlpars,pset,h,,,,pset for algorithm control parameters
+verbose,b,h,yes,,,>display results ?
+averbose,b,h,no,,,>display iteration info ?
+version,s,h,"05May91",,,>date of installation
+mode,s,h,al

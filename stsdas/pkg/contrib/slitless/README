@@ -1,0 +1,13 @@
+To use slitless as a standalone program, you must first declare where
+you installed the program using:
+	$set slitless =  home$where_ever/
+	task  slitless =  slitless$slitless.e
+
+Slitless attempt to use the rspectext task from the noao onedspec
+package.  Make sure that it is loaded prior to running Slitless.
+
+The Slitless documentation can be read using:	
+	help slitless$slitless.hlp fi+
+
+
+To recompile Slitless, just run the mkpkg scripts.

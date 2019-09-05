@@ -1,0 +1,12 @@
+# Update the seam application code in the wfpc package library
+# Author: HSU, 03-MAR-1993
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_seam.x 	"wmosaic.h"
+	mosaic_seam.x	"wmosaic.h"
+	;

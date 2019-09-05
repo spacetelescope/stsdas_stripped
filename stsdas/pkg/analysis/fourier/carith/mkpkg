@@ -1,0 +1,17 @@
+# Update the carith application code in the fourier package library
+# Author:  Phil Hodge, 23-July-1990
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	carith.x		<imhdr.h> ../fourier.h ftarith.h
+	czcutoff.x		<imhdr.h> ../fourier.h
+	czgline.x		<imhdr.h> ../fourier.h
+	czinit.x		<imhdr.h> ../fourier.h ftarith.h
+	czinterp.x
+	czopen.x		<imhdr.h> ../fourier.h ftarith.h
+	czwhich.x		<imhdr.h> ../fourier.h ftarith.h
+	;

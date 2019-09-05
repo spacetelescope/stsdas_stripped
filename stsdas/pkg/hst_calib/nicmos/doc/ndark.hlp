@@ -1,0 +1,51 @@
+.help ndark May96 stsdas.hst_calib.nicmos
+.ih
+NAME
+ndark -- builds the DARKFILE reference file for the NICMOS calibration
+pipeline.
+.ih
+USAGE
+ndark input output
+.ih
+DESCRIPTION
+This is a simple CL script task that builds the reference file with dark
+exposures needed for the NICMOS pipeline program CALNICA.
+
+The output file is built by appending each of the input file's first
+NICMOS IMSET into the output file. Output IMSETs are ordered into
+ascending EXTVER sequence. Additional IMSETs in each input file are ignored. 
+
+The integration time in each input file is assumed to be specified by the
+"PIXVALUE" keyword in the TIME extension. That is, only dark exposures with
+the same integration time for all pixels are acceptable. The task does not
+make any consistency checks on this and other parameters. If the "PIXVALUE"
+keyword is not found, the input file is appended to the output file but
+with a zeroed integration time (this is properly handled by CALNICA).
+
+The output file inherits its Primary Header Unit from the first dark
+exposure in the input list. This header is appended with the NUMEXPOS 
+keyword, as well as with the EXPOS_ keywords that specify the integration 
+time corresponding to each output IMSET. 
+ 
+The dark exposures are appended in increasing order of integration time.
+.ih
+PARAMETERS
+.ls input = "" [file name list/template]
+Input dark exposure name template. 
+.le
+.ls outfile = "" [file]
+Name of the output DARKFILE file.
+.le
+.ls (tempdir = "tmp$") [file]
+Directory for temporary files.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I. Busko.
+.ih
+SEE ALSO
+.endhelp

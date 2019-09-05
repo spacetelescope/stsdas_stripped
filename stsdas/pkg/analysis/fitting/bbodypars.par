@@ -1,0 +1,10 @@
+# Black body function parameters.
+#
+temp,r,h,INDEF,10.,300000.,>initial guess for temperature
+ampl,r,h,INDEF,,,>initial guess for amplitude at reference x
+ref,r,h,INDEF,,,>reference x axis value
+vtemp,b,h,yes,,,>vary temperature ?
+vampl,b,h,yes,,,>vary amplitude ?
+vref,b,h,no,,,>vary reference ?
+version,s,h,"10Feb90",,,>date of installation
+mode,s,h,al

@@ -1,0 +1,12 @@
+
+# Update the jansson application code in the restore package library.
+# Author: B. Stobie, 24-Jan-1992
+
+$checkout restore.a ../
+$update   restore.a
+$checkin  restore.a ../
+$exit
+
+restore.a:
+	jansson.x	janfft.h 
+        ;

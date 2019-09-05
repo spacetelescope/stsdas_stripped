@@ -1,0 +1,66 @@
+STECF/IMPOL Imaging Polarimetry Package
+
+Brief installation notes.
+Richard Hook, ST-ECF, 17th June 1999
+
+[Draft]
+
+This package was written by Jeremy Walsh for analysis of imaging polarimetry
+data from HST. It is a standard Iraf package with the source in src$, help
+files in doc$ and library files in lib$ (including a help library). There
+is a mkpkg which works in the normal way.
+
+Note that this package is part of the STECF Iraf package and is not
+normally installed independently.
+
+Installation:
+
+i) Unpack the tar file into an empty directory outside the Iraf directory
+   tree, typically ...iraf/extern/stecf/impol.
+
+ii) Define the package for Iraf, either in a personal startup file
+    (loginuser.cl) or in $iraf/unix/hlib/extern.pkg
+
+         set impol=<appropriate directory>     
+         task impol.pkg = impol$impol.cl
+
+iii) Add the line
+
+         impol$lib/helpdb.mip
+
+     to the standard Iraf "helpdb" environment variable. For a system
+     installation this will be at the end of $iraf/unix/hlib/extern.pkg
+
+iv) Enter Iraf (cl) and define the environment:
+
+     cl> softools
+     so> impol
+     im> cd impol
+
+v) Configure the appropriate architecture
+
+     im> mkpkg <arch>
+
+   <arch> takes one of the standard Iraf values: sparc,ssun (Solaris),
+   linux, redhat,hp700,irix,alpha,freebsd,rs6000 etc. This package has
+   been tested on Solaris 2.5.1, Redhat Linux 6 and HP-UX 10.20 in
+   call cases under Iraf 2.11.1
+
+vi) Build the package:
+
+     im> mkpkg -p stsdas -p tables
+
+This should only produce benigh compilation warnings and create a package
+x_impol.e file.
+
+[Note that this OUGHT to move the final executable from the src$ directory
+ to the appropriate bin but seems not to. I think this is a failure in
+ my understanding of mkpkg files... You may have to do:
+
+ so> rename impol$src/impolbinx_impol.e impol$bin/x_impol.e    ]
+
+Once this is done it should be possible to enter Iraf again, define the
+IMPOL package by typing "impol" and also gain access to help information.
+
+Please remember that this is just a test version and there may well be 
+problems.

@@ -1,0 +1,32 @@
+input, f, a, "", , , 		Input image name
+
+bpixtab, s, h, , , ,		Output pedigree
+mofftab, s, h, , , ,		Output pedigree
+mlintab, s, h, , , ,		Output pedigree
+atodtab, s, h, , , ,		Output pedigree
+ccdtab, s, h, , , ,		Output pedigree
+
+biasfile, s, h, , , ,		Output pedigree
+crrejtab, s, h, , , ,		Output pedigree
+darkfile, s, h, , , ,		Output pedigree
+apdestab, s, h, , , ,		Output pedigree
+pfltfile, s, h, , , ,		Output pedigree
+dfltfile, s, h, , , ,		Output pedigree
+lfltfile, s, h, , , ,		Output pedigree
+
+shadfile, s, h, , , ,		Output pedigree
+phottab, s, h, , , ,		Output pedigree
+idctab, s, h, , , ,		Output pedigree
+sdctab, s, h, , , ,		Output pedigree
+xtractab, s, h, , , ,		Output pedigree
+sptrctab, s, h, , , ,		Output pedigree
+lamptab, s, h, , , ,		Output pedigree
+
+disptab, s, h, , , ,		Output pedigree
+inangtab, s, h, , , ,		Output pedigree
+apertab, s, h, , , ,		Output pedigree
+sdstfile, s, h, , , ,		Output pedigree
+pctab, s, h, , , ,		Output pedigree
+wbiafile, s, h, , , ,		Output pedigree
+
+mode, s, h, "al"

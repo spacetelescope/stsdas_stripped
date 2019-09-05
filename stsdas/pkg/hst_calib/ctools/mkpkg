@@ -1,0 +1,77 @@
+#   Make the ctools package
+#   Author: R.L. Williamson, 28-Jul-1993
+#   02-Jun-1997  Add msstreakflat, msbadpix and msreadnoise tasks (IB)
+#   07-Jul-2000  Add splice (PEH)
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg debug		relink but with debugging and no optimization.
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to bin$
+#	mkpkg update		update object library, link, and move to bin$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+	$set XFLAGS = "-fgqz $(XFLAGS)"
+        $set LFLAGS = "-z $(LFLAGS)"
+	$call relink
+	;
+
+relink:
+	$call	relink@msbadpix
+	$call	relink@msreadnoise
+	$call	relink@msstreakflat
+	$call	relink@splice
+	$update	ctools.a
+        $update calpar.a
+	$call	ctools
+	;
+
+install:
+	$call	install@msbadpix
+	$call	install@msreadnoise
+	$call	install@msstreakflat
+	$call	install@splice
+	$move	xx_ctools.e stsdasbin$x_ctools.e
+        $move   xx_calpar.e stsdasbin$x_calpar.e
+	;
+
+ctools:
+linkonly:
+	$omake	x_ctools.x
+        $omake  x_calpar.x
+	$link	x_ctools.o ctools.a  \
+		-lxtools -lcurfit -liminterp \
+		-lstxtools -ltbtables -lgflib -lgilib \
+		-o xx_ctools.e
+        $link   x_calpar.o calpar.a -o xx_calpar.e
+	;
+
+ctools.a:
+	@eng2tab
+	@groupmod
+	@hstephem
+	@mkmultispec
+	@mkweight
+	@north
+	@poffsets
+	@pprofile
+	@rcombine
+        @rdsaa
+	@resample
+	@specalign
+	@vac2air
+	;
+
+calpar.a:
+	@calpar
+	;
+

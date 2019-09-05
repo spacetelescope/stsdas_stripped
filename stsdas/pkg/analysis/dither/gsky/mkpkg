@@ -1,0 +1,18 @@
+# Update the gsky application code in the dither package library
+# Author: BUSKO, 06-Jun-1996
+
+$checkout dither.a ../
+$update   dither.a 
+$checkin  dither.a ../
+$exit
+
+dither.a:
+	dqval.x
+	t_gsky.x	gsky.h
+	gsky_check.x	gsky.h <imhdr.h>
+	gsky_do.x	gsky.h <mach.h> <imhdr.h>
+	gsky_sky.x	gsky.h <imhdr.h>
+	gsky_in.x	gsky.h
+	gsky_mode.x
+	gsky_subsky.x	gsky.h <imhdr.h>
+	;

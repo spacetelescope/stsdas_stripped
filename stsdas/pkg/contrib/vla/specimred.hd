@@ -1,0 +1,10 @@
+
+# Help directory for the STSDAS.PLAYPEN package
+
+$doc     = "stsdas$pkg/playpen/doc/"
+$playpen = "stsdas$pkg/playpen/"
+$specimred = "stsdas$pkg/playpen/specimred"
+
+intensity	hlp=doc$intensity.hlp,		src=specimred$intensity.cl
+smooth		hlp=doc$smooth.hlp,		src=specimred$smooth.cl	
+velocity	hlp=doc$velocity.hlp,		src=specimred$velocity.cl

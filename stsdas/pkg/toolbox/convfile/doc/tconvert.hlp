@@ -1,0 +1,148 @@
+.help tconvert Jun96 stsdas.toolbox.convfile 
+.nj
+.ih
+NAME
+tconvert -- Convert table formats between Suns and VAXes.
+.ih
+USAGE
+tconvert intable outtable direction
+.ih
+DESCRIPTION
+This task converts STSDAS tables between Sun and VAX formats. 
+Normally, the input and output tables will be on different machines,
+using IRAF networking to actually transfer the files.
+As an alternative,
+the output tables can be put on the same machine as the input tables,
+and then you can transfer the output files using FTP (in binary mode)
+to the other machine.
+
+FITS tables and text tables are machine independent,
+so they do not need any conversion and can simply be copied.
+Nevertheless, 'tconvert' can be used for these files as well.
+In the case of a text file,
+'tconvert' will first verify that the file can be opened as a table,
+in order to exclude files that contain plain text rather than tabular text.
+In the case of a FITS file,
+if a particular table within the file was specified
+(i.e. by name or number in brackets appended to the file name),
+then that table will be copied;
+otherwise, the entire file will be copied.
+
+The 'tconvert' task cannot be used to change the table type.
+You can use 'tcopy' to change type, however,
+as long as the machine-dependent format is on the local node.
+See example 7.
+.ih
+PARAMETERS
+.ls intable = "" [file name template]
+Input table names.
+If the input tables are on a remote node (i.e., a Sun),
+the name must include the node name followed by an exclamation point
+and the full directory and file name.
+The names may be given in a single-column ASCII list file,
+in which case 'intable' would be passed the file name preceded by an "@" sign.
+.le
+.ls outtable = "" [file name template]
+Output file names, or the name of a directory.
+As with 'intable', the output names may be given in a single-column ASCII file.
+If 'outtable' is a directory name (which may be on a remote node),
+the output table names will be the same as the input names.
+.le
+.ls direction = "default" [string, allowed values: default | vs | sv]
+
+Setting this parameter to "vs" specifies that
+input tables are in VAX format,
+and output tables will be in Sun format.
+Setting 'direction="sv"' implies that
+tables should be converted from Sun to VAX format.
+
+It is necessary to explicitly specify the type of conversion when
+both the input and output tables are on the same type of machine.
+If one table is on the local node and the other is on a remote node,
+however, either the input name or output name but not both
+will contain an exclamation point separating the node name from the
+directory and file name.
+In this case 'direction' can be set to "default",
+and the task will assume the direction is from VAX to Sun or from Sun to VAX
+depending on whether the exclamation point is found in
+the 'outtable' parameter or 'intable'.
+.le
+.ls (verbose = yes) [boolean]
+Print operations performed?  If this is set to "yes",
+the names of each input and output table will
+be written to the standard output.
+.le
+.ih
+EXAMPLES
+1.  Suppose we are running IRAF on a Sun,
+and we have tables on a VAX called "abcvax"
+in directory "disk$scratch:[caldir]"
+that we want to copy to the current directory on the Sun.
+We specify the direction "vs" explicitly.
+
+.nf
+	co> set scrdir = "abcvax!disk\$scratch:[caldir]"
+	co> tconvert scrdir$*.tab . vs
+.fi
+
+2.  This example is similar to the previous example, but 
+will copy another table, called "c241150fx.cxu",
+from the current Sun directory to the scratch directory on the remote VAX.
+
+.nf
+	co> tconvert c241150fx.cxu scrdir sv
+.fi
+
+3.  This example is like the previous example, 
+but will set the name of the output table to "uni.tab".
+
+.nf
+	co> tconvert c241150fx.cxu scrdir$uni.tab sv
+.fi
+
+4.  Suppose we are running IRAF on a VAX,
+and we have tables on a Sun called "abcsun" in the
+directory "/abc/u1/caldir"
+that we want to copy to the "tabdir" subdirectory
+of our IRAF home directory on the local VAX. We
+would do something like:
+
+.nf
+	co> set scrdir = "abcsun!/abc/u1/caldir/"
+	co> tconvert scrdir$*.tab home$tabdir/ sv
+.fi
+
+5.  This example is like example 4, but will copy 
+the file "c241150fx.cxu"
+from the current VAX directory to the directory
+"/abc/u1/caldir" on the remote Sun,
+changing the file name to "uni.tab".
+
+.nf
+	co> tconvert c241150fx.cxu scrdir$uni.tab sv
+.fi
+
+6.  This example is also like example 4, but will
+specify the remote node and directory
+on the command line rather than using an environment variable.
+Since the name includes a "!" we can use 'direction = default'.
+
+.nf
+	co> tconvert abcsun!/abc/u1/caldir/*.tab home$tabdir/ default
+.fi
+
+7.  Copy an STSDAS table in the current directory to a FITS file
+on another machine.
+Note that we use 'tcopy' rather than 'tconvert'.
+
+.nf
+	co> tcopy c241150fx.cxu scrdir$c241150fx.fits
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+
+Type "help convfile option=sys" for a higher-level description of
+the 'convfile' package.
+.endhelp

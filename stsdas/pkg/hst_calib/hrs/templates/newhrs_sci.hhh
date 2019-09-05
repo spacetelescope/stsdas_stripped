@@ -1,0 +1,286 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                   25 /                                                
+PSIZE   =                  960 /                                                
+PTYPE1  = 'CRVAL1  '           / pixel number                                   
+PDTYPE1 = 'REAL*8  '           /                                                
+PSIZE1  =                   64 /                                                
+PTYPE2  = 'CRPIX1  '           / pixel number of reference pixel                
+PDTYPE2 = 'REAL*4  '           /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'CD1_1   '           / pixel increment                                
+PDTYPE3 = 'REAL*4  '           /                                                
+PSIZE3  =                   32 /                                                
+PTYPE4  = 'DATAMIN '           / the minimum value of the data                  
+PDTYPE4 = 'REAL*4  '           /                                                
+PSIZE4  =                   32 /                                                
+PTYPE5  = 'DATAMAX '           / the maximum value of the data                  
+PDTYPE5 = 'REAL*4  '           /                                                
+PSIZE5  =                   32 /                                                
+PTYPE6  = 'RA_APER '           / right ascension of aperture (deg)              
+PDTYPE6 = 'REAL*8  '           /                                                
+PSIZE6  =                   64 /                                                
+PTYPE7  = 'DEC_APER'           / declination of aperture (deg)                  
+PDTYPE7 = 'REAL*8  '           /                                                
+PSIZE7  =                   64 /                                                
+PTYPE8  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE8 = 'INTEGER*4'          /                                                
+PSIZE8  =                   32 /                                                
+PTYPE9  = 'ERRCNT  '           / the error count of the data                    
+PDTYPE9 = 'INTEGER*4'          /                                                
+PSIZE9  =                   32 /                                                
+PTYPE10 = 'PKTTIME '           / time from the packet ancillary data            
+PDTYPE10= 'REAL*8  '           /                                                
+PSIZE10 =                   64 /                                                
+PTYPE11 = 'CTYPE1  '           / the first coordinate type                      
+PDTYPE11= 'CHARACTER*8'        /                                                
+PSIZE11 =                   64 /                                                
+PTYPE12 = 'OBSRPT  '           / observation repeat number                      
+PDTYPE12= 'INTEGER*4'          /                                                
+PSIZE12 =                   32 /                                                
+PTYPE13 = 'OBSINT  '           / intermediate readout number                    
+PDTYPE13= 'INTEGER*4'          /                                                
+PSIZE13 =                   32 /                                                
+PTYPE14 = 'YDEF    '           / vertical deflection                            
+PDTYPE14= 'INTEGER*4'          /                                                
+PSIZE14 =                   32 /                                                
+PTYPE15 = 'XDEF    '           / horizontal deflection                          
+PDTYPE15= 'INTEGER*4'          /                                                
+PSIZE15 =                   32 /                                                
+PTYPE16 = 'SAMPLE  '           / sample position                                
+PDTYPE16= 'REAL*4  '           /                                                
+PSIZE16 =                   32 /                                                
+PTYPE17 = 'DELTAS  '           / delta sample position                          
+PDTYPE17= 'REAL*4  '           /                                                
+PSIZE17 =                   32 /                                                
+PTYPE18 = 'LINE    '           / line positions                                 
+PDTYPE18= 'REAL*4  '           /                                                
+PSIZE18 =                   32 /                                                
+PTYPE19 = 'EXPOSURE'           / exposure time (seconds)                        
+PDTYPE19= 'REAL*4  '           /                                                
+PSIZE19 =                   32 /                                                
+PTYPE20 = 'BINID   '           /  binid                                         
+PDTYPE20= 'INTEGER*4'          /                                                
+PSIZE20 =                   32 /                                                
+PTYPE21 = 'CARPOS  '           /  carrousel position                            
+PDTYPE21= 'INTEGER*4'          /                                                
+PSIZE21 =                   32 /                                                
+PTYPE22 = 'ZSCOEF1 '           /  first coefficient of sample mapping           
+PDTYPE22= 'REAL*4  '           /                                                
+PSIZE22 =                   32 /                                                
+PTYPE23 = 'ZSCOEF2 '           /  second coefficient of sample mapping          
+PDTYPE23= 'REAL*4  '           /                                                
+PSIZE23 =                   32 /                                                
+PTYPE24 = 'ZSCOEF3 '           /  third coefficient of sample mapping           
+PDTYPE24= 'REAL*4  '           /                                                
+PSIZE24 =                   32 /                                                
+PTYPE25 = 'ZSCOEF4 '           /  fourth coefficient of sample mapping          
+PDTYPE25= 'REAL*4  '           /                                                
+PSIZE25 =                   32 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / GROUP PARAMETERS: PODPS                                      
+                                                                                
+                 / HRS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'HRS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'SCI               ' / shp, udl, ext, sci, img, wav, flx              
+BUNIT   = 'n/a               ' / brightness units                               
+                                                                                
+                 / HRS PATTERN KEYWORDS                                         
+NBINS   =                 -999 / number of substep bins in this pattern         
+NINIT   =                 -999 / number of initial deflections                  
+RPTOBS  =                 -999 / expected number of observation repeats         
+INTOBS  =                 -999 / expected number of intermediate readouts       
+BINID1  =                 -999 / bin id of substep 1 (0 = no data, 7 = dark cur)
+BINID2  =                 -999 / bin id of substep 2 (1 = star small aperture)  
+BINID3  =                 -999 / bin id of substep 3 (2 = star large aperture)  
+BINID4  =                 -999 / bin id of substep 4 (3 = upper interorder)     
+BINID5  =                 -999 / bin id of substep 5 (4 = lower interorder)     
+BINID6  =                 -999 / bin id of substep 6 (5 = sky small aperture)   
+BINID7  =                 -999 / bin id of substep 7 (6 = sky large aperture)   
+IXDEF1  =                -9999 / initial x deflection 1                         
+IXDEF2  =                -9999 / initial x deflection 2                         
+IXDEF3  =                -9999 / initial x deflection 3                         
+IXDEF4  =                -9999 / initial x deflection 4                         
+IXDEF5  =                -9999 / initial x deflection 5                         
+IYDEF1  =                -9999 / initial y deflection 1                         
+IYDEF2  =                -9999 / initial y deflection 2                         
+IYDEF3  =                -9999 / initial y deflection 3                         
+IYDEF4  =                -9999 / initial y deflection 4                         
+IYDEF5  =                -9999 / initial y deflection 5                         
+HOFF1   =                -9999 / horizontal offset bin 2                        
+HOFF2   =                -9999 / horizontal offset bin 3                        
+HOFF3   =                -9999 / horizontal offset bin 4                        
+HOFF4   =                -9999 / horizontal offset bin 5                        
+HOFF5   =                -9999 / horizontal offset bin 6                        
+HOFF6   =                -9999 / horizontal offset bin 7                        
+VOFF1   =                -9999 / vertical offset bin 2                          
+VOFF2   =                -9999 / vertical offset bin 3                          
+VOFF3   =                -9999 / vertical offset bin 4                          
+VOFF4   =                -9999 / vertical offset bin 5                          
+VOFF5   =                -9999 / vertical offset bin 6                          
+VOFF6   =                -9999 / vertical offset bin 7                          
+RPTCD1  =                 -999 / repeat code bin 2 (0 = no def offset)          
+RPTCD2  =                 -999 / repeat code bin 3 (1 = every time)             
+RPTCD3  =                 -999 / repeat code bin 4 (2 = every 2nd time)         
+RPTCD4  =                 -999 / repeat code bin 5 (4 = every 4th time)         
+RPTCD5  =                 -999 / repeat code bin 6 (8 = every 8th time)         
+RPTCD6  =                 -999 / repeat code bin 7                              
+ZXDCALU =                -999. / x comp null deflection cal correction          
+ZXDCALP =                -999. / proportional x-deflection cal correction       
+ZYDCALU =                -999. / y comp null deflection cal correction          
+ZYDCALP =                -999. / proportional y-deflection cal correction       
+INFOB   =                 -999 / deflection pairs/substep pattern               
+INFOC   =                 -999 / largest repeat code in the substep pattern     
+SCIDMP  =                 -999 / intermediate data dump (-1 = nodump)           
+MAXGSS  =                 -999 / maximum substep patterns/observation           
+MERGED  =                 -999 / number of merged spectra in this pattern       
+STEPPATT=                 -999 / step pattern sequence                          
+STEPTIME=                -999. / integration time at step pattern position (sec)
+FP_SPLIT= 'n/a               ' / fp-split (NO, TWO, FOUR, DSTWO, DSFOUR)        
+COMB_ADD= 'n/a               ' / comb-addition (NO, TWO, FOUR, DSTWO, DSFOUR)   
+FINCODE =                 -999 / observation termination code                   
+DOPPLER = 'n/a               ' / on-board doppler compensation (ON, OFF)        
+METER   = 'n/a               ' / observation terminated by exposure meter? (Y or
+                                                                                
+                 / CALIBRATION FLAGS AND INDICATORS                             
+OBSMODE = 'n/a               ' / observation mode                               
+DETECTOR=                 -999 / detector in use (1-2)                          
+GRATING = 'n/a               ' / grating,echelle or mirror in use               
+APERTURE= 'n/a               ' / aperture name                                  
+                                                                                
+                 / CALIBRATION REFERENCE FILES                                  
+DIOHFILE= 'n/a               ' / diode response header file                     
+PHCHFILE= 'n/a               ' / photocathode response header file              
+VIGHFILE= 'n/a               ' / vignetting response header file                
+ABSHFILE= 'n/a               ' / absolute flux header file                      
+NETHFILE= 'n/a               ' / absolute flux wavelength net header file       
+DQIHFILE= 'n/a               ' / data quality initialization header file        
+CCR1    = 'n/a               ' / photocathode line mapping parameters table     
+CCR2    = 'n/a               ' / photocathode sample parameters table           
+CCR3    = 'n/a               ' / detector parameters table                      
+CCR4    = 'n/a               ' / wavelength ranges table                        
+CCR5    = 'n/a               ' / spectral order constants table                 
+CCR6    = 'n/a               ' / dispersion constants table                     
+CCR7    = 'n/a               ' / thermal constants table                        
+CCR8    = 'n/a               ' / incidence angle coefficients table             
+CCR9    = 'n/a               ' / echelle interpolation constants table          
+CCRA    = 'n/a               ' / echelle non-interpolation constants table      
+CCRB    = 'n/a               ' / scattered light correction factors             
+CCG2    = 'n/a               ' / paired-pulse correction table                  
+                                                                                
+                 / CALIBRATION SWITCHES                                         
+DQI_CORR= 'OMIT              ' / data quality initialization                    
+EXP_CORR= 'OMIT              ' / division by exposure time                      
+DIO_CORR= 'OMIT              ' / diode response correction                      
+PPC_CORR= 'OMIT              ' / paired-pulse correction                        
+MAP_CORR= 'OMIT              ' / mapping function                               
+DOP_CORR= 'OMIT              ' / doppler compensation                           
+PHC_CORR= 'OMIT              ' / removal of photocathode nonuniformity          
+VIG_CORR= 'OMIT              ' / removal of vignetting nonuniformity            
+MER_CORR= 'OMIT              ' / merging of substep bins                        
+MDF_CORR= 'OMIT              ' / median filter of background spectra            
+PLY_CORR= 'OMIT              ' / polynomial smoothing of background spectra     
+MNF_CORR= 'OMIT              ' / mean filter of background spectra              
+BCK_CORR= 'OMIT              ' / background removal                             
+ADC_CORR= 'OMIT              ' / application of dispersion constants            
+IAC_CORR= 'OMIT              ' / incidence angle correction                     
+ECH_CORR= 'OMIT              ' / correction for echelle ripple                  
+FLX_CORR= 'OMIT              ' / absolute flux calibration                      
+HEL_CORR= 'OMIT              ' / conversion to heliocentric wavelengths         
+VAC_CORR= 'OMIT              ' / vacuum to air correction                       
+                                                                                
+                 / CALIBRATION KEYWORDS                                         
+DOPZER  =                -999. / doppler shift zero phase time (Mod Julian Date)
+DOPMAG  =                -999. / doppler shift scaling correction magnitude     
+SCLAMP  =                 -999 / spectral calibration lamp                      
+ZLCOEF1 =                -999. / line mapping function L0                       
+ZLCOEF2 =                -999. / line mapping function A                        
+SPORDER =                 -999 / spectral order                                 
+MINWAVE =        0.0000000E+00 / minimum wavelength (angstroms)                 
+MAXWAVE =       -0.1000000E+01 / maximum wavelength (angstroms)                 
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+PODPSFF = 'n/a               ' / 0=(no podps fill), 1=(podps fill present)      
+STDCFFF = 'n/a               ' / 0=(no st dcf fill), 1=(st dcf fill present)    
+STDCFFP = 'n/a               ' / st dcf fill pattern (hex)                      
+PKTFMT  =                 -999 / packet format code                             
+                                                                                
+                 / CDBS KEYWORDS                                                
+                                                                                
+ZFSPYBF =                 -999 / control bits for spectrum y-balance            
+ZFXMAPC =                -9999 / x deflection of the center of field map        
+ZFYMAPC =                -9999 / y deflection of the center of fiels map        
+ZDEBTF  =                -999. / DEB front post amp. temperature                
+ZDEBTR  =                -999. / DEB rear post amp temperature                  
+ZDETT1  =                -999. / det. 1 temperature                             
+ZDETT2  =                -999. / det. 2 temperature                             
+ZDRT    =                -999. / digicon radiator tem                           
+ZDT11   =                -999. / det. 1 detector shield temperature #1          
+ZDT12   =                -999. / det. 2 detector shield temperature #1          
+ZET11   =                -999. / det. 1 enclosure temperature #1                
+ZET31   =                -999. / det. 1 enclosure temperature #3                
+ZFIAT   =                -999. / fixture interface A temperature                
+ZFIBT   =                -999. / fixture interface B temperature                
+ZFICT   =                -999. / fixture interface C temperature                
+ZHDC1   =                -999. / det. 1 horizontal deflection current           
+ZHDC2   =                -999. / det. 2 horizontal deflection current           
+ZHVPST1 =                -999. / det. 1 high voltage power supply temperature   
+ZHVPST2 =                -999. / det. 2 high voltage power supply temperature   
+ZMEBT1  =                -999. / main elec box 1 temperature                    
+ZMEBT2  =                -999. / main elec box 2 temperature                    
+ZOBBT   =                -999. / optical bench bulkhead temperature             
+ZOBT11  =                -999. / det. 1 optical bench temperature #1            
+ZPABT1  =                -999. / det. 1 preamp assembly box temperature         
+ZPABT2  =                -999. / det. 2 preamp assembly box temperature         
+ZPCC1   =                -999. / det. 1 photo cathode current                   
+ZPCC2   =                -999. / det. 2 photo cathode current                   
+ZPCV1   =                -999. / det. 1 photo cathode high voltage              
+ZPCV2   =                -999. / det. 2 photo cathode high voltage              
+ZRIUTA  =                -999. / RIU A internal temperature                     
+ZRIUTB  =                -999. / RIU B internal temperature                     
+ZSCT1   =                -999. / det. 1 spectral calibration lamp temperature   
+ZSCT2   =                -999. / det. 2 spectral calibration lamp temperature   
+ZTST11  =                -999. / det. 1 thermal shelf temperature #1            
+ZCST    =                -999. / carrousel stator temperature                   
+ZSPYBLU =                -999. / spectrum y-balance offset                      
+                                                                                
+                 / APERTURE POSITION                                            
+RA_APER1=                -999. / right ascension of the aperture (deg)          
+DECAPER1=                -999. / declination of the aperture (deg)              
+                                                                                
+                 / EXPOSURE INFORMATION                                         
+EQUINOX = 'n/a               ' / equinox of the celestial coordinate system     
+SUNANGLE=                -999. / angle between sun and V1 axis (deg)            
+MOONANGL=                -999. / angle between moon and V1 axis (deg)           
+SUN_ALT =                -999. / altitude of the sun above Earth's limb (deg)   
+FGSLOCK = 'n/a               ' / commanded FGS lock (FINE,COARSE,GYROS,UNKNOWN) 
+                                                                                
+DATE-OBS= 'n/a               ' / UT date of start of observation (yyyy-mm-dd)   
+TIME-OBS= 'n/a               ' / UT time of start of observation (hh:mm:ss)     
+EXPSTART=                -999. / exposure start time (Modified Julian Date)     
+EXPEND  =                -999. / exposure end time (Modified Julian Date)       
+EXPTIME =                -999. / exposure duration (seconds)--calculated        
+EXPFLAG = 'n/a               ' / Exposure interruption indicator                
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name                         
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

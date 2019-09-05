@@ -1,0 +1,56 @@
+.help dispfiles Mar94 stsdas.hst_calib.foc.focprism
+.nj
+.ih
+NAME
+dispfiles -- Parameter set (pset) for names of dispersion files.
+.ih
+USAGE
+dispfiles
+.ih
+DESCRIPTION
+The 'objcalib' and 'simprism' tasks require a dispersion file
+which gives the pixel offset as a function of wavelength.
+For FOC observations,
+the relay name and prism name are extracted from the 'obsmode' string,
+and this is used to select the correct dispersion file from this pset.
+If you have created your own dispersion file for an FOC observation,
+you should assign the file name to the appropriate parameter
+in this pset.
+
+If 'obsmode' does not contain a valid FOC relay name ("f/96" or "f/48"),
+the observation is assumed to be non-FOC,
+and the dispersion file name is taken from the 'userprism' parameter.
+.ih
+PARAMETERS
+.ls fuv96 = "focprism$f96_fuv_disp.dat" [string]
+F/96 far UV dispersion file.
+This is selected if 'obsmode' contains "f/96" and "prism1".
+.le
+.ls nuv96 = "focprism$f96_nuv_disp.dat" [string]
+F/96 near UV dispersion file.
+This is selected if 'obsmode' contains "f/96" and "prism2".
+.le
+.ls fuv48 = "focprism$f48_fuv_disp.dat" [string]
+F/48 far UV dispersion file.
+This is selected if 'obsmode' contains "f/48" and "prism1".
+.le
+.ls nuv48 = "focprism$f48_nuv_disp.dat" [string]
+F/48 near UV dispersion file.
+This is selected if 'obsmode' contains "f/48" and "prism2".
+.le
+.ls userprism = "" [string]
+Dispersion file for non-FOC observations.
+This is selected if 'obsmode' does not contain either "f/96" or "f/48"
+(case insensitive).
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+objcalib, simprism
+
+Type "help focprism option=sys" for a higher-level description of
+the 'focprism' package. 
+.endhelp

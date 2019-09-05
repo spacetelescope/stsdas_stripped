@@ -1,0 +1,28 @@
+# This mkpkg file builds mscopy as a native IRAF task.
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+linkonly:
+	$set XFLAGS = "-DNATIVE_IRAF -Inolibc \
+		'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake mscopy.c		<xclio.h> <ximio.h> <xxtools.h> <c_iraf_priv.h>
+	$omake namegio.c	<ximio.h> <xxtools.h>
+
+	$set LFLAGS = "-H -z $(LFLAGS)"
+	$link mscopy.o \
+		namegio.o \
+		-lcvos -lc \
+		-lxtools \
+		-o xx_mscopy.e
+	;
+
+install:
+	$move xx_mscopy.e stsdasbin$x_mscopy.e
+	;

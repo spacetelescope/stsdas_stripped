@@ -1,0 +1,5 @@
+input,f,a,,,,">Filename of the FOS observation"
+output,f,a,,,,">Rootname of the output files"
+badwp,s,h,0,,, ">Bad waveplate positions"
+Version,s,h,"3.2,May99",,,"Date of installation"
+mode,s,h,a

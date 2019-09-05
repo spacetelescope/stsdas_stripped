@@ -1,0 +1,162 @@
+.help resample Sep92 stsdas.hst_calib.ctools
+.ih
+NAME
+resample -- Resample calibrated spectra to a linear wavelength scale.
+.ih
+USAGE
+resample input output
+.ih
+DESCRIPTION
+The input spectra are resampled to match the dispersion parameters
+given by the user: starting wavelength, wavelength increment, ending wavelength,
+and spectrum length. The output spectra pixel intervals may be 
+either in wavelength or in the logarithm of the wavelength.
+The output spectrum may be zero-filled on either or both ends if 
+the choice of parameters requires extrapolation beyond the limits 
+of the input spectrum. 
+
+The image names of the spectra to be resampled need not have 
+an extension of '.c1h'. However, if a separate wavelength image is not 
+specified, the task will assume that there exists a corresponding 
+wavelength image with the same root as the flux image and 
+an extension of '.c0h', and placed in the same directory as the flux image. 
+
+The wavelength images should contain monotonically increasing (or decreasing)
+values. If the input wavelength images happen to be zero-padded, use
+the image section specification to pass only the valid part of the 
+spectrum to this task.
+
+If all groups of a multigroup image are to be processed, the image name should
+be given without a group designation. To process a single group of a 
+multigroup image, give the image name with a group designation 
+(e.g., "z00xh903r.c1h[5]", to resample the fifth group of the image).
+
+The Hanning window used with the sinc function is defined as:
+
+.nf
+	wj = 1 / 2 [1 - cos(2 * PI * (j - 1) / (N - 1))] 
+	 
+	where j goes from 1 to N, the size of the window.
+
+.fi
+Except for the sinc function, the interpolation algorithms are the
+same as those in the IRAF task 'dispcor'. 
+.ih
+PARAMETERS
+.ls input [file name template]
+The image names of the spectra to be resampled.
+.le
+.ls output [file name template]
+The image names of the new spectra.
+.le
+.ls (wave = "") [file name template]
+The names of the wavelength images corresponding to the input spectra.
+.le
+.ls (logarithm = no) [boolean]
+Should the output spectra be linear in the logarithm base 10 of
+wavelength?
+
+If set to "no" the output spectra will be linear in the 
+wavelength.
+.le
+.ls (pixout = 0) [integer]
+Length of the output spectrum.  
+
+If 0, then the output spectrum will be
+the same size as the input spectrum.  If INDEF, then the size of the
+output spectrum will be whatever is required to satisfy the
+requirements specified by the 'wave0', 'delwav', and 'ewave' parameters.
+.le
+.ls (wave0 = INDEF) [real]
+Starting wavelength.
+
+If INDEF, then the first wavelength of the input spectrum is used.  If
+a value is
+specified, the output spectra will be resampled 
+so that the first pixel has this wavelength.  If a logarithmic scale 
+is specified then this number must be the logarithm of the starting
+wavelength. 
+.le
+.ls (delwav = INDEF) [real]
+The output spectra will be resampled having a pixel-to-pixel
+increment specified by 'delwav'.  If a logarithmic scale is specified
+then this number is the interval in the logarithm of the wavelength.
+If INDEF, then this is calculated based on the starting, ending, and
+size of the output spectrum.
+.le
+.ls (ewave = INDEF) [real]
+The ending output wavelength.  If INDEF, then the last usable
+wavelength of the input is used.
+.le
+.ls (interp_mode = "linear") [string]
+Allowed values: linear | spline3 | poly3 | poly5 | sums | sinc
+
+Interpolation method used in resampling.
+
+The interpolation may be linear,
+cubic spline ("spline3"), third order polynomial ("poly3"), or 
+fifth order polynomial ("poly5"). 
+The count preserving interpolator option 
+("sums") may be specified. Additionally, a sinc function interpolation
+may be selected. The "sinc" option uses a Hanning window; the size
+of the window is selected by the user in the parameter 'window'.
+.le
+.ls (window = 35) [integer]
+This parameter must be present if 'interp_mode' is set to "sinc", 
+otherwise it is not used. This parameter specifies the size of the
+Hanning window which is convolved with the sinc function. 
+.le
+.ih
+EXAMPLES
+1. Resample all groups of the observation 'z00xh903r' to a linear wavelength
+scale covering the same wavelength range using a sinc function interpolation
+with a window 15 pixels wide.
+
+.nf
+  hr> resample z00xh903r.c1h new903.c1h interp=sinc window=15
+.fi
+
+2. Resample the second group of the observation 'z00xh903r' to a linear 
+wavelength scale spanning 1000 pixels starting at 2695 angstroms and using
+a wavelength per pixel value of .01 angstroms. Interpolate using a fifth
+order polynomial.
+.nf
+
+  hr> resample z00xh903r.c1h[2] x903.c1h wave0=2695. delwav=0.001 \
+  >>> pixout = 1000 interp=poly5
+
+.fi
+
+3. Resample and flip a red-side FOS spectrum 'y00hf104t' to a linear
+wavelength scale.
+
+.nf
+  fo> resample y00hf104t.c1h newfos.c1h wave0=3250 delwav=0.75
+.fi
+
+4. An alternate way to flip a red-side FOS spectrum while letting
+the task determine the scaling would be:
+
+.nf
+  fo> resample y00hf104t.c1h newfos.c1h wave=y00hf104t.c0h
+.fi
+
+5. Resample a part of an FOS observation:
+
+.nf
+  fo> resample ytest.c1h[200:400] ytestprime.c1h 
+.fi
+
+6. Resample an HRS observation to a high dispersion and create the
+spectrum large enough to span the specified wavelength region.
+
+.nf
+  hr> resample z00hf104t.c1h high.hhh pixout=indef wave0=965.3
+  >>> delwave=.001 ewave=1843.2
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+dispcor
+.endhelp

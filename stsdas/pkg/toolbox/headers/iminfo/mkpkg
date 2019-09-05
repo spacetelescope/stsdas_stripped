@@ -1,0 +1,28 @@
+# Update iminfo in the headers package library.
+# Author: STOBIE, 15-FEB-1989
+
+$checkout headers.a ../
+$update   headers.a
+$checkin  headers.a ../
+$exit
+
+headers.a:
+	acsbot.x	<imhdr.h>
+	focbot.x	<imhdr.h>
+	fosbot.x	<imhdr.h>
+	gentop.x	
+	hrsbin.x	
+	hrsbot.x	<imhdr.h>
+	hspbot.x	
+	iminfo.x	<error.h>  <imhdr.h>
+	impinfo.x	<imhdr.h>
+	nicbot.x	
+	nonhst.x	<imhdr.h>
+	pargtype.x	
+	pktfmt.x	
+	rpt.x		
+	wf2bot.x	<imhdr.h>
+	wf3bot.x	<imhdr.h>
+	wfpbot.x	<imhdr.h>
+#	x_iminfo.x	
+	;

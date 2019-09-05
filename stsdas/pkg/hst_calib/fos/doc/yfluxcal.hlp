@@ -1,0 +1,123 @@
+.help yfluxcal Jan98 stsdas.hst_calib.fos
+.ih
+NAME
+yfluxcal -- Set calibration switches to flux calibrate an FOS observation.
+.ih
+DESCRIPTION
+'yfluxcal' will set the switches to flux calibrate an FOS observation.
+Originally intended to modify IMAGE mode observations, there is
+currently nothing specific in this task that forces the observations
+to be originally IMAGE mode.
+
+'yfluxcal' will always set the calibration switch header keywords in the
+raw, or '.d0h', image for full calibration through to flux calibration.
+The type of flux calibration, whether old-style, or AIS, can be
+chosen.  Optionally, 'yfluxcal' can run 'getref/upreffile' to update
+the reference file and table keywords.  Please note that the 'getreffile'
+task originally run by 'yfluxcal' no longer exists; 'getreffile' has been
+replaced by the 'getref' task.  Also, the task can optionally
+run 'calfos' to perform the recalibration, all in one convenient step.
+For the recalibration step, the special mode processing switch can be 
+set for time-resolved, rapid readout, or spectropolarimetry observations.
+
+The calibration switches are set as follows:
+
+.nf
+	CNT_CORR = "PERFORM"
+	OFF_CORR = "OMIT"
+	PPC_CORR = "PERFORM"
+	BAC_CORR = "PERFORM"
+	GMF_CORR = "PERFORM"
+	SCT_CORR = "PERFORM"
+	FLT_CORR = "PERFORM"
+	SKY_CORR = "PERFORM"
+	WAV_CORR = "PERFORM"
+
+	If the AIS method of flux calibration is chosen:
+
+	   FLX_CORR = "OMIT"
+	   APR_CORR = "PERFORM"
+	   AIS_CORR = "PERFORM"
+	   TIM_CORR = "PERFORM"
+
+	Else, the "old-style" flux calibration:
+
+	    FLX_CORR = "PERFORM"
+	    APR_CORR = "OMIT"
+	    AIS_CORR = "OMIT"
+	    TIM_CORR = "OMIT"
+
+	ERR_CORR = "PERFORM"
+
+        If special mode processing (SPECMODE) is set to yes:
+
+	    MOD_CORR = "PERFORM"
+
+        Else, no special mode processing will occur:
+
+	    MOD_CORR = "OMIT"
+.fi
+.ih
+PARAMETERS
+.ls input [file list]
+The list of observations to modify.  This may be just an observation
+root, any one of an observation's header files, a comma-separated list
+of rootnames or file names, or an "@" file list of rootnames or file
+names, or any filename wildcard operation.
+.le
+.ls (ais = yes) [boolean]
+If "yes", the average inverse sensitivity calibration will be set.  If
+"no", the "old-style" flux calibration will be set.
+.le
+.ls (upref = yes) [boolean]
+If "yes", the tasks 'getref' and 'upreffile' will be executed to
+update the reference file header parameters.
+.le
+.ls (calibrate = no) [boolean]
+If "yes", 'calfos' will then be executed to recalibrate the input
+observations.  The rootname of the calibrated output files will be the
+same as the input rootnames with the extension, specified in the
+parameter 'outext', appended.
+.le
+.ls (specmode = no) [boolean]
+If "yes", the MOD_CORR calibration switch will be set to PERFORM in 
+the '.d0h' file.
+Setting 'specmode = yes' is applicable to time-resolved, rapid readout, or 
+spectropolarimetry observations.
+.le
+.ls (outext = "_flx") [string]
+If the parameter 'calibrate' is "yes", 'calfos' will be executed on the
+input observation data sets.  The calibrated output files will be the
+same as the input rootnames with the extension, specified by this
+parameter, appended.
+.le
+.ih
+EXAMPLES
+Recalibrate all the IMAGE mode data in a directory for full
+flux calibration.  The directory contains other observations
+that should not be recalibrated, so only the IMAGE mode observations
+are located and done.
+
+.nf
+    cl> cd /borrego/data7/cycle4/5539/blue
+    cl> hselect *.d0h $I "grndmode=\"IMAGE\"" > list.txt
+    cl> yfluxcal @list.txt calibrate+
+.fi
+.ih
+REFERENCES
+Author: Jonathan Eisenhamer
+.ih
+REVISIONS
+This task has been revised (January 1998) to accommodate changes in the
+'getref' and 'upreffile' tasks.  The 'getreffile' task used in the previous
+versions of this script is now obsolete; 'getreffile' has been replaced by
+the foreign task, 'getref'.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.le
+.ih
+SEE ALSO
+getref, upreffile, calfos
+.endhelp

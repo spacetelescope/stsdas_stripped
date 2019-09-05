@@ -1,0 +1,124 @@
+.help tacount Jun97 stsdas.hst_calib.hrs
+.ih 
+NAME 
+tacount -- Calculate the observed count rate given the predicted count rate
+for GHRS target acquisitions.
+.ih
+DESCRIPTION 
+'tacount' modifies a predicted count rate for a target
+acquisition using the Goddard High Resolution Spectrograph (GHRS),
+accounting for paired-pulse effects and the incoming light's point
+spread function (PSF).  The observed count rate and count rate for
+each of the eight target acquisition diodes are placed in the task's
+parameters and optionally output to standard out.
+
+The GHRS uses an array of diode detectors to count photons of light
+entering one of the apertures.  Once a photon strikes a diode, it is
+counted in the electronics which takes some time, albeit a short amount of
+time.  Within this
+interval, the diode+electronics are unable to count photons.  If a
+photon should happen to strike this diode within the "dead time", it
+will not be counted.  This is called the paired-pulse effect.  For low
+count rates, i.e. less than 2000 counts/diode/second, the error rate
+is less than 1%.  The error is less than 10% for rates up to about
+20,000.  The detectors saturate at a count rate of about 100,000.
+
+The equation relating observed count rate to true count rate is as
+follows:
+
+.nf
+	y = (1.0 - e**(-t*x)) / t
+
+where
+	x = True count rate
+	t = Dead time constant ~ 10.2x10e-6 seconds.
+	y = Observed count rate
+.fi
+
+The input is simply the predicted, or true, count rate of the target
+to be acquired.  This rate can come from a number of sources,
+including the "synphot" package.  Since GHRS target acquisitions use eight of the
+500 science diodes, a PSF is needed to distribute the incoming flux
+over the eight diodes.  These are specified in the parameters 'psfX'
+where X is the target acquisition diode number.
+
+The observed count rate, i.e. what the GHRS would see, is stored in
+the parameter 'obs_rate'.  The count rates for the individual diodes
+are stored in the parameters 'diodeX', where "X" is the diode number.
+If the 'verbose' parameter is "yes", this information is also
+sent to standard output.
+
+The reason one would be interested in the count rate for each diode is
+that the memory location which stores the counts can only hold a
+maximum of 65536 counts per diode.  If the target acquisition exposure
+time is
+long enough at a specified count rate, the counter will overflow and
+wrap back down to zero.  Knowing the count rate will help an observer
+avoid this situation.
+.ih
+PARAMETERS
+.ls input [real]
+The predicted, or true, count rate of the target to be acquired.
+.le
+.ls (obs_rate = 0.) [real]
+Output: On task completion, this will have the value of the observed
+count rate.
+.le
+.ls (diode1, diode2,...,diode8 = 0.) [real]
+Output: On task completion, these parameters will contain the
+count rates for each of the target acquisition diodes.
+.le
+.ls (verbose = yes) [boolean]
+If "yes", the observed count rate and individual diode count rates will
+be printed on standard output.
+.le
+.ls (psf1, psf2,..., psf8) [real]
+These parameters contain the Point Spread Function (PSF) as seen by the
+target acquisition diodes.
+.le
+.ls (dead_time = 10.2) [real]
+The "dead time" constant, expressed in microseconds (10e-6 seconds)
+for the diodes.
+.le
+.ih
+EXAMPLES
+1. Determine the count rate that GHRS will observe from an object
+whose predicted count rate is 4000 counts/diode/second.
+
+.nf
+	cl> tacount 4000
+
+	# For predicted count rate 4000., observed count rate is 3738.
+	# Count rate for each diode is:
+	# Diode   Rate
+	   1    35.9339848272905
+	   2    83.64116955106521
+	   3    252.6865667694634
+	   4    1496.623069154898
+	   5    1496.623069154898
+	   6    252.6865667694634
+	   7    83.64116955106521
+	   8    35.9339848272905
+.fi
+
+The count rate that GHRS would observe is 3738 counts/diode/second.
+The maximum count rate any one diode will see is 1497
+counts/diode/second.
+.ih
+BUGS
+.ih
+REFERENCES
+Steve Hulbert, Science Instrument Branch, STScI.
+
+Jonathan Eisenhamer, STSDAS, STScI.
+
+Ball Aerospace, "GHRS Science Verification Program for the Hubble Space
+Telescope", Dennis Ebbets, ed., 24Feb1992, under NASA contracts
+NAS5-26000 and NAS5-30433.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+.endhelp

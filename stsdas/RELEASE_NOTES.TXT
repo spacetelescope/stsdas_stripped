@@ -1,0 +1,187 @@
+STSDAS Version 3.18.3 Release Notes
+
+February 2018
+
+aXe Changes
+===========
+- bigfix for pyfits ascard header update in fcubeobjs
+
+aXe Changes
+===========
+- Bugfix for pyfits header updates in drizzleobjects
+- logic added to dither code to deal with missing header keywords in data file
+ 
+
+December 2017
+
+aXe Changes
+===========
+
+A quickfix for outdated axe files in iraf.
+
+
+March 2014
+
+This release of STSDAS primarily contains changes to code supporting WFC3 and
+STIS.
+
+The final software used by the ST-ECF to calibrate FOS data has been included
+strictly as a record of the processing performed to generate the FOS products
+available from the HST archive.
+
+The specific changes are detailed in the following sections.
+
+
+HSTCAL and STSDAS Releases
+==========================
+The code for CALACS has been removed entirely from STSDAS as it has been
+replaced by the HSTCAL version.  Any user loading the acs package under STSDAS
+will be directed to the HSTCAL version which now has a Python-based TEAL
+interface as well as the standard command-line executable interface.
+
+The STSDAS versions of CALWF3 and CALSTIS have been deprecated and will no
+longer be supported. All new development of WFC3 and STIS calibration code will
+take place in the HSTCAL versions of the code.
+
+
+Source Code Distribution Changes
+================================
+Copyrighted algorithms from the Numerical Recipes books were found to be present
+in the STSDAS code base.  As a result, those functions are no longer being
+distributed with the STSDAS source code.  They are used to compile the binaries
+that get distributed, but we can no longer provide the source code for those
+functions.
+
+
+Platform Support
+================
+Binaries for this release were built on Red Hat Enterprise Linux 4 and Mac OS X
+10.5.  Binaries were built with IRAF 2.14.  Binaries for newer versions of IRAF
+or operating systems may be built as needed, and users can check the STSDAS web
+pages for more details.
+
+IRAF is available separately from http://iraf.net.
+
+No Solaris Support
+------------------
+This release has NOT been tested on the Solaris platform.  We no longer build
+Solaris binaries for STSDAS, although the source code can always be downloaded
+and compiled locally as needed.
+
+64-bit IRAF Support
+--------------------
+IRAF 2.15 includes support for 64-bit systems. The changes necessary to support
+64-bits generally require applications to be modified. We will only release
+32-bit binaries of the Tables and STSDAS packages for use with IRAF 2.15.
+Support for 32-bit binaries will continue as long as there are sufficient
+platforms that such binaries will run on.  We may only convert some packages in
+Tables and STSDAS to 64-bit version when the 32-bit versions are no longer
+viable and if created will be released as a separate package with a different
+name. When the 32-bit versions of TABLES and STSDAS are no longer viable,
+support for any tasks within those packages not ported to 64-bits will end.  The
+full description of this policy can be found online at:
+
+http://www.stsci.edu/resources/software_hardware/stsdas/iraf64
+
+
+STECF Software
+==============
+This release contains the latest version of the stecf IRAF package for
+supporting HST data that had been developed by members of the Space Telescope
+European Coordinating Facility (ST-ECF) which closed on 31 December 2010.
+
+The packages included in stecf are:
+
+imres - Tasks used for photometric image restoration with unconstrained star
+        positions, simulating images with ground-based seeing and making
+        apodizing mask images.
+
+impol - A package for imaging linear polarization mapping for data taken using
+        the polarimetry modes of HST instruments.  An overview and access to
+        demos and help files is available at:
+            http://www.eso.org/~jwalsh/softpol/
+
+specres - A package for point source extraction and background decomposition
+          of 2-D (longslit) spectra. An oThe wf3rej task was upgraded to read
+          and save the BUNIT keyword value from the [sci,1] extension of each
+          input image and to then check those values each time input sci data
+          arrays are loaded in the various subroutines. If the input data are in
+          units of rates (either DN/sec or electrons/sec), the data are
+          immediately scaled up by the exposure time of the particular image to
+          turn them back into units of counts, which is the expected working
+          units within wf3rej.verview is provided at:
+          
+            http://www.eso.org/~jwalsh/specres/
+
+Support for these packages may be obtained by contacting the STScI Help Desk at
+'help@stsci.edu'. These questions will then be forwarded to the package authors
+at ESO as required.
+
+
+SLITLESS
+=========
+The tasks in aXe Version 2.4.4 have been revised to address the following
+issues:
+
+* fcubeprep no longer causes errors saying there was no "SCI" extension when
+used with multidrizzle. 
+
+* Updated fcubeprep to catch MEF segment images and make the extension
+specification more generic.
+
+* Added support to the astrodrizzle-based code in fcubeprep for option to allow
+larger image cutouts (excess pixels around the original input frame) to the
+output MEF cube thats created from the drizzled image.
+
+* Added a subroutine to check input images for subarray for axeprep, and return
+an error statement.
+
+* The task axeprep no longer stops in the event it finds fewer than 10% of the
+image pixels useable for the background computation, instead it skips background
+subtraction altogether.
+
+* A new function was added to axe_inputs which checks for the existence of the
+direct image column in the input image list created by axeinputs. when found, it
+does not do the subarray check.
+
+
+CTOOLS
+======
+The splice task in ctools was modified to address the following issues:
+
+* Functions were modified to include a check on the number of elements in the 
+input spectrum and rejects points with zero or negative wavelength deltas. 
+
+* A new function was added to trim negative or zero wavelengths from the input
+spectrum.
+
+
+WFC3
+=====
+The code for CALWF3 found in STSDAS has been frozen with no further development
+being done on this version.  It has been replaced, as noted when the package
+gets loaded, by the HSTCAL version of CALWF3.  All future bug fixes and code
+enhancements will take place with the HSTCAL version of this code. This version
+may, or may not, be removed entirely from STSDAS at some point in the future.
+
+
+STIS
+=====
+The code for CALSTIS found in STSDAS has been frozen with no further development
+being done on this version.  It has been replaced, as noted when the package
+gets loaded, by the HSTCAL version of CALSTIS.  All future bug fixes and code
+enhancements will take place with the HSTCAL version of this code. This version
+may, or may not, be removed entirely from STSDAS at some point in the future.
+
+
+INSTALLATION
+=============
+With IRAF 2.15, stsdasbin$ was not being resolved correctly, causing things like
+iminfo and listarea to not be found.  So, stsdas/lib/zzsetenv.def was changed to
+define stsdasbin as "stsdas$bin/" instead of "stsdas$bin(arch)/" (which works
+because there is a symlink from bin --> bin.arch).
+
+WARNING - This will break things if you have executables for multiple
+architectures in a single installation of stsdas.  This is considered an
+edge-case now, with the low cost of disc space.
+

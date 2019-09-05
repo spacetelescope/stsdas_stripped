@@ -1,0 +1,72 @@
+.help spiralmap Jun97 stsdas.hst_calib.hrs 
+.ih
+NAME
+spiralmap --Construct GHRS spiral-search map. 
+.ih
+USAGE
+spiralmap input output
+.ih
+DESCRIPTION
+The GHRS has the capability of mapping a 10 x 10 arcsecond area of the sky as
+seen through the 2 x 2 arcsecond large science aperture. This is done by
+performing a "spiral search" consisting of twenty-five maps of the large
+science aperture (LSA) using one of the focus diodes. The spatial resolution
+of the maps is 0.125 arcseconds---the size of the focus diodes. The spiral
+search may be also be carried out for a 6 x 6 arcsecond area of the sky 
+consisting of nine individual maps. While the individual maps are 
+22 x 22 pixels in size, only a 16 x 16 pixel piece of this maps the LSA.  
+The individual maps also cover overlapping areas of the sky. Currently,
+a map is displaced 1.75 arcseconds (in either the X or Y direction, or
+both) from the 
+position of the previous map resulting in an overlap of 0.25 arcseconds, 
+or about two pixels.
+
+This task assembles the individual maps into a single map suitable for display
+by trimming the individual maps to 16 x 16 pixels (except for those edges
+that end up as an outer edge in the composite map) and averaging the 
+overlapping regions of two pixels. 'spiralmap' also produces a mosaic of the
+raw maps; this map is placed in the 'tmp$' directory 
+with a temporary name that looks something like 'ssmapXXXXX'.
+.ih
+PARAMETERS
+.ls input [file name]
+The image name of the GHRS observation. 
+.le
+.ls output [file name]
+The image name of the map built up from the individual maps.
+.le
+.ls (left = 3) [integer]
+The number of pixels to trim off the left side of the individual maps.
+.le
+.ls (right = 3) [integer]
+The number of pixels to trim off the right side of the individual maps.
+.le
+.ls (top = 3) [integer]
+The number of pixels to trim off the top of the individual maps.
+.le
+.ls (bottom = 3) [integer]
+The number of pixels to trim off the bottom of the individual maps.
+.le
+.ls (overlap = 2) [integer]
+The number of pixels to overlap adjacent individual maps.
+.le
+.ih
+EXAMPLES
+1. Construct a spiral search map from observation 'z00xh903r'.
+
+.nf
+  hr> spiralmap z00xh903r.d0h map.hhh
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+showspiral
+.endhelp

@@ -1,0 +1,158 @@
+.help comparesets Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+comparesets -- Compare flux spectra at different waveplate positions.
+.ih
+USAGE
+comparesets image pass_dir
+.ih
+DESCRIPTION  
+The 'comparesets' task produces a stacked plot of the flux spectra at all
+waveplate positions for an FOS polarimetry flux calibrated ('c1h') data file
+and also computes statistics for each of the individual spectra. This allows
+for the identification of spectra at individual waveplate positions that may be 
+corrupted or of lower quality than other spectra. The dataset
+can then be reprocessed using the 'calpolar' task, excluding any bad waveplate
+positions from the computations.
+
+Only one of the two sets of spectra from the two orthogonal instrument pass 
+directions may be plotted at a time; the choice of which pass direction to 
+plot is set via the 'pass_dir' parameter. The spectra may be plotted as is,
+or the user can choose to ratio each spectrum against the spectrum
+from a chosen reference waveplate position.
+
+Statistics computed for the spectra at each waveplate position include the
+mean and standard deviation as measured over a chosen sample range.
+The statistics are written to the terminal screen in the following format:
+
+.nf
+# POS  GROUP    SAMPLE       MEAN     STDDEV
+   1      1  [start:end]  x.xxxxxxx  x.xxxxxxx
+   2      3  [start:end]  x.xxxxxxx  x.xxxxxxx
+   3      5  [start:end]  x.xxxxxxx  x.xxxxxxx
+   4      7  [start:end]  x.xxxxxxx  x.xxxxxxx
+.fi
+
+where "POS" gives the waveplate position number, "GROUP" is the data file
+group number of the spectrum, and "SAMPLE" gives the pixel range used to
+compute the mean and standard deviation.
+ 
+.ih
+PARAMETERS 
+.ls image [file name]
+Input flux image name. If the input image name extension is not
+given, an extension of 'c1h' is assumed.
+.le
+.ls pass_dir [integer; min=1, max=2]
+The pass direction of the set of spectra to plot. The only allowed values
+are 1 or 2.
+.le
+.ls (normalize = yes) [boolean]
+The normalize switch controls whether or not to normalize the spectra by
+the spectrum at a chosen reference waveplate position (see 'refpos').
+If set to "yes", all spectra will be divided by the spectrum at the reference
+position before plotting and calculating statistics. The reference spectrum
+itself is not included in the plot. If set to "no", all spectra are plotted
+in their natural form.
+.le
+.ls (refpos = 1) [integer; min=1, max=16]
+The waveplate position of the spectrum to be used as a reference when
+normalizing. If 'normalize = no', this parameter is ignored.
+.le
+.ls (wave = "") [file name]
+The wavelength image name. This file is used to provide a wavelength
+scale for plotting the flux spectra. If the 'wave' parameter is left blank
+(the default), a wavelength file having the same root name as the input
+flux image and an extension of 'c0h' is used. If a wavelength image
+name is given without an extension, an extension of 'c0h' is assumed.
+
+If no wavelength image is found, the plot will be produced
+in pixel space. In this case, the statistics sample range (if one is given) 
+must also be expressed in pixel space.
+.le
+.ls (stats = yes) [boolean]
+Compute statistics for the spectra? If set to "yes", the mean and standard
+deviation of each spectrum will be calculated over the sample range
+specified by the 'sample' parameter (see below). The statistics are printed
+to the terminal screen.
+.le
+.ls (sample = "*") [string]
+The sample range to use when computing statistics. If 'stats = no', this
+parameter is ignored. The sample range is expressed as "start:end". If a
+wavelength image is used to provide a wavelength scale for the spectra, 
+then the sample range must be given in terms of starting and ending
+wavelengths. If no wavelength scale is available, the sample range is given
+in pixels. The default value of "*" will use the entire range of the spectra.
+.le
+.ls (wx1 = 0.) [real]
+Starting x-coord for plot. If a wavelength scale is provided, this value
+must be given in terms of wavelength, otherwise pixel space is used.
+.le
+.ls (wx2 = 0.) [real]
+Ending x-coord for plot. If wx1 = wx2, the plot will be autoscaled in the x-axis
+to include the full x-range of the spectra.
+.le
+.ls (wy1 = 0.) [real]
+Lower y-coord limit for plot.
+.le
+.ls (wy2 = 0.) [real]
+Upper y-coord limit for plot. If wy1 = wy2, the plot will be autoscaled in the
+y-axis to include the full y-range of all spectra.
+.le
+.ls (device = "stdgraph") [string]
+Output graphics device name.
+.le
+.ih
+EXAMPLES
+1. Plot the spectra for pass direction 1 in the image 'y0nb0203t.c1h'. The
+spectra at waveplate positions 2-8 will be ratioed against position 1 and
+statistics will be computed over the full range of each spectrum. Wavelengths
+are read from the file 'y0nb0203t.c0h'. Both the x- and y-axes of the plot
+will be autoscaled.
+
+.nf
+ sp> comparesets y0nb0203t 1 
+
+ # POS  GROUP    SAMPLE       MEAN     STDDEV
+    2      3  [   1:2064]      1.052      1.022
+    3      5  [   1:2064]      1.095      1.467
+    4      7  [   1:2064]      1.129      1.038
+    5      9  [   1:2064]      1.097      1.637
+    6     11  [   1:2064]      1.047      1.472
+    7     13  [   1:2064]      1.082      1.164
+    8     15  [   1:2064]      1.123      1.026
+.fi
+
+2. Plot the spectra for pass direction 2 in the image 'y0nb0203t.c1h' but
+don't normalize them. Compute statistics over the wavelength range 1800
+to 2000 Angstroms.
+
+.nf
+ sp> comparesets y0nb0203t 2 norm- sample="1800:2000"
+
+ # POS  GROUP    SAMPLE       MEAN     STDDEV
+    1      2  [ 631:1172]  2.098E-14  6.078E-15
+    2      4  [ 631:1172]  2.181E-14  6.093E-15
+    3      6  [ 631:1172]  2.098E-14  5.905E-15
+    4      8  [ 631:1172]  1.984E-14  5.611E-15
+    5     10  [ 631:1172]  2.118E-14  6.180E-15
+    6     12  [ 631:1172]  2.147E-14  5.974E-15
+    7     14  [ 631:1172]  2.103E-14  5.830E-15
+    8     16  [ 631:1172]  2.001E-14  6.138E-15
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+calpolar, grspec
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

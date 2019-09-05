@@ -1,0 +1,57 @@
+.help prepimages Nov2007 axesim
+.ih
+NAME
+prepimages -- generate a Model Images file
+.ih
+USAGE
+.nf
+prepimages inlist [model_images]
+.fi
+.ih
+PARAMETERS
+.ls inlist
+Name of the image template list
+.le
+.ls (model_images)
+Filename of the model image file
+.le
+.ih
+DESCRIPTION
+This task combines the user provided templates images into a Model Images
+file that can be read by the aXeSIM executables to simulate slitless images and
+direct images. Each line in the "inlist" contains the filename of a template
+image, which is located in the directory indicated by "$AXE_SIMDATA_PATH".
+
+The task "prepimages" combines these images into a multi-dimensional binary fits
+file with a filename either given in "model_images" or derived from "inlist".
+.ih
+FILE NAMING CONVENTION
+.nf
+The Model Images file is named either "model_images" or:
+<inlist_trunc>.fits
+with <inlist_trunc>  the parameter "inlist", truncated after the last ".".
+The Model Images file is written to "$AXE_IMAGE_PATH" and "$AXE_OUTSIM_PATH".
+.fi
+.ih
+EXAMPLES
+1) Combine the images listed in "galaxies.lis" into the Model Images file
+"galaxies.fits"
+.nf
+    --> prepimages galaxies.lis
+.fi
+2) Combine the images listed in "galaxies.lis" into the Model Images file
+"small_galaxies.fits"
+.nf
+    --> prepimages galaxies.lis model_images="small_galaxies"
+.fi
+.ih
+BUGS
+No known bugs.
+.ih
+REFERENCES
+For further information on this task and aXeSIM, please consult 
+the aXeSIM manual at "http://www.stecf.org/software/slitless_software/aXeSIM".
+.ih
+SEE ALSO
+simdata, simdispim, simdirim
+.endhelp

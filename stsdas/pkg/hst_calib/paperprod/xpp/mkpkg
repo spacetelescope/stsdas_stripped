@@ -1,0 +1,18 @@
+# Update the upp application code in the paperprod package library
+# Author: Hack, 13-Feb-1997
+
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	xpp_image.x	"xpp.h"	<imhdr.h>
+	xpp_obsum.x	<imhdr.h> <tbset.h> "xpp.h"	
+	xpp_c0h.x	"xpp.h"
+	xpp_calflag.x	"xpp.h"
+#	get_jitname.x	<imhdr.h> "xpp.h"
+	log_img.x	<imhdr.h>
+	calc_tlim.x
+	;
+

@@ -1,0 +1,69 @@
+.help polcalc Aug97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+polcalc -- Calculate polarization from Stokes IQUV spectra.
+.ih
+USAGE
+polcalc input output
+.ih
+DESCRIPTION  
+The 'polcalc' task recomputes polarization spectra (linear, circular, and 
+position angle) from the Stokes IQUV parameter spectra in an FOS polarimetry
+('c3h') file. This allows a user to manipulate or modify the Stokes parameter 
+spectra in a 'c3h' file in any desired way and then recompute
+the polarization spectra from the modified Stokes spectra.
+
+All four sets of Stokes and polarimetry spectra within the input 'c3h' file 
+(corresponding to instrument pass direction 1, pass direction 2, 1+2 combined, 
+and 1+2 combined and corrected) are operated on by this task.
+The output file (in standard 'c3h' format) is a copy of the input file with
+the data groups corresponding to the polarization spectra (9-14, 23-28,
+37-42, and 51-56) replaced by their new values.
+
+The formulae used to compute linear (PL) and circular (PC) polarization,
+polarization position angle (THETA), and their errors from the Stokes IQUV
+spectra are identical to those used in the 
+'calfos', 'calpolar', 'polave', and 'polbin' tasks.
+Note that these algorithms assume that the Stokes QUV spectra in the input 'c3h' 
+file have NOT previously been normalized by Stokes I.
+See the help page for the 'polbin' task for a listing of these formulae.
+.ih
+PARAMETERS 
+.ls input [file name]
+Input polarization ('c3h') file name.
+If the input file name extension is not given explicity, an extension
+of 'c3h' is assumed.
+.le
+.ls output [file name]
+Output file name.  If the output file name extension is not given, an 
+extension of 'c3h' is used.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Recompute the polarization spectra from the Stokes parameters in the
+file 'y0xr0305t.c3h', storing the output in 'y0xr0305_new.c3h'.
+.nf
+
+   sp> polcalc y0xr0305t.c3h y0xr0305_new.c3h
+.fi
+.ih
+BUGS
+At this time this task does NOT incorporate the appropriate corrections
+for post-COSTAR FOS spectropolarimetry data.
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+plbias, polave, polbin, polnorm
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

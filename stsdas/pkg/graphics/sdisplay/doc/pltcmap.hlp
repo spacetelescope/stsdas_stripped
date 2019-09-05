@@ -1,0 +1,72 @@
+.help pltcmap Dec92 stsdas.graphics.sdisplay
+.ih
+NAME
+pltcmap -- Plot a color map in image format.
+.ih
+USAGE
+pltcmap cmapimg
+.ih
+DESCRIPTION
+This task plots a color map.  The map must be in the form of an image,
+as the output will be used by the 'scmapc' task (among others).  The rows in this 256 x 3
+image represent the red, green, and blue maps, respectively.  The
+floating point data values are scaled to the range zero to one.  The
+plot shows the displayed intensity for each of the three colors red,
+green, and blue, versus the element number, representing the relative
+pixel value in the corresponding displayed image.
+.ih
+PARAMETERS
+.ls cmap = "" [file name]
+The colormap file image.  The rows in this 256 x 3 image represent the
+red, green, and blue maps, respectively.  The floating point data
+values are scaled to the range zero to one.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device on which to plot.
+.le
+.ls (fullrange = no) [boolean]
+Apply the SAOimage colormap to the full intensity range?  
+
+If this is set to "no", then
+only the entries 1:200 will be used for gray level values.  
+This is useful for
+ensuring correct rendition of an image dumped directly from the display
+window, in which only 200 color values are reserved for the image pixel
+values.  The remainder are either overlay graphics colors or reserved
+for the other windows on the screen.
+.le
+.ls (prtigi = no) [boolean]
+Print the 'igi' command script used to draw the plot?  
+
+This is not really
+very useful, except as an example of 'igi'.
+.le
+.ih
+EXAMPLES
+1. Say the file 'bwgam.scm' contains the following:
+.nf
+
+# SAOimage color table
+# dev$pix - m51  B  600s
+# Wed Feb 26 15:06:25 1992
+PSEUDOCOLOR
+RED: gamma 1.5
+(0.000,0.000)(1.000,1.000)
+GREEN: gamma 1.5
+(0.000,0.000)(1.000,1.000)
+BLUE: gamma 1.5
+(0.000,0.000)(1.000,1.000)
+
+.fi
+It is a color map output from SAOimage of the default gray ramp with an
+applied gamma of 1.5. The following command could be used to reformat
+it to an STF image.
+.nf
+
+pl> scmapc bwgam.scm bwgam.hhh
+
+.fi
+.ih
+SEE ALSO
+dstoim, saodump
+.endhelp

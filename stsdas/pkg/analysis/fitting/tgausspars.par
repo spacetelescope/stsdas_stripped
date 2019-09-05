@@ -1,0 +1,19 @@
+# 2-d Gaussian function parameters.
+#
+a,r,h,0.,,,>initial guess for background
+ampl,r,h,INDEF,,,>initial guess for peak amplitude
+xcent,r,h,INDEF,,,>initial guess for X center position
+ycent,r,h,INDEF,,,>initial guess for Y center position
+fwhm,r,h,INDEF,,,>initial guess for fwhm
+ellip,r,h,0.,0.,1.,>initial guess for ellipticity
+theta,r,h,0.,0.,360.,>initial guess for position angle (degrees)
+boxsize,i,h,40,2,180,>box size
+va,b,h,no,,,>vary background ?
+vampl,b,h,yes,,,>vary amplitude ?
+vxcent,b,h,yes,,,>vary X center ?
+vycent,b,h,yes,,,>vary Y center ?
+vfwhm,b,h,no,,,>vary fwhm ?
+vellip,b,h,no,,,>vary ellip ?
+vtheta,b,h,no,,,>vary theta ?
+version,s,h,"12Jul90",,,>date of installation
+mode,s,h,al

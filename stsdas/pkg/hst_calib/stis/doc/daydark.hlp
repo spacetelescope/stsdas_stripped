@@ -1,0 +1,162 @@
+.help daydark Jan2013 stis
+.ih
+NAME
+daydark -- Preparation of Daily STIS CCD Dark
+.ih
+USAGE
+daydark infiles basedark 
+.ih
+PARAMETERS
+.ls infiles
+File name template for input dark file(s). This can be one 
+bias-subtracted, cosmic-ray-rejected daily dark file (a file with 
+"_crj" file suffix), or a list of "raw" dark files. 
+.le
+.ls basedark
+Baseline superdark file (typically the most recent weekly delivery of
+the STIS superdarks; the user should retrieve it from the archive using 
+e.g. bestref).
+.le
+.ls (biasfile = "")
+Name of reference bias file to be used in calstis reduction (typically the 
+most recent weekly delivery of the STIS bias files; the user should retrieve 
+this file from the archive using e.g. bestref). If this parameter is left 
+empty, the value of the BIASFILE keyword in the main header of infiles 
+is used. This parameter is only relevant in case infiles is a list of 
+"raw" dark files. 
+.le
+.ls (outfile= "day_dark.fits")
+Name of output daily superdark file 
+.le
+.ls (houstemp = INDEF)
+(Optional) CCD housing temperature(s) for these exposures. Note: The housing 
+temperatures are only relevant for observations taken after July 2, 2001.  
+The input format can be an array of numbers divided by commas, or a list 
+identified as "@filename". If the default value INDEF is used, 
+daydark uses the temperatures given in the header keyword 
+OCCDHTAV of the science extension of each input dark file or imset. 
+However, if a houstemp is given, houstemp will override those 
+keyword values. The number of input temperatures in parameter houstemp 
+should be equal to the number of input dark file imsets. If not, the action 
+undertaken can be twofold: (i) If the header keyword OCCDHTAV is present 
+in the science extension of the input imsets, the task will use those values; 
+(ii) If OCCDHTAV is not present, the task will issue an error message asking 
+the user to input a proper number of temperature values in parameter 
+houstemp. 
+.le
+.ls (maxiter = 40)
+Maximum allowed number of iterations for statistics calculations
+.le
+.ls (lower = INDEF)
+Initial lower limit for statistics calculations
+.le
+.ls (upper = INDEF)
+Initial upper limit for statistics calculations
+.le
+.ls (verbose = no)
+Show results of all iterations on statistics calculations?
+.le
+.ls (print = no)
+Show final results of statistics calculations?
+.le
+.ih
+DESCRIPTION
+The main purpose of DAYDARK is to provide a daily update to the
+locations and intensities of the hottest pixels in the STIS CCD, by 
+updating the hot pixels that are present in the "baseline" STIS CCD
+superdarks that are delivered weekly to the archive by those found 
+in daily darks with a short exposure time. After running the
+DAYDARK script, the actual dark correction has to be done by running 
+the calstis pipeline calibration (e.g., tasks calstis or
+basic2d) on the "raw" STIS fits file (the file with "_raw" 
+suffix) after having chosen outfile as the DARKFILE. 
+(One has to use hedit to update the DARKFILE header keyword in 
+the main (zeroth) header of the science file to be calibrated).
+
+The task performs the following steps: 
+(1) The input dark images infiles [typically STIS fits files with 
+"_raw" file suffix] are first joined together into one multi-imset dark 
+file. After that, the task checks whether cosmic ray rejection has 
+already been performed for the file(s) specified as infiles. If so, 
+the calstis step is skipped. If not, calstis will be 
+run to perform bias subtraction and cosmic ray rejection. If the input 
+data were taken after July 2, 2001, the individual bias-subtracted darks 
+are scaled to a reference CCD housing temperature of 18 degrees C prior 
+to summing them into one cosmic-ray rejected dark. The user is notified 
+of the action(s) taken. If appropriate, the log file of the 
+calstis reduction steps is written to output file calstis.log.    
+[NOTE: Users wanting to create daily darks for STIS data taken before 
+May 24, 1998, should retrieve the daily dark file taken in CCDGAIN=4 with 
+_crj suffix (i.e., the "calibrated" image) to save time]. 
+(2) The combined, cosmic-ray-rejected daily dark is normalized to yield 
+intensity units of electrons per second. 
+(3) Iterative statistics are performed on both the daily dark 
+infiles and the "baseline" dark basedark [a file with
+"_drk" suffix, to be retrieved from the archive, to which it is
+delivered weekly], in order to neglect hot pixels. "New" hot pixels
+are defined as pixels having a value higher than 5 sigma above the
+median dark current of the normalized daily dark. The hot pixels in
+the baseline dark basedark are replaced by those in the daily
+dark (the "new" hot pixels). Pixels in the baseline dark having a
+value below the threshold of 5 sigma above the median dark current of
+the daily dark are NOT changed. Pixels that have "healed" themselves
+during the time between the "USEAFTER" date of the baseline dark and
+the exposure date of the daily dark are given the value of a
+median-filtered version of the baseline dark.   
+
+The result is a superdark with the signal-to-noise of the baseline
+dark in which the hot pixels have been updated.  The level (in
+electrons per second) above which the pixels are updated is printed out.
+
+INPUT AND OUTPUT IMAGES
+    
+The input file template infiles must contain one or more STIS FITS 
+files, with three extensions: science (EXTNAME=SCI), error (ERR), and data
+quality (DQ). The output file outfile has the same format
+as (each of) the input file(s), and can be used in the other tasks in the
+STIS package. The file name of the baseline dark basedark
+is entered into the DARKFILE keyword in the main header of output
+image outfile.
+
+.ih
+EXAMPLES
+
+1. Create daily superdark from input dark file o4at35010_crj.fits (from
+proposal 7802). Use "baseline" superdark file hcg14421o_drk.fits 
+(retrieved from the archive).   
+.nf
+
+    cl> daydark o4at35010_crj.fits hcg14421o_drk.fits 
+.fi
+
+2. Create daily superdark from input dark files o4wicfa3q_raw.fits, 
+o4wicga8q_raw.fits, o4wichc9q_raw.fits, and o4wicicrq_raw.fits (from
+proposal 7948). Use "baseline" superdark file j331721ho_drk.fits and bias
+file j6m1312qo_bia.fits (both retrieved from the archive).  
+.nf
+
+    cl> daydark o4wic*raw.fits j331721ho_drk.fits \
+    >>> biasfile=j6m1312qo_bia.fits
+
+3. Similar to example 1 (using different files), but now override the 
+housing temperature data present in the header keyword OCCDHTAV of the 
+science extension of all input imsets.
+.nf
+
+    cl> daydark o6hm2*raw.fits m2f1636oo_drk.fits \
+	houstemp="17.80,18.10,18.05,17.85"
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on July 6, 1999. Update for side-2 CCD data 
+issued on April 26, 2002. 
+.fi 
+.ih
+BUGS
+.ih
+SEE ALSO
+calstis, basic2d, hedit
+.endhelp

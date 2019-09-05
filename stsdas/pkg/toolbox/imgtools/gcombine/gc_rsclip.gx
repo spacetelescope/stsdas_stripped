@@ -1,0 +1,477 @@
+include	"../gcombine.h"
+
+define	MINCLIP		3	# Mininum number of images for algorithm
+define	BWTS		0.001	# Reduced weight factor on low end
+define	PCNTL		0.95	# Range for trimming
+
+$for (sird)
+# G_ARSIGCLIP -- Reject pixels using sigma clipping about the weighted
+# average. The initial average excludes the high and low pixels.  
+# An average standard deviation around the mean is computed with
+# "robust" weights and scaled based on Poisson noise.
+#
+# CYZhang 4 June, 1994
+
+procedure g_arsigclip$t (data, id, nimages, n, npts, average, szuw)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image id pointers
+int	n[npts]			# Number of good pixels
+int	nimages			# Number of images
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	average[npts]		# Average
+$else
+PIXEL	average[npts]		# Average
+$endif
+pointer	szuw
+
+real	wdth
+int	i, j, k, l, n1, n2, nk, idj, minkeep, lrej, lowj, highj, ii
+$if (datatype == sil)
+real	d1, low, high, wt, wt1, sum, ksi, a, s, s1, s2, r, one, zero, lowwt, highwt, sumwt, sig
+data	one, zero /1.0, 0.0/
+$else
+PIXEL	d1, low, high, wt, wt1, sum, ksi, a, s, s1, s2, r, one, zero, lowwt, highwt, sumwt, sig
+data	one, zero /1$f, 0$f/
+$endif
+pointer	sp, resid, w, dp1, dp2, ip1, ip2
+
+include	"../gcombine.com"
+
+begin
+	# If there are insufficient pixels go on to the combining
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	lrej = max (MINCLIP, minkeep+1)
+	if (nimages < lrej) {
+	    docombine = true
+	    return
+	} 
+	
+	# Since the unweighted average is computed here possibly skip combining
+	# When weighted average or median is required, must call combine
+	if (DOWTS || G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = true
+	else
+	    DOCOMBINE = false
+
+
+	# Save the residuals and the sigma scaling corrections if needed.
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+	call salloc (w, nimages, TY_REAL)
+
+	# Do sigma clipping.
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (NKEEP < 0)
+		minkeep = max (0, n1 + NKEEP)
+	    else
+		minkeep = min (n1, NKEEP)
+	    lrej = max (MINCLIP, minkeep)
+	    # If there are not enough pixels simply compute the average.
+	    if (n1 < lrej) {
+		if (!DOCOMBINE) {
+		    if (n1 == 0)
+			average[i] = BLANK
+		    else {
+			sum = Mem$t[data[1]+k]
+			do j = 2, n1
+			    sum = sum + Mem$t[data[j]+k]
+			average[i] = sum / real(n1)
+		    }
+		}
+		next
+	    }
+
+	    if (n1 == 2) {
+		wt = Memr[SCALES(szuw)+Memi[id[1]+k]-1]
+		wt1 = Memr[SCALES(szuw)+Memi[id[2]+k]-1]
+		sumwt = wt + wt1
+		a = (Mem$t[data[1]+k]*wt + Mem$t[data[2]+k]*wt1) / sumwt
+	    } else if ( n1 > 2 ) {
+	    # Compute trimmed mean weighted with exposures
+		low = Mem$t[data[1]+k]
+		lowj = Memi[id[1]+k]
+		high = Mem$t[data[2]+k]
+		highj = Memi[id[2]+k]
+		if (low > high) {
+		    d1 = low
+		    low = high
+		    high = d1
+		    idj = lowj
+		    lowj = highj
+		    highj = idj
+	    	}
+		sum = zero
+		sumwt = zero
+		do j = 3, n1 {
+	            d1 = Mem$t[data[j]+k]
+		    idj = Memi[id[j]+k]
+	            if (d1 < low) {
+			wt = Memr[SCALES(szuw)+lowj-1]			
+			sumwt = sumwt + wt
+			sum = sum + low * wt
+		    	low = d1
+			lowj = idj
+		    } else if (d1 > high) {
+			wt = Memr[SCALES(szuw)+highj-1]
+			sumwt = sumwt + wt
+		    	sum = sum + high * wt
+		    	high = d1
+			highj = idj
+		    } else {
+			wt = Memr[SCALES(szuw)+idj-1]
+			sumwt = sumwt + wt
+		    	sum = sum + d1 * wt
+		    }
+	        }
+		lowwt = Memr[SCALES(szuw)+lowj-1]
+		highwt = Memr[SCALES(szuw)+highj-1]
+		if (sumwt > zero)
+		    a = sum / sumwt
+		else
+		    a = (low + high) / 2.0
+	    	sum = sum + low * lowwt + high * highwt
+		sumwt = sumwt + lowwt + highwt
+	    }
+	    # Iteratively reject pixels
+	    # Compact the data and keep track of the image IDs if needed.
+
+	    repeat {
+		n2 = n1
+		wdth = min ((high - a), (a - low)) * PCNTL
+		# Compute the weighted average sigma
+		s = zero; s1 = zero; s2 = zero
+		do j = 1, n1 {
+		    d1 = Mem$t[data[j]+k]
+		    idj = Memi[id[j]+k]
+		    if (DOSCALE) {
+			ksi = max (one, (a + Memr[ZEROS(szuw)+idj-
+			    1]) / Memr[SCALES(szuw)+idj-1])
+		    } else {
+			ksi = max (one, a)
+		    }
+		    wt1 = one / ksi
+		    Memr[w+j-1] = wt1
+		    if ( abs (d1 - a) <= wdth || (d1 > low && d1 <= a)) 
+			wt = wt1
+		    else if ( (d1 - a) > wdth ) {
+			if (DOSCALE)
+			    ksi = one / (max (one, (d1 + Memr[ZEROS(szuw)+
+				idj-1]) / Memr[SCALES(szuw)+idj-1]))
+			else
+			    ksi = one / max (one, d1)
+			wt = min (ksi, wt1)
+		    } else if ( d1 == low ) {
+			wt = BWTS * wt1
+		    }
+		    s = s + (d1 - a) ** 2 * wt
+		    s1 = s1 + wt
+		    s2 = s2 + wt1
+		}
+		if (n1 >= 2) 
+		    sig = sqrt (s / real (n1 - 1) / s1 * s2)
+		else
+		    sig = sqrt (s / s1 * s2)
+		# Reject pixels.  Save the residuals and data values.
+
+		if (sig > zero) {
+		    for (j=1; j<=n1; j=j+1) {
+			dp1 = data[j] + k
+			d1 = Mem$t[dp1]
+			idj = Memi[id[j]+k]
+			ksi = one / Memr[w+j-1]
+			s = sig * sqrt (ksi)
+			r = (d1 - a) / s
+			if (r < -lsigma || r > hsigma) {
+			    Memr[resid+n1] = abs (r)
+			    if (j < n1) {
+				dp2 = data[n1] + k
+				Mem$t[dp1] = Mem$t[dp2]
+				Mem$t[dp2] = d1
+				ip1 = id[j] + k
+				ip2 = id[n1] + k
+				idj = Memi[ip1]
+				Memi[ip1] = Memi[ip2]
+				Memi[ip2] = idj
+				j = j - 1
+			    }
+			    sum = sum - d1 * Memr[SCALES(szuw)+idj-1]
+			    sumwt = sumwt - Memr[SCALES(szuw)+idj-1]
+			    n1 = n1 - 1
+			}
+		    }
+		}
+		# Recompute the average.
+		if (n1 > 1) {
+		    if (sumwt > 0.0)
+			a = sum / sumwt
+		    else
+			next
+		    low = Mem$t[data[1]+k]
+		    high = Mem$t[data[2]+k]
+		    if (low > high) {
+			d1 = low
+			low = high
+			high = d1
+		    }
+		    if (n1 > 2) {
+			do j = 3, n1 {
+			    d1 = Mem$t[data[j]+k]
+			    if (d1 < low) 
+				low = d1
+			    if (d1 > high)
+				high = d1
+			}
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+
+	    # If too many pixels are rejected add some back.
+	    # All pixels with equal residuals are added back.
+	    if (n1 < minkeep) {
+		nk = minkeep
+		for (j=n1+1; j<=nk; j=j+1) {
+		    dp1 = data[j] + k
+		    r = Memr[resid+j]
+		    ii = 0
+		    do l = j+1, n2 {
+			s = Memr[resid+l]
+			if (s < r + TOL) {
+			    if (s > r - TOL)
+				ii = ii + 1
+			    else {
+				ii = 0
+				Memr[resid+l] = r
+				r = s
+				dp2 = data[l] + k
+				d1 = Mem$t[dp1]
+				Mem$t[dp1] = Mem$t[dp2]
+				Mem$t[dp2] = d1
+				ip1 = id[j] + k
+				ip2 = id[l] + k
+				idj = Memi[ip1]
+				Memi[ip1] = Memi[ip2]
+				Memi[ip2] = idj
+			    }
+			}
+		    }
+		    sum = sum + Mem$t[dp1] * Memr[SCALES(szuw)+idj-1]
+		    sumwt = sumwt + Memr[SCALES(szuw)+idj-1]
+		    n1 = n1 + 1
+		    nk = max (nk, j+ii)
+		}
+	    }
+	    # Save the average if needed.
+	    n[i] = n1
+	    if (!DOCOMBINE) {
+		if (n1 == 0)
+		    average[i] = BLANK
+		else {
+		    sum = Mem$t[data[1]+k]
+		    do j = 2, n1
+			sum = sum + Mem$t[data[j]+k]
+		    average[i] = sum / real(n1)
+		}
+	    }
+	}
+
+	call sfree (sp)
+end
+
+
+# G_MRSIGCLIP -- Reject pixels using sigma clipping about the median
+#  The robust weighted average sigma about median is computed and used
+#  for clipping.
+#
+# CYZhang 4 June 1994
+
+procedure g_mrsigclip$t (data, id, nimages, n, npts, median, szuw)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image IDs
+int	n[npts]			# Number of good pixels
+int	nimages			# Number of images
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	median[npts]		# Median
+$else
+PIXEL	median[npts]		# Median
+$endif
+pointer	szuw
+
+real	wdth
+int	i, j, k, l, n1, n2, n3, nl, nh, idj, minkeep, lrej
+pointer	sp, resid, w
+$if (datatype == sil)
+real	d1, d2, med, r, s, s1, s2, wt, wt1, one, zero, ksi, sig
+data	one, zero /1.0, 0.0/
+$else
+PIXEL	d1, d2, med, r, s, s1, s2, wt, wt1, one, zero, ksi, sig
+data	one, zero /1$f, 0$f/
+$endif
+
+include	"../gcombine.com"
+
+begin
+	# If there are insufficient pixels go on to the combining
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	lrej = max (MINCLIP, minkeep+1)
+	if (nimages < lrej) {
+	    DOCOMBINE = true
+	    return
+	}
+
+	# Save the residuals and sigma scaling corrections if needed.
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+	call salloc (w, nimages, TY_REAL)
+
+	# Compute median and sigma and iteratively clip.
+
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (NKEEP < 0)
+		minkeep = max (0, n1 + NKEEP)
+	    else
+		minkeep = min (n1, NKEEP)
+	    lrej = max (MINCLIP, minkeep+1)
+	    nl = 1
+	    nh = n1
+
+	    repeat {
+		n2 = n1
+		n3 = nl + n1 / 2
+
+		if (n1 == 0)
+		    med = BLANK
+		else if (mod (n1, 2) == 0)
+		    med = (Mem$t[data[n3-1]+k] + Mem$t[data[n3]+k]) / 2.
+		else
+		    med = Mem$t[data[n3]+k]
+
+		if (n1 >= lrej) {
+		    # Compute the weighted average sigma
+		    s = zero; s1 = zero; s2 = zero
+		    d2 = Mem$t[data[nl]+k]
+		    do j = nl, nh {
+		 	d1 = Mem$t[data[j]+k]
+			idj = Memi[id[j]+k]
+			if (DOSCALE) {
+			    ksi = max (one, (med + Memr[ZEROS(szuw)+idj-
+				1]) / Memr[SCALES(szuw)+idj-1])
+			} else {
+			    ksi = max (one, med)
+			}
+			wt1 = one / ksi
+			Memr[w+j-1] = wt1
+			wdth = min ((Mem$t[data[nh]+k] - med), (med -
+			    Mem$t[data[nl]+k])) * PCNTL
+			if ( abs (d1 - med) <= wdth || (d1 <= med && d1 > d2)) 
+			    wt = wt1
+			else if ( (d1 - med) > wdth) {
+			    if (DOSCALE)
+				ksi = one / (max (one, (d1 + Memr[ZEROS(szuw)+
+				    idj-1]) / Memr[SCALES(szuw)+idj-1]))
+			    else
+				ksi = one / max (one, d1)
+			    wt = min (ksi, wt1)
+			} else if (d1 == d2) {
+			    wt = BWTS * wt1
+			}
+			s = s + (d1 - med) ** 2 * wt
+			s1 = s1 + wt
+			s2 = s2 + wt1
+		    }
+		    if (n1 >= 2) 
+		    	sig = sqrt (s / real (n1 - 1) / s1 * s2)
+		    else
+		    	sig = sqrt (s / s1 * s2)
+
+		    # Reject pixels and save the residuals.
+		    if (s > zero) {
+			for (; nl <= n2; nl = nl + 1) {
+			    r = (med - Mem$t[data[nl]+k]) / (sig * 
+				sqrt(Memr[w+nl-1]))
+			    if (r <= LSIGMA)
+				break
+			    Memr[resid+nl] = r
+			    n1 = n1 - 1
+			}
+			for (; nh >= nl; nh = nh - 1) {
+			    r = (Mem$t[data[nh]+k] -  med) / (sig *
+				sqrt (Memr[w+nh-1]))
+			    if (r <= HSIGMA)
+				break
+			    Memr[resid+nh] = r
+			    n1 = n1 - 1
+			}
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+	    # If too many pixels are rejected add some back.
+	    # All pixels with equal residuals are added back.
+	    while (n1 < minkeep) {
+		if (nl == 1)
+		    nh = nh + 1
+		else if (nh == n[i])
+		    nl = nl - 1
+		else {
+		    r = Memr[resid+nl-1]
+		    s = Memr[resid+nh+1]
+		    if (r < s) {
+			nl = nl - 1
+			r = r + TOL
+			if (s <= r)
+			    nh = nh + 1
+			if (nl > 1) {
+			    if (Memr[resid+nl-1] <= r)
+				nl = nl - 1
+			}
+		    } else {
+			nh = nh + 1
+			s = s + TOL
+			if (r <= s)
+			    nl = nl - 1
+			if (nh < n2) {
+			   if (Memr[resid+nh+1] <= s)
+				nh = nh + 1
+			}
+		    }
+		}
+		n1 = nh - nl + 1
+	    }
+
+	    # Only set median and reorder if needed
+	    n[i] = n1
+	    if (n1 > 0 && nl > 1 && G_COMBINE != C_MEDIAN) {
+		j = max (nl, n1 + 1)
+		do l = 1, min (n1, nl-1) {
+		    Mem$t[data[l]+k] = Mem$t[data[j]+k]
+		    Memi[id[l]+k] = Memi[id[j]+k]
+		    j = j + 1
+		}
+	    }
+
+	    if (G_COMBINE == C_MEDIAN)
+		median[i] = med
+	}
+
+	# Flag that the median has been computed.
+	if (G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = false
+	else
+	    DOCOMBINE = true
+
+	call sfree (sp)
+end
+$endfor

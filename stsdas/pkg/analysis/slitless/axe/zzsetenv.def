@@ -1,0 +1,5 @@
+# Global environment definitions for the axe package
+# (needed for building binaries with mkpkg)
+set     axebin        = "stsdasbin$"
+set     axesimbin     = "stsdasbin$/"
+keep

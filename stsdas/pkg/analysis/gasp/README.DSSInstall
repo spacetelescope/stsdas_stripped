@@ -1,0 +1,180 @@
+
+
+ Installation Instructions 
+
+
+
+I. SOFTWARE INSTALLATION NOTES 
+
+Software installation information is contained in the cover booklet in the
+disc 61 jewel box. Please read the booklet first. Please monitor the Space
+Telescope Science Institute Web pages or contact the
+Astronomical Society of the Pacific for information on Getimage software
+upgrades. To access STScI via the WWW,  go to http://www.stsci.edu. 
+
+UNIX INSTALLATION NOTES
+
+ 1. If your system is running Solaris 2.x (Sun Microsystems, Inc) you will
+   need to remove the ranlib lines from the file makefile.unx. The 
+   Getimage software will not work properly under Solaris 2.2 (and
+   higher versions) if the system routines vold and filemgr are also
+   running. Code modifications for Solaris 2 systems will be made
+   available shortly. 
+ 2. To install the Getimage software on machines operating under some
+   versions of the UNIX operating system, including (but not necessarily
+   limited to) SunOS (Sun Microsystems, Inc.) versions 4.1.x and IRIX
+   4.0.x (Silicon Graphics, Inc.), the following additional installation
+   steps are required to circumvent deficiencies in the operating
+   systems' handling of ISO 9660 format CD-ROMs: After copying the
+   header files from disc 61 to your local hard disk (Step II-2 in the
+   CD-ROM installation file install.unx), issue the following
+   commands: 
+
+
+           cd headers
+           chmod 700 copyrght. lo_comp.lis
+           mv copyrght. copyrght.orig
+           mv lo_comp.lis lo_comp.lis.orig
+           fold -80 copyrght.orig >copyrght.
+           fold -80 lo_comp.lis.orig >lo_comp.lis
+           rm -f .orig
+
+   These commands must be issued prior to running Getimage for the
+   first time. 
+ 3. A patch must be applied to the SunOS 4.1.x and the Solaris 2.x
+   operating systems (if your system manager has not already done so).
+   The patch allows the operating system to see the ``record structured"
+   files that reside on our ISO 9660 format CD-ROM discs, a capability
+   that is not (but should be) supported by the Sun supplied ISO 9660
+   driver. The patch is really only a work around and does not provide
+   "proper" access to these files. The files on the CD-ROMs that we
+   produce have fixed, even-length records and is why the patch works.
+   SunSoft should fix their ISO 9660 driver to provide complete ISO
+   9660 support. The current patches are only supported with the
+   SPARC (sun4, sun4c, sun4m) architecture. A patch does not
+   currently exist for 68k (sun3) or x86 based Solaris systems. There will
+   probably be a patch for Solaris 2.4 on Intel x86 architecture and the
+   PowerPC release of Solaris when it is available late next year. 
+
+To apply the patch under SunOS 4.1.x (Solaris 1.x) you need to do the
+following steps: 
+
+   Log in as root or su to root 
+   Change directory (cd) to /usr/sys/`arch -k`/OBJ (Note that these are
+   back-ticks rather than forward-ticks) 
+   Save a copy of the file hsfs\_node.o in case you need to restore the
+   original version in the future 
+   If your system is running 4.1, 4.1.1, or 4.1.1b, type: 
+
+
+             adb -w hsfs_node.o
+             hs_parsedir+9c?Wba0da0e6
+             hs_parsedir+14c?Wba0da0e6
+             $q
+
+   Your output should look like: 
+
+
+             hs_parsedir+9c?Wba0da0e6
+             _hs_parsedir+0x9c:         0xba0da0ee   =   0xba0da0e6
+             hs_parsedir+14c?Wba0da0e6
+             _hs_parsedir+0x14c:        0xba0da0ee   =   0xba0da0e6
+             $q
+
+   If your system is running 4.1.2, or one of the many versions of 4.1.3,
+   type: 
+
+
+             adb -w hsfs_node.o
+             hs_parsedir+c0?Wba0de0e6
+             hs_parsedir+1a4?Wba0de0e6
+             $q
+
+   Your output should look like: 
+
+
+             hs_parsedir+c0?Wba0de0e6
+             _hs_parsedir+0xc0:         0xba0de0ee   =   0xba0de0e6
+             hs_parsedir+1a4?Wba0de0e6
+             _hs_parsedir+0x1a4:        0xba0de0ee   =   0xba0de0e6
+             $q
+
+   Verify that the kernel configuration file contains a line similar to: 
+
+
+             options               HSFS    # Support for ISO 9660 CDs
+
+   and a line or lines similar to 
+
+
+             disk sr0 at scsibus0 target 6 lun 0   # CD-ROM device
+
+
+   After completing these steps, you must rebuild the kernel and install
+   the new one. Save a copy of the old kernel before installing the new
+   one in case you need to restore the original version in the future.
+   Once the new kernel is installed, the system must be rebooted for the
+   changes to take effect. 
+
+To apply the patch under Solaris 2.0 or 2.1, type: 
+
+
+             adb -w /kernel/fs/hsfs
+             hs_parsedir+0xcc?W ba8de0e6
+             hs_parsedir+0x198?W ba8de0e6
+             $q
+
+   Your output should look like: 
+
+
+             hs_parsedir+0xcc?W ba8de0e6
+             hs_parsedir+0xcc:          0xba8de0ee   =   0xba8de0e6
+             hs_parsedir+0x198?W ba8de0e6
+             hs_parsedir+0x198:         0xba8de0ee   =   0xba8de0e6
+
+   Find the module id for the hsfs driver by typing: 
+
+
+             modinfo | grep hsfs
+
+   The first number is the module id. 
+   Unload the driver using the modunload command, replacing xxx
+   with the module id 
+
+
+             modunload -i xxx
+
+   If modunload fails, reboot the system instead. 
+
+To apply the patch under Solaris 2.2 or any of the many 2.3 versions 
+
+   add the following lines to the end of /etc/system: 
+
+
+             set hsfs:ide_prohibited=0xe6
+             set hsfs:hde_prohibited=0xe6
+
+   Find the module id for the hsfs driver: 
+
+
+             modinfo | grep hsfs
+
+   The first number is the module id. 
+   Unload the driver using the modunload command, replacing xxx
+   with the module id 
+
+
+             modunload -i xxx
+
+   If modunload fails, reboot the system instead. 
+
+This patch will probably also apply to future versions of Solaris 2.x including
+Solaris 2.4 for the Intel x86 architecture due out in 1994, and Solaris for the
+PowerPC due in late 1995. This will probably only change when SunSoft
+distributes a complete ISO 9660 driver with Solaris. 
+
+
+
+   Marc Postman ---- postman@stsci.edu 
+
+

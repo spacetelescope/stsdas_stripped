@@ -1,0 +1,19 @@
+Menu for the package stsdas.analysis.statistics:
+
+    bhkmethod - Compute the generalized Kendall's tau correlation coefficient.
+ buckleyjames - Compute linear regression coeffs based on Kaplan-Meier residuals.
+       censor - Information about the censoring indicator in survival analysis.
+    coxhazard - Compute the correlation probability by Cox's proportional 
+                hazard model.
+     emmethod - Compute linear regression coeff for a normal distribution of 
+                residuals.
+   kmestimate - Compute the Kaplan-Meier estimator of a randomly censored 
+                distribution.
+       kolmov - Kolmogorov-Smirnov test for goodness of fit.
+   schmittbin - Compute regression coefficients by Schmitt's method.
+     spearman - Compute the generalized Spearman's rho correlation.
+     survival - Provide background & overview of survival analysis.
+     twosampt - Determine if two sets of data are from the same population.
+
+(Type "help statistics opt=sys" for more information about the `statistics' 
+ package.)

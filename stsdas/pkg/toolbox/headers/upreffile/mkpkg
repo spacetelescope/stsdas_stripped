@@ -1,0 +1,38 @@
+# Update the upreffile application code in the headers package library
+# Author: B.Simon, 19-Apr-99
+
+$call update
+$exit
+
+debug:
+	$set XFLAGS = "-fgq $(XFLAGS)"
+	$set LFLAGS = "-xz"
+	$call standalone
+	;
+
+standalone:
+	$call update
+	$omake x_upreffile.x
+	$link x_upreffile.o ../headers.a -lstxtools -ltbtables -o upreffile.e
+	$move upreffile.e ../upreffile.e
+	;
+
+update:
+	$checkout headers.a ../
+	$update   headers.a
+	$checkin  headers.a ../
+	;
+
+headers.a:
+	addrefdir.x	
+	checkeq.x	<ctype.h>
+	checksource.x	
+	datatype.x	<lexnum.h>
+	getqual.x	
+	isreffile.x	
+	opnroot.x	
+	rdreffile.x	
+	upheader.x	
+	upreffile.x	<fset.h>
+	upropen.x	<imhdr.h>
+	;

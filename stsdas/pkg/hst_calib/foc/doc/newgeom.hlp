@@ -1,0 +1,141 @@
+.help newgeom Apr94 stsdas.hst_calib.foc
+.nj
+.ih
+NAME
+newgeom -- Perform geometric correction.
+.ih
+USAGE
+newgeom input output geo_file
+.ih
+DESCRIPTION
+This task performs geometric correction of FOC images using the algorithm
+developed by Robert Jedrzejewski and Bill Sparks.
+This is a replacement for the 'geomcorrx' task.
+The GEOCORR header parameter in the output image
+will be set to "COMPLETE" when the task finishes.
+
+The pixel coordinate convention used by 'p2geo' and 'newgeom'
+differs from the standard IRAF convention.
+Normally in IRAF, an integer coordinate refers to
+the center of the pixel,
+so the first pixel spans the range from 0.5 to 1.5.
+The convention adopted by 'p2geo' and 'newgeom'
+is that the first pixel runs from zero to one.
+For example, the actual pixel values in a geometric correction
+reference file with the identity mapping for a 2 x 2 image
+are as follows:
+
+.nf
+ Sample:     1       2       3       4       5       6
+   Line
+      3      0.      1.      2.      2.      2.      2.
+
+      2      0.      1.      2.      1.      1.      1.
+
+      1      0.      1.      2.      0.      0.      0.
+.fi
+
+Each line of the geometric reference file
+gives the X coordinates of pixel corners
+followed by the Y coordinates of those corners.
+Note that the values are the coordinates in the input, distorted image,
+for each pixel of the output, undistorted image.
+For example, line two above gives
+the X coordinates and Y coordinates in the input image
+for the top of the first line (or the bottom of the second line)
+of the 2 x 2 output image.
+There are three such corners, with coordinates (0,1), (1,1) and (2,1).
+.ih
+PARAMETERS
+.ls input = "" [file name]
+Image to be geometrically corrected.
+.le
+.ls output = "" [file name]
+Output (corrected) image.
+.le
+.ls geo_file = "" [file name]
+Geometric correction reference file.
+This is an image which can be created from a polynomial fit file
+using the task 'p2geo'.
+See the DESCRIPTION section above and also the help for 'p2geo'
+for further information about 'geo_file'.
+.le
+.ls (defval = 0.) [real]
+Default output value.
+If a given output pixel corresponds (via the geometric distortion)
+to a point that is outside the input image,
+'defval' will be assigned to that output pixel.
+.le
+.ls (coord_trans = "set_values") [string, allowed values:  set_values |
+apply_distortion | none]
+
+How should the coordinate parameters be modified?
+
+The default value of "set_values" is usually appropriate.
+With this option certain coordinate parameters in the image header
+are assigned specific values, overriding previous values.
+For long-slit spectrographic mode,
+all the coordinate parameters are replaced by values
+taken from the header of the geometric correction reference image.
+This is done because after geometric correction
+the coordinate type for the second axis (Y) is wavelength.
+For normal image mode, the CD matrix is replaced by values
+computed from the image position angle and pixel spacing.
+The pixel spacing is taken from the IMSCALE keyword
+in the geometric correction reference image;
+the CD matrix is not modified if IMSCALE is missing.
+The image orientation is taken from the ORIENTAT keyword
+in the input image (or from the input CD matrix if ORIENTAT is missing).
+Using PA for the position angle of the image Y axis (line direction)
+measured eastward from north, and using IMSCALE for the pixel spacing,
+the CD matrix is computed as follows:
+
+.nf
+	CD1_1 = -IMSCALE * cos (PA)
+	CD1_2 = IMSCALE * sin (PA)
+	CD2_1 = IMSCALE * sin (PA)
+	CD2_2 = IMSCALE * cos (PA)
+.fi
+
+If the coordinate parameters of the input image really are
+a fair representation of the coordinate system of that image,
+then an alternative is to modify CRPIX1, CRPIX2, and the CD matrix
+of the geometrically corrected image
+by amounts that depend on the geometric distortion.
+To make this change, set 'coord_trans' to "apply_distortion".
+
+If the coordinate parameters should not be modified at all,
+set 'coord_trans' to "none".
+.le
+.ls (box_check = no) [boolean]
+Check computation of box overlap?
+.le
+.ls (verbose = yes) [boolean]
+Print percent done?
+.le
+.ih
+EXAMPLES
+1.  Geometrically correct the image "x0dw0103t.d0h"
+using the geometric reference file "b191525mx.r5h",
+producing output image "x0dw0103_gc.hhh".
+
+.nf
+   fo> newgeom x0dw0103t.d0h x0dw0103_gc.hhh b191525mx.r5h
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Robert Jedrzejewski,
+with a subroutine by Bill Sparks.
+The polynomial evaluation routine was extracted to
+the separate task 'p2geo' by Phil Hodge.
+.ih
+SEE ALSO
+The 'p2geo' task in the 'focgeom' package converts a polynomial fit file
+to the format (an image) which is taken as input to 'newgeom'.
+
+Type "help focutility option=sys" for a higher-level description of
+the 'focutility' package.
+.endhelp

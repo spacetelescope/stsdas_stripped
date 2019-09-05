@@ -1,0 +1,11 @@
+$checkout calpar.a ../
+$update   calpar.a
+$checkin  calpar.a ../
+$exit
+
+calpar.a:
+        calpar.x        <clio.h> <ctype.h> "calpar.h"
+        t_getcal.x      "calpar.h"
+        t_modcal.x      "calpar.h"
+        t_putcal.x      "calpar.h"
+	;

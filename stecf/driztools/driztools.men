@@ -1,0 +1,8 @@
+ 
+DRIZTOOLS - Support tools for image combination with Drizzle 
+            Richard Hook & Andy Fruchter, (contact: rhook@eso.org)
+
+steep - compute the steepest gradient between each pixel of an image
+        and its four nearest neighbors
+
+satmask - a tool to make masks to cover satellite trails

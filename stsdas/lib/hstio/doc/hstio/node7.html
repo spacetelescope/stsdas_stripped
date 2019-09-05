@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  Inserting keywords in a FITS Header. </TITLE>
+<meta name="description" value="  Inserting keywords in a FITS Header. ">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html97 HREF="node8.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html95 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html89 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html98 HREF="node8.html">  Adding/Inserting already formatted </A>
+<B>Up:</B> <A NAME=tex2html96 HREF="node2.html"> 
+Manipulating FITS Header </A>
+<B> Previous:</B> <A NAME=tex2html90 HREF="node6.html">  Adding keywords to </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00025000000000000000>  Inserting keywords in a FITS Header. </A></H2>
+<P>
+<PRE>    409:    FitsKw insertBoolKw(FitsKw, char *name, Bool value, char *comment);
+    410:    FitsKw insertIntKw(FitsKw, char *name, int value, char *comment);
+    411:    FitsKw insertFloatKw(FitsKw, char *name, float value, char *comment);
+    412:    FitsKw insertDoubleKw(FitsKw, char *name, double value, char *comment);
+    413:    FitsKw insertStringKw(FitsKw, char *name, char * value, char *comment);
+    414:    FitsKw insertSpacesKw(FitsKw, char *comment);
+    415:    FitsKw insertCommentKw(FitsKw, char *comment);
+    416:    FitsKw insertHistoryKw(FitsKw, char *comment);</PRE>
+<P>
+The keywords are inserted after the current position.  The position
+is set with the ``find'', ``first'' and ``next'' functions.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

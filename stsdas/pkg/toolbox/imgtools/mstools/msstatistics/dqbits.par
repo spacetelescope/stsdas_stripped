@@ -1,0 +1,18 @@
+#  Generic data quality bits
+#
+bit1,b,h,no,,,"Reject pixels with "
+bit2,b,h,no,,,"bit set ?"
+bit3,b,h,no,,,""
+bit4,b,h,no,,,""
+bit5,b,h,no,,,""
+bit6,b,h,no,,,""
+bit7,b,h,no,,,""
+bit8,b,h,no,,,""
+bit9,b,h,no,,,""
+bit10,b,h,no,,,""
+bit11,b,h,no,,,""
+bit12,b,h,no,,,""
+bit13,b,h,no,,,""
+bit14,b,h,no,,,""
+bit15,b,h,no,,,""
+bit16,b,h,no,,,""

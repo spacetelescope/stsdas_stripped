@@ -1,0 +1,107 @@
+.help sky Mar99 stsdas.analysis.dither
+.ih
+NAME
+sky -- Compute sky using the 'crrej' task sky measurement algorithm, 
+plus a correction for histogram truncation. 
+.ih
+USAGE
+sky input
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input image list/template.
+.le
+.ls (masks = "") [string]
+Input Data Quality File list/template.
+.le
+.ls (lower = -99.) [real]
+The lower limit of the input data to be used.  Data lower than this limit 
+will be excluded from subsequent calculations.  This number is ALWAYS in DN
+even if the image is in countrate.
+..If it is set to INDEF, there will be no lower limit.
+.le
+.ls (upper = 4096.) [real]
+The upper limit of the input data to be used.  Data higher than this limit 
+will be excluded from subsequent calculations.  This number is ALWAYS in DN
+even if the image is in countrate.
+..If it is set to INDEF, there will be no upper limit.
+.le
+.ls (dq = "") [pset]
+Data quality filter pset.  This parameter set can be used to exclude pixels
+with certain data quality bit values.
+.le
+.ls (subsky = no) [boolean]
+Subtract sky from input image(s) ?
+.le
+.ls (width = 8) [real, min=0.]
+Interval width for sky statistics.  This number should have the same unit as
+the image, i.e. if the image is in count, width will be in count, if the 
+image is in countrate, width should be in countrate.
+.le
+.ls (stat = "mode") [string, allowed values mean | mode]
+Sky correction statistics.
+.le
+.ls (bunit = " ") [string, allowed values cps | | counts]
+Is the image in counts or countrate?  If this value is blank, it will look for
+the keyword "BUNIT" in the header.  If the header keyword BUNIT has the value 
+of counts/s, c/s, cps, or count/s, the image is treated as in countrate, 
+otherwise in counts.  If the header keyword BUNIT does not exist, the image 
+is assumed to be in counts unless this parameter bunit specifies otherwise.
+.le
+.ls (expname = "") [string, exposure time header keyword name]
+If the image is in countrate, this task will look for the header keyword
+specified by this parameter to get the exposure time.
+.le
+.ls (skyname = "BACKGRND") [string]
+If this is set to a group parameter name in the input image, the sky values
+calculated in this task will be used to update that group parameter.
+For WFPC2, this is usually set to "BACKGRND".
+.le
+.ls (skyvalue) [real]
+Output sky value. This is the sky value of the last image/group in the
+input list.
+.le
+.ls (verbose = no) [boolean]
+Print out results at STDOUT ?
+.le
+.ls (tempdir = "tmp$") [file]
+Directory for temporary files.
+.le
+.ih
+DESCRIPTION
+This task first finds a rough value for the sky using the same algorithm 
+employed by the stsdas.hstcalib.wfpc.crrej task, but then refines this 
+estimate using the gstatistics program.  This task can deal with images
+either in counts or countrate.
+
+Users wishing to learn more about these algrithms should see the appropriate
+help files.  
+
+This combination algorithm was developed because having zero sky can important 
+in drizzling, and because the routine used in crrej, while fine for cosmic
+ray removal, may not be sufficient in some cases (typically when the sky
+is low and the WFPC2 gain undersamples the noise).  It is, however, generally
+robust, and provides a good starting point for the gstatistics program.
+If after previous processing, the skies presently
+found in your images vary by less than the sky noise then you do not need
+to use this task before drizzling.  
+
+This task will either write the sky found in an image to a user defined 
+header keyword, or will update the header value, if the task determines 
+that the header value has already been updated by the crrej task.
+
+The main parameter that users must set is the width.  This determines
+the region of the pixel histogram that is used to determine the image
+statistics.  It should be set to include most pixels in the sky (so 
+substantially more than the FWHM of the sky distribution) but not so large 
+as to include a substantial amount of power from objects or cosmic rays.
+.ih
+EXAMPLES
+.ih
+REFERENCE
+This task was written by I. Busko following a recipe by A. Fruchter.
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

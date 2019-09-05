@@ -1,0 +1,8 @@
+list1, f, a, "", , ,		input file list name
+list2, f, a, "", , ,		output file list name
+old_prefix, s, a, "", , ,	old prefix
+new_prefix, s, a, "", , ,	new prefix
+old_suffix, s, a, "", , ,	old suffix
+new_suffix, s, a, "", , ,	new suffix
+
+mode, s, h, "al"

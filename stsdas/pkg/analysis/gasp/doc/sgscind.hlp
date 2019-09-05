@@ -1,0 +1,147 @@
+.help sgscind Jul93 stsdas.analysis.gasp
+.ih
+NAME
+sgscind -- Find fields in the guide star catalog.
+.ih
+USAGE
+sgscind ra dec width
+.ih
+DESCRIPTION
+This task searches the guide star catalog index to find any guide star
+regions that overlap a user-defined field.  Fields are defined as a
+range of coordinates and are specified by the task parameters 'rahlow'
+through 'decshi'.
+
+Before you can use any of the 'gasp' tasks that access the CD-ROM, you
+must tell 'gasp' where the CD-ROM is located; this is done by
+specifying a mount point consisting of a path name and, optionally, a
+node name if using IRAF networking to a remote host. The two parameters
+that make up the the mount point are 'cdrom_north' and 'cdrom_south'.
+If the disks are not mounted on the local host they may be accessible
+via the IRAF networking capability. To use IRAF networking to access a
+remotely mounted CD-ROM, prepend the remote host name followed by an
+exclamation point. This is explained in the parameter descriptions
+below for 'cdrom_north' and 'cdrom_south'.
+
+The catalog index consists of a list of boundaries of every region in
+the Guide Star Catalog.  This task produces a list containing pathnames
+of any files on the CD-ROM that correspond to the selected guide star
+regions.  This text is suitable as input to the 'cdrom' task and is
+printed to STDOUT so that it can be piped to another task.
+
+The 'sgscind' task will also write an ASCII list file containing only
+the root names of the selected table files.  This list may be used as
+input to the 'extgst' task, which extracts stars from the tables.
+
+Note that this task is called by other tasks in the 'gasp' package and
+contains the only reference to the Guide Star Catalog CD-ROM location.
+.ih
+PARAMETERS
+.ls ra [real, min = 0, max = 24]
+Right ascension of the field center (in hours).
+.le
+.ls dec [real, min = -90, max = 90]
+Declination of the field center (in degrees).
+.le
+.ls width [real, min = 0, max = 180]
+Field width (in degrees).
+.le
+.ls index = "scidata$index" [file name]
+Name of the guide star catalog index table.
+.le
+.ls cdrom_north = "/data/gsc1" [string]
+The path name to the mount point for the first volume of the 
+Guide Star Catalog CD-ROM containing the Northern Hemisphere 
+data.  Note that this may contain a node name followed by an 
+exclamation point if the disk is mounted on a host accessible 
+via IRAF networking.  For example, if the disk is available 
+from host "tib":
+.nf
+
+	cdrom_north = tib!/data/gsc1
+.fi
+.le
+.ls cdrom_south = "/data/gsc2" [string]
+The path name to the mount point for the second volume of the 
+Guide Star Catalog CD-ROM containing the Southern Hemisphere 
+data.  Note that this may contain a node name followed by an 
+exclamation point if the disk is mounted on a host accessible 
+via IRAF networking.  For example, if the disk is available 
+from host "tib":
+.nf
+
+	cdrom_south = tib!/data/gsc2
+.fi
+.le
+.ls region = "REG_NO" [string]
+Name of the column containing region number.
+.le
+.ls rahlow = "RA_H_LOW" [string]
+Column name containing the lower limit of right ascension 
+hours.
+.le
+.ls ramlow = "RA_M_LOW" [string]
+Column name containing the lower limit of right ascension 
+minutes.
+.le
+.ls raslow = "RA_S_LOW" [string]
+Column name containing the lower limit of right ascension 
+seconds.
+.le
+.ls rahhi = "RA_H_HI" [string]
+Column name containing the upper limit of right ascension 
+hours.
+.le
+.ls ramhi = "RA_M_HI" [string]
+Column name containing the upper limit of right ascension 
+minutes.
+.le
+.ls rashi = "RA_S_HI" [string]
+Column name containing the upper limit of right ascension 
+seconds.
+.le
+.ls decsilow = "DECSI_LO" [string]
+Column name containing the lower limit of declination sign.
+.le
+.ls decdlow = "DEC_D_LO" [string]
+Column name containing the lower limit of declination 
+degrees.
+.le
+.ls decmlow = "DEC_M_LO" [string]
+Column name containing the lower limit of declination 
+minutes.
+.le
+.ls decslow = "DEC_S_LO" [string]
+Column name containing the lower limit of declination 
+seconds.
+.le
+.ls decsihi = "DECSI_HI" [string]
+Column name containing the upper limit of declination sign.
+.le
+.ls decdhi = "DEC_D_HI" [string]
+Column name containing the upper limit of declination 
+degrees.
+.le
+.ls decmhi = "DEC_M_HI" [string]
+Column name containing the upper limit of declination 
+minutes.
+.le
+.ls decshi = "DEC_S_HI" [string]
+Column name containing the upper limit of declination 
+seconds.
+.le
+.ls (tablist = "tblist") [string]
+List of tables overlapping the field.  This is an output 
+parameter.
+.le
+.ls (nregions = 0) [integer]
+Number of regions found (this is an output parameter).
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih 
+SEE ALSO
+extgst, regions, targets
+.endhelp

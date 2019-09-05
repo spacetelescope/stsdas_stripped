@@ -1,0 +1,106 @@
+.help sun2vax Aug93 stsdas.toolbox.convfile
+.ih
+NAME
+sun2vax -- Translate GEIS image data files from SUN format to VAX format
+.ih
+USAGE
+sun2vax input output
+.ih
+DESCRIPTION
+The `sun2vax' task will convert image data files from the binary 
+format used on Sun systems to that used on a VAX.  Input files should 
+be in GEIS (`.hhh') format.  (Type "help 
+geis" for more information about GEIS format images.)  If the 
+input files reside on a different machine than the output files, 
+they may transferred transparently with this task via IRAF 
+networking.  If access via IRAF networking is unavailable, the 
+files can first be transferred from the remote host using FTP and 
+then converted using `sun2vax' on the local host.  This task can 
+be used with either a Sun or a VAX as the local host; see the 
+EXAMPLES section for details.  For more information about IRAF 
+networking, type "help networking".  
+.ih
+PARAMETERS
+.ls input [file name template]
+The input image header names.  This is a list of images describing 
+which files are going to be transferred/translated; you can use a 
+template or the "@" notation for a list file. 
+.le
+.ls output [file name or directory]
+The output header filename template, list file (preceded by the 
+"@" character), or directory name.  The number of output files 
+must equal the number of input files, unless the output is a 
+directory name.  NOTE: you cannot translate the files in-place--
+i.e., the output filename must be different than the input 
+filename, or the output must be to a different directory.  
+.le
+.ls (verbose = yes) [boolean]
+Print a status line as each image is transferred/converted?
+.ih
+EXAMPLES
+In the following examples the pathname for the remote host and 
+directory are referred to with IRAF environment variables.  This 
+is usually good practise (it helps to avoid typo's), but it is 
+often necessary for IRAF networking because wildcards in file 
+names are NOT expanded if the path begins with a node name.  
+Simply append the "$" character to the environment variable and 
+use it in place of the "node!pathname" syntax.  
+
+1. Tranfer all GEIS images beginning with the letter "v" from the remote 
+SUN machine "sol" to the current directory on a local VAX.  Notice the 
+notation for the local directory (.).  
+
+.nf
+   	cl> set dsol = sol!/sol/u1/user/vdir/
+   	cl> sun2vax dsol$v*.hhh .
+.fi
+
+2. Tranfer and translate all images beginning with "v" from a 
+local Sun host to the remote VAX host "AIRY" in the directory 
+"DISK$DATA:[USER1.DATA]" (Note that the "\" character is essential 
+to escape the CL metacharacters.) 
+
+.nf
+   	cl> set dvax = airy!disk\$data:[user1.data]
+   	cl> sun2vax v*.hhh dvax$
+.fi
+
+3. A list file "inlist" has been created with the names (including 
+pathnames) of the input header files, and a similar list for the 
+output files is in "outlist". The number of files (lines) in both 
+list files should be the same. 
+
+.nf
+   	cl> sun2vax @inlist @outlist
+.fi
+
+
+4. This example is more complicated.  If IRAF networking is 
+unavailable for your machine, you may still transfer your files 
+from a Sun to a VAX with FTP, and then run `sun2vax' to convert the 
+binary format.  You will need to specify "binary" mode in FTP 
+before transferring the ".hhd" files; ASCII mode must be used for the 
+".hhh" files.  
+.fi
+Now run `sun2vax' on the images "v1" and 
+"n23" and place the output in the subdirectory "ctemp" on the local 
+VMS machine.  
+
+.nf
+	cl> sun2vax v1.hhh,n23.imh ctemp/
+
+If instead you want the output images in the same directory, try:
+
+   	cl> sun2vax v1.hhh v1new.hhh
+   	cl> sun2vax n23.imh n23new.imh
+.fi
+.ih
+REFERENCES
+This task was written by Nelson Zarate, ST ScI.  
+.ih
+SEE ALSO
+vax2sun, tconvert, set
+
+For more information about IRAF networking, type "help networking". 
+For more information about GEIS format files, type "help geis".  
+.endhelp

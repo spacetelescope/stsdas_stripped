@@ -1,0 +1,45 @@
+.help lowpars Aug93 stsdas.analysis.restore
+.ih
+NAME
+lowpars -- Set low-pass filter parameters for the wiener task.
+
+.ih
+USAGE
+lowpars
+.ih
+DESCRIPTION
+This pset is used to set the values for the low-pass filter parameters
+in the wiener task.
+
+After deconvolving the input image, the wiener task may optionally apply a
+low-pass filter to the deconvolution result.  This low-pass filtering 
+step is particularly important in the case of inverse filter deconvolution.
+Use parameter 'lowpass' to specify filter
+type, and 'fwhm' parameter to specify the width of the smoothing kernel in 
+image pixel units.
+A circularly symmetric or an axially symmetric (in frequency
+domain) filter can be selected, or you can specify that no filter is to 
+be used at all.
+The square filter has proven to be effective at eliminating rings around the
+deconvolved point sources. The filter is an apodizing function which
+minimizes side-bands.
+.ih
+PARAMETERS
+.ls (lowpass = "none") [string, allowed values: none | square | circular]
+
+Type of low-pass filter.
+.le
+.ls (fwhm = INDEF) [real, min=1.]
+Full width at half maximum of low-pass filter smoothing kernel, in image
+pixel units. If INDEF, no filtering is performed regardless
+of 'lowpass' value.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help wiener" and "help wiener opt=sys" for more information about 
+the wiener task.
+.endhelp

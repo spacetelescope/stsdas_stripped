@@ -1,0 +1,21 @@
+input, f, a, "", , , 		Input image name
+
+bpixtab, s, h, , , ,		Output pedigree
+ccdtab, s, h, , , ,		Output pedigree
+atodtab, s, h, , , ,		Output pedigree
+oscntab, s, h, , , ,		Output pedigree
+biasfile, s, h, , , ,		Output pedigree
+
+crrejtab, s, h, , , ,		Output pedigree
+shadfile, s, h, , , ,		Output pedigree
+darkfile, s, h, , , ,		Output pedigree
+pfltfile, s, h, , , ,		Output pedigree
+dfltfile, s, h, , , ,		Output pedigree
+lfltfile, s, h, , , ,		Output pedigree
+
+phottab, s, h, , , ,		Output pedigree
+idctab, s, h, , , ,		Output pedigree
+dithtab, s, h, , , ,		Output pedigree
+mlintab, s, h, , , ,		Output pedigree
+
+mode, s, h, "al"

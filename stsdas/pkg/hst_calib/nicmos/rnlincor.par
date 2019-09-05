@@ -1,0 +1,4 @@
+input,s,a,"",,,"Input datafile"
+output,s,a,"",,,"Output cleaned datafile"
+nozpcorr,b,h,no,,,"Disable zero point correction?"
+mode,s,h,al

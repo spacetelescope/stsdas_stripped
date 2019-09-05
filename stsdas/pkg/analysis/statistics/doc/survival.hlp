@@ -1,0 +1,479 @@
+.help survival Nov92 stsdas.analysis.statistics
+.ih
+NAME
+survival -- Discussion of the Astronomical Survival Analysis Package.
+.ih
+USAGE
+survival
+.ih
+DESCRIPTION
+[This file is extracted from the documentation of the Astronomy
+Survival Analaysis (ASURV) package developed by Takashi Isobe, Michael
+LaValley, and Eric Feigelson at Pennsylvania State University.]
+
+Observational astronomers frequently encounter the situation where
+they observe a particular property (e.g. far infrared emission,
+calcium line absorption, CO emission) of a previously defined sample
+of objects, but fail to detect all of the objects.  The data set then
+contains nondetections as well as detections, preventing the use of
+simple and familiar statistical techniques in the analysis.
+
+A number of astronomers have recently recognized the existence of
+statistical methods, or have derived similar methods, to deal with
+these problems.  The methods are collectively called `survival
+analysis' and nondetections are called `censored' data points. This
+revision of the survival analysis package provides the maximum
+likelihood estimator of the censored distribution, several two sample
+tests, correlation tests and linear regressions as described in our
+papers in the Astrophysical Journal (Feigelson and Nelson, 1985;
+Isobe, Feigelson, and Nelson, 1986).
+
+No statistical procedure can magically recover information that was 
+never measured at the telescope.  However, there is frequently 
+important information implicit in the failure to detect some objects 
+which can be partially recovered under reasonable assumptions.  We 
+purposely provide several two-sample tests, correlation tests and 
+linear regressions--each based on different models of where upper 
+limits truly lie--so that the astronomer can judge the importance of 
+the different assumptions.
+
+There are several reasons to have confidence in these methods.  First, 
+the volume of scholarly effort devoted to the problem is impressive.  
+A dozen books and scores of papers have been published during the last 
+decade.  Second, people in enterprises involving thousands of lives 
+and billions of dollars appear to believe the methods.  Third, our 
+Monte Carlo simulations of a typical astronomical problem 
+(flux-limited satellite observations of a magnitude limited population 
+of uniformly distributed objects) showed several methods to be quite 
+reliable in this context (Isobe et al., 1986).  More simulations 
+of astronomical problems are definitely needed.  
+
+There are also reasons for not applying these methods.  We describe 
+some of their known limitations in section about cautions and caveats.
+
+.ih
+OVERVIEW OF SURVIVAL ANALYSIS
+Statistical methods dealing with censored data have a long and 
+confusing history.  It began in the 17th century with the development 
+of actuarial mathematics for the life insurance industry and 
+demographic studies.  Astronomer Edmund Halley was one of the founders 
+of this field.  In the mid-20th century, statistical analysis grew, 
+along with biomedical and clinical research, into a major field of 
+biometrics.  Similar (and sometimes identical) statistical methods 
+were being developed in two other fields: reliability theory with its 
+industrial and engineering applications; and econometrics, with 
+attempts to understand the relations between economic forces in groups 
+of people.  Finally, we find the same mathematical problems and some 
+of the same solutions arising in modern astronomy as discussed above.
+
+Let us give an illustration of the use of survival analysis 
+in three disparate fields.  Consider a linear regression problem. 
+First, an epidemiologist wishes to determine how the longevity or 
+"survival time" (the dependent variable) depends on the number of 
+cigarettes smoked per day (the independent variable).  The experiment 
+lasts 10 years, during which some individuals die and others do 
+not. The survival time of the living individuals is only known to 
+be greater than their age when the experiment ends.  These values 
+are therefore "right censored data points."  Second, a company 
+manufacturing engines wishes to know the average time between 
+breakdowns as a function of engine speed to determine the optimal 
+operating range.  Test engines are set running until 20% of them 
+fail; the average "lifetime" and dependence on speed is then 
+calculated with 80% of the data points censored.  Third, an 
+astronomer observes a sample of nearby galaxies in the far-
+infrared to determine the relation between dust and molecular 
+gas.  Half have detected infrared luminosities but half are upper 
+limits ("left censored data points").  The infrared luminosities 
+are compared to CO observations, which themselves may contain 
+censored values.
+
+Astronomers have dealt with their upper limits in several ways.  One
+is to consider only detections in the analysis; while possibly
+acceptable for some purposes (such as regression), this will clearly
+bias the results in others (such as estimating luminosity functions).
+Another way is to consider the ratio of detected objects to observed
+objects in a given sample.  When plotted in a range of luminosity
+bins, this has been called the "fractional luminosity function" and
+has been frequently used in extragalactic radio astronomy.  This is
+mathematically the same as actuarial life tables, but it is sometimes
+used incorrectly in comparing different samples: the detected fraction
+clearly depends on the (usually uninteresting) distance to the objects
+as well as their (interesting) luminosity.  Also, simple square root
+of N error bars do not apply in these fractional luminosity functions.
+A third procedure is to take all of the data, including the exact
+values of the upper limits, and model the properties of the parent
+population under certain mathematical constraints, such as maximizing
+the likelihood that the data fits the model.  This technique, which is
+at the root of much of modern survival analysis, was developed by
+astrophysicist Yoram Avni (Avni et al., 1980; Avni and Tananbaum 1986)
+and is now commonly used in observational astronomy.
+
+The advantage of learning and using survival analysis methods
+developed in biometrics, econometrics, actuarial and reliability
+mathematics is the wide range of useful techniques developed in these
+fields.  In general, astronomers can have faith in the mathematical
+validity of survival analysis.  Issues of great social importance
+(e.g., establishing Social Security benefits, strategies for dealing
+with the AIDS epidemic, and MIL-STD reliability standards) are based
+on it.  In detail, however, astronomers must study the assumptions
+underlying each model and be aware that some methods at the forefront
+of survival analysis may not be fully understood.
+
+.ih
+OVERVIEW OF THE SOFTWARE
+The statistical methods for dealing with censored data might be
+divided into a 2 x 2 grid: parametric vs. nonparametric, and
+univariate vs. multivariate.  Parametric methods assume that the
+censored survival times are drawn from a parent population with a
+known distribution function (e.g., Gaussian, exponential), and is the
+principal assumption of industrial reliability models.  Nonparametric
+models make no assumption about the parent population, and frequently
+rely on maximum likelihood techniques.  Univariate methods are devoted
+to determining the characteristics of the population from which the
+censored sample is drawn, and comparing such characteristics for two
+or more censored samples.  Bivariate methods measure whether the
+censored property of the same is correlated with another property of
+the objects and, if so, to perform a regression that quantifies the
+relationship between the two variables.
+
+We have chosen to concentrate on nonparametric models, since the
+underlying distribution of astronomical populations is usually
+unknown.  The linear regression methods however, are either fully
+parametric (e.g. EM algorithm regression) or semi-parametric (e.g. Cox
+regression, Buckley-James regression).  Most of the methods are
+described in more detail in the astronomical literature by Schmitt
+(1985), Feigelson and Nelson (1985) and Isobe et al. (1986).  The
+generalized Spearman's rho is derived by Akritas (1990).
+
+There are two tasks that are univariate in nature: 'kmestimate' and
+'twosampt'.  The 'kmestimate' task gives the Kaplan-Meier estimator
+for the distribution function of a randomly censored sample.  First
+derived in 1958, it lies at the root of non-parametric survival
+analysis.  It is the unique, self-consistent, generalized maximum
+likelihood estimator for the population from which the sample was
+drawn.  When formulated in cumulative form, it has analytic asymptotic
+(for large N) error bars.  The median is always well defined, though
+the mean is not if the lowest point in the sample is an upper limit.
+It is identical to the differential "redistribute to the right"
+algorithm, independently derived by Avni et al. (1980), but the
+differential form does not have simple analytic error analysis.
+
+The second univariate task is 'twosampt', giving the variety 
+of ways to test whether two censored samples are drawn from the 
+same parent population.  They are mostly generalizations of 
+standard tests for uncensored data, such as the Wilcoxon and 
+logrank nonparametric two-sample tests.  They differ in how the 
+censored data are weighted or "scored" in calculating the 
+statistic.  Thus each is more sensitive to differences at one end 
+or the other of the distribution.  The Gehan and logrank tests 
+are widely used in biometrics, while some of the others are not.
+Details of the tests are provided in the help file.
+
+There are a number of bivariate methods, including three correlation
+tests and three linear regression analyses.  Cox hazard model
+(correlation test), EM algorithm, and Buckley-James method (linear
+regressions) can treat several independent variables if the dependent
+variable contains only one kind of censoring (i.e., upper or lower
+limits).  Generalized Kendall's tau, Spearman's rank order test
+(correlation tests) and Schmitt's binned linear regression can treat
+mixed censoring, including censoring in the independent variable, but
+can have only one independent variable. A bootstrapping procedure
+provides error analysis for Schmitt's method.
+
+.ih
+CAUTIONS AND CAVEATS
+The Kaplan-Meier estimator works with any underlying 
+distribution (e.g., Gaussian, power law, or bimodal), but only if the 
+censoring is "random."  That is, the probability that the 
+measurement of an object is censored can not depend on the value 
+of the censored variable.  At first glance, this may seem 
+inapplicable to most astronomical problems: we detect the 
+brighter objects in a sample, so the distribution of upper limits 
+always depends on brightness.  However, two factors often serve 
+to randomize the censoring distribution.  First, the censored 
+variable may not be correlated with the variable by which the 
+sample was initially identified.  Thus, infrared observations of 
+a sample of radio bright objects will be randomly censored if the 
+radio and infrared emission are unrelated to each other.  Second, 
+astronomical objects in a sample usually lie at different 
+distances, so that brighter objects are not always the most 
+luminous.  In cases where the variable of interest is censored at 
+a particular value (e.g., flux, spectral line equivalent width, 
+stellar rotation rate) rather than randomly censored, then 
+parametric methods appropriate to "Type 1" censoring should be 
+used.  These are described by Lawless (1982) and Schneider 
+(1986), but are not included in this package.
+
+The censoring mechanisms of each study MUST be 
+understood individually to judge whether the censoring is, or is 
+not, likely to be random.  The appearance of the data, even if the 
+upper limits are clustered at one end of the distribution, is NOT 
+a reliable measure.  A frequent (if philosophically distasteful) 
+escape from the difficulty of determining the nature of the 
+censoring in a given experiment is to define the population of 
+interest to be the observed sample.  The Kaplan-Meier estimator 
+then always gives a valid redistribution of the upper limits, 
+though the result may not be applicable in wider contexts.
+
+The two-sample tests are somewhat less restrictive than the
+Kaplan-Meier estimator, since they seek only to compare two samples
+rather than determine the true underlying distribution.  The two
+versions of the Gehan test in 'twosampt' assume that the censoring
+patterns of the two samples are the same, but the version with
+hypergeometric variance is more reliable in case of different
+censoring patterns.  The logrank test results appear to be correct as
+long as the censoring patterns are not very different.  Peto-Prentice
+seems to be the test least affected by differences in the censoring
+patterns.  There is little known about the limitations of the
+Peto-Peto test.
+
+Two of the bivariate correlation coefficients, generalized Kendall's
+tau and Cox regression, are both known to be inaccurate when many tied
+values are present in the data.  Ties are particularly common when the
+data is binned.  Caution should be used in these cases.  It is not
+known how the third correlation method, generalized Spearman's rho,
+responds to ties in the data.  However, there is no reason to believe
+that it is more accurate than Kendall's tau in this case, and it
+should also used be with caution in the presence of tied values.
+
+Cox regression, though widely used in biostatistical applications,
+formally applies only if the "hazard rate" is constant; that is, the
+cumulative distribution function of the censored variable falls
+exponentially with increasing values.  Astronomical luminosity
+functions, in contrast, are frequently modeled by power law
+distributions.  It is not clear whether the results of a Cox
+regression are significantly affected by this difference.
+
+There are several limitations to the three linear regression methods
+(i.e., the 'emmethod', 'buckleyjames', and 'schmittbin' tasks).
+First, only 'schmittbin' works when censoring is present in both
+variables.  Second, 'emmethod' requires that the residuals about the
+fitted line follow a Gaussian distribution.  'buckleyjames' and
+'schmittbin' are less restrictive, requiring only that the censoring
+distribution about the fitted line is random.  Both we and Schneider
+(1986) find little difference in the regression coefficients derived
+from these two methods.  Third, there is considerable uncertainty
+regarding the error analysis of the regression coefficients of all
+three models.  'emmethod' gives analytic formulas based on asymptotic
+normality, while Avni and Tananbaum (1986) numerically calculate and
+examine the likelihood surface.  'buckleyjames' gives an analytic
+formula for the slope only, but it lies on a weak theoretical
+foundation.  We provide Schmitt's bootstrap error analysis for
+'schmittbin', although this may be subject to high computational
+expense for large data sets. Fourth, 'schmittbin' is questionable in
+certain cases with heavy censoring.  The user must arbitrarily choose
+a bin size.  If it is too small, many censored points at the end of
+the distribution will be changed to detected points.  If the bins are
+too large, accuracy in the regression calculation is reduced.  Fifth,
+the Buckley-James method has a defect in that the final solution
+occasionally oscillates rather than converges smoothly. Users may wish
+to run each of the methods and evaluate the uncertainty with caution.
+In our judgment, the most reliable linear regression method may be the
+Buckley-James regression, and we suggest that Schmitt's regression be
+reserved for problems with censoring present in both variables.
+
+If we consider the field of survival analysis from a broader
+perspective, we note a number of deficiencies with respect to censored
+statistical problems in astronomy.  Most importantly, survival
+analysis assumes the upper limits in a given experiment are precisely
+known, while in astronomy they frequently represent n times the RMS
+noise level in the experimental detector, where n=2, 3, 5, or
+whatever.  Methods adopted to this situation are clearly needed.  A
+related deficiency is the absence of weighted means or regressions.
+Survival analysis also has not yet produced any true multi-variate
+techniques, such as a Principal Components Analysis that permits
+censoring.  There also seems to be a dearth of nonparametric
+goodness-of-fit tests like the Kolmogorov-Smirnov test.
+
+Finally, we note that this package is not unique.  Nearly a dozen
+software packages for analyzing censored data have been developed
+(Wagner and Meeker 1985).  Four are part of large multi-purpose
+commercial statistical software systems: SAS, SPSS, BMDP, and GLIM.
+These packages are available on many university mainframes.  We have
+found BMDP to be the most useful for astronomers (see Appendices to
+Feigelson and Nelson 1985, Isobe et al., 1986 for instructions on its
+use).  It provides most of the functions in 'kmestimate' and
+'twosampt' as well as a full Cox regression, but no linear
+regressions.  Other packages (CENSOR, DASH, LIMDEP, STATPAC, STAR,
+SURVAN, SURVREG) were written at various universities, medical
+institutes and industrial labs, and have not been evaluated by us.
+
+.ih
+ACKNOWLEDGMENTS
+The production and distribution of the ASURV package was principally funded
+at Penn State by a grant from the Center for Excellence in Space Data
+and Information Sciences (operated by the Universities Space Research
+Association in cooperation with NASA), NASA grants NAGW-1917 and
+NAGW-2120, and NSF grant DMS-9007717. T.I. was supported by NASA grant
+NAS8-37716.  We are grateful to Prof. Michael Akritas (Dept. of
+Statistics, Penn State) for advice and guidance on mathematical
+issues, and to Drs. Mark Wardle (Dept. of Physics and Astronomy,
+Northwestern University), Paul Eskridge (Harvard-Smithsonian Center
+for Astrophysics), and Eric Smith (Laboratory for Astronomy and Solar
+Physics, NASA-Goddard Space Flight Center) for generous consultation
+and assistance on the coding.  We would also like to thank Drs. Peter
+Allan (Rutherford Appleton Laboratory), Simon Morris (Carnegie
+Observatories), Karen Strom (UMASS), and Marco Lolli (Bologna) for
+their help in debugging.
+
+.ih
+ANNOTATED BIBLIOGRAPHY
+.ls Akritas, M.
+``Aligned Rank Tests for Regression With Censored Data'', Penn State
+Dept. of Statistics Technical Report, 1989.  [Source for ASURV's
+generalized Spearman's rho computation.]
+.le
+.ls Amemiya, T.
+Advanced Econometrics (Harvard U. Press:Cambridge MA)
+1985.  [Reviews econometric "Tobit" regression models 
+including censoring.]
+.le
+.ls Avni, Y., Soltan, A., Tananbaum, H. and Zamorani, G.
+"A Method
+for Determining Luminosity Functions Incorporating Both Flux 
+Measurement and Flux Upper Limits, with Applications to the 
+Average X-ray to Optical Luminosity Ration for Quasars," 
+Astrophys. J. 235:694 1980.  [The discovery paper in the 
+astronomical literature for the differential Kaplan-Meier 
+estimator.]
+.le
+.ls Avni, Y. and Tananbaum, H.
+"X-ray Properties of Optically
+Selected QSOs."  Astrophys. J. 305:57 1986.  [The discovery 
+paper in the astronomical literature of the linear 
+regression with censored data for the Gaussian model.]
+.le
+.ls Bickel, P.J and Ritov, Y. 
+``Discussion:  `Censoring in Astronomical Data Due
+to Nondetections' by Eric D. Feigelson'', in {Statistical Challenges
+in Modern Astronomy}, eds. E.D. Feigelson and G.J. Babu, (Springer-Verlag:
+New York) 1992. [A discussion of the possible inadequacies of survival
+analysis for treating low signal-to-noise astronomical data.]
+.le
+.ls Brown, B.J. Jr., Hollander, M., and Korwar, R.M.
+"Nonparametric
+Tests of Independence for Censored Data, with Applications 
+to Heart Transplant Studies" in Reliability and Biometry, 
+eds. F. Proschan and R.J. Serfling (Philadelphia: SIAM) p. 
+327 1974.  [Reference for the generalized Kendall's tau 
+correlation coefficient.]
+.le
+.ls Buckley, J. and James, I.
+"Linear Regression with Censored
+Data," Biometrika 66:429 1979.  [Reference for the linear 
+regression with Kaplan-Meier residuals.]
+.le
+.ls Feigelson, E. D. 
+``Censored Data in Astronomy'', { Errors, Bias and 
+Uncertainties in Astronomy}, eds. C. Jaschek and F. Murtagh, (Cambridge U. 
+Press: Cambridge) p. 213 1990. [A recent overview of the field.]
+.le
+.ls Feigelson, E.D. and Nelson, P.I.
+"Statistical Methods for
+Astronomical Data with Upper Limits:  I. Univariate 
+Distributions," Astrophys. J. 293:192 1985.  [Our first 
+paper, presenting the procedures in UNIVAR here.]
+.le
+.ls Isobe, T., Feigelson, E.D., and Nelson, P.I.
+"Statistical Methods
+for Astronomical Data with Upper Limits: II. Correlation and 
+Regression," Astrophys. J. 306:490 1986.  [Our second paper, 
+presenting the procedures in BIVAR here.]
+.le
+.ls Isobe, T. and Feigelson, E. D.
+``Survival Analysis, or What To Do with Upper 
+Limits in Astronomical Surveys", { Bull. Inform. Centre Donnees 
+Stellaires}, 31:209 1986. [A precis of the above two papers in 
+the Newsletter of Working Group for Modern Astronomical Methodology.]
+.le
+.ls Isobe, T. and Feigelson, E. D. 
+``ASURV'', { Bull. Amer. Astro. Society}, 22:917 1990.
+[The initial software report for ASURV Rev 1.0.]
+.le
+.ls Kalbfleisch, J.D. and Prentice, R.L.
+The Statistical Analysis of 
+Failure Time Data (Wiley:New York) 1980.  [A well-known 
+monograph with particular emphasis on Cox regression.]
+.le
+.ls Latta, R. 
+``A Monte Carlo Study of Some Two-Sample Rank Tests With Censored 
+Data'', { Jour. Amer. Stat. Assn.}, 76:713 1981. 
+[A simulation study comparing several two-sample tests available in ASURV.]
+.le
+.ls LaValley, M., Isobe, T. and Feigelson, E.D. 
+``ASURV'', { Bull. Amer. Astro. Society} 1992
+[The new software report for ASURV Rev. 1.1.]
+.le
+.ls Lawless, J. F. 
+{ Statistical Models and Methods for Lifetime Data} (Wiley:New York) 1982.
+[A very thorough monograph, emphasizing parametric models and engineering 
+applications.]
+.le
+.ls Lee, E.T.
+Statistical Methods for Survival Data Analysis 
+(Lifetime Learning Pub.:Belmont CA) 1980.  [Hands-on 
+approach, with many useful examples and FORTRAN programs.]
+.le
+.ls Magri, C., Haynes, M., Forman, W., Jones, C. and Giovanelli, R.
+`The Pattern of Gas Deficiency in Cluster Spirals: The Correlation 
+of H I and X-ray Properties'', { Astrophys. J.} 333:136 1988. 
+[A use of bivariate survival analysis in astronomy, with a good discussion
+of the applicability of the methods.]
+.le
+.ls Millard, S. and Deverel, S. 
+``Nonparametric Statistical Methods for Comparing 
+Two Sites Based on Data With Multiple Nondetect Limits'',
+{ Water Resources Research}, 24:2087 1988. 
+[A good introduction to the two-sample tests used in ASURV, 
+written in nontechnical language.]
+.le
+.ls Miller, R.G. Jr.
+Survival Analysis (Wiley, New York) 1981.
+[A good introduction to the field; brief and informative 
+lecture notes from a graduate course at Stanford.]
+.le
+.ls Prentice, R. and Marek, P. 
+``A Qualitative Discrepancy Between Censored Data 
+Rank Tests'', { Biometrics} 35:861 1979. 
+[A look at some of the problems with the Gehan two-sample test, using
+data from a cancer experiment.]
+.le
+.ls Sadler, E. M., Jenkins, C. R.  and Kotanyi, C. G.. 
+``Low-Luminosity Radio Sources in Early-Type Galaxies'', 
+{ Mon. Not. Royal Astro. Soc.} 240:591 1989. 
+[An astronomical application of survival analysis, with useful 
+discussion of the methods in the Appendices.]
+.le
+.ls Schmitt, J.H.M.M.
+"Statistical Analysis of Astronomical Data
+Containing Upper Bounds:  General Methods and Examples Drawn 
+from X-ray Astronomy."  Astrophys. J. 293:178 1985.  
+[Similar to our papers, a presentation of survival analysis 
+for astronomers.  Derives schmittbin regression for censoring in 
+both variables.]
+.le
+.ls Schneider, H.
+Truncated and Censored Samples Normal Populations
+(Dekker:New York) 1986.  [Monograph specializing on Gaussian 
+models, with a good discussion of linear regression.]
+.le
+.ls Wagner, A.E. and Meeker, W.Q. Jr.
+"A Survey of Statistical
+Software for Life Data Analysis," in 1985 Proceedings of the 
+Statistical Computing Section, (Amer. Stat. Assn.:Washington 
+DC), p. 441.  [Summarizes capabilities and gives addresses 
+for other software packages.]
+.le
+.ls Wardle, M. and Knapp, G.R.
+"The Statistical Distribution of the
+Neutral-Hydrogen Content of SO Galaxies," Astron. J. 91:23 
+1986.  [Discusses the differential Kaplan-Meier distribution 
+and its error analysis.] 
+.le
+.ls Wolynetz, M.S.
+"Maximum Likelihood Estimation in a Linear Model
+from Confined and Censored Normal Data,"  Appl. Stat. 28:195 
+1979.  [Published Fortran code for the EM algorithm linear 
+regression.]
+.le
+.endhelp

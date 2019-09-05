@@ -1,0 +1,87 @@
+.help tran Oct04 stsdas.analysis.dither
+.ih
+NAME
+tran v0.11 -- Transform am X,Y position from an input to output frame
+.ih
+USAGE
+tran origimage drizimage direction x y 
+.ih
+PARAMETERS
+.ls origimage = "" [file name]
+The name of the original input image, before it is drizzled.
+This string must match exactly with what is written into the header
+of the output image by drizzle as this is used as a key to find the
+other drizzling parameters from the output image header.
+.le
+.ls drizimage = "" [file name]
+The name of the image which resulted from drizzling "origimage".
+.le
+.ls direction = "forward|backward" [string]
+The direction of the transformation, either forward from the input
+image onto the output drizzled one, or backward in the other direction.
+.le
+.ls x = 100.0 [float]
+The X pixel position on the input or output image which is to be
+tranformed. If direction=forward then the position is on the input image
+and if direction=backward it is on the output drizzled image.
+.le
+.ls y = 100.0 [float]
+The Y pixel position on the input or output image which is to be
+tranformed. If direction=forward then the position is on the input image
+and if direction=backward it is on the output drizzled image.
+.le
+.ls (xylist = "") [file name]
+A free-format list of X,Y positions to be transformed. Each line of
+this file must have just an X and Y pixel position value, separated by
+white-space. If a file is specified the values of x and y are ignored. 
+.le
+.ih
+DESCRIPTION
+This task transforms an X,Y pixel position between an input image and
+the result of drizzling that input. It assumes that the drizzling was
+done using standard drizzle tools and that the parameters defining the
+mapping from input to output position can be found in the header
+of the output image. It is necessary that the coefficients files used
+in the processing (matching their names in the drizzled image header)
+are available to define the non-linear part of the distortion.
+
+Care must be taken to make sure that the origimage name matches
+exactly with the string found in the drizimage header.
+
+This task is a wrapper for traxy and tranback which off more flexible
+image pixel mapping facilities.
+
+.ih
+EXAMPLES
+.nf
+Let us assume that the WFPC2 image u40x0102m_c0h.fits has been drizzled
+onto an image called f555w_1.fits and we want to find where the lower-left
+(1,1) pixel of the PC (chip 1 = [sci,1]) ended up:
+
+--> tran u40x0102m_c0h.fits[sci,1] f555w_1.fits forward 1 1
+Running Tran Version  0.11 (May 2004)
+-Reading drizzle keywords from header...
+-Image  u40x0102m_c0h.fits[sci,1]  was # 1
+-to be drizzled onto output  f555w_1.fits
+-Transforming position...
+ Xin,Yin:      1.00000     1.00000 Xout,Yout:   2486.90673  2444.48991
+
+and we can then check the reverse operation as follows:
+
+--> tran u40x0102m_c0h.fits[sci,1] f555w_1.fits backward 2486.90673  2444.48991
+Running Tran Version  0.11 (May 2004)
++ TRAN.B V0.2 (November 2003)
+-Reading drizzle keywords from header...
+-Image  u40x0102m_c0h.fits[sci,1]  was # 1
+-to be drizzled onto output  f555w_1.fits
+-Transforming position...
+ Xin,Yin:      1.00000     1.00000 Xout,Yout:   2486.90673  2444.48991
+
+.fi
+.ih
+TIMINGS
+It is, as one would expect, very quick!
+.ih
+SEE ALSO
+drizzle, blot, traxy, tranback, wtraxy, wtranback, wcs2dr
+.endhelp

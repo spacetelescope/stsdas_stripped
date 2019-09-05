@@ -1,0 +1,13 @@
+# Update the pprofile application code in the ctools package library
+# Author: HODGE, 29-Jul-1992
+
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	pprofile.x		<fset.h> <gset.h> <imhdr.h>
+	encirc.x
+	mpc.x			<imhdr.h>
+	;

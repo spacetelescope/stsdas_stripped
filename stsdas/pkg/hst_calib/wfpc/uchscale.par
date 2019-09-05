@@ -1,0 +1,4 @@
+infile, f, a, "", , , 	Input files
+newscale, s, a, "", , , New scales
+
+mode, s, h, "al"

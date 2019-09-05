@@ -1,0 +1,10 @@
+operand1,f,a,"",,,>File template/list or constant + error
+op,s,a,"+","+|-|*|/",,>Operator
+operand2,f,a,"",,,>File template/list or constant + error
+result,f,a,"",,,>Resultant file name/list or directory path
+list1,s,h,"",,,>IMSETs in operand1
+list2,s,h,"",,,>IMSETs in operand2
+crate,b,h,no,,,>Count rate ? (NICMOS only)
+divzero,r,h,0.,,,>Replacement value for division by zero
+verbose,i,h,1,0,2,>Verbosity level
+version,s,h,"25Mar04",,,>Date of installation

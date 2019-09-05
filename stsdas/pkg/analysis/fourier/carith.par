@@ -1,0 +1,7 @@
+input1,s,a,"",,,"name of first input"
+operation,s,a,"/","*|/",,"operation to perform"
+input2,s,a,"",,,"name of second input"
+output,s,a,"",,,"name of output"
+cutoff,r,h,-1.e-6,,,"cutoff, fraction of maximum"
+verbose,b,h,yes,,,"print actual image names?"
+mode,s,h,"al"

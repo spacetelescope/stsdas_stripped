@@ -1,0 +1,26 @@
+#################################################################################
+# Make COMBINE object library							#
+#										#
+#	Development version:	11/90 by RAShaw					#
+#										#
+$checkout	wfpc.a	../
+$update		wfpc.a
+$checkin	wfpc.a	../
+$exit
+
+wfpc.a:
+	asigclip.x	"wpdef.h" "wpcom.h" <mach.h>
+	average.x	"wpdef.h" "wpcom.h"
+	combine.x   <imhdr.h> <imset.h> <error.h> <syserr.h> "wpdef.h" "wpcom.h" 
+#	copy.x		"wpdef.h" "wpcom.h"
+	crreject.x	"wpdef.h" "wpcom.h" <mach.h>
+	maxrej.x	"wpdef.h" "wpcom.h" <mach.h>
+	median.x	"wpdef.h" "wpcom.h"
+	minrej.x	"wpdef.h" "wpcom.h" <mach.h>
+	mmrej.x		"wpdef.h" "wpcom.h" <mach.h>
+	mode.x		"wpdef.h" "wpcom.h"
+	sigclip.x	"wpdef.h" "wpcom.h" <mach.h>
+	sigma.x		"wpdef.h" "wpcom.h"
+	sum.x		"wpdef.h" "wpcom.h"
+	thresh.x	"wpdef.h" "wpcom.h"
+;

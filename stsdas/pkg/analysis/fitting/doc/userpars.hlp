@@ -1,0 +1,75 @@
+.help userpars May90 stsdas.analysis.fitting
+.ih
+NAME
+userpars -- Edit parameters for fitting a user-defined function.
+.ih
+USAGE
+userpars
+.ih
+PARAMETERS
+.ls (function) [string]
+The functional form to be fitted, written as a FORTRAN expression.  If
+the string begins with the character "@", the remaining part of the string is
+taken as a file name which actually contains the FORTRAN function,
+written in free-format.  All FORTRAN operators and intrinsic functions,
+including the relational operators, are supported.  Comments can be
+embedded in the function: everything between a '#' character and the end
+of the line is discarded by the interpreter.  Only two types of variable
+names are recognized: the character "x", meaning the independent
+variable vector; and the function coefficients "c1", "c2", etc.. For
+more information on this facility, type 'help funcform'.
+.le
+.ls (c1 through c10= INDEF) [real]
+Initial guess for the first function coefficient is 'c1', subsequent 
+coefficients are 'ci' where 'i' is the number from 1 through 10.
+.le
+.ls (v1 through v10= no) [boolean]
+Vary coefficients 1 through 10 ? The first coefficient is varied by 
+specifying 'v1 = yes', the second by specifying 'v2 = yes', etc.
+.le
+.ih
+EXAMPLES
+1 - Fit function y = c1 * (c2/x) ** (x/2.) + 1.25 to data in file 'data',
+with results stored in 'out' table.
+.nf
+
+fi> userpars.function = "c1 * (c2/x) ** (x/2.) + 1.25"
+fi> userpars.c1 = 1.0
+fi> userpars.c2 = 3.e4
+fi> userpars.v1 = yes
+fi> userpars.v2 = yes
+fi> nfit1d  data out  func="user"
+
+.fi
+
+2 - Fit black-body function to data in file 'data', with results stored in 
+'out' table. The functional form is stored in file 'bbfunction'.
+.nf
+
+fi> type bbfunction
+# Black body function
+#
+# c1  -  temperature
+# c2  -  intensity at reference wavelength
+# c3  -  reference wavelength in Angstroms
+
+c2 *
+((c3 ** 5) * (exp (1.438786e8 / c1 / c3) - 1.)) /
+(( x ** 5) * (exp (1.438786e8 / c1 / x ) - 1.))
+
+
+fi> userpars.function = "@bbfunction"
+fi> userpars.c1 = 5000.
+fi> userpars.c2 = 3.e-14
+fi> userpars.c3 = 5500.
+fi> userpars.v1 = yes
+fi> userpars.v2 = yes
+fi> userpars.v3 = no
+fi> nfit1d  data out  func="user"
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

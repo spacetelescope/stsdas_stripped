@@ -1,0 +1,20 @@
+# Help directory for the W_CALIB package
+
+$w_calib	= "stsdas$pkg/hst_calib/wfpc/w_calib/"
+$doc		= "stsdas$pkg/hst_calib/wfpc/w_calib/doc/"
+
+$mka2d		= "stsdas$pkg/hst_calib/wfpc/w_calib/mka2d/"
+$flagflat	= "stsdas$pkg/hst_calib/wfpc/w_calib/flagflat/"
+$mkphottb	= "stsdas$pkg/hst_calib/wfpc/w_calib/mkphottb/"
+$normclip	= "stsdas$pkg/hst_calib/wfpc/w_calib/normclip/"
+$psfextr	= "stsdas$pkg/hst_calib/wfpc/w_calib/psfextr/"
+$streakflat	= "stsdas$pkg/hst_calib/wfpc/w_calib/streakflat/"
+$sharp		= "stsdas$pkg/hst_calib/wfpc/w_calib/sharp/"
+
+flagflat	hlp=doc$flagflat.hlp,	src=flagflat$t_flagflat.x
+mka2d		hlp=doc$mka2d.hlp,	src=mka2d$t_mka2d.x
+mkphottb	hlp=doc$mkphottb.hlp,	src=mkphottb$t_mkphottb.x
+normclip	hlp=doc$normclip.hlp,	src=normclip$t_normclip.x
+psfextr		hlp=doc$psfextr.hlp,	src=psfextr$t_psfextr.x
+streakflat	hlp=doc$streakflat.hlp,	src=steakflat$t_streakflat.x
+sharp		hlp=doc$sharp.hlp,	src=sharp$t_sharp.x

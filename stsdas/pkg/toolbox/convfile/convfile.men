@@ -1,0 +1,9 @@
+
+Menu for the package `stsdas.toolbox.convfile':
+
+     sun2vax - Convert GEIS images from Sun to Vax binary format
+     vax2sun - Convert GEIS images from Vax to Sun binary format
+    tconvert - Convert table format between Vax and Sun binary format
+
+(Type "help convfile option=sysdoc" for general info about this package.)
+

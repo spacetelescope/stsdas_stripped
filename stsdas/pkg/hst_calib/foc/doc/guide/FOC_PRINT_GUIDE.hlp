@@ -1,0 +1,42 @@
+.help FOC_PRINT_GUIDE Jun88 stsdas.foc
+.ih
+NAME
+FOC_PRINT_GUIDE -- print the whole FOC GUIDE to a file
+.ih
+USAGE
+FOC_PRINT_GUIDE 
+.ih
+DESCRIPTION
+The whole FOC guide will be printed to a named file.
+The format of the page may be altered by editing the parameters of 
+task "help". Chapters named in the table of contents which do not yet exist
+are represented by a blank page. The blank pages may be removed by 
+running the file through task lists.unique which will remove adjacent 
+page throws.
+.ih
+PARAMETERS
+.ls (output = FOC_GUIDE.doc) [file]
+name of the output file to contain the guide.
+.le
+.ls (graphout = FOC_GUIDE.figs) [file]
+metacode file for graphics output for the guide.
+.le
+.ih
+EXAMPLES
+.nf
+1. fo> FOC_PRINT_GUIDE 
+   fo> unique FOC_GUIDE.doc | type >FOC_GUIDE.doc
+   fo> lpr FOC_GUIDE.doc pa-
+.fi
+
+This example prints the guide to a file, remves repeat blank pages and
+then prints the guide to the line printer.
+To print on a line printer help.nlpp should be set to 55 to avoid unnecessary
+page throws.
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help foc option=sys" for a higher-level description of
+the foc package.
+.endhelp

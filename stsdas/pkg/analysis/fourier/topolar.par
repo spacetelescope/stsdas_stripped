@@ -1,0 +1,4 @@
+input,s,a,"",,,"root name of input image"
+ampl,s,a,"",,,"output image for amplitude"
+phase,s,a,"",,,"output image for phase"
+mode,s,h,"al"

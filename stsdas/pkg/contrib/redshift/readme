@@ -1,0 +1,55 @@
+REDSHIFT -- Package to obtain redshifts and velocity dispersions
+
+The local package REDSHIFT defined in this directory was developed by
+Gerard Kriss at Johns Hopkins University to obtain redshifts and
+velocity dispersions using either the Fourier quotient technique or
+cross correlation methods.  It consists of two tasks: "fquot" and "xcor".
+
+To install this package in your local IRAF system, take the following steps:
+
+1)	Create a directory "redshift" in your local$tasks directory
+	and load this software into it.
+
+2)	Add to local$tasks/local.cl the package definition:
+
+	task	$redshift	=	local$tasks/redshift/redshift.cl
+
+3)	Place fquot.hlp and xcor.hlp in local$tasks/doc
+
+4)	Add to local$tasks/local.hd :
+
+	fquot	hlp=doc$fquot.hlp,	src=fquot.x
+	xcor	hlp=doc$xcor.hlp,	src=xcor.x
+
+5)	Add to local$tasks/local.men:
+
+	redshift - Package for determining redshifts and dispersions
+
+6)	Execute softools.mkhelpdb to recompile the help database
+
+7)	Add @redshift to the update section of local$tasks/mkpkg
+
+8)	Do a mkpkg update in local$tasks to compile and link the new package.
+
+*****************************************************************************
+
+Alternatively, an individual user may partially support the redshift package
+in his/her own file space.
+
+1)	Create a "redshift" directory in your own file space.
+
+2)	Do a "mkpkg personal" in that directory to compile and link the package.
+
+3)	Add the following lines to your login.cl file in the default USER
+	package section:
+
+		task	xcor = "<redshift directory pathname>/x_xcor.e"
+		task	fquot = "<redshift directory pathname>/x_fquot.e"
+
+	These tasks will now be part of your default user package whenever you
+	start up IRAF.
+
+4)	To access the help files, simply type
+
+	help <redshift directory pathname>/xcor.hlp file+		OR
+	help <redshift directory pathname>/fquot.hlp file+

@@ -1,0 +1,9 @@
+images,s,a,,,,"Images"
+masks,s,h,"",,,"Masks"
+groups,s,h,"*",,,"Range of groups"
+g_accum,b,h,no,,,"Accumulate over groups?"
+fields,s,h,"npix,mean,stddev,min,max",,,"Fields to be printed"
+lower,r,h,INDEF,,,"Lower cutoff for pixel values"
+upper,r,h,INDEF,,,"Upper cutoff for pixel values"
+gstpar,pset,h,,,,"Results of statistics on the last image (pset)"
+

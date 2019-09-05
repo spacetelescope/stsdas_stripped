@@ -1,0 +1,6 @@
+# Root entry for the axesim help tree
+axesim          men = axesim$axesim.men,
+                hlp = axesim$axesim.men,
+                pkg = axesim$axesim.hd,
+                sys = axesim$axesim.hlp,
+                src = axesim$axesim.cl

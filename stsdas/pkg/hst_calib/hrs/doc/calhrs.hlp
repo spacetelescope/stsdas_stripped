@@ -1,0 +1,233 @@
+.help calhrs May97 stsdas.hst_calib.hrs
+.ih
+NAME
+calhrs -- Calibrate Goddard High Resolution Spectrograph (GHRS) data.
+.ih
+USAGE
+calhrs rootname output
+.ih
+DESCRIPTION
+This task performs the routine calibration of GHRS data.  This task is
+different in philosophy from the usual IRAF task in that input is not
+primarily from the parameters of the task, but a set of files and
+keywords in those files.  A discussion of how to control 'calhrs'
+through the calibration header keywords is discussed.  Then a detailed
+description of the calibration process is presented.
+
+.ls INPUT
+The input for 'calhrs' based on the value of the task parameter
+"rootname".  This parameter specifies the rootname of the files that
+contain the observational data to be calibrated.  The observation
+files, as produced by the OSS PODPS Unified System (OPUS), will have a 
+rootname of the form
+
+.nf
+	IPPPSSOOT
+.fi
+
+Based on the rootname, 'calhrs' will open a number of files, each with a
+different file name extension.  The necessary files are as follows:
+
+.nf
+	.SHH	- Standard Header Packet (SHP) file
+	.ULH	- Unique Data Log (UDL) file
+	.D0H	- Science Data file
+	.Q0H	- Science Data Quality file
+	.X0H	- Special Diode/Engineering Trailer file
+	.XQH	- Special Diode Quality file
+.fi
+
+All these files constitute the raw data of a single observation and
+are required by 'calhrs'.
+.le
+.ls CONTROL OF CALIBRATION
+The calibration steps
+carried out by 'calhrs' are determined by the values of certain keywords in the
+science data header file.  This file is identified by the extension '.d0h'. The
+science data header file must be edited (with the tasks, 'chcalpar', 'hedit', 
+or 'eheader', for example) to change the values of
+keywords, thus selecting the desired calibration steps. These keywords
+may contain either of two values: "OMIT" or "PERFORM". 
+
+Some processing steps require the use
+of reference tables and files. Keywords that contain names of 
+reference files and tables must be edited
+to refer to the desired reference files (the name must 
+include the directory path).
+
+The following is a list of the calibration keywords and what step of
+the calibration the keyword controls.  Any reference files or tables
+used by that calibration step are listed.  The calibration occurs in
+the order listed.
+
+.ls DQI_CORR
+Apply data quality initialization using the reference file specified
+by the keyword "DQIHFILE".
+.le
+.ls EXP_CORR 
+Divide by the exposure time to convert to count rates.
+.le
+.ls DIO_CORR 
+Divide the count value by the diode's response to correct for diode
+nonuniformity. The diode response file is specified by the keyword  "DIOHFILE".
+.le
+.ls PPC_CORR 
+Correct the raw count rates for saturation in the detector
+electronics.  The paired-pulse correction table is specified by the
+keyword  "CCG2".
+.le
+.ls MAP_CORR 
+Perform the photocathode mapping function. The photocathode line
+mapping table is specified by the keyword "CCR1" and the sample mapping
+table is specified by the keyword "CCR2".
+.le
+.ls DOP_CORR 
+Correct for on-board Doppler compensation when removing photocathode
+nonuniformities and vignetting.
+.le
+.ls PHC_CORR 
+Remove photocathode nonuniformity by dividing the count value by the
+photocathode response contained in the file specified by the keyword
+"PHCHFILE". 
+.le
+.ls VIG_CORR 
+Remove vignetting and wavelength-dependent photocathode variations by dividing
+each count value by the vignetting response contained in the file
+specified by the keyword "VIGHFILE".
+.le
+.ls MER_CORR 
+Merge the substep bins.
+.le
+.ls ADC_CORR 
+Convert the sample positions on the photocathode to wavelengths by applying the
+dispersion constants. Requires tables "CCR5", "CCR6", and "CCR7" containing 
+spectral order, dispersion, and thermal constants.
+.le
+.ls GWC_CORR
+Convert the sample positions on the photocathode to wavelengths by
+applying the global wavelength coefficients (GWC).  This is an
+alternative, and better defined, method of calculating wavelengths for
+an observation.  This step requires tables "CCR5", "CCR7", and "CCRC".
+.le
+.ls MDF_CORR 
+Use a median filter on the background. The filter width is contained in
+table specified by the keyword "CCR3".
+.le
+.ls MNF_CORR 
+Use a mean filter on the background. The filter width is contained in
+table specified by the keyword "CCR3".
+.le
+.ls PLY_CORR 
+Use a low-order polynomial filter on the background. The order of polynomial 
+is contained in table specified by the keyword "CCR3".
+.le
+.ls BCK_CORR 
+Subtract the background counts from the raw counts of the 
+diode array. Correct for the presence of scattered light using the
+coefficients found in table specified by the keyword "CCRB".
+.le
+.ls BMD_CORR 
+Instead of using acquired background data, use the background count
+rate model to determine a background spectrum.  The background count
+rate model is stored in a table and is specified by the keyword "CCRE".
+This option also uses the SAA Model Contour 7 to issue warning messages.
+The SAA Contour is contained in the file specified by the keyword
+"SAAHFILE".
+.le
+.ls IAC_CORR 
+Adjust the zero-point of the wavelength scale for the large science aperture
+and the two spectral lamp apertures.  The incident angle coefficients
+are found in the table specified by the keyword "CCR8".
+.le
+.ls ECH_CORR 
+If one of the Echelle gratings is used, divide the flux value by the normalized
+grating efficiency to remove the Echelle ripple. The tables specified
+in the keywords "CCR9" and "CCRA" contain Echelle ripple constants.
+.le
+.ls FLX_CORR 
+Calculate the absolute flux by dividing the flux by the absolute flux
+coefficients. Requires interpolation in the absolute flux file,
+specified by the keyword "ABSHFILE", and
+corresponding wavelength file, specified by the keyword "NETHFILE".
+.le
+.ls HEL_CORR 
+Convert wavelengths to the heliocentric coordinate system.
+.le
+.ls VAC_CORR 
+Apply vacuum-to-air correction to the wavelengths.
+.le
+.le
+
+The calibration keywords are reset from "PERFORM" to "COMPLETE"
+upon successful completion.
+.ih
+PARAMETERS
+.ls rootname [string]
+The rootname of the input GHRS observation data set.
+.le
+.ls output [string]
+The rootname of the output GHRS data set. If not specified, 
+the output file name will be created using the value of 
+"rootname".
+.le
+.ih
+EXAMPLES
+1. Calibrate the observation 'z00xh903r'. Output files are to have 
+the same root name as the input files.
+
+.nf
+  hr> calhrs z00xh903r ""
+.fi
+
+2. Calibrate the observation 'z00xh104r' found in the directory 'nite1$' and
+produce output files with a root name of 'test001' and put them in the
+'test' subdirectory.
+
+.nf
+  hr> calhrs nite1$z00xh902r test/test001
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+The following references are available from STScI
+and describe various aspects of the calibration
+process, simple cookbook, and general usage of STSDAS:
+.nf
+	"HST Data Handbook"
+	"STSDAS Users Guide"
+	"GHRS Data Products Guide"
+	"GHRS Instrument Handbook"
+	"Phase II Proposal Instructions"
+.fi
+
+The following are technical references meant for internal
+usage and are not written as "end-user" products.  However, these
+documents can be retrieved if a detailed understanding of the
+instrument is required.
+
+The document
+describing the CALHRS algorithms is "SOGS Requirements Document", (SE-06-01).
+
+The document describing the contents and form of the reference data is "Post
+Observation Data Processing System to Calibration Database System
+Interface Control Document", (ICD-47).
+
+The document describing the keywords is "Post Observation Data Processing
+System to Space Telescope Science Data Analysis Software Interface
+Control Document", (ICD-19).
+
+The document describing the GHRS is "SI Systems
+Description and User's Handbook for the Goddard High Resolution Spectrograph
+(GHRS) for the Hubble Space Telescope (HST)", Ball Aerospace, SE-01.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+chcalpar, hedit, eheader
+
+Type "help hrs option=sysdoc" for a higher-level description 
+of the 'hrs' package and the calibration process.
+.endhelp

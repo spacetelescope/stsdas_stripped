@@ -1,0 +1,13 @@
+intable,f,a," ",,,">Input aperture table name (Required)"
+outtable,f,a," ",,,">Output aperture table name (Required)"
+xoffset,r,h,0.0,,,">X-position offset"
+xscale,r,h,1.0,,,">X-position scale factor"
+yoffset,r,h,0.0,,,">Y-position offset"
+yscale,r,h,1.0,,,">Y-position scale factor"
+theta,r,h,0.0,,,">Rotation angle in degrees (rotates axis counter-clockwise)"
+foffset,r,h,0.0,,,">Flux offset"
+fscale,r,h,1.0,,,">Flux scale factor"
+xunits,s,h," ",,,">new x-units (string)"
+yunits,s,h," ",,,">new y-units"
+funits,s,h," ",,,">new f-units"
+mode,s,h,a

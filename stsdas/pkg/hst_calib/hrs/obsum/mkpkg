@@ -1,0 +1,17 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+        t_obsum.x       <imio.h> "obsum.h"
+        obsaif.x
+        obschc.x
+	obsdie.x	"epoch.h" "obsum.h"
+        obsdor.x        "obsum.h"
+        obsexe.x
+        obsgee.x        <imio.h>
+        obsget.x        
+        obshrs.x        <mach.h>
+        obsino.x        "epoch.h" "obsum.h"
+        out.x           "out.h"

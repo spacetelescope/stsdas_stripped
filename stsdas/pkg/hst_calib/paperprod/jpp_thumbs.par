@@ -1,0 +1,5 @@
+igi_output, f, a, "", , ,	    Output igi script file name
+root, f, a, "", , ,             Product exposure root name
+prodext, f, a, "", , ,          Product exposure extension
+
+mode, s, h, "al"

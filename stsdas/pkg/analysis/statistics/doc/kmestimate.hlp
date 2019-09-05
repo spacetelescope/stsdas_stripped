@@ -1,0 +1,115 @@
+.help kmestimate Aug92 stsdas.analysis.statistics
+.ih
+NAME
+kmestimate -- Compute the Kaplan-Meier estimator of a randomly 
+censored distribution.
+.ih
+USAGE
+kmestimate  input
+.ih
+DESCRIPTION
+The 'kmestimate' task calculates and prints the Kaplan-Meier
+product-limit estimator of a randomly censored distribution.  It is
+the unique, self-consistent, generalized maximum-likelihood estimator
+for the population from which the sample was drawn.  When formulated
+in cumulative form, it has analytic asymptotic error bars (for large
+N).  The median is always well-defined, though the mean is not if the
+lowest point in the sample is an upper limit.
+
+A differential, or binned, Kaplan-Meier estimator is available as an
+option. This allows users to find the number of points falling into
+specified bins along the X-axis according to the Kaplan-Meier
+estimated survival curve. However, users are stringly encouraged to
+use the cumulative form for which analytic error analysis is
+available. There is no known error analysis for the differential
+estimator. 
+
+The Kaplan-Meier estimator works with any underlying distribution
+(e.g., Gaussian, power law, bimodal), but only if the censoring is
+"random."  That is, the probability that the measurement of an object
+is censored can not depend on the value of the censored variable.  At
+first glance, this may seem to be inapplicable to most astronomical
+problems: we detect the brighter objects in a sample, so the
+distribution of upper limits always depends on brightness.  However,
+two factors often serve to randomize the censoring distribution.
+First, the censored variable may not be correlated with the variable
+by which the sample was initially identified.  Thus, infrared
+observations of a sample of radio bright objects will be randomly
+censored if the radio and infrared emission are unrelated.  Second,
+astronomical objects in a sample usually lie at different distances,
+so that brighter objects are not always the most luminous.
+
+Thus, the censoring mechanisms of each study MUST be understood
+individually to judge whether the censoring is likely to be random.
+The appearance of the data, even if the upper limits are clustered at
+one end of the distribution, is NOT a reliable measure.  A frequent
+(if philosophically distasteful) escape from the difficulty of
+determining the nature of the censoring in a given experiment is to
+define the population of interest to be the observed sample.  The
+Kaplan-Meier estimator then always gives a valid redistribution of the
+upper limits, though the result may not be applicable in wider
+contexts.
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files. Following each file name
+is a list of column names in brackets. Thes column names specify which
+columns in the file contain the information used by this task. The
+brackets MUST contain two names in the following format:
+[censor_indicator, variable]. The censor indicator specifies the
+censorship of the data point. Zero indicates a detection, one
+indicates that the data point is a lower limit, and minus one
+indicates that the point is an upper limit. The variable specifies the
+column containing the data points. If the input file is an STSDAS table,
+the names in brackets are the table column names. If the input file is
+a text file, the names in brackets are the column numbers.  A title
+string will be printed if the input file is a table containing the
+header parameter 'TITLE'.
+.le
+.ls (binstart = INDEF) [double]
+The starting value of the first bin in the differential estimator. 
+
+If
+this value is INDEF (the default) the task will compute it internally.
+This task parameter is only used if the task parameter 'diff' is set to
+"yes".
+.le
+.ls (binsize = INDEF) [double]
+The width of each bin in the differential estimator. 
+
+If this value is
+INDEF (the default) the task will compute it internally.  This task
+parameter is only used if the task parameter 'diff' is set to "yes".
+.le
+.ls (nbin = 10) [integer]
+The number of bins in the differential estimator. 
+
+This task parameter
+is only used if the task parameter 'diff' is set to "yes".
+.le
+.ls (diff = no) [boolean]
+Print differential form of Kaplan-Meier estimator?
+.le
+.ls (verbose = no) [boolean]
+Print extensive output? 
+.le
+.ih
+EXAMPLES 
+1. Apply the Kaplan-Meier estimator to the data in the text file
+"kmestimate.dat".  There is a copy of this file in the statistics$data
+directory (i.e., "statistics$data/kmestimate.dat").  The notation [1,2]
+means that the first column is the censor indicator and the second column
+contains the values.
+
+.nf
+cl> kmestimate kmestimate.dat[1,2]
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

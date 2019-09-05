@@ -1,0 +1,18 @@
+.help dunlearn Apr97 stsdas.analysis.dither
+.ih
+NAME
+dunlearn -- Sets parameters in all tasks to their default values.
+.ih
+USAGE
+dunlearn
+.ih
+PARAMETERS
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

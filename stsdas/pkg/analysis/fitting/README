@@ -1,0 +1,17 @@
+These directories contain curve fitting tools. The various subdirectories 
+and the tasks that they contain are as follows:
+
+CONVERT	      convert - converts between old database and new table format
+DOC                   - help files for each task
+PRFIT           prfit - print fit tables in human-readable format
+FUNCTION     function - generate curve as image, table or list
+GFIT1D         gfit1d - interactive 1-d curve fit to images, tables or lists
+LIB                   - general library
+NCFIT                 - modified icfit package to be used with non-linear 
+			1-dim fitting.
+NFIT1D         nfit1d - interactive non-linear 1-d curve fit to images, tables 
+			or lists.
+NGAUSSFIT   ngaussfit - interactive multiple 1-d Gaussian fitting to images, 
+			tables or lists
+N2GAUSSFIT n2gaussfit - 2-d Gaussian fitting to images
+NLFIT                 - non-linear fitting library

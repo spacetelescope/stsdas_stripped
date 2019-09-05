@@ -1,0 +1,16 @@
+# Galaxy brigthness profile parameters.
+#
+se,r,h,INDEF,,,>initial guess for bulge brigthness
+re,r,h,INDEF,0.,,>initial guess for bulge radius
+s0,r,h,INDEF,,,>initial guess for disk brigthness
+r0,r,h,INDEF,0.,,>initial guess for disk radius
+r1,r,h,0.,0.,,>initial guess for disk "hole" radius
+backgr,r,h,0.,,,>initial guess for background level
+vse,b,h,yes,,,>vary bulge brigthness ?
+vre,b,h,yes,,,>vary bulge radius ?
+vs0,b,h,yes,,,>vary disk brigthness ?
+vr0,b,h,yes,,,>vary disk radius ?
+vr1,b,h,no,,,>vary "hole" radius ?
+vbackgr,b,h,no,,,>vary background level ?
+version,s,h,"23Apr90",,,>date of installation
+mode,s,h,al

@@ -1,0 +1,17 @@
+Menu for the package stsdas.toolbox.tools
+
+       base2dec - Convert a number in a base to base 10 (decimal).
+          ddiff - Print differences between two directory trees.
+       dec2base - Convert a base 10 (decimal) number to another base.
+	  epoch - Convert between different time formats.
+         fparse - Parse file specifications and leave results in parameters.
+      mkapropos - Make the apropos database.
+    newredshift - Change the redshift of spectra
+         tepoch - Convert time between different formats in a table.
+       tprecess - Precess images, tables, or lists of coordinates.
+       uniqfile - Give a file a unique name prior to archiving.
+         uniqid - Create a unique character string identifier.
+       uniqname - Create a unique file name for archiving.
+        uniqtab - Give all the files in an STSDAS table unique names.
+
+Type "help tools" for more information about the 'tools' package.

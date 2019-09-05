@@ -1,0 +1,65 @@
+.help pyexecute Mar02 stsdas
+.ih
+NAME
+pyexecute -- Run Python-based tasks under PyRAF.
+.ih
+USAGE
+pyexecute script
+.ih
+DESCRIPTION
+This task will execute Python code under PyRAF, and optionally redirect 
+the task to a default CL script under IRAF.  The Python code can be any
+Python task regardless of whether it relies on IRAF tasks.  
+
+An IRAF interface can be created for nearly any Python task using the
+mechanisms built into PyRAF.  That interface code should then be
+given to pyexecute to establish the IRAF task definition.  Such an
+interface would allow the Python task to be defined as an IRAF task as
+a convenience for users who could then take advantage of the graphical
+parameter editing interface provided by PyRAF. However, pyexecute does
+not require the Python task to establish an IRAF interface at all.
+
+In the case where PyRAF is not being used, a message will be printed
+out stating that the package which contains the Python task require
+PyRAF in order to run the task.  Optionally, if the IRAF name(s) of the
+task(s) are provided to pyexecute, their task definition will be
+redirected to a default CL script which prints out a message when the
+task is run that it requires PyRAF. This allows the Python task to be
+present in the STSDAS system without interfering with standard IRAF
+operations when PyRAF is not installed.
+.ih
+PARAMETERS
+.ls script [string]
+Name of the Python module to execute.
+This string should be enclosed in double quotes
+when using IRAF path variables to define the location of the script.
+.le
+.ls (tasknames) [string]
+This optional string would contain the single name, or a comma-separated list 
+of names, of the IRAF tasks which are defined in the Python code. These
+task definitions would then be redirected under IRAF to a default script which
+would simply print out a message stating that PyRAF would be required to 
+run the task.
+.le
+.ls (versbose = "yes") [boolean]
+If 'yes', will print out a message stating that the package contains a
+Python task which require PyRAF in order to run.
+.le
+.ih
+EXAMPLE
+1. Define a Python task as an IRAF task:
+.nf
+cl> pyexecute "dither$pydrizzle/pydrizzle_iraf.py" tasknames="pydrizzle"
+Under IRAF:
+cl> pydrizzle
+The task 'pydrizzle' requires PyRAF in order to run.
+
+Under PyRAF: PyDrizzle would be recognized as a normal IRAF task.
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+pyraf
+.endhelp

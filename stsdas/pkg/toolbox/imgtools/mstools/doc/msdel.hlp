@@ -1,0 +1,68 @@
+.help msdel Mar07 stsdas.toolbox.imgtools.mstools
+.ih
+NAME
+msdel -- This script removes one (1) entire FITS imset from a FITS file.
+.ih
+USAGE
+msdel filename firstentry# output device
+DESCRIPTION
+The 'msdel' task is for deleting entire imsets from a FITS file.  When
+the task is run it removes a certain number of extensions starting with
+the SCI extension that is the first in all standard imsets.  You will be
+shown a list of SCI extensions that are in the input file and You will be 
+asked whether or not it is NICMOS or WFC3/IR data, for which there are five 
+extensions in an imset.  At this point it is assumed then that the task is 
+dealing with STIS or ACS data, where only three extensions constitute an imset.
+With this information the task knows which extensions, though and including,
+your number entered, for the imset you want removed, from the left-most 
+column of the list displayed on the window.
+
+h
+PARAMETERS
+.ls INPUT [string]
+This is a string representing your input FITS file. 
+
+.ls DELNUM [integer]
+This is the starting FITS extension number of the imset you want to remove.
+This number is in the left-most column of the table from the FITS file you
+entered as input.  This table is displayed on the screen when the task is run
+interactively.  This the recommended mode of use.
+
+.ls OUTPUT [string]
+This is a required parameter which may be the same name as the input file,
+but need not be.
+
+.ls NICMOS [bool]
+This parameter controls the functioning of this task.  Basically whether five
+FITS extensions are removed (for a 'yes' it is a NICMOS or WFC3/IR FITS file) 
+or three extensions are removed (for a 'no').
+
+.le
+.ih
+EXAMPLES
+'msdel' is a very easy task to use.  It is recommended that you run the
+task interactively so you take advantage of the list of imsets that is 
+generated this way.  If you run it on the command line and provide all the 
+values for the required parameters (all of them), you will not get to see
+this listing unless you examined it previously with some other task.
+
+fi> msdel
+
+As long as the hidden parameter 'mode' remains in a query state this will
+prompt you for evrything that is needed for a sucessful execution.
+
+fi> msdel dataname.fits
+
+This example is very similar to that above but the first required parameter
+INPUT has been supplied.  The rest of the parameters will still be prompted
+for.
+
+  The rest of the parameters will still be prompted
+for.
+
+.fi
+
+SEE ALSO
+extdel, ecdel
+.endhelp
+

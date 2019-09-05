@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  Adding keywords to a FITS Header. </TITLE>
+<meta name="description" value="  Adding keywords to a FITS Header. ">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html87 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html85 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html79 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html88 HREF="node7.html">  Inserting keywords in </A>
+<B>Up:</B> <A NAME=tex2html86 HREF="node2.html"> 
+Manipulating FITS Header </A>
+<B> Previous:</B> <A NAME=tex2html80 HREF="node5.html">  Accessing and changing </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00024000000000000000>  Adding keywords to a FITS Header. </A></H2>
+<P>
+<PRE>    393:    int addBoolKw(Hdr *, char *name, Bool value, char *comment);
+    394:    int addIntKw(Hdr *, char *name, int value, char *comment);
+    395:    int addFloatKw(Hdr *, char *name, float value, char *comment);
+    396:    int addDoubleKw(Hdr *, char *name, double value, char *comment);
+    397:    int addStringKw(Hdr *, char *name, char * value, char *comment);
+    398:    int addSpacesKw(Hdr *, char *comment);
+    399:    int addCommentKw(Hdr *, char *comment);
+    400:    int addHistoryKw(Hdr *, char *comment);</PRE>
+<P>
+The new keywords are added to the keyword list just prior to the
+``END'' keyword.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

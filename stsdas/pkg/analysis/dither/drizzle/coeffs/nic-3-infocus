@@ -1,0 +1,14 @@
+# New NIC3 geometric distortion coefficients, 
+# adapted from new solution by Cox et al. from
+# data (program 7610) taken during the January 1998
+# NICMOS refocus campaign.  Note Cox et al. solution 
+# is quadratic, so cubic terms are zero here.
+#
+# M. Dickinson (16 Sept. 1998).  
+cubic
+
+0.0 1.001481 0.0 2.78412e-6 17.32563e-6 
+6.02892e-6 0.0 0.0 0.0 0.0 
+
+0.0 -1.62759e-3 0.998521 -15.41716e-6 -3.33506e-6 
+4.25370e-6 0.0 0.0 0.0 0.0 

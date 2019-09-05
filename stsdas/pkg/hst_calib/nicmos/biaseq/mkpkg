@@ -1,0 +1,46 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+debug:
+	$set XFLAGS="-g -q $(XFLAGS)"
+	$set LFLAGS="$(LFLAGS) -/Bdynamic"
+	$call relink
+	;
+ 
+relink:
+	$set XFLAGS="-DNATIVE_IRAF -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_biaseq.c ../lib/nicmos.h
+	$update	libbiaseq.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_biaseq.o libbiaseq.a ../lib/libnicmos.a \
+		-lhstio -lcvos -lxtools -lc \
+		-o xx_biaseq.e
+		;
+
+install:
+	$move xx_biaseq.e stsdasbin$x_biaseq.e
+	;
+
+libbiaseq.a:
+	dobiascorr.c		"biaseq.h"
+	findjumps.c		"biaseq.h"
+	makebias.c		"biaseq.h"
+	makesky.c		"biaseq.h"
+	n_biaseq.c		"biaseq.h"
+	n_firstdiffs.c		"../lib/nicmos.h"
+	n_history.c		"biaseq.h"
+	n_inputpar.c		"biaseq.h"
+	n_reaccum.c		"../lib/nicmos.h"
+	n_singlefile.c		"biaseq.h"
+	subbias.c		"biaseq.h"
+	;

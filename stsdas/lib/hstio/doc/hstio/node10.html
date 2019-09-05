@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> 
+Error handling in hstio.c
+</TITLE>
+<meta name="description" value=" 
+Error handling in hstio.c
+">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html125 HREF="node11.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html123 HREF="hstio.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html117 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html126 HREF="node11.html"> 
+IRAF initialization
+</A>
+<B>Up:</B> <A NAME=tex2html124 HREF="hstio.html">A Descritpion of the </A>
+<B> Previous:</B> <A NAME=tex2html118 HREF="node9.html">  Deleting keywords in </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00030000000000000000> 
+Error handling in hstio.c
+</A></H1>
+<P>
+I have built in some degree of flexibility into the error handling.
+The routines that return status information return 0 if successful and
+-1 for an error.  You can access further error information via the
+functions:
+<P>
+<PRE>                HSTIOError hstio_err();
+                char *hstio_errmsg();</PRE>
+<P>
+The first merely returns an enumerated code.  The second returns a text
+string with the error message itself.  These functions can be examined
+after any operation.  ``hstio<code>_</code>err()'' will return 0 if there 
+was no error.
+<P>
+In addition, you can install a global error handler.  Suppose you have a
+function of the form:
+<P>
+<PRE>                void detect_error() {
+                        fprintf(stderr,&quot;There was an ERROR!\n%s\n&quot;,
+                                hstio_errmsg());
+                        ... or whatever ...
+                        ... decide what to do ...
+                }</PRE>
+<P>
+Then, you can install this function as a global error handler with the 
+function:
+<P>
+<PRE>                push_hstioerr(detect_error);</PRE>
+<P>
+There is a stack of function pointers (limited to a nesting depth of 32, 
+which is arbitrary).  If there is a non-zero pointer on the stack, that
+function is automatically called when an error occurs.  You are free to
+do anything in the error handling function: print a message, abort, or 
+whatever.  Execution continues after executing the error handling function.
+<P>
+Of course, there is also a pop function:
+<P>
+<PRE>                pop_hstioerr();</PRE>
+<P>
+So, you can manipulate the error handling stack as you see fit, e. g. by
+installing a new error handling function at the beginning of some complex
+procedure and popping it at the end.  At any point, if you want to override
+the action of the global handler and give special handling after executing
+some function, you can merely push 0 onto the stack before executing the
+operation.  That prevents the global error handler from being called.  Of
+course, the pop function then restores the global error handler.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

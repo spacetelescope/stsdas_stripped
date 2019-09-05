@@ -1,0 +1,7 @@
+Menu for the package stsdas.hst_calib.foc.focprism
+
+    objcalib - Photometrically calibrate an objective prism image.
+    simprism - Create a 1-D or 2-D simulated objective prism spectrum.
+
+Type "help focprism opt=sys" for a general description of the
+'focprism' package.

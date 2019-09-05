@@ -1,0 +1,6 @@
+intable,s,a,"",,,"tables containing spectra"
+outtable,s,a,"",,,"output tables"
+wgt_name,s,h,"weight",,,"weight column name"
+verbose,b,h,yes,,,"print file names?"
+Version,s,h,"7July2000",,,"date of installation"
+mode,s,h,"al"

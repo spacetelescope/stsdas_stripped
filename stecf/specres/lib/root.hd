@@ -1,0 +1,3 @@
+# Root help directory for the STECF/SPECRES package.
+
+_specres		pkg = stecf$specres/lib/rootspecres.hd

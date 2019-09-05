@@ -1,0 +1,6 @@
+image,s,a,,,,"Input image"
+inlist,s,a,,,,"Star list"
+statsec,s,a,"",,,"Image section for background"
+outlist,s,a,,,,"Output sharpness list"
+boxsize,r,h,9,,,"Boxsize for computing sharpness"
+

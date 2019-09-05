@@ -1,0 +1,146 @@
+.help fconvolve Jul93 stsdas.analysis.fourier
+.nj
+.ih
+NAME
+fconvolve -- Convolve 1- or 2-dimensional images.
+.ih
+USAGE
+fconvolve input1 input2 output
+.ih
+DESCRIPTION
+This task performs a convolution of 1- or 2-dimensional images
+using Fourier methods.
+
+The two input images are read into arrays,
+padding with zero as needed to make the arrays the same size.
+The second image is then shifted
+to put the pixel with the maximum value at the origin.
+The Fourier transform of each array is taken,
+the results are multiplied together,
+and the inverse transform is taken,
+with the result saved to the output image.
+
+The pixel values of 'output'
+will be about the same as those of 'input1'
+(except for the smoothing, of course)
+if the sum of all pixel values of 'input2' is one.
+
+Unlike other tasks in the 'fourier' package,
+'fconvolve' always operates in-memory,
+rather than having the option of using scratch images.
+Two complex arrays of the same size are used.
+The size depends on the sizes of the input images and on the 'pad' parameter.
+One complex array must fit entirely in memory (i.e. no paging)
+in order to perform the Fourier transform in a reasonable amount of time.
+.ih
+PARAMETERS
+.ls input1 = "" [file name]
+Name of the first input data set
+(images containing the real and/or imaginary parts).
+Type "help fourier opt=sys" for a description of
+the naming convention for real and imaginary parts.
+See also 'inreal1' and 'inimag1',
+which specify whether the real and imaginary parts are to be read.
+.le
+.ls input2 = "" [file name]
+Name of the second input data set.
+This is the "PSF", or kernel,
+with which 'input1' will be convolved.
+See also 'inreal2' and 'inimag2',
+which specify whether the real and imaginary parts are to be read.
+
+It is expected that 'input2' will reach a maximum (in absolute value)
+somewhere near the middle of the image
+and will be not too far from zero near the edges of the image.
+The task searches for the maximum of 'input2'
+and shifts it to the first pixel
+-- the zero point for the Fourier transform --
+before taking the transform.
+If this were not done,
+the result of the convolution would be shifted
+by about half the size of 'input2'.
+Note that 'input2' should NOT ordinarily have its maximum at the first pixel.
+If it does, then the following three conditions must hold.
+The size of 'input2' must be at least as large as 'input1'
+in each dimension.
+The 'pad' parameter must be set to no.
+The shift must have been done so that the left half of the kernel
+wraps around to the right edge of the image.  (The 'shift' task
+will do it this way.)
+.le
+.ls output = "" [file name]
+Name of the output data set to be created by 'fconvolve'.
+.le
+.ls (inreal1 = yes) [boolean]
+Use the real part of 'input1'?
+.le
+.ls (inimag1 = no) [boolean]
+Use the imaginary part of 'input1'?
+.le
+.ls (inreal2 = yes) [boolean]
+Use the real part of 'input2'?
+.le
+.ls (inimag2 = no) [boolean]
+Use the imaginary part of 'input2'?
+.le
+.ls (outreal = yes) [boolean]
+Create the real part of the output data set?
+.le
+.ls (outimag = no) [boolean]
+Create the imaginary part of the output data set?  Note that
+the default is not to save the imaginary part.
+This default is appropriate for the case that
+both 'input1' and 'input2' are real images.
+If either or both have imaginary parts,
+then 'outimag' should be set to yes.
+.le
+.ls (pad = yes) [boolean]
+Use sum of sizes of input images?"
+
+The default is for the convolution to be done on arrays that 
+are larger than the input images;
+their size is the sum of the sizes of the two input images,
+and they are padded with zeros.
+
+If pad = no, then the convolution is done using arrays that
+are as large as the larger of the two input images.
+Thus some padding will still be done if the images are not the same size.
+For 2-D images it may be that 'input1' is larger in the X direction,
+but 'input2' is larger in the Y direction,
+in which case 'input1' will be padded with zeros in Y,
+while 'input2' will be padded with zeros in X.
+
+If 'input1' has significantly non-zero values at its edges,
+and 'input1' is at least as large as 'input2',
+then 'pad' should be set to yes to prevent aliasing.
+.le
+.ls (verbose = yes) [boolean]
+Print input and output image names?
+
+Setting 'verbose=yes' shows you the actual names of the image headers,
+including the "r" and "i" suffixes for real and imaginary parts.
+.le
+.ih
+EXAMPLES
+1.  Convolve the file "file1.hhh" with a PSF image "psf.hhh"
+(both of which are real, with no imaginary part).
+Store the output in a file called "x.hhh".
+The output imaginary part will be zero, except for roundoff error, 
+so don't keep it.
+
+.nf
+fo> fconvolve file1 psf x
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Bracewell, R.N.:  "The Fourier Transform and Its Applications,"
+McGraw-Hill Publishing Co., New York, 1986.
+.ih
+SEE ALSO
+forward, carith, inverse
+
+Type "help fourier opt=sys" for a higher-level 
+description of the 'fourier' package.
+.endhelp

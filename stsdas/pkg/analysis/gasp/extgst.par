@@ -1,0 +1,15 @@
+intablist,f,a,,,,Input table list
+outable,f,a,,,,Output table
+ra,r,a,,0,24,Right Ascension of field center in hours
+dec,r,a,,-90,90,Declination of field center in degrees
+width,r,a,,0,180,Width of field in degrees
+mag1,r,h,INDEF,,,Brightness limit 1 [magnitude]
+mag2,r,h,INDEF,,,Brightness limit 2 [magnitude]
+onestar,b,h,yes,,,Use only one star if duplicated?
+plateid,s,h,"",,,Guide star plate ID
+allcols,b,h,no,,,Copy all table columns?
+nstars,i,h,INDEF,,,Number of stars selected [output]
+
+version,s,h,"2Jun1992",,,"Date of installation"
+
+mode,s,h,"al"

@@ -1,0 +1,7 @@
+input, f, a, "", , ,		input image name
+igi_output, f, a, "", , ,	output igi script file name
+x, r, a, , , ,			X position of the compass
+y, r, a, , , ,			Y position of the compass
+size, r, a, , , ,		size of the compass
+
+mode, s, h, "al"

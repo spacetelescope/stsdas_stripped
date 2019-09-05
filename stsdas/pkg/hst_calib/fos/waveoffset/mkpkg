@@ -1,0 +1,11 @@
+# Update the waveoffset application code in the fos package library
+
+$checkout fos.a ../
+$update   fos.a
+$checkin  fos.a ../
+$exit
+
+fos.a:
+	waveoffset.x	<imhdr.h> <tbset.h>
+	ycrscor.x
+	;

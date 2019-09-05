@@ -1,0 +1,67 @@
+                     The STSDAS gasp package
+                          stsdaspkg$gasp
+                            April 1991
+
+This directory defines a package to access the compact disk (CD-ROM)
+format Hubble Space Telescope Guide Star Catalog.  The two volumes of
+the CD-ROM consist of FITS files containing tables of guide star
+coordinates separated by fields within limits of right ascension and
+declination.  Some of the tasks depend on hardware and software to read
+the CD-ROM not available on all systems.  Some tasks require an image
+display server (imtool or SAOImage) available to IRAF.  Other tasks are
+independent of these system configurations.
+
+See the package help (help gasp) to find out how to gain access to the
+disks.
+
+The tasks in this package: 
+
+  o  Load a CD-ROM index table to local magnetic disk and convert the
+  FITS file to an STSDAS table.  There is a copy of the index table on
+  both disks.  (stgindx)
+
+  o  Search the index table to locate those files containing guide
+  stars whose coordinates are within specified limits.  The input
+  consists of the center and width of the user's region.  The output is
+  a list containing the path and file names of the guide star region
+  files residing on the CD.  (sgscind)
+
+  o  Copy the files containing the selected fields from the CD to
+  magnetic disk files and convert the FITS table(s) into STSDAS
+  table(s).  The input consists of a list of files on the CD (the
+  output of the previous task) and the output is the STSDAS tables and
+  a list of these tables.
+
+  o  Extract the guide stars within the specified coordinate and
+  brightness limits from the list of field tables.  The output is a
+  table containing the guide star coordinates within the specified
+  region.  (extgst)
+
+  o  Display an image corresponding to the user's field;  either a
+  guide star plate scan or the user's image.  This image must have a
+  preliminary transformation to convert image pixel numbers to
+  celestial coordinates.
+
+  o  Compute image pixel coordinates from celestial coordinates based
+  on a given coordinate transformation.
+
+  o  Allow the user to interactively identify guide stars with objects
+  in the displayed image to improve the intitial coordinates.  The user
+  points to objects manually, and specifies the correct position by
+  pointing there as well. Various keystrokes perform specific functions
+  such as deleting guide stars or performing a plate solution.
+  (intrep)
+
+  o  Improve the identified positions from analysis of the sub-image
+  near the identified positions.
+
+  o  Perform a plate solution between the identified plate coordinates
+  and the guide star catalog coordinates.
+
+  o  Compute coordinates of targets interactively specified by the user
+  on the image using the plate solution coefficients.
+
+
+Separate tasks implement various parts of the package because of the
+nature of the interfaces and a single script, targets, brings them
+together in one task.

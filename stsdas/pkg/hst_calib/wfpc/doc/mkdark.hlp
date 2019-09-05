@@ -1,0 +1,137 @@
+.help mkdark Dec93 stsdas.hst_calib.wfpc
+.ih
+NAME
+mkdark -- Generate a dark image free of cosmic rays from multiple exposures of the same field.
+.ih
+USAGE
+mkdark infile outfile outfile2 sigmas radius pfactor hotthresh minval initial
+.ih
+DESCRIPTION
+One way to reduce the cosmic rays registered in images is to take multiple 
+exposures of the same field and combine the images by rejecting very high 
+counts in each pixel stack.  This task is a more sophisticated implementation 
+of this simple idea of averaging several images of a target while removing
+cosmic ray events.  The following list explains features of this task
+(capitalized words in parenthesis are relevant parameter names):
+
+(1) When computing the average value of each pixel from the input images it 
+uses only those pixels within N*(sigma) of some "initial guess" image.  
+Pixels too far above AND BELOW the initial estimate are rejected and not 
+used in the average.  Pixels which are too low are rejected so as to 
+avoid a negative bias on the result.
+
+(2) The "sigma" includes a constant noise term (READOUT), noise proportional 
+to the square root of counts (statistical noise), and noise proportional to 
+the counts, e. g. pointing jitter (SCALE).  The last is necessary to avoid 
+corrupting the PSF of bright objects relative to that of faint objects.
+
+(3) It is possible to discard pixels adjacent to rejected pixels, as well 
+as the rejected pixel itself.  The radius from the rejected pixel to which 
+adjacent ones are rejected is controllable in units of pixels (RADIUS).  
+The most popular usage will probably be to discard pixels within 1.0 pixel 
+of the rejected one, so as to discard five pixels in a "+" shaped pattern.  
+This serves to eliminate pixels adjacent to cosmic rays, which are, 
+statistically speaking, slightly high, but not high enough to be rejected by 
+any other criteria.
+
+(4) The rejection process can be iterative.  After computing an average image, 
+it is fed back in as the "initial guess" and repeat the calculation.  Both 
+the number of iterations and the value of N (the number of sigmas used in 
+rejecting pixels) are specifiable separately for each iteration (SIGMAS).  
+The purpose of the iterations is two fold: (a) to allow the solution to 
+slowly achieve an equilibrium, and (b) to allow for propagation of information 
+about rejected pixels into adjacent pixels.
+
+(5) It can accept an "initial guess" input image or computing the "initial 
+guess" from the input images, e.g. minimum or median of the input images
+(INITIAL).  The initial calculation as the minimum of the input images gives 
+a better rejection of bad pixels when s substantial fraction of the images 
+contain bad pixels.  In these situations it is likely that the median is 
+corrupted.  On the other hand, using median as the initial guess converges 
+more quickly.
+
+(6) This task works on multi-group images as well as single group images.
+
+(7) It has the option to use a more stringent test on pixels adjacent to 
+cosmic rays, rather than simply discarding them.  The user could specify 
+a separate threshold (PFACTOR) for testing them in units of the parameter 
+specified in SIGMAS.  For example, specifying 0.5 would mean to use rejection 
+threshold of "2,2,1.5,1" sigmas on pixels adjacent to cosmic rays when 
+"4,4,3,2" is specified for the parameter SIGMAS.  If zero is specified, all 
+neighboring pixels within range are discarded.
+
+(8) The user can specify a lower and upper limit of the observed counts.
+The upper limit (HOTTHRESH) is useful in dealing with time variable hot 
+pixels, which do not impact neighboring pixels. If a point has an 
+"initial value" higher than the upper limit, it will not propagate the 
+rejection to the neighboring pixels even if itself is higher than the N 
+sigmas.  The lower limit (MINVAL) is useful to deal with corrupted data 
+which have large negative values.  Points lower than this value will be 
+marked as bad points but it will not propagate the rejection to neighboring 
+pixels either.
+
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Input file template.
+.le
+.ls outfile = "" [string]
+Name of the output (dark) file, i.e., the cosmic ray free image. 
+.le
+.ls outfile2 = "" [string]
+Name of the output file which contains numbers of good data points used in 
+each pixel.  This parameter is optional, i.e. this output file will not be 
+created if this parameter is NULL.
+.le
+.ls sigmas = "4,4,3,2" [string]
+Sigmas used in cosmic ray rejection during each successive iteration.
+These default values work fairly well for WF/PC1 data if the readout noise
+(in the noisepar pset) is set to 2.67 DN (=20 electrons).
+.le
+.ls radius = 0. [real]
+Rejection propagation radius in pixels.  For example, radius=1.0 will reject 
+a total of 5 pixels in a "+" shaped pattern, radius=1.5 will reject a total 
+of 9 pixels as a 3 by 3 square.
+.le
+.ls pfactor = 0. [min= 0. real]
+The "propagation factor"  See (7) above.
+.le
+.ls hotthresh = 4096. [real]
+The "hot pixel threshold".  See (8) above.
+.le
+.ls minval = -99. [real]
+The minimum allowed DN value.  See (8) above.
+.le
+.ls initial = "min" [string]
+The initial value estimate scheme.  Allowed values are "min", "med", or a name
+of an image which is to be used as the initial estimate of the average.
+.le
+.ls (noisepar) = "" [pset]
+The noise parameter pset.
+.le
+.ls (fillval) = INDEF [real]
+If for a given pixel stack, all points are bad, the user can have the option 
+to fill in a fixed value for the final image at that pixel.  If INDEF is 
+specified, the initial value will be used as the fill value.
+.le
+.ls (verbose) = yes [boolean]
+Print out detailed messages as the task progresses?
+.le
+.ih
+EXAMPLES
+1. Get a cosmic-ray-free combined image from all .c0h images in the local 
+directory.
+
+.nf
+w_> mkdark *.c0h crfree.hhh "" "4,4,3,2" 1. 0. 50. -99. "min"
+.fi
+.ih
+REFERENCE
+John Biretta, May 18, 1993 memo.
+.ih
+BUGS
+Input files must have the same exposure time.
+.ih
+SEE ALSO
+imcombine, combine, crrej
+.endhelp

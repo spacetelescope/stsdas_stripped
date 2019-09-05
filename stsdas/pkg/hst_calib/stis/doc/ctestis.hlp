@@ -1,0 +1,176 @@
+.help ctestis Jan2013 stis
+.ih
+NAME
+ctestis -- Correct STIS CCD photometry and astrometry for CTE loss
+.ih
+USAGE
+ctestis intab netc skyc yc
+.ih
+PARAMETERS
+.ls intab [file]
+File name of input photometry table. This can be an ASCII file, a STSDAS
+formatted table, or a FITS table.
+.le
+.ls outtab [file]
+File name of output photometry table. By default, outtab will have the same
+file type as parameter intab. However, choosing a file name ending in
+extension ".fits" will result in a FITS-formatted table.
+.le
+.ls netc [string]
+ID of column containing the net source counts of the objects. For ASCII tables,
+one can, for example, enter "c2" or just "2" to indicate column number 2.
+.le
+.ls skyc [string]
+ID of column containing the sky count level of the objects. For ASCII tables,
+one can, for example, enter "c3" or just "3" to indicate column number 3.
+.le
+.ls yc [string]
+ID of column containing the Y coordinates of the objects. For ASCII tables,
+one can, for example, enter "c1" or just "1" to indicate column number 1.
+.le
+.ls (stisimage = "") [file]
+Name of STIS FITS-formatted image that was used to perform the
+photometry measurements that are contained in the input photometry table.
+IMPORTANT NOTE: This image will be used to read the values of relevant header
+keywords to fill any of the following four task parameters (mjd,
+nread, ybin, and gain), BUT ONLY if the parameter in question
+= INDEF. If user values are provided for any of those four task parameters, they
+WILL be used in the calculations.
+.le
+.ls (mjd = INDEF) [real]
+Modified Julian Date (MJD) of the observations. For STIS data, this is the
+value of main header keyword TEXPSTRT of the image on which the
+measurements were performed.
+.le
+.ls (nread = INDEF) [int, min=1]
+Number of images (of equal exposure time) added together during image
+combination, e.g., the number of  CR-SPLITs. If a STIS _crj.fits file was used
+for the measurements, this is the value of the NCOMBINE keyword in the
+science header (i.e., file_crj.fits[sci]). IMPORTANT NOTE: If individual images
+were averaged rather than added together during image combination, this
+parameter should be set to 1.
+.le
+.ls (ybin = INDEF) [int, min=1]
+On-chip binning factor in the Y direction. For STIS images, this is the value
+of keyword BINAXIS2 in the main header of the image on which the
+measurements were performed.
+.le
+.ls (gain = INDEF) [int, min=1]
+CCD gain value (in electrons per DN). For STIS images, this is the value of
+keyword CCDGAIN in the main header of the image on which the measurements
+were performed. Only values of 1 and 4 are supported.
+.le
+.ls (outscol = "corr_flux") [string]
+(Optional) ID for output column containing the net source counts corrected for
+CTE loss. This parameter is relevant only for input tables in STSDAS or FITS
+format; output columns are not named for ASCII-formatted input tables.
+.le
+.ls (outmcol = "corr_dmag") [string]
+(Optional) ID for output column containing the difference in magnitude to be
+added to MEASURED magnitudes to correct for CTE loss. This parameter is
+relevant only for input tables in STSDAS or FITS format; output columns are not
+named for ASCII-formatted input tables.
+.le
+.ls (outycol = "corr_dy") [string]
+(Optional) ID for output column containing the difference in pixels to be
+added to MEASURED Y centroid to correct for CTE distortion. This parameter is
+relevant only for input tables in STSDAS or FITS format; output columns are not
+named for ASCII-formatted input tables.
+.le
+.ls (verbose = yes) [boolean]
+Option to print task messages? If "yes", the task will print the values and
+origin of parameters mjd, nread, ybin, and ccdgain as
+well as the ID's of the newly created table columns to STDOUT while the task is
+running. (Any error messages will be printed to STDOUT in any case.)
+.le
+.ih
+DESCRIPTION
+The purpose of the ctestis task is to correct signal levels of point-like
+sources in photometry tables measured from STIS CCD images for charge loss due
+to imperfect Charge Transfer Efficiency (CTE). The algorithm used to correct
+for CTE-induced signal loss is the one published in Goudfrooij, Bohlin,
+Maiz-Apellaniz, & Kimble, 2006, PASP, October 2006 edition (astro-ph/0608349).
+The values of CTE loss derived using this algorithm should be accurate to about
+3% RMS (tested for data taken between March 1997 and August 2004). No
+significant differences in CTE loss were found for different aperture sizes,
+although this has been verified only for a limited range of aperture sizes (2,
+3, and 5 pixel radii). The algorithm was derived from measurements of point
+sources in a relatively sparse field (the outskirts of a Galactic globular
+cluster), as detailed in the PASP paper mentioned above.
+
+The program also computes the shift in the Y centroids of point sources due to
+distortions in the stellar PSF caused by CTE trails.  The algorithm is taken
+from Equation 9 of Goudfrooij et al. (2006). Note, however, that that the
+equation has been multiplied by -1, so that the resulting correction may be
+ADDED to the measured Y centroid of each star.
+
+INPUT AND OUTPUT FILES
+
+The input table file intab must contain at least three columns:
+One column containing the measured net (i.e., background-subtracted) source
+counts within the measurement aperture, one column containing the measured
+background count level (per pixel), and one column containing the Y coordinate
+of the objects. Three file formats are supported for input table intab:
+ASCII, native STSDAS table format, and FITS. A typical input table is a file
+produced by first running the phot task in the digiphot.apphot
+aperture photometry package and, subsequently, the txdump task
+to produce a list-formatted ASCII table.
+
+The output table outtab is a copy of the input table with three columns
+appended: (1) A column containing the net source counts corrected for CTE loss;
+(2) A column containing the difference in magnitude to be added to measured
+magnitudes to correct for CTE loss; (3) A column containing the shift
+in pixels to be added to the measured Y centroids to correct for CTE distortions.
+
+In case the input file intab is in STSDAS or FITS format, the user has
+the option to assign an ID to these two output columns by means of the
+outscol and outmcol parameters, respectively. These two task
+parameters are not used in case the input file intab is an ASCII file.
+
+.ih
+EXAMPLES
+
+1. Correct flux levels in column #3 of input ASCII table "myimag_LP.mag.dat"
+for CTE loss. Sky levels are in column #5 and Y coordinates are in column
+#2. Output table name is myimag_LP_CTE.dat. The STIS image used for the
+measurements was "myimag_LP_crj.fits".
+.nf
+
+  cl> ctestis myimag_LP.mag.dat myimag_LP_CTE.dat 3 5 2 \
+      >>> stisima="myimag_LP_crj.fits"
+.fi
+
+2. Same as Example 1, but now we supply the values for modified Julian date,
+number of CCD readouts added, on-chip binning factor in the Y direction, and
+CCD gain setting by hand.
+.nf
+
+  cl> ctestis myimag_LP.mag.dat myimag_LP_CTE.dat 3 5 2 mjd=52200.53 \
+      >>> nread=2 ybin=2 gain=1
+.fi
+
+3. Same as Example 1, but now the photometry table is FITS table
+"myimag_LP.fits", flux levels are in column "FLUX_LP", sky levels are in
+column "SKY_LP", and Y coordinates are in column "YCEN". Override any value of
+nread found in the STIS image by the number 1. Desired output column
+IDs are "CORFLUX_LP", "dMag_LP", and "dY_LP".
+.nf
+
+  cl> ctestis myimag_LP.fits myimag_LP_CTE.fits FLUX_LP SKY_LP YCEN \
+      >>> stisima="myimag_LP_crj.fits" nread=1 \
+      >>> outscol="CORFLUX_LP" outmcol="dMag_LP" outycol="dY_LP"
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on August 10, 2006.  Correction to Y centroid
+added by Van Dixon on April 28, 2011.
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+apphot.phot, ptools.txdump, imutil.hedit
+.endhelp

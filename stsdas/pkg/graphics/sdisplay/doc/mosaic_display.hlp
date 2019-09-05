@@ -1,0 +1,100 @@
+.help mosaic_display Dec91 stsdas.graphics.sdisplay
+.ih
+NAME
+mosaic_display -- Display a list of images in a single frame buffer.
+.ih
+USAGE
+mosaic_display images
+.ih
+DESCRIPTION
+This task takes a list of image names and displays all the images
+within a single frame buffer of an image display using the
+'images.tv.display' task.  Images are placed in the display frame
+buffer starting at the upper left and proceeding horizontally to the
+right and vertically down.  If either (or both) of the 'ncols' and 'nrows' 
+parameters is undefined, the images are
+arranged in as close to a square format as possible.  If 'ncols' and 'nrows'
+are defined, the images are layed out as specified.  The values of
+'ncols' and 'nrows' should be specified such that 'ncols' * 'nrows' > number
+of images to display.
+
+Two options are available for modifying the scaling parameters of
+the displayed images.  If all that is passed to 'mosaic_display' is a
+list of images, the current settings of the display's parameters are
+used for each image.  However, you can specify different scaling
+parameters to be used for a particular image by creating a file
+containing the list of images to be displayed and specifying the
+scaling parameters in that file (see the examples below).
+Specifically, after each image name, you specify in a comma-seperated
+list all the display parameters you want for that particular image.
+
+Finally, for image displays that support more than one buffer, you can
+specify which buffer with the frame parameter.
+.ih
+PARAMETERS
+.ls images = "" [file]
+The image or list of images to display.
+.le
+.ls (ncols = INDEF) [integer]
+The number of columns in which the images will be displayed.  This parameter 
+and the
+parameter 'nrows' define the geometry of how the images will be placed
+in the display buffer.
+.le
+.ls (nrows = INDEF) [integer]
+The number of rows in which the images will appear.
+.le
+.ls (frame = 1) [integer]
+Frame buffer of the display used to display the images.
+.le
+.ih
+EXAMPLES
+1. Display all the images the begin with "image.*":
+
+.nf
+  st> mosaic_display image.*
+.fi
+
+2. If the number of files beginning with "image.*" were 8, the above would
+appear in a 3 x 3 square with the lower right position left empty.  If
+you wanted the images to be display in a 4 x 2 grid:
+
+.nf
+  st> mosaic_display image.* ncols=4 nrows=2
+.fi
+
+3. If you wanted to display the images with a logarithmic scaling instead
+of the default linear scaling, all you would need to do is:
+
+.nf
+  st> display.ztrans="log"
+  st> mosaic_display image.*
+.fi
+
+4. If you wanted to modify the scaling parameters for each image
+individually, you can create a file like 'image.list', below:
+
+Contents of 'image.list':
+
+.nf
+  image.1
+  image.2,ztrans="log"
+  image.3
+  image.4,zscale=no,zrange=no,z1=10,z2=1000
+.fi
+
+and display them with the command:
+
+.nf
+  st> mosaic_display @image.list
+.fi
+
+'image.1' and 'image.3' would be displayed with the display parameters
+specified before execution of 'mosaic_display'.  'image.2' would be
+displayed with logarithmic scaling, and 'image.4' would be displayed
+with the scaling being performed between 10 and 1000.  See the 
+'display' task for more information and available scaling parameters.
+.ih
+SEE ALSO
+display
+.endhelp

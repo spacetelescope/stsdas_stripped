@@ -1,0 +1,6 @@
+# parameter file for polcalc
+input,f,a,,,,Input image name
+output,f,a,,,,Output image name
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"02Dec93",,,Date of installation
+mode,s,h,"ql",,,

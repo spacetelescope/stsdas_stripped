@@ -1,0 +1,17 @@
+# Update the bj application code in the statistics package library
+# Author: BALL, 6-APR-1988
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	bj.x
+	bjdata.x	<tbset.h>
+	bjprint.x
+	bjtitle.x	<tbset.h>
+	buckly.f
+	regres.x
+	t_bj.x		<tbset.h>
+	;

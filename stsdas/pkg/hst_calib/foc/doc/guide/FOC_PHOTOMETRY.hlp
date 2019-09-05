@@ -1,0 +1,239 @@
+.help FOC_PHOTOMETRY Apr88 "FOC 5"
+
+.ih
+CHAPTER
+FOC_PHOTOMETRY -- description of method of production of photometric files.
+
+.ih
+SUMMARY
+Summary for FOC_PHOTOMETRY
+.ls Sections:
+
+.nf
+	Introduction
+	Normal imaging mode detective efficiency files
+	Relative de
+	Absolute de (W-Factor)
+	Spectrograph mode
+	Cross-disperser
+	Objective prisms
+.fi
+.le
+
+.ih
+INTRODUCTION
+The purpose of the set of photometry tasks is to calibrate, model
+and display FOC photometric response,
+to generate calibration files for PODPS/RSDP,
+and to rectify images.
+
+Photometric response covers several areas:
+
+.ls Photometric non-linearity
+The modelling of this aspect is incomplete. 
+See the help foc FOC_LINEARITY for more details.
+.le
+.ls Flat field variations
+This may be subdivided into
+.ls Photocathode variations
+It appears that there is only weak wavelength dependence of the
+image variation, except at wavelengths longer than 6000 Angstroms.
+See the help foc FOC_RELDE for more details.
+.le
+.ls Format dependent large scale response
+Independent of wavelength there is a strong (+/-25%) variation across the
+image, being especially strong in the first 10% of the image line.
+See the help foc FOC_FORMAT for more details.
+.le
+.ls Fine scale structure
+The main component is a 10% ripple across the image with a periiod of around 4
+pixels.
+See the help foc FOC_PATTERN for more details.
+.le
+.ls Scratches and lines
+The fly-back of the read beam shows as a thin line curving diagonally across
+the image
+.le
+.le
+.ls Sensitivity 
+To convert from counts to energy of photon units one must apply a scaling
+which depends on the detector as well as the filters being used.
+See the help foc FOC_ABSDE for more details.
+.le
+
+.ih
+NORMAL IMAGING MODE DETECTIVE EFFICIENCY FILES
+
+For reasons of convenience the calibration is done in two stages:
+relative DE and an absolute sensitivity, the latter is also
+referred to as the 'W-factor'.
+
+.ih
+RELATIVE DE
+The relative DE files are images normalised to unity which describe
+the variation of the detector response over the imaging area when
+illuminated uniformly with almost monochromatic light.
+In principle the non-uniformity of the source should be corrected for so
+that we have the response to a uniform illumination. The steps are therefore:
+
+.ls Subtract Dark count
+IMCALC may be used to subtract the dark count image, 
+including the exposure time factor 
+if the images have not been converted to count rate,
+or simple subtraction if they are both count rate images.
+.le
+
+.ls Create source non-uniformity image
+Use SOURCEGENX to generate a source non-uniformity map. The inputs may be
+created by TESTIMX and RGENX. The former have the measured light levels,
+normalised to unity, and the latter have the positions for each data point.
+.le
+
+.ls Correct for source non-uniformity
+Use RATIOX to divide the source non-uniformity into the data image.
+.le
+
+.ls Normalise to get Relative DE
+DQENORMX is then used to create a normalised image. Note that the
+area used to define the normalisation may be chosen by the user -
+but should be the same area as was used to calculate the absolute DE
+if possible.
+.le
+
+The images used to generate the relative DE files 
+for RSDP should cover the full
+faceplate. Note also that RSDP requires the inverse of the file generated;
+task RSDPUNIX performs the required inversion and reformatting.
+
+.ih
+ABSOLUTE DE (W-FACTOR)
+The absolute sensitivity (W-factor) consists essentially of
+a table of numerical factors which 
+are used to convert from 
+images counts to light intensity, taking into account the
+wavelength dependent transmission of the optical elements as well
+as the photocathode response. The images used to generate the
+absolute DE should have been processed using the
+appropiate Relative DE files.
+
+.ls Three contributing factors
+.ls Filter transmissions
+These are assumed known from ground based measurements on the filters
+.le
+
+.ls Detector (photocathode) Sensitivity
+To be measured in flight by imaging stars using various filters
+to obtain sufficiently narrow band data. Note
+that f/96 mode has narrow band filters but f/48 does not. The 
+detector in the latter chain may be calibrated using spectrograph mode.
+However if it is decided to use the broad passbands for f/48 
+detector sensitivity measurements then both chains way be processed
+in essentially the same way.
+.le
+
+.ls ST optics throughput
+If known then this may be separated out from the detector sensitivity.
+Otherwise one may leave this combined with the latter and use a 
+file containing unity values
+in place of this data.
+.le
+.le
+
+.ls Subtract Dark count
+IMCALC may be used to subtract the dark count image, 
+including the exposure time factor 
+if the images have not been converted to count rate,
+or simple subtraction if they are both count rate images.
+.le
+
+.ls Correct for Relative DE
+RATIOX may be used to divide the relative DE file into the
+DE image.
+.le
+
+.ls Process stellar parameters
+Obtain the counts in selected stars using the DAOPHOT package.
+STSDAS packages should be used to process the stars' known fluxes to obtain
+that expected at the instrument. Tasks TTOOLS.TCREATE and TTOOLS.TCALC may
+then be used to transform the data into an SDAS table with entries
+equal to the counts in a star at the effective wavelength -
+probably either mean or pivotal wavelength. Other table handling
+routines which should be provided in SDAS may be required,
+depending upon the number of stars per image to be processed.
+
+The filter transmission must be removed at this point, as we
+need to separate the filter transmissions from the response of the
+detector units. In principle one may wish to remove the ST optics
+contribution also, if this is known.
+
+Division of the measured count rates by the expected fluxes gives
+the Absolute DE of the particular FOC detector, 
+at an effective wavelength depending
+on the passband and spectral shape. 
+
+Note that we currently assume that wavelengths are in units of 
+NANOMETERS and flux in units of ERGS/SEC.
+.le
+
+.ls Generation of the W-factors for RSDP
+Task wfactorx combines the filter data together with the absolute DE,
+and also the ST optics throughput (which may be set to unity if this
+has not been separated from the absolute DE files).
+
+One must generate the wfactors for each optical relay separately,
+but the text files or tables may be concatenated.
+
+Some further selection, presumably based on the pivotal or mean
+wavelength for each filter combination, may be made with table
+handling tools in order to define the filter combinations to be associated with
+each relative DE image. The latter sets are required by CDBS to
+build the final table for RSDP.
+
+Note that the W factors will currently have units of ERGS/COUNT.
+.le
+
+.ih
+SPECTROGRAPH MODE
+Currently the method to be used for generation of spectrograph DE
+files is to take mean values in a 
+small area at as many points as possible within
+a geometrically corrected spectrograph image. These points are
+assumed to have known incident flux. Division of measured count rate
+by expected flux gives a grid of points of sensitivity.
+
+Task SOURCEGENX  may then be used to generate a full image from these points.
+
+Note that spectrograph mode may be used to provide an absolute calibration
+of the f/48 detector as this is the only way to obtain narrow band
+data, there being no narrow band filters in this chain. This requires
+fairly accurate knowledge of the spectrograph optics efficiency.
+In view of the very patchy data likely to be used it seems sensible
+to allow such processing to be done in a highly interactive way, to be
+refined later. Tasks such as SOURCEGENX, IMCALC, LISTAREA and the text editor
+may suffice.
+.le
+
+.ih
+CROSS-DISPERSER
+
+.ih
+OBJECTIVE PRISM
+
+.ih 
+SEE ALSO
+From FOC_PHOTOMETRY see also:
+
+.nf
+FOC_RELDE           Wavelength dependent flat field overview
+FOC_FORMAT          Format dependent response description
+FOC_PATTERN         Pattern noise in images description
+FOC_ABSDE           Absolute sensitivity (DE) description
+FOC_ITF             Photometric nonlinearity  description
+FOC_DARK            Detector dark count description
+FOC_SPECTRO         Description of the FOC spectrograph mode calibration
+FOC_CROSSDISP       Description of the FOC cross disperser mode calibration
+FOC_OBJPRISM        Description of the FOC objective prism mode calibration
+.fi
+
+
+.endhelp

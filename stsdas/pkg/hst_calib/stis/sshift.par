@@ -1,0 +1,6 @@
+input,s,a,"",,,"Input FITS files"
+output,s,h,"",,,"Output FITS files"
+shifts,s,h,"",,,"Pixel shifts in Y-direction"
+platescale,r,h,0.0507,,,"Size of pixel in arcseconds"
+tolerance,r,h,0.1,,,"Tolerance of calculated pixel shift (fraction of pixel)"
+Version,s,h,"Version 1.5, 4Oct04",,,"Date of installation"

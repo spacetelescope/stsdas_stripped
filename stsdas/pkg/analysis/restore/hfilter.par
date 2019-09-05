@@ -1,0 +1,17 @@
+input,s,a,"",,,">input image"
+output,s,a,"",,,">output image"
+blksize,i,h,8,2,,">block size"
+storage,s,h,"memory","|memory|disk",,">intermediate storage
+
+THRESHOLD FILTER"
+thfilter,b,h,yes,,,">threshold filter ?"
+thresh,r,h,2.,0,,">threshold value"
+gain,r,h,1.,0.,1.,">filter gain"
+skysec,s,h,"input",,,">sky image section
+
+SPECTRAL FILTER"
+spfilter,b,h,no,,,">spectral filter ?"
+spfactor,r,h,4.,,,">spectral factor
+"
+verbose,b,h,yes,,,">verbose"
+mode,s,h,al,,,

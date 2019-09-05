@@ -1,0 +1,89 @@
+.help spearman Nov92 stsdas.analysis.statistics
+.ih
+NAME
+spearman -- Compute the generalized Spearman's rho correlation coefficient.  
+.ih
+USAGE
+spearman input
+.ih
+DESCRIPTION
+The 'spearman' task computes the generalized Spearman's rank order
+correlation coefficient between two variables.  It can treat mixed
+censoring including censoring in the independent variable, but can
+have only one independent variable. It is not known how this method
+responds to ties in the data.  However, there is no reason to believe
+that it is more accurate than Kendall's tau in this case, and it
+should also used be with caution in the presence of tied values.
+
+The test assumes the null hypothesis.  The probability given by this 
+program is the probability that there is no correlation between the 
+variables.  If the probability is small, that means "the probability 
+that these two variables are not correlated is small" or approximately 
+"these variables are correlated".  If you see the result 0.000, it 
+means "< 0.001".  
+
+The usual Spearman's rho correlation estimate for uncensored data is
+simply the correlation between the ranks of the independent and
+dependent variables.  In order to extend the procedure to censored
+data, the Kaplan-Meier estimate of the survival curve is used to
+assign ranks to the observations.  Consequently, the ranks assigned to
+the observations may not be whole numbers.  Censored points are
+assigned half (for left-censored) or twice (for right-censored) the
+rank that they would have had were they uncensored.  This method is
+based on preliminary findings and has not been carefully scrutinized
+either theoretically or empirically.  It is offered in the code to
+serve as a less computer intensive approximation to the Kendall's tau
+correlation, which becomes computationally infeasible for large data
+sets.  The generalized Spearman's Rho routine is not dependable for
+small data sets (n < 30).  In that situation the generalized Kendall's
+tau routine ('bhkmethod') should be relied upon.
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files. Following each file name
+is a list of column names in brackets. Thes column names specify which
+columns in the file contain the information used by this task. The
+brackets MUST contain three names in the following format:
+[censor_indicator, independent_var, dependent_var]. The censor
+indicator specifies the censorship of the data point. The different
+kinds of censorship are explained in the 'censor' help file. The second
+name in the brackets specifies the column containing the independent
+variable.  The third name specifies the column containing the
+dependent variable.  If the input file is an STSDAS table, the names in
+brackets are the table column names. If the input file is a text file,
+the names in brackets are the column numbers.  A title string will be
+printed if the input file is a table containing the header parameter
+'TITLE'.
+.le
+.ls (verbose = no) [boolean]
+Provide detailed output? 
+
+The detailed output includes the number of
+data points and the number of censored points and type of censorship.
+.le
+.ih
+EXAMPLES
+1. Sequentially process several files.  The following will compute the
+bhk correlation for the two files indicated. The first is an STSDAS
+table, and the second is a text file.
+
+.nf
+
+st> spearman kriss.tab[Censor,LogL2500A,LogL2keV],iraslum.dat[1,2,3]
+
+.fi
+The above command will apply the 'spearman' task to the data in the 
+table "kriss.tab", using the columns "Censor" for the censoring 
+indicator, "LogL2500A" for the independent variable column, and 
+"LogL2keV" for the dependent variable column.  Then use the file
+"iraslum.dat" (text file), columns 1, 2, and 3 (censor, independent, 
+dependent).
+.ih
+BUGS
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

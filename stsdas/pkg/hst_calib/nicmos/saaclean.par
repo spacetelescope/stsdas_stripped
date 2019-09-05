@@ -1,0 +1,34 @@
+calcimage,s,a,"",,,"Input (usually ped) file to calculate correction"
+targimage,s,a,"",,,"Input (ped or cal) file to correct"
+output,s,a,"",,,"Output cleaned datafile (targimage with correction applied)"
+clobber,b,q,no,,,"Overwrite output files if they already exist?"
+
+readsaaper,b,h,no,,,"Read SAA persistence image from file (If no, construct it.)"
+saaperfile,s,q,"saaper.fits",,,"Filename for SAA persistence image"
+writesaaper,b,h,yes,,,"Write SAA persistence image?"
+flatsaaper,b,h,yes,,,"Flat-field SAA persistence image before analysis"
+
+darkpath,s,h,"saaref$",,"Path to dark reference files"
+scale,r,h,0.54,0.0,1.0,"Scale factor for constructing persistence image"
+wf1,r,h,0.7,0.0,1.0,"Weight for first SAA exposure"
+wf2,r,h,0.3,0.0,1.0,"Weight for second SAA exposure"
+
+crthresh,r,h,0.3,0.0,1.0,"Threshold for CR rejection"
+noisethresh,r,h,1.0,0.0,100.0,"Noise reduction threshold (percent)"
+binsigfrac,r,h,0.3,0.0,1.0,"Stddev fraction for excluding narrow bins"
+
+stepsize,r,h,0.008,,,"Increment multiplier for SAA scale factor fitting"
+fitthresh,b,h,yes,,,"Solve for threshold value? (If no, uses value of thresh)"
+thresh,r,h,,,,"Threshold to separate high/low signal domain in SAA persistence image"
+histbinwidth,r,h,0.001,,,'Bin width for histogram in threshold fitting'
+nclip,i,h,3,,,'Number of clipping iterations for threshold fitting'
+
+
+hirange,r,h,0.4,,,"Maximum multiplier for high signal domain"
+lorange,r,h,0.25,,,"Maximum multiplier for low signal domain"
+fitmult,b,h,yes,,,"Fit to determine multiplier for minimum noise?"
+applied,s,h,"","both|low everywhere|high only|none|n/a|aborted",,"Cleaning applied to which domains?"
+hi_nr,r,h,"",,,"Noise reduction in high signal domain"
+lo_nr,r,h,"",,,"Noise reduction in low signal domain"
+alldiags,b,a,no,,,"Write out all possible diagnostic files?"
+diagroot,s,h,"diag",,,"Root filename for diagnostic files"

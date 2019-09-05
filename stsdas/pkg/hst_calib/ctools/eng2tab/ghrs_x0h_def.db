@@ -1,0 +1,207 @@
+# ghrs_x0h_def.db -- X0H information from GHRS observations
+# 
+# DESCRIPTION
+# This text database defines how to extract and interprete the information
+# contained in the Extracted Data (X0H) image for Goddard High
+# Resolution Spectrograph (GHRS) observations.  See the task
+# "eng2tab" in the STSDAS external package for IRAF for more information.
+# 
+# Each record defines an item to be retrieved from the image data.  Each
+# record contains four fields:
+# 
+# 	descr   -- Description of the item.
+# 	extract -- How to get the monitor value from the x0h image.
+# 	format  -- How to interpret the value of the item.
+# 	units   -- Units of the interpreted value
+#
+# The values of the 'extract' and 'format' fields are expressions used
+# to extract item from the image array and to format it into some
+# understandable form.  For a full description of the expressions, see
+# the help for the task "eng2tab" in the ctools package of STSDAS under
+# IRAF. 
+#
+# FORMAT
+# This file conforms to the standard IRAF text database format.  A
+# text database consists of a series of 'records'.  Each record consists
+# of a set of 'fields'.  A record looks like the following:
+# 
+# 	begin record
+# 		field value
+# 		field value
+# 		....
+# 
+# A record starts at a line which has the word "begin" followed by a
+# single word which is the record name.  Each subsequent line is
+# considered a field of the record (unless it is blank or a comment
+# line).  Each field line has the following format: The first word on
+# the line is the name of the field.  Everything else on the line, up to
+# the newline, is the value of the field.  A line can contain
+# approximately 200 characters.  There is no indentation requirement;
+# indentation is present only to humans examine the file.
+#
+# DATABASE
+begin period_counter
+	extract	(and(shift(d[13],-9),127))
+	descr	50 ms period counter
+	units	50ms counter
+	format	v
+begin adder
+	extract	(and(shift(d[13],0),511))*65536 + and(d[14], 65535)
+	descr	On-the-fly adder
+	units	counts
+	format	v
+begin anti_coin_sum
+	extract	(and(shift(d[15],0),65535))
+	descr	Anti-coincidence sum counter (co-added for non-direct downlink)
+	units	counts
+	format	v
+begin anti_coin_thresh
+	extract	(and(shift(d[16],-10),63))
+	descr	Anti-coincidence threshold
+	units	counts
+	format	v
+begin noise_sum_flag
+	extract	(and(shift(d[16],-9),1))
+	descr	analog noise sum flag
+	units	flag
+	format	v==1
+begin anti_coin_enable
+	extract	(and(shift(d[16],-8),1))
+	descr	Anti-coincidence circuit enable
+	units	flag
+	format	v==1
+begin car_err_gt
+	extract	(and(shift(d[16],-7),1))
+	descr	Carrousel error "greater than"
+	units	flag
+	format	v==1
+begin car_err_eq
+	extract	(and(shift(d[16],-6),1))
+	descr	Carrousel error "equal to"
+	units	flag
+	format	v==1
+begin car_err_lt
+	extract	(and(shift(d[16],-5),1))
+	descr	Carrousel error "less than"
+	units	flag
+	format	v==1
+begin fine_track_lock
+	extract	(and(shift(d[16],-4),1))
+	descr	Carrousel fine track lock
+	units	flag
+	format	v==1
+begin shutter_open
+	extract	(and(shift(d[16],-3),1))
+	descr	Shutter open
+	units	flag
+	format	v==1
+begin shutter_closed
+	extract	(and(shift(d[16],-2),1))
+	descr	Shutter closed
+	units	flag
+	format	v==1
+begin system_2
+	extract	(and(shift(d[16],-1),1))
+	descr	System 2
+	units	flag
+	format	v==1
+begin system_1
+	extract	(and(shift(d[16],0),1))
+	descr	System 1
+	units	flag
+	format	v==1
+begin test_pulse_addr
+	extract	(and(shift(d[17],-11),31))
+	descr	Test pulse address
+	units	address
+	format	v
+begin test_pulse_enable
+	extract	(and(shift(d[17],-10),1))
+	descr	Test pulse circuit enable
+	units	flag
+	format	v==1
+begin window_heater
+	extract	(and(shift(d[17],-8),1))
+	descr	Digicon window heater on
+	units	flag
+	format	v==1
+begin latch_enable
+	extract	(and(shift(d[17],-7),1))
+	descr	Latch enable (Threshold)
+	units	flag
+	format	v==1
+begin lamp_relay_1
+	extract	(and(shift(d[17],-5),1))
+	descr	Lamp power relay 1 on
+	units	flag
+	format	word_find(v,"off,on")
+begin lamp_relay_2
+	extract	(and(shift(d[17],-4),1))
+	descr	Lamp power relay 2 on
+	units	flag
+	format	word_find(v,"off,on")
+begin sc1_lamp
+	extract	(and(shift(d[17],-3),1))
+	descr	Spectral calibration lamp 1 relay on
+	units	flag
+	format	word_find(v,"off,on")
+begin sc2_lamp
+	extract	(and(shift(d[17],-2),1))
+	descr	Spectral calibration lamp 2 relay on
+	units	flag
+	format	word_find(v,"off,on")
+begin flat_field_lamp
+	extract	(and(shift(d[17],-1),1))
+	descr	Flat field lamp relay on
+	units	flag
+	format	word_find(v,"off,on")
+begin x_def_commanded
+	extract	(and(shift(d[18],0),4095))
+	descr	Horizontal deflection position commanded
+	units	deflection steps
+	format	v-2048
+begin y_def_commanded
+	extract	(and(shift(d[19],0),4095))
+	descr	Vertical deflection position commanded
+	units	deflection steps
+	format	v-2048
+begin carpos_commanded
+	extract	(and(shift(d[20],0),65535))
+	descr	Carrousel position commanded
+	units	encoder units
+	format	v
+begin tweak_coil
+	extract	(and(shift(d[21],-8),255))
+	descr	Tweaking coil current level commanded
+	units	
+	format	v
+begin integration
+	extract	(and(shift(d[21],0),255))
+	descr	Integration time commanded
+	units	
+	format	v
+begin obsnum_src
+	extract	(and(shift(d[22],-15),1))
+	descr	Observation source
+	units	observation source
+	format	word_find(v,"ost,gc/ost")
+begin obsnum
+	extract	(and(shift(d[22],0),32767))
+	descr	Observation number
+	units	obs number
+	format	v>32767?v-65536:v
+begin ncoadd
+	extract	(and(shift(d[23],0),65535))
+	descr	Number of times data has been co-added to this bin
+	units	
+	format	v>32767?v-65536:v
+begin nsamples
+	extract	(and(shift(d[24],-8),255))
+	descr	Number of samples (field map data)
+	units	
+	format	v
+begin binnum
+	extract	(and(shift(d[24],0),255))
+	descr	Substep bin number, 0=direct, or number of lines (field map)
+	units	
+	format v

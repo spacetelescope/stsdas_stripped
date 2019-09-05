@@ -1,0 +1,84 @@
+<!-- Translated by iraftex version 0.15 -->
+<html>
+<title>SEEING (V1.3) --- Apr00 --- SEEING (V1.3)</title>
+<h1>NAME</h1>
+<blockquote>
+seeing -- Create a simulated ground-based star image based on a model
+of atmospheric turbulence
+</blockquote>
+<h1>USAGE</h1>
+<blockquote>
+seeing output xdim ydim gamma fwhmx fwhmy
+</blockquote>
+<h1>PARAMETERS</h1>
+<blockquote>
+<dl>
+<dt>output = &quot;&quot; [image]
+<dd>
+The name for the output image to be created.
+<dt>xdim = 512 [integer]
+<dd>
+The X dimension for the output image.
+<dt>ydim = 512 [integer]
+<dd>
+The Y dimension dor the output image.
+<dt>gamma = 1.6666 [real]
+<dd>
+A parameter which control the shape of the PSF produced. For a
+discussion of the significance of this please see the discussion below
+and the references given.
+<dt>fwhmx = 5.0 [real]
+<dd>
+The full width at half maximum of the PSF produced in the X direction.
+<dt>fwhmy = 5.0 [real]
+<dd>
+The full width at half maximum of the PSF produced in the Y direction.
+</dl>
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+This task is for creating simulated groung-based telescope point-spread
+function (PSF) images. It is based on a model proposed by Saglia et al.
+1993, MNRAS, 264, 961 which uses a simple atmospheric turbulence description.
+The radial profile is derived from the Fourier transform of an exponential
+power-spectrum model. Apart from the FWHM (which is just a scaling and
+which can be different in X and Y) there is one free parameter called gamma.
+The default value of 5/3 comes from the theory but the authors find that
+slightly different values may give better simulated PSFs, depending on the
+telescope, site and conditions. 
+<p>
+It is strongly suggested that this task only be used after careful reading
+of the Saglia paper. It has had little use and there may be problems.
+<p>
+It is important that the images used are large enough to avoid artifacts
+which come from truncating the image before the Fourier transform is
+taken. This may be checked by looking at the values displayed by the
+program for the extreme values in the images. In rough terms the minimum 
+in the &quot;input image&quot; should be small (eg, 10-8) and so should the minimum in
+the output real part, relative to the peak (eg, a factor of 10-6 lower). The
+output imaginary part should be very small (eg, 10-10).
+<p>
+</blockquote>
+<h1>EXAMPLES</h1>
+<blockquote>
+<pre>
+st&gt; seeing
++ SEEING Version 1.3 (April 2000)
+Output image file name (qqq): test
+X dimension of output (512): 
+Y dimension of output (512): 
+Full Width half max (in X) of resultant PSF (5.0): 
+Full Width half max (in Y) of resultant PSF (5.0): 
+Gamma value for PSF (1.66666): 
+-Extreme values in input array:   0.1224E-10   1.000
+-Extreme values in output imaginary part:  -0.2135E-11  0.3030E-10
+-Extreme values in output real part:   0.1542E-03   9476.
+st&gt;
+</pre>
+</blockquote>
+<h1>TIMINGS</h1>
+<blockquote>
+The time spent is mostly taken up by the Fourier Transform. Array sizes
+which are powers of two are most efficient.
+</blockquote>
+</html>

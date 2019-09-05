@@ -1,0 +1,85 @@
+# CFITSIO -- This IRAF mkpkg file updates the TBTABLES library to include
+# the CFITSIO interface.
+
+$checkout libtbtables.a ../
+$update libtbtables.a
+$checkin libtbtables.a ../
+$exit
+
+libtbtables.a:
+	$set XFLAGS = "-Inolibc $(XFLAGS)"
+	adler32.c	zutil.h
+	buffers.c	fitsio2.h fitsio.h longnam.h
+	cfileio.c	fitsio2.h fitsio.h longnam.h
+	checksum.c	fitsio2.h fitsio.h longnam.h
+	crc32.c		crc32.h zutil.h
+	deflate.c	deflate.h
+	drvrfile.c	fitsio2.h fitsio.h longnam.h
+	drvrgsiftp.c	fitsio2.h fitsio.h longnam.h
+	drvrmem.c	fitsio2.h fitsio.h longnam.h
+	drvrnet.c	fitsio2.h fitsio.h longnam.h
+	drvrsmem.c	fitsio2.h fitsio.h longnam.h
+	editcol.c	fitsio2.h fitsio.h longnam.h
+	edithdu.c	fitsio2.h fitsio.h longnam.h
+	eval_f.c	eval_defs.h fitsio2.h fitsio.h longnam.h \
+				eval_tab.h region.h
+	eval_l.c	eval_defs.h fitsio2.h fitsio.h longnam.h \
+				eval_tab.h
+	eval_y.c	eval_defs.h fitsio2.h fitsio.h longnam.h \
+				region.h
+	fitscore.c	fitsio2.h fitsio.h longnam.h
+	fits_hcompress.c	fitsio2.h fitsio.h longnam.h
+	fits_hdecompress.c	fitsio2.h fitsio.h longnam.h
+	getcol.c	fitsio2.h fitsio.h longnam.h
+	getcolb.c	fitsio2.h fitsio.h longnam.h
+	getcold.c	fitsio2.h fitsio.h longnam.h
+	getcole.c	fitsio2.h fitsio.h longnam.h
+	getcoli.c	fitsio2.h fitsio.h longnam.h
+	getcolj.c	fitsio2.h fitsio.h longnam.h
+	getcolk.c	fitsio2.h fitsio.h longnam.h
+	getcoll.c	fitsio2.h fitsio.h longnam.h
+	getcols.c	fitsio2.h fitsio.h longnam.h
+	getcolsb.c	fitsio2.h fitsio.h longnam.h
+	getcolui.c	fitsio2.h fitsio.h longnam.h
+	getcoluj.c	fitsio2.h fitsio.h longnam.h
+	getcoluk.c	fitsio2.h fitsio.h longnam.h
+	getkey.c	fitsio2.h fitsio.h longnam.h
+	group.c		fitsio2.h fitsio.h longnam.h group.h
+	grparser.c	fitsio.h longnam.h grparser.h
+	histo.c		fitsio2.h fitsio.h longnam.h
+	imcompress.c	fitsio2.h fitsio.h longnam.h
+	infback.c	zutil.h inftrees.h inflate.h inffast.h
+	inffast.c	zutil.h inftrees.h inflate.h inffast.h
+	inflate.c	zutil.h inftrees.h inflate.h inffast.h
+	inftrees.c	zutil.h inftrees.h
+	iraffits.c
+	modkey.c	fitsio2.h fitsio.h longnam.h
+	pliocomp.c
+	putcol.c	fitsio2.h fitsio.h longnam.h
+	putcolb.c	fitsio2.h fitsio.h longnam.h
+	putcold.c	fitsio2.h fitsio.h longnam.h
+	putcole.c	fitsio2.h fitsio.h longnam.h
+	putcoli.c	fitsio2.h fitsio.h longnam.h
+	putcolj.c	fitsio2.h fitsio.h longnam.h
+	putcolk.c	fitsio2.h fitsio.h longnam.h
+	putcoll.c	fitsio2.h fitsio.h longnam.h
+	putcols.c	fitsio2.h fitsio.h longnam.h
+	putcolsb.c	fitsio2.h fitsio.h longnam.h
+	putcolu.c	fitsio2.h fitsio.h longnam.h
+	putcolui.c	fitsio2.h fitsio.h longnam.h
+	putcoluj.c	fitsio2.h fitsio.h longnam.h
+	putcoluk.c	fitsio2.h fitsio.h longnam.h
+	putkey.c	fitsio2.h fitsio.h longnam.h
+	quantize.c	fitsio2.h fitsio.h longnam.h
+	region.c	fitsio2.h fitsio.h longnam.h region.h
+	ricecomp.c	fitsio2.h fitsio.h longnam.h
+	scalnull.c	fitsio2.h fitsio.h longnam.h
+	swapproc.c	fitsio2.h fitsio.h longnam.h
+	trees.c		deflate.h
+	uncompr.c	zlib.h
+	wcssub.c	fitsio2.h fitsio.h longnam.h
+	wcsutil.c	fitsio2.h fitsio.h longnam.h
+	zcompress.c	zlib.h
+	zuncompress.c
+	zutil.c		zlib.h
+	;

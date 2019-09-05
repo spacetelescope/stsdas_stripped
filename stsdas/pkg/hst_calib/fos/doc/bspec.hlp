@@ -1,0 +1,137 @@
+.help bspec Feb98 stsdas.hst_calib.fos
+.ih 
+NAME
+bspec -- Compute FOS scattered light spectrum
+.ih
+USAGE
+bspec spectab scattab detector grating
+.ih
+DESCRIPTION
+This task performs theoretical modeling only.  It is NOT an absolutely 
+calibrated reduction tool.  Accuracies are limited by the completeness of 
+the treatment of the basic optical principles employed, the correctness of 
+the optical specifications of the FOS, and the input template spectra.  This 
+task is intended for use as a post-observation parametric analysis tool only.
+
+For a given input spectrum the 'bspec' task computes the scattered light
+spectrum that is produced by a specified observing mode of the FOS.
+The input spectral data must be in STSDAS table format and must contain
+columns of wavelength and flux values. The wavelength data must be
+in units of Angstroms and the flux data in units of counts per second per
+pixel. Furthermore, the input spectral data must already be convolved with the 
+throughput functions of all the FOS optical components EXCEPT that of the 
+grating blaze function.
+The task 'countspec' can be used to produce such a countrate spectrum from 
+calibrated spectral data for any source.
+The input spectral data should extend to a maximum wavelength of at least
+6000 Angstroms in order to insure reliable modelling of scattered
+red light.
+ 
+The output of this task is an STSDAS table containing several columns of
+spectral information. Those columns of most interest to the user are
+"gwav" (wavelength) and "ablg" (total intrinsic+scattered light countrate
+spectrum). These data can be easily plotted using the task 'sgraph', for 
+example.
+The output table columns are:
+.nf
+
+	angle - array of diffracted angles (degrees)
+	blg   - array of intensity due to blazed grating only
+	apd   - array of intensity due to finite aperture (LSF)
+	ablg  - array of intensity due to blazed grating + aperture
+	benv  - input spectrum dispersed with grating equation
+	bfu   - grating blaze function (of selected order)
+	gwav  - wavelengths corresponding to diffracted angles
+
+.fi
+
+Note that the "benv" data column contains the dispersed light spectrum only,
+while the "ablg" data column contains the spectrum of dispersed and scattered
+light, hence the difference ("ablg-benv") corresponds to the scattered light
+spectrum only.
+.ih 
+PARAMETERS
+.ls spectab [file name]
+Input spectrum table name. Must contain two columns of data labeled
+"wavelength" and "flux", with the wavelengths in units of Angstroms and
+the flux data in units of counts per second per pixel.
+.le
+.ls scattab [file name]
+Output spectrum table name.
+.le
+.ls detector [string, allowed values: red | blue]
+FOS detector name.
+.le
+.ls grating [string, values: g130h|g190h|g270h|g400h|g570h|g780h|g160l|g650l]
+FOS grating name. The combination of detector and grating names is used
+by the task to select the proper set of grating parameters to be used in 
+the modelling. Note that the two detector/grating combinations "red/g130h"
+and "blue/g780h" are not allowed.
+.le
+.ls (instpars = "") [pset]
+Parameter set containing the grating parameters. A null value causes the
+task to automatically select the appropriate parameters for the specified
+detector and grating.
+.le
+.ls (low_ord = 1) [integer]
+Lowest order to be included in calculations.
+.le
+.ls (high_ord = 5) [integer]
+Highest order to be included in calculations. For extremely red stars
+it may be useful to set this parameter to as high as 10.
+.le
+.ls (glsf = 0.003) [real]
+The e-folding length (in diodes) of the wings of the Voigt LSF.
+.le
+.ls (slsf = 0.01) [real]
+The core width (in diodes) of the Voigt LSF.
+.le
+.ls (flat = 1.5E-6) [real]
+The level of the flat (baseline) component of the Voigt LSF.
+.le
+.ls (lmin = 0) [real]
+Lower limit of the wavelength range to be included in the calculations.
+If lmin is less than the limit of the input spectrum, the min wavelength
+of the input spectrum will be used.
+.le
+.ls (lmax = INDEF) [real]
+Upper limit of the wavelength range to be included in the calculations.
+If lmax is greater than the limit of the input spectrum, the max wavelength
+of the input spectrum will be used.
+.le
+.ls (iop = 0) [integer, min=0, max=4]
+Operation code: 0 - evaluate and convolve grating and LSF characteristics;
+1 - evaluate grating only; 2 - evaluate grating and aperture LSF;
+3 - convolve grating and aperture LSF characteristics;
+4 - evaluate grating blaze function for order "low_ord".
+.le
+.ih
+EXAMPLES
+1. Compute the scattered light spectrum for a G2V star spectrum (produced
+using the 'countspec' task) for the FOS blue-side and grating g190h. The
+input spectrum is in the table "fos_g2v_spec.tab" and the results will be
+stored in the table "scatter.tab". Plot the results using 'sgraph'.
+.nf
+
+	te> bspec fos_g2v_spec scatter blue g190h
+	te> sgraph "scatter gwav ablg" logy+
+	te> sgraph "scatter gwav benv" logy+ append+
+
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Two instrument science reports which describe the practical usage of this
+task are: FOS ISRs 127 and 150.
+
+This task was originally written by M.R.Rosa and TH.Mueller at ST-ECF
+and was ported to the IRAF/STSDAS environment by H.Bushouse (STScI).
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+countspec
+.endhelp 

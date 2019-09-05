@@ -1,0 +1,13 @@
+infile, s, a, "", , ,   	"Input file name"
+x, s, a, "", , ,		"X coordinate"
+y, s, a, "", , ,		"Y coordinate"
+
+hms, b, h, yes, , ,		"Output in HMS format?"
+centroid, b, h, no, , ,		"Do centroiding?"
+boxsize, i, h, 7, 1, ,		"Centroid boxsize"
+cursor, *imcur, h, '', , ,	"Image cursor"
+
+ra, s, h, , , ,
+dec, s, h, , , ,
+
+mode, s, h, "al"

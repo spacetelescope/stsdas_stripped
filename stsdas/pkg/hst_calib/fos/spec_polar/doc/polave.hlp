@@ -1,0 +1,100 @@
+.help polave Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+polave -- Average FOS polarimetry data ('c3h') files.
+.ih
+USAGE
+polave input output
+.ih
+DESCRIPTION  
+The 'polave' task takes any number of FOS polarimetry data ('c3h') files and 
+computes the average of the Stokes parameter I, Q, U, and V spectra,
+as well as the average of the corresponding IQUV error spectra. Polarization
+spectra (linear, circular, and position angle) are recomputed from the
+averaged Stokes IQUV spectra.
+Since an FOS POLSCAN observation sequence is usually limited in duration to
+one orbit, this routine allows for the averaging of many separate datasets for
+faint sources.
+
+All four sets of polarimetry spectra within the 'c3h' file (pass direction 1,
+pass direction 2, 1+2 combined, 1+2 combined and corrected)
+are operated on by this task.
+The formulae used to compute polarization spectra from the averaged Stokes
+parameter spectra are identical to those used in the 
+'calfos', 'calpolar', 'polcalc', and 'polbin'
+tasks (see the help page for the 'polbin' task for a listing of
+these formulae).
+Note that these algorithms assume that the input Stokes QUV spectra have NOT 
+previously been normalized by Stokes I.
+
+The averaged spectra can be computed using either uniform or variance
+weighting of the input Stokes IQUV data. In the case of uniform weighting,
+all data receive equal weights, while for variance weighting the IQUV data
+are weighted by the inverse square of their respective error values.
+In either weighting mode, IQUV values that have corresponding errors equal
+to zero are not used in computing the averages (i.e. their weights are set
+to zero). In mathematical form, the average IQUV and error values for a
+given pixel are computed as follows:
+.nf
+
+             Uniform Weighting                    Variance Weighting
+
+wgt(i)     = 1 or 0 (if S_err(i)=0)               1 / S_err(i)**2
+
+wsum       = sum{ wgt(i) }                        sum{ wgt(i) }
+
+ave. S     = sum{ S(i)*wgt(i) } / wsum            sum{ S(i)*wgt(i) } / wsum
+
+ave. S_err = sqrt{ sum{ S_err(i)**2 }} / wsum     sqrt{ 1/wsum }
+
+.fi
+where the sums are over the number of input images, S(i) and S_err(i)
+are the values of one of the Stokes IQUV parameters and its
+error, and wgt(i) is the assigned weight value for the pixel from input
+image number "i". If all input values for a given pixel are rejected due
+to zero error values, then all output values for that pixel are set to zero.
+.ih
+PARAMETERS 
+.ls input [file name]
+Images to combine. May be a list or a file name template.
+If the input image name extension is not given, an extension
+of 'c3h' is assumed.
+.le
+.ls output [file name]
+Output image name.  The output image name extension is always set equal to
+the input image name extension.
+.le
+.ls (weight = "uniform") [string, allowed values: uniform | variance]
+The type of weighting to be used when computing averages. Uniform weight
+assigns equal weight to all input values, while variance weighting assigns
+a weight to the Stokes IQUV values that is equal to the inverse square of 
+their associated error values (see description above).
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Calculate the average of the polarimetry data files 'y0xr0305t.c3h', 
+'y0xr0306t.c3h', 'y0xr0307t.c3h', and 'y0xr0308t.c3h' using variance weighting.
+Store the result in the file 'hd94910_ave.c3h'.
+.nf
+
+   sp> polave y0xr030*t.c3h hd94910_ave weight=variance
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+pcombine, plbias, polcalc, polbin, polnorm
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

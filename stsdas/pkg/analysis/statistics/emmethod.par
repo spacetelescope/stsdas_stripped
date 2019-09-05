@@ -1,0 +1,9 @@
+# Task parameters for the EM task
+
+input,s,a,,,,"> Input file(s)"
+alpha,s,a,"0.0",,,"> Initial estimates of regression coefficients"
+tolerance,r,h,1.0e-5,0.0,,"> Tolerance for regression fit?"
+niter,i,h,50,1,,"> Maximum number of iterations to allow"
+emestim,b,h,n,,,"> User provides initial values for regression coefficients?"
+verbose,b,h,n,,,"> Full printout desired?"
+mode,s,h,"al",,,

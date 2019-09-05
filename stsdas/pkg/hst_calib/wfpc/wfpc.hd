@@ -1,0 +1,99 @@
+# Help directory for the WFPC package.
+
+$wfpc		= "stsdas$pkg/hst_calib/wfpc/"
+$doc		= "stsdas$pkg/hst_calib/wfpc/doc/"
+$bjdetect	= "stsdas$pkg/hst_calib/wfpc/bjdetect/"
+$calwfp		= "stsdas$pkg/hst_calib/wfpc/calwfp/"
+$calwp2		= "stsdas$pkg/hst_calib/wfpc/calwp2/"
+$combine	= "stsdas$pkg/hst_calib/wfpc/combine/"
+$crrej		= "stsdas$pkg/hst_calib/wfpc/crrej/"
+$engextr	= "stsdas$pkg/hst_calib/wfpc/engextr/"
+$invmetric      = "stsdas$pkg/hst_calib/wfpc/invmetric/"
+$metric         = "stsdas$pkg/hst_calib/wfpc/metric/"
+$mkdark         = "stsdas$pkg/hst_calib/wfpc/mkdark/"
+$noise		= "stsdas$pkg/hst_calib/wfpc/noise/"
+$pixcoord	= "stsdas$pkg/hst_calib/wfpc/pixcoord/"
+$qmosaic	= "stsdas$pkg/hst_calib/wfpc/qmosaic/"
+$seam		= "stsdas$pkg/hst_calib/wfpc/seam/"
+$uchcoord       = "stsdas$pkg/hst_calib/wfpc/uchcoord/"
+$uchscale       = "stsdas$pkg/hst_calib/wfpc/uchscale/"
+$w_calib	= "stsdas$pkg/hst_calib/wfpc/w_calib/"
+$warmpix        = "stsdas$pkg/hst_calib/wfpc/warmpix/"
+$wfixup         = "stsdas$pkg/hst_calib/wfpc/wfixup/"
+$wmosaic	= "stsdas$pkg/hst_calib/wfpc/wmosaic/"
+$wstat		= "stsdas$pkg/hst_calib/wfpc/wstat/"
+
+
+w_calib		men=w_calib$w_calib.men,
+		hlp=..,
+		sys=w_calib$w_calib.hlp,
+		pkg=w_calib$w_calib.hd,
+		src=w_calib$w_calib.cl
+
+bjdetect    	hlp = doc$bjdetect.hlp,
+		src = bjdetect$t_bjdetect.x
+
+calwfp    	hlp = doc$calwfp.hlp,
+		src = calwfp$t_calwfp.x
+
+calwp2    	hlp = doc$calwp2.hlp,
+		src = calwp2$t_calwp2.x
+
+checkwfpc    	hlp = doc$checkwfpc.hlp,
+		src = wfpc$checkwfpc.cl
+
+combine 	hlp = doc$combine.hlp,
+		src = combine$t_combine.x
+
+crrej	 	hlp = doc$crrej.hlp,
+		src = crrej$t_crrej.x
+
+engextr 	hlp = doc$engextr.hlp,
+		src = engextr$t_engextr.x
+
+invmetric       hlp = doc$invmetric.hlp,
+                src = invmetric$t_invmetric.x
+
+metric          hlp = doc$metric.hlp,
+                src = metric$t_metric.x
+
+mkdark	 	hlp = doc$mkdark.hlp,
+		src = mkdark$t_mkdark.x
+
+noisemodel 	hlp = doc$noisemodel.hlp,
+		src = noise$t_noisemodel.x
+
+dqfpar	 	hlp = doc$dqfpar.hlp
+
+dqpar	 	hlp = doc$dqpar.hlp
+
+noisepar 	hlp = doc$noisepar.hlp
+
+wdestreak 	hlp = doc$wdestreak.hlp
+
+pixcoord	hlp = doc$pixcoord.hlp,
+		src = pixcoord$pixcoord.x
+
+qmosaic        hlp = doc$qmosaic.hlp,
+                src=qmosaic$t_qmosaic.x
+
+seam            hlp = doc$seam.hlp,
+                src=seam$t_seam.x
+
+uchcoord        hlp = doc$uchcoord.hlp,
+		src=uchcoord$t_uchcoord.x
+ 
+uchscale        hlp = doc$uchscale.hlp,
+		src=uchscale$t_uchscale.x
+ 
+warmpix         hlp = doc$warmpix.hlp,
+                src=warmpix$t_warmpix.x
+
+wfixup          hlp = doc$wfixup.hlp,
+                src=wfixup$t_wfixup.x
+
+wmosaic         hlp = doc$wmosaic.hlp,
+                src=wmosaic$t_wmosaic.x
+
+wstatistics	hlp = doc$wstatistics.hlp,
+		src = wstat$t_wstat.x

@@ -1,0 +1,23 @@
+SPECRES - Long Slit Spectroscopic Restoration Package 
+        Jeremy Walsh, ST-ECF (jwalsh@eso.org), March 2003
+
+Tasks included:
+
+specholucy -  extract the spectra of point sources and estimate 
+              the background spectrum of a longslit spectrum 
+              for the homogeneous case (background spectrum not 
+              varying with position) using a Richardson-Lucy 
+              (R-L) restoration technique
+
+specinholucy - extract the spectra of point sources and estimate 
+               the background spectrum of a longslit spectrum 
+               for the inhomogeneous case (spatially varying
+               background) using a R-L restoration technique
+
+specpsf  -  form a longslit point source spectrum from point 
+            spread function images
+
+For more detailed information please see:
+Lucy & Walsh, 2003, AJ, in press (astro-ph/0301102)
+http://www.stecf.org/~jwalsh/specres/
+

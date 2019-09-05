@@ -1,0 +1,78 @@
+.help headers Aug93 stsdas.toolbox
+.ih
+NAME
+headers -- Tools for examining & editing image headers. 
+.ih
+INTRODUCTION
+There are several tasks in this package for examining and 
+editing image headers---particularly GEIS format image headers. 
+Type "help geis" for more information about the data structure for 
+HST data.  The `headers' package is implicitly loaded when 
+STSDAS is loaded.  Placing these tasks in a separate 
+package merely serves (in this case) to emphasize the logical 
+relationship between them, and to make the package menu small and 
+informative.  A quick summary is given in Table 1 below, followed 
+by a few highlights.  Utilities for examining, editing, and 
+reformatting images can be found in the `toolbox.imgtools' package. 
+
+.nf
+
+                Table 1.  Image Header Utility Tasks
+  +--------------------------------------------------------------+
+  | Task        | Description                                    |
+  +--------------------------------------------------------------+
+  | eheader     | Interactively edit an image header             |
+  | groupmod    | Add/delete group parameters from GEIS images   |
+  | hcheck      | Check image header keywords                    |
+  | hdiff       | Display differences between two headers        |
+  | iminfo      | Print instrument-specific info for HST images  |
+  | stfhistory  | Add history records to a GEIS image header     |
+  +--------------------------------------------------------------+
+.fi
+.ih
+HEADER EDITING
+There are four tasks in `headers' for editing the 
+contents of an image header.  
+.nf
+'eheader'   - Interactive editor for editing all header keywords
+              and values, including those in a group parameter block.
+' 
+          header editor is the 
+most general utility, in that it allows the user to edit 
+interactively all header keywords and their values, including those 
+in a GEIS group parameter block (GPB), but it cannot add or delete 
+GPB keywords.  The `chgkeywrd' task provides a non-interactive 
+means to change the names (but not the values) of many header 
+keywords at once, but it cannot modify the names of GPB keywords 
+either.  The `groupmod' task DOES allow keywords to be added to or 
+deleted from the GPB, but it initializes them all to only one 
+chosen value.  (For more details about GEIS format files, type 
+"help geis".)  Finally, the `stfhistory' task will add a text 
+string as a "HISTORY" record to an image header.  
+.ih
+HEADER EXAMINATION
+There are three tasks for examining the image header contents.  The 
+`iminfo' task prints the values of some generally useful keywords 
+that are found in most astronomical image headers, such as the 
+image size, the integration time, the RA & Dec, UT and ST, etc.  
+For HST data this task will print various, instrument-specific 
+information, such as the filter(s)/grating(s) used, the instrument 
+operating mode, etc.  The two more general tasks are `hdiff', which 
+prints the names and values of keywords that differ between pairs 
+of images, and `hcheck' which will print the values of specified 
+keywords based upon a user-specified condition.  `hcheck' is quite 
+general and is very useful for finding keyword values that are, 
+e.g., out of range, or missing altogether.  
+.ih
+GROUP FORMAT IMAGES
+Users should be aware that modifications to GPB keywords must be 
+performed explicitly on each group in multi-group GEIS files; the 
+default is to operate on only the first image group.  To learn the 
+syntax for operating on individual image groups, type "help geis". 
+.ih
+SEE ALSO
+toolbox.imgtools.  
+
+Type "help geis" for more information about GEIS format files.  
+.bp
+.endhelp

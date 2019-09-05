@@ -1,0 +1,5 @@
+image,f,a,,,,Image name
+silent,b,h,no,,,Don't ring bell?
+rdonly,b,h,no,,,Edit table read only?
+inplace,b,h,no,,,Edit table in place?
+mode,s,h,al

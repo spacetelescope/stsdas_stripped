@@ -1,0 +1,4 @@
+input,f,a,"",,,	">image to be unwrapped"
+output,f,a,"",,,	">output image"
+thresh,r,h,25000.0,,,	">threshold"
+mode,s,h,a

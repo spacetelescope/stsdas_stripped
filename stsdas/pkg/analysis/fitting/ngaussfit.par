@@ -1,0 +1,21 @@
+# Parameter file for the ngaussfit task.
+#
+input,s,a,,,,>data to be fit
+output,s,a,,,,>output table
+function,s,h,"Gaussians","Gaussians|cgauss",,>function type
+rt,b,h,no,,,>get initial guess from table ?
+tablein,s,h,"",,,>table with initial guess
+row,i,h,1,1,,>row from which to take initial guess
+gausspars,pset,h,,,,>pset for Gaussians function
+cgausspars,pset,h,,,,>pset for cgauss function
+errorpars,pset,h,,,,pset for error-related parameters
+controlpars,pset,h,,,,pset for algorithm control parameters
+samplepars,pset,h,,,,pset for sampling parameters
+interactive,b,h,yes,,,>set fitting parameters interactively?
+verbose,b,h,no,,,>print iteration info ?
+pcomp,b,h,yes,,,>plot individual components ?
+ltype,s,h,"continuous","continuous|boxes",,>plot line type
+device,s,h,"stdgraph",,,>graphics output device
+gcur,*gcur,h,"",,,>graphics cursor input
+version,s,h,"16Sep97",,,>date of installation
+mode,s,h,al

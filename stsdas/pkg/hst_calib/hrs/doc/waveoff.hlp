@@ -1,0 +1,359 @@
+.help waveoff Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+waveoff -- Determine offset between calculated wavelengths and
+calibration lamp observations
+.ih
+USAGE
+waveoff input wave offsets
+.ih
+DESCRIPTION
+This task calculates the general zero-point offset between a
+calculated wavelength solution, and a spectral observation of a
+calibration lamp with a corresponding line list.  The offset is useful
+in determining the "correctness" of the wavelength solution.  The
+offset can also be used as input to tasks that automatically calculate
+dispersion solutions but need the offset to properly find line
+positions. This task was
+developed for use with the Goddard High Resolution Spectrograph (GHRS),
+but there is nothing instrument-specific about the task.
+
+.ls ALGORITHM
+The offset is determined by calculating the cross-correlation function
+between the observed calibration source and an artificial spectrum
+created from the known line list.
+
+The artificial spectrum is created using the input wavelength solution
+and the calibration source's known line list.  The spectrum is set to
+0 counts everywhere except those pixels where a spectral line should
+exist, according to the input wavelength solution.  The value of the
+pixel depends on the input.  If the known line list table has a column
+for intensity, the pixel is set to that value.  If not, the value of
+the pixel will be the median value of the input observation spectrum.
+
+Once the artificial spectrum is created, it is cross-correlated with
+the calibration observation.  The cross-correlation function used is
+the normalized mean and variance correlation given by the following
+equation:
+ 
+.nf
+	        TOTAL{(x[i] - xmean) * (y[i - k] - ymean)}
+     corr[k] = ------------------------------------------------
+		SQRT(TOTAL{(x[i] - xmean)**2}) *
+		     SQRT(TOTAL{(y[i - k] - ymean)**2})
+ 
+	where:
+	   corr[k]  - measure of correlation at offset k
+	   x[i]     - values in the first spectrum
+           xmean    - mean value of X in the region
+	 	      being correlated
+	   y[i]     - values in the second spectrum
+	   ymean    - mean value of Y in the region being
+		      correlated
+	   TOTAL{ } - sum over i
+.fi
+
+The absolute value of the maximum offset is specified by the 'max_offset'
+parameter.  The size of the correlation function is therefore two
+times the 'max_offset' size plus one to accommodate shifts from
+"-max_offset" to "max_offset".
+
+The maximum value of the correlation is found and the offset is
+computed to sub-pixel precision using quadratic refinement (i.e., the
+offset is the position of the maximum of the quadratic through the
+peak value and its two neighbors).
+
+The offset is calculated in the following sense:
+
+.nf
+	offset = artificial - observed
+
+	where:
+          artificial = The artificial spectrum position created
+                       from the specified wavelength solution.	
+          observed   = The calibration lamp observation.
+.fi
+
+The offsets are reported to the standard output and written to a
+table for later use.
+.le
+
+.ls INPUT
+For input, the calibration lamp observations must be images.  The
+wavelength solution can be specified in two forms.  First, the
+solution is in the form of images
+containing the wavelength solution vector.  Second, if the wavelength
+solution is specified by world coordinate system (WCS) information in
+the headers of the input images, a value of "WCS" in the parameter
+'wave' will access this information.
+
+The line list should be in a table, either a binary table or simple
+text table, with at least one column containing the wavelengths of
+known lines produced by the source used for the calibration lamp
+observation.  The 
+table does not have to be sorted (though for efficiency, it would be
+useful).  Optionally, a column of relative intensity value can also be
+present.  Though not crucial, the cross-correlation performs much
+better when the relative line strengths are taken into account.  The
+columns names are specified in parameters in the 'linetabpar' pset
+(see below).
+.le
+.ls OUTPUT
+The output is a table, specified by the parameter 'output',
+that contains the offset and value of the correlation function for
+each input observation.  The columns of this table are described
+below.
+.ls file
+The name of the calibration lamp observation.
+.le
+.ls woffset
+The offset calculated in wavelength space.  The exact units are the
+same as whatever the input wavelength solution was in.
+.le
+.ls poffset
+The offset, in pixel space, between the calculated wavelength solution
+and the actual observation.
+.le
+.ls soffset
+For GHRS spectrum, an absolution position space exists called "sample"
+space.  The offset in sample space is calculated here.  For non-GHRS
+data, this column will contain undefined values.
+.le
+.ls correlation
+The value of the cross-correlation function at its maximum.
+.le
+.le
+.ls OUTPUT - CORRELATION FUNCTION
+If specified by the parameter 'preview', the cross-correlation
+function can be viewed on the graphics device.  The correlation
+function is graphed for each group of each input observation, and the
+calculated offset is displayed.  The x-axis is the offset range, from
+the most negative offset to the most positive offset, with zero offset
+in the middle.  The y-axis is the value of the correlation, from 0 to
+1.  
+
+This graph is meant simply as a preview of how well the correlation is
+working.  There is limited interaction.  Besides the usual graphics keys
+available under gcur (see help for gcur), the following keys below
+have special functions:
+.ls ?
+Prints out the help for the graphics keys.
+.le
+.ls n	
+Turn previewing off.  Subsequent correlations will not be shown.
+.le
+.ls p
+Turn previewing on.  Continue displaying correlations.
+.le
+.ls q
+Quit and go on to next correlation.
+.le
+.le
+.ih
+PARAMETERS
+.ls input [file list]
+List of input calibration observations.  For HST observations, the
+minimum required is the rootname of the observations.  If no extension
+is specified, the extension of specified in the parameter 'input_ext'
+will be appended.  The list of
+observations can be in a file, which would be specified as '@file'.
+.le
+.ls (output = "STDOUT") [file]
+Name of the table to put the offset information in.  If the table
+doesn't exist, it will be created.  If it does exist, all columns
+must exist.  The new information
+will be appended to the table.  If the table is specified as "STDOUT",
+the offsets will be written to standard out, with a preceding line
+indicating what the columns are.
+.le
+.ls (wave = "") [file list]
+List of wavelength images.  These images contain the calculated
+wavelength solutions for the corresponding input calibration
+observations specified in the 'input' parameter.  If blank, the
+wavelength file names will be constructed by taking each input
+observation name and appending the extension specified in the
+parameter 'wave_ext'.  If the word
+"WCS" is specified, the wavelength solution will be taken from the
+world coordinate system (WCS) information found in the header of the
+input observations.  The list of wavelength images can also be placed
+in a file and accessed by specifying '@file'.
+.le
+.ls (max_offset =  INDEF) [integer]
+The maximum offset, in pixels, that can be determined.  If not
+specified, i.e. INDEF, the maximum offset will be one quarter the size
+of the input spectra.  
+.le
+.ls (preview = no) [boolean]
+If yes, each correlation function calculated is displayed on the
+graphics device.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device to display the correlation functions.
+.le
+.ls (cursor = "") [*gcur cursor input]
+Where the input for cursor interaction should come from.  By default,
+cursor interaction is controlled by the user's standard input,
+usually the keyboard.
+.le
+.ls (linetab = "scidata$czptnelinec") [file]
+The line identification table the corresponds to the specified
+calibration observation lamp.  The default is the platinum-neon line
+list for the calibrations lamps located in the GHRS and distributed
+with STSDAS.
+.le
+.ls (linetabpar = "") [pset]
+This pset contains the names of the columns that contain the
+wavelength and intensity columns for the calibration lamp line list
+table specified in the 'linetab' parameter.  The parameters in the
+pset are as follows:
+.ls (wavelength_col = "wavelength") [string]
+Name of the column containing the wavelengths of the known line
+features in the input calibration observations.
+.le
+.ls (intensity_col = "intensity") [string]
+Name of the column containing the relative intensity of the lines.  If
+not specified or not present, the intensities for all the lines will
+be assumed uniform when constructing the "artificial" observation.
+.le
+.le
+.ls (input_ext = "c1h") [string]
+The default extension to append onto the input file names.
+.le
+.ls (wave_ext = "c0h") [string]
+The default extension to append onto the wavelength file names.
+.le
+.ih
+EXAMPLES
+1. Find how much the calculated wavelength solution is off for the GHRS
+calibration lamp observation 'z0dj020am'.  Since only the rootname is
+specified, 'waveoff' will look for the observation in file 'z0dj020am.c1h'
+and the wavelength solution in file 'z0dj020am.c0h'.
+
+.nf
+	cl> waveoff z0dj020am output=offsets
+	#    file             woffset poffset soffset correlation
+	z0dj020am.c1h[1/1]    -0.0188 -0.8046 -0.2015  0.4463
+.fi
+
+The observation 'z0dj020am' is available in the STDATA distribution (see
+the REFERENCES section).
+
+To remove this zero-point offset in the wavelength solution for the
+observation, use the offset value found in the "woffset" column and
+simply add it to the wavelength image, 'z0dj020am.c0h'.  The corrected
+wavelength solution will be placed in the file 'z0dj020am_correct.c0h'.
+
+.nf
+	cl> imcalc z0dj020am.c0h z0dj020am_correct.c0h \
+	>>>"im1 + -0.0188"
+.fi
+
+2.  Find the offset between the GHRS calibration lamp observation
+'z0dj020am', the same as above, and the now corrected wavelength
+solution, 'z0dj020am_correct.c0h'.  This example demonstrates specifying
+files on input as opposed to observation rootnames.
+
+.nf
+	cl> waveoff z0dj020am.c1h wave=z0dj020am_correct.c0h
+	#    file             woffset poffset soffset correlation
+	z0dj020am.c1h[1/1]    -0.0012 -0.0504 -0.0126  0.4434
+.fi
+
+3. Changing the maximum offset and previewing the correlation
+function.  For the above, the default maximum 
+size was used, which is one-quarter the size of the spectrum, or in
+the case of 'z0dj020am', about 500 pixels.  However the offset is only a
+few pixels.  If one had a series of similar observations, it would be
+appropriate to limit the maximum offset to a more reasonable value,
+such as plus or minus 20 pixels:
+
+.nf
+	cl> waveoff z0dj020am max_offset=20
+.fi
+
+To see how the maximum offset affects the correlation function, set
+the "preview" parameter to yes.  The correlation function will be
+drawn on the graphics device.  Hit the 'q' key to continue after each
+graph is displayed:
+
+.nf
+	cl> waveoff z0dj020am max_offset=indef preview+
+	cl> waveoff z0dj020am max_offset=20    preview+
+.fi
+
+4. The directory "wavecal$" contains only GHRS wavelength calibration
+observations.  Find the offsets for all the observations using default
+values for the parameters.  The offsets will be placed in the table
+"offsets.tab".
+
+.nf
+	cl> waveoff wavecal$*.c1h output=offsets
+.fi
+
+5. Using an "@" file to specify the observations.  This examples
+builds a file containing the list of observation names from the
+directory "wavecal$" using the IRAF "files" command.  The list is put
+into the file "file.list"
+
+.nf
+	cl> files *.c1h > file.list
+	cl> waveoff @file.list
+.fi
+
+6. Finding the offset for observations that have the wavelength
+solution in header keywords specifying a world coordinate system (WCS)
+transformation.  This example again uses the observation 'z0dj020am'.
+However, since this observation does not have any WCS information in
+its header, a
+copy of the image must first be created that does have such
+information.  To do this, use the task 'mkmultispec':
+
+.nf
+	cl> mkmultispec z0dj020am.c1h z0dj020am.c0h z0dj020am_wcs.c1h
+.fi
+
+The file 'z0dj020am_wcs.c1h' now has the wavelength solution as WCS
+header keywords.  To use this WCS information with 'waveoff', specify
+the word "WCS" for the 'wave' parameter:
+
+.nf
+	cl> waveoff z0dj020am_wcs.c1h wave=WCS
+.fi
+
+The offset calculated should be the same as that calculated in the
+first example.
+.ih
+BUGS
+.ih
+REFERENCES
+Jonathan Eisenhamer, STSDAS
+
+The file "czptnelinec.tab", is an STSDAS binary table which contains
+the known line list for the PtNe calibration lamps used by the GHRS.
+This table is distributed with STSDAS in the directory
+"scidata".  Refer to the "STSDAS Installation Guide" and
+"STSDAS Manager's Guide" for instructions on setting up this
+directory.
+
+The observation used in some of the examples in this help, z0dj020am,
+is available from two places.  First, it can be retrieved from the
+STScI archive, as any other observation can be retrieved.  For
+instructions on using the archive, refer to the "HST Archive Manual".
+If one does not have an account or is otherwise unable to use the
+archive, the observation is available in the example data, STDATA.
+Refer to the "STSDAS Manager's Guide" for information on retrieving
+and installing the STDATA example data.  If the STSDAS distribution is
+used, the observation will have to first be calibrated using 'calhrs'.
+
+For specific information about the GHRS, its data, and the reduction
+of such data, there are numerous manuals available: "GHRS Instrument
+Handbook", "GHRS Data Products Guide", "STSDAS User's Guide", and "HST
+Data Handbook".
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+gcur, mkmultispec, ctools, onedspec, hrs, calhrs
+.endhelp

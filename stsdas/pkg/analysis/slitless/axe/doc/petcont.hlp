@@ -1,0 +1,90 @@
+.help petcont Jul2005 axe
+.ih
+NAME
+petcont -- check whether pixels in a PET are members of more than one beam
+.ih
+USAGE
+.nf
+petcont grism config
+.fi
+.ih
+PARAMETERS
+.le
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Filename of grism/prism configuration file.
+.le
+.ls (cont_model = gauss) [gauss|fluxcube|geometric]
+The contamination model to be applied.
+.le
+.ls (model_scale = 3.0) [float]
+Scale factor for the gaussian emission model.
+.le
+.ls (spec_models) [string]
+Spectral models to use.
+.le
+.ls (object_models) [string]
+Object models to use.
+.le
+.ls (inter_type = linear) [linear|polynomial|spline]
+Interpolation type for the flux values.
+.le
+.ls (lambda_psf) [float]
+Wavelength in [nm] A_IMAGE and B_IMAGE was measured at (gauss).
+.le
+.ls (cont_map = no) [yes|no]
+Whether to write the contamination map into a FITS file.
+.le
+.ls (in_AF = "") [string]
+Name to use for the input aperture file (instead of the default).
+.le
+.ih
+DESCRIPTION
+This taks determines for each pixel in a PET the degree of contamination
+experienced from other sources. There are two fundamentally different ways
+to describe the contamination:
+
+The quantitative contamination uses an emission model and computes the
+contaminating flux according to the emission model (cont_model='gauss' or
+'fluxcube').
+
+The geometrical contamination (cont_model=geometric) just records the number
+of beams a PET pixel is used in.
+
+Depending on the contamination model used the requirements for the
+Input Object Lists and mandatory input files are different.
+Please read the aXe manual for details.
+
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input PET would be
+called <grism-rootname>_<science extension>.PET.fits and the input 
+aperture file would be <grism-rootname>_<science extension>.OAF.
+.ih
+EXAMPLES
+1. Compute the contamination for the image 'test_grism_1.fits' using
+the gaussian emission model:
+
+.nf
+   ax> petcont test_grism_1.fits SLIM.conf.test.0 cont_model='gauss'
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+af2pet,pet2spc
+.endhelp

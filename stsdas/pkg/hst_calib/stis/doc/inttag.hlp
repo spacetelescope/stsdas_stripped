@@ -1,0 +1,130 @@
+.help inttag Oct97 stis
+.ih
+NAME
+inttag -- Convert an events table of TIMETAG into an integrated ACCUM image.
+.ih
+USAGE
+inttag input output
+.ih
+PARAMETERS
+.ls input [string]
+Input file that contains TIMETAG event stream.
+This is ordinarily a FITS file containing two tables.
+The TIMETAG data are in the table with EXTNAME = "EVENTS",
+and the "good time intervals" are in the table with EXTNAME = "GTI".
+If the GTI table is missing or empty,
+all times will be considered "good".
+.le
+.ls output [string]
+Name of output FITS file.
+.le
+.ls (starttime = INDEF) [real]
+Start time for integrating events,
+in units of seconds since the beginning of the exposure.
+The default value of INDEF means that the start time
+will be set to the first START time in the GTI table.
+.le
+.ls (increment = INDEF) [real]
+Time interval in seconds.
+The default value of INDEF means integrate to
+the last STOP time in the GTI table.
+.le
+.ls (rcount = 1) [int, min = 1, max = INDEF]
+Repeat count, the number of output image sets to create.
+If 'rcount' is greater than 1 then 'increment' must also be specified
+(but 'starttime' may still be set to INDEF).
+.le
+.ls (highres = no) [bool]
+Create a high resolution output image?
+.le
+.ls (allevents = no) [bool]
+If 'allevents' is set to yes,
+all events in the input EVENTS table
+will be accumulated into the output image.
+The TIME column in the EVENTS table
+will only be used to determine the exposure time,
+and the GTI table will be ignored.
+.le
+.ls (verbose = yes) [bool]
+Print additional info?
+.ls
+.ih
+DESCRIPTION
+The task 'inttag' converts an events table of TIMETAG mode STIS data into a
+raw, time-integrated ACCUM image.
+'inttag' integrates the TIMETAG event stream
+in time to produce an ACCUM mode image integrating over only the good time
+intervals.
+The output image can be calibrated as any other raw image.
+
+INPUT AND OUTPUT FILES
+
+The input file for 'inttag' is an event stream table
+of TIMETAG mode produced by generic conversion.
+The data will be Doppler corrected (as required for
+medium and high resolution spectroscopic modes).
+This file will consist of
+a primary header with no data, and two binary table extensions.
+The primary header is identical in structure to
+the primary header of an ACCUM mode image.
+The first binary table (EXTNAME=EVENTS) contains
+a list of the events themselves (i.e. science data as an event stream),
+and the second binary table (EXTNAME=GTI) contains
+a list of good time intervals for the TIMETAG exposure.
+Columns "TIME", "AXIS1", and "AXIS2" in the EVENTS table are read.
+Columns "START" and "STOP" in the GTI table are read.
+
+The output image is a time integrated (ACCUM mode) image with the same
+structure as any other STIS MAMA raw image (i.e. primary header followed by
+a single or series of triplet extensions: SCI, ERR, DQ).
+The number of triplets is determined by the value of 'rcount'.
+The time interval in the Nth
+triplet covers from (starttime + (N-1)*increment) to (starttime + N*increment).
+The exposure time in each interval need not be identical,
+because events are included in the image
+only if they occur during "good time intervals"
+(as determined by the GTI extension table).
+The keyword OBSMODE in the primary
+header of the output image will still be set to "TIME-TAG".
+
+The output science image is ready to be calibrated
+(see 'calstis', 'crreject', 'basic2d', 'x2d', 'x1d').
+
+.ih
+EXAMPLES
+
+1. To process an inttag file in the data set with rootname "o3xv04nfm".
+The output image will be in low resolution:
+
+.nf
+      cl> inttag o3xv04nfm_tag.fits o3xv04nfm_raw.fits
+.fi
+
+2. As above, but create a five-imset output file,
+starting at 27.3 seconds after the shutter opened,
+with each imset integrated over 100 seconds.
+
+.nf
+      cl> inttag o3xv04nfm_tag.fits o3xv04nfm_raw.fits starttime=27.3 \
+	  increment=100 rcount=5
+.fi
+
+3. As above, but let the start time default to the first good time
+interval in the GTI table.
+
+.nf
+      cl> inttag o3xv04nfm_tag.fits o3xv04nfm_raw.fits starttime=INDEF \
+	  increment=100 rcount=5
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.nf
+STIS ISR 96-13, S. Baum et al, July 1996.
+Iraf task written by R. Katsanis.
+INTTAG routine written by N. Zarate.
+.fi
+.ih
+SEE ALSO
+.endhelp

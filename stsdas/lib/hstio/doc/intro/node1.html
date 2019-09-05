@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Fundamental Design and Implementation Considerations</TITLE>
+<meta name="description" value=" Fundamental Design and Implementation Considerations">
+<meta name="keywords" value="intro">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html18 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html16 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html10 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html19 HREF="node2.html"> General Structure of </A>
+<B>Up:</B> <A NAME=tex2html17 HREF="intro.html">Data Structures in STIS </A>
+<B> Previous:</B> <A NAME=tex2html11 HREF="intro.html">Data Structures in STIS </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00010000000000000000> Fundamental Design and Implementation Considerations</A></H1>
+<P>
+STIS and NICMOS (New, 1995), instruments to be installed aboard the
+Hubble Space Telescope during the 1997 servicing mission, are extremely
+flexible and can be used in many different modes.  Consequently, the
+data produced by these instruments contains complex internal
+relationships as well as external associations with other data groups. 
+This paper will discuss the basic structure of the data from STIS and
+NICMOS and the structure of the software that provides access to the data.
+This software is being used in the STScI calibration pipelines for these
+instruments.
+<P>
+The calibration software is being written in strict conformity to ANSI C, 
+(which includes the standard ANSI C library), with no special vendor 
+extensions allowed.  The pipeline software is modular in design with 
+minimal and managed dependencies on the operating system in which the 
+software executes.  The pipeline utilizes the IRAF software environment 
+(Tody, 1986).  However, any IRAF routines employed use the OpenIRAF 
+software environment, which allows IRAF library routines to be called 
+from an ANSI C program.  The design perspective toward IRAF is the same 
+as that toward an operating system, viz., managed and minimal 
+dependencies.  The use of IRAF routines is confined primarily to basic I/O 
+routines or special STSDAS (Hanisch, 1989) packages, such as synphot.
+<P>
+ANSI C data structures represent both uncalibrated and calibrated data
+from each instrument, forming a data model of each instrument.  The
+pipeline software consists of calibration steps that operate on these
+data structures.  A major goal is to make the calibration algorithms
+themselves only dependent on these data structures.  All I/O is
+encapsulated in basic routines that form a mapping between these
+data structures and external storage media.
+<P>
+Exceptions to this goal are calibration steps for which I/O becomes a
+significant part of the algorithm itself, e. g. when there is
+insufficient memory to contain all the needed data.  In this case, I/O
+needs will be satisfied by calls to the interface module, leaving the
+algorithms themselves free of any direct, low-level I/O.  This issue
+will likely be significant to STIS.
+<P>
+<BR> <HR><A NAME=tex2html18 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html16 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html10 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html19 HREF="node2.html"> General Structure of </A>
+<B>Up:</B> <A NAME=tex2html17 HREF="intro.html">Data Structures in STIS </A>
+<B> Previous:</B> <A NAME=tex2html11 HREF="intro.html">Data Structures in STIS </A>
+<BR> <HR> <P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:26:56 EDT 1996</I>
+</ADDRESS>
+</BODY>

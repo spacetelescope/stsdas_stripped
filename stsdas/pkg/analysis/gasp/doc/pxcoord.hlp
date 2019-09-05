@@ -1,0 +1,84 @@
+.help pxcoord Jul93 stsdas.analysis.gasp
+.ih
+NAME
+pxcoord -- List pixel coordinates of guide stars.
+.ih
+USAGE
+pxcoord image gsctable
+.ih
+DESCRIPTION
+List the pixel coordinates of objects in both a table and an image.
+The STSDAS table is assumed to be extracted from the Guide Star Catalog
+and the image is assumed to contain a coordinate transformations that
+Guide star positions are marked on an image by replacing pixels along a
+pair of lines near the pixel corresponding to the coordinate.
+
+Coordinates are read from an STSDAS table containing right ascensions
+and declinations.  Estimated pixel coordinates for each star are
+computed based on a transformation specified in task parameters.  The
+pixel coordinates are written in table columns 'X_PIX' and 'Y_PIX'.  If
+these columns are not present in the specified table, they are created.
+Pixel values used as the marker can be specified explicitly or can be
+based on the highest pixel value in the image.
+.ih
+PARAMETERS
+.ls inimage [file name]
+Input image.  Note that pixels are replaced in-place.  We 
+recommend using a copy of the image.
+.le
+.ls gsctable [file name]
+Guide star catalog table.
+.le
+.ls pixval = INDEF [real]
+Marker pixel value.
+.le
+.ls crval1 [real]
+X coordinate at the reference pixel.
+.le
+.ls crval2 [real]
+Y coordinate at the reference pixel.
+.le
+.ls crpix1 = 1 [real]
+X reference pixel.
+.le
+.ls crpix2 = 1 [real]
+Y reference pixel.
+.le
+.ls cdelt1 = 1 [real]
+X coordinate increment per pixel.
+.le
+.ls cdelt2 = 1 [real]
+Y coordinate increment per pixel.
+.le
+.ls crota = 0 [real]
+Rotation angle (in degrees).
+.le
+.ls ctype1 = "RA" [string]
+X coordinate type.
+.le
+.ls ctype2 = "DEC" [string]
+Y coordinate type.
+.le
+.ls valid = no [boolean]
+Initialize  all stars to valid?
+.le
+.ls xycoord = no [boolean]
+Use (X,Y) pixel coordinates?
+.le
+.ls imtrans = yes [boolean]
+Find the coordinate transformation in the input image?
+.le
+.ls pltsol = no [boolean]
+Use the plate solution for the coordinate transformation?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+extgst, intrep, targets
+
+Type "help gasp opt=sys" for a description of the 'gasp' package and
+the Guide Star Catalog.
+.endhelp

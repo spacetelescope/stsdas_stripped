@@ -1,0 +1,38 @@
+STSDAS 3.13 Patch 1
+
+This patch delivers CALWF3 2.3.  To install a binary distribution,
+
+	cd ~/iraf
+	cp .../calwf3-2.3.$IRAFARCH.tar.gz .
+	cl
+	stsdas
+	cd stsdas$
+	! tar xf $HOME/iraf/calwf3-2.3.$IRAFARCH.tar.gz
+
+If you are installing from source code, use calwf3-2.3.tar.gz and run mkpkg in 
+stsdas$pkg/hst_calib/wfc3
+
+
+The changes to CALWF3 are:
+
+Updates for version 2.3 - 15-Mar-2011 (HAB):
+    calwf3.cl:
+        Increment version to "15Mar2011".
+    wf3version.h:
+        Increment version to 2.3 and date to 15-Mar-2011.
+    calwf3/calwf3.c:
+        Modified CopyFFile routine to update the FILENAME keyword in created
+        output file. (PR 67225; Trac #646)
+    wf3ir/doir.c:
+        No longer load dark ref file for zsigcorr. (PR 67728; Trac #681)
+    wf3ir/getirflags.c:
+        Removed zsigcorr checks in checkDark routine, because zsigcorr no
+        longer uses the dark. (PR 67728; Trac #681)
+    wf3ir/zsigcorr.c:
+        Modified zsigcorr routine to just subtract the super-zero read image
+        from the science zero read image to estimate zero read signal, rather
+        than scaling the difference between the first and zero reads in the
+        science image. This avoids problems with zoer read exposure time in
+        subarray exposures. Also eliminated use of dark image.
+        (PR 67728; Trac #681)
+

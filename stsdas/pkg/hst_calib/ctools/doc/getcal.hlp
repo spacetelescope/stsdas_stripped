@@ -1,0 +1,55 @@
+.help getcal Mar93 stsdas.hst_calib.ctools
+.ih
+NAME
+getcal -- Populate a pset with calibration parameter values from HST data.
+.ih
+USAGE
+getcal input
+.ih
+DESCRIPTION
+'getcal' is a utility task used by 'chcalpar' to retrieve parameter
+values, although the task can also be used directly by users.
+(See the help file for 'chcalpar' for more information.)
+
+'getcal' reads an HST image, decides which pset to use based on the
+instrument that acquired the data, and populates the pset with the
+values of the calibration parameters.  The name of the chosen pset is
+placed in the parameter 'keywords' of 'getcal'.  (You can also
+specify a customized pset.)
+.ih
+PARAMETERS
+.ls input [file name]
+Image used to define instrument calibration keywords and initial values.
+If a list of images is specified, the pset is populated with values
+taken from the FIRST image.
+.le
+.ls keywords = "" [pset]
+Name of the instrument-specific pset that contains the calibration
+parameters of the specified input image.  If this parameter
+is blank, 'getcal' tries to
+determine which standard pset to use based on the
+"INSTRUME" header keyword.  A specified pset can be used, provided
+there is no conflict with the instrument specified by the image
+header and the value of the 'instrument' parameter in the pset.
+.le
+.ih
+EXAMPLES
+1. Retrieve the calibration parameters from the GHRS image 'z06i5601m.d0h'.
+Examine the 'keywords' parameter of 'getcal' to see the name of the
+pset, and invoke the pset to examine the values loaded by 'getcal'.
+
+.nf
+        cl> getcal z06i5601m.d0h ""
+        cl> lpar getcal
+                input = "z06i5601m.d0h" Input science data header file name
+            (keywords = "ckwhrs")       Pset for calibration parameters
+             (Version = "9Nov92")       Date of Installation
+                (mode = "ql")           
+        cl> ckwhrs
+                ...eparam appears with the pset ckwhrs.
+.fi
+
+.ih
+SEE ALSO
+chcalpar, eparam, lparam, modcal, parameters, putcal, unlearn, ckwxxx
+.endhelp

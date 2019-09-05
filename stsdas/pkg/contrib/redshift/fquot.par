@@ -1,0 +1,23 @@
+templates,s,a,,,,List of template stars
+spectra,s,a,,,,List of input spectra
+line,i,a,1,,,"Line number"
+zlist,s,a,1000.,,,List of redshift estimates
+z0,r,a,1000.,,,Initial redshift estimate cz (km/sec)
+obj_plot,b,h,yes,,,Plots the raw object data
+window_plot,b,h,yes,,,Plots the windowed object data
+fft_plot,b,h,yes,,,Plots the power spectrum of the data
+fit_plot,b,h,yes,,,Do you wish a plot of the best fit?
+intermediate,b,h,yes,,,Displays intermediate results
+sigma,r,h,180.,,,Initial velocity dispersion estimate (km/sec)
+gamma,r,h,0.80,,,Initial line strength parameter estimate
+order,i,h,4,1,10,Order of polynomial fit to spectrum
+bell_window,r,h,0.2,,,Fraction of spectrum to taper
+counts_per_photon,r,h,1.,,,Detector units per photon
+low_bin,i,h,5,,,Inverse wavelength bins below this value are excluded
+nrun,i,h,20,,,Initial number of bins included in fit
+initial_chi,r,h,20.,,,Initial estimate of chi-square
+converge,r,h,0.1,,,Convergence criterion
+max_iterations,i,h,10,,,Maximum iterations permitted for minimization
+logfiles,s,h,"STDOUT,fquot.log",,,List of log files
+cursor,*gcur,h,"",,,Graphics cursor input
+mode,s,h,"ql",,,

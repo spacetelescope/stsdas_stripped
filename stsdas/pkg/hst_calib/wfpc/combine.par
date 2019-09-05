@@ -1,0 +1,25 @@
+#  wfpc.combine parameters
+#	Last Revised:		29 Mar 93 by RAShaw
+#
+input,s,a,,,,List of image rootnames to combine
+output,s,a,,,,Output image name
+sigma,s,h,"",,,Output sigma image (optional)
+logfile,s,h,"STDOUT",,,Log file
+option,s,h,"average","sum|average|median|minreject|maxreject|minmaxrej|\
+|crreject|threshold|sigclip|avsigclip",,"Type of combine operation:
+    sum, average, median, minreject, maxreject,
+    minmaxrej, crreject, threshold, sigclip, 
+    avsigclip"
+outtype,s,h,"r","u|s|i|l|r|d",,Output image pixel datatype
+expname,s,h,"",,,Image header exposure time keyword
+exposure,b,h,no,,,Scale by the exposure times?
+scale,b,h,no,,,Scale by the mode?
+offset,b,h,no,,,Add offset determined from the mode?
+weight,b,h,no,,,Use a weighted average?
+modesec,s,h,"",,,Image section for computing mode
+lowreject,r,h,3.,0.,,Lower sigma clipping factor
+highreject,r,h,3.,0.,,Upper sigma clipping factor
+blank,r,h,0.,,,Value if all pixels are rejected
+usedqf,b,h,no,,,Reference DQFs to reject flagged values?
+dqfpar,pset,h,,,,"Data Quality File parameters"
+noisepar,pset,h,,,,"Noise model parameters"

@@ -1,0 +1,18 @@
+Menu for the package stsdas.analysis.restore 
+
+       adaptive - Adaptive filter.
+     filterpars - Pset for setting filter parameters used in the wiener task. 
+        hfilter - Adaptive low-pass filter based on H-transform.
+        lowpars - Pset for setting the low-pass filter parameters used in the
+                  wiener task.
+           lucy - Deconvolve an image using Leon Lucy's algorithm.
+            mem - Deconvolve an image by the Maximum Entrophy Method (MEM).
+      modelpars - Pset for setting model parameters used in the wiener task.
+      noisepars - Pset for setting noise parameters used in the wiener task.
+        psfpars - Pset for setting psf parameters used in the wiener task. 
+         sclean - Sigma-CLEAN deconvolution of 2-d images.
+         wiener - Deconvolve a 2-dimensional image using a noniterative 
+                  Fourier method.
+
+(Type "help restore option=sysdoc" for more information about the 
+restore package).

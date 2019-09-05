@@ -1,0 +1,171 @@
+.help sclean Aug92 stsdas.analysis.restore
+.ih
+NAME
+sclean -- Sigma-CLEAN deconvolution of 2-d images.
+.ih
+USAGE
+sclean  input psf output residual
+.ih
+DESCRIPTION
+Standard CLEAN works by iteratively building the
+so-called "CLEAN map" from the input image and PSF.
+The algorithm proceeds as follows:
+.ls (1)
+Copy the input image to a new image, called "residual map".
+Clear (zero) the CLEAN map.
+.le
+.ls (2)
+Locate the largest (in absolute value) peak in the residual map.
+.le
+.ls (3)
+At its corresponding position in the CLEAN map, add a Dirac-delta-like
+contribution ("CLEAN component").
+Its amplitude is a function of the residual map peak value
+and the so-called "CLEAN loop gain" (a value less than 1.).
+.le
+.ls (4)
+Subtract a scaled version of the PSF from the residual map, at the peak
+position.
+.le
+.ls (5)
+Iterate to step (2), or stop if some convergency criterion is met.
+.le
+
+The basic difference between standard CLEAN and Keel's sigma-CLEAN 
+is in the way it locates features to be subtracted from the
+residual map. Standard CLEAN looks for the largest peak
+in the residual map. Sigma-CLEAN builds, at each iteration,
+an auxiliary "signal-to-noise map", and looks there for the largest
+peak instead. In this way, information from the noise in the
+input image is constantly used to control the iterations, presumably giving
+better stability properties to the method. Refer to the reference
+for details.
+
+This task implements some additional features not contained in Keel's 
+code (as published in the below-cited paper):
+.ls o
+Optionally, the CLEANed image can be convolved with a so-called
+"restored beam", in order to dampen very high, non-realistic spatial 
+frequencies present in the CLEANed image. This convolution can be
+implemented either by a direct operation or in Fourier space. 
+The direct operation uses a Gaussian kernel, and may be adequate when
+its FWHM is small. For larger values of FWHM, Fourier convolution may
+be faster. However, it may result in some faint ringing appearing around
+very bright point sources. The FFT algorithm
+used by the task is faster when the axis sizes are composite numbers
+(non-primes), faster yet when rich in factors of 2, and even faster when
+exact powers of 2. Alternatively, the restored beam convolution may be 
+done outside the task, for instance using task 'gauss' in package
+'images'.
+.le
+.ls o
+Optionally, the residual image remaining after iterations have
+ended may be added to the CLEANed convolved image. This is useful 
+to preserve noise properties of the input image into the CLEANed image.
+.le
+.ls o
+The convergency criterion adopted in the original code showed to be
+too strong, usually stopping the algorithm at the very first iterations.
+The present implementation adopts a modified stopping mechanism:
+iterations are terminated when
+the S/N peak value beign processed drops below a user-supplied 
+parameter (task parameter `crit'), meaning that CLEAN components 
+started to dig into noise.
+To lessen the sensitivity to oscillations, the actual
+comparison includes the 5 last iterations.
+The algorithm is stopped only when all of them have peak S/N values 
+below the stopping parameter .
+.le
+
+The current implementation also includes a much faster (albeit more complex)
+peak finding algorithm.
+
+The PSF image must be read from a separate file from the input image. 
+The PSF does not need to be accurately centered in the array.
+The pixel with maximum intensity will be taken as the 
+PSF center. 
+However, to speed up PSF addressing in the code, it is assumed
+that the precise PSF center coincides with the center of a pixel. 
+Also, it is assumed that the PSF image goes to zero at the borders
+of the PSF array.
+
+The task can process an image template or list in 'input'. In this case,
+'output' is either a matching list of images or a directory. Both 'psf'
+and 'residual' are, however, always single images. If a multiple image
+list or template is used, the residual image will correspond to
+the first image only; residual image output is disabled for the
+remaining input images.
+
+HISTORY records containing information on algorithm parameters are appended 
+to the output image header.
+
+Typical CPU time is 0.2 seconds per iteration (Sparc 2) for a 512 X 512 image 
+and 100 X 100 PSF. 
+.ih
+PARAMETERS
+.ls input [file name template]
+Input 2-d image(s) section(s) to be deconvolved. This can also be a file list.
+.le
+.ls psf [file name]
+Input PSF 2-d image section.
+.le
+.ls output [file name list]
+Output deconvolved image(s).
+Always type real, regardless of input image type. This parameter can also
+be a directory name.
+.le
+.ls residual = "" [file name]
+Output residual image. If left as a null string (""), no residual image is
+produced.
+.le
+.ls (noise = 0.) [real, min=0.]
+Effective readout noise in electrons.
+.le
+.ls (adu = 1.) [real, min=0.]
+A/D conversion constant, electrons/DN.
+.le
+.ls (cgain = 0.02) [real, min=0., max=1.]
+CLEAN loop gain.
+.le
+.ls (crit = 2.7) [real, min=1.]
+Stopping criterion, in S/N units.
+.le
+.ls (maxloop = 1000) [int, min=1]
+Maximum allowed number of iterations, independently from the stopping
+criterion given by parameter `crit'.
+.le
+.ls (fwhm = 2.0) [real, min=0.]
+Restored beam FWHM. If set to zero, no convolution takes place.
+.le
+.ls (fft = no) [boolean]
+Perform convolution in Fourier space?
+.le
+.ls (addres = yes) [boolean]
+Add residual map to CLEAN map?
+.le
+.ls (verbose = 0) [integer, min=0, max=1]
+Verbosity level. 
+.nf
+  0 - No output
+  1 - Print the file name and execution time
+  2 - Print iteration number, peak position, peak value, clean
+      component, and peak S/N
+.fi
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task implements the sigma-CLEAN deconvolution algorithm
+described in:
+.ls
+Keel, W., 1991, PASP, 103, p. 723.
+.le
+.ls
+This task was written by I.Busko
+.le
+.ih
+SEE ALSO
+.endhelp

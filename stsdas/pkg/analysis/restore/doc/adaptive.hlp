@@ -1,0 +1,93 @@
+.help adaptive Apr93 stsdas.analysis.restore
+.ih
+NAME
+adaptive -- Adaptive filter for an image.
+.ih
+USAGE
+adaptive input output
+.ih
+DESCRIPTION
+.nf
+COPYRIGHT  (c)  1990 European Southern Observatory
+IDENT      filter.adap.hlq
+AUTHOR     G.M. Richter
+KEYWORDS   MIDAS, Smoothing, gradient-filter, Laplace-filter
+PURPOSE    On-line help file for the command: FILTER/ADAPTIV
+VERSION    1.0  10-APR-1991 : Creation, Richter 
+.fi
+
+This task evalutes---using an H-transform---the local 
+signal-to-noise ratio as a function
+of decreasing resolution:
+mean gradients and curvatures over different
+scale lengths (obtained from the H-coefficients of
+different orders) are compared to the corresponding
+expectation values of the noise.
+The order for which this
+signal-to-noise ratio exceeds a given parameter 'threshold'
+indicates the local resolution scale length of the signal
+(i.e., the point becomes significant at this order),
+and this determines the size of the impulse response of the filter
+at this point.
+
+When the task is completed, it displays information
+about the standard deviation and expectation values of
+the gradients and the Laplace terms at every order
+involved, and the number of pixels that became
+significant on every order by the gradient and by the Laplace term,
+respectively.
+The rest of the pixels are set to the maximum size response.
+.ih
+PARAMETERS
+.ls input = "" [file name]
+Name of input image.
+.le
+.ls output = "" [file name]
+Name of output image.
+.le
+.ls (mask = "") [file name]
+Name of optional mask.
+If mask = "", no mask is used.
+If a mask is used, it must be the same size as the input image.
+A given pixel is included when estimating noise statistics
+if its corresponding mask value is zero, or if no mask is used.
+Any non-zero mask value means
+the image pixel will not be used for noise statistics.
+.le
+.ls (type = "smooth") [string, allowed values:  smooth | gradient | laplace]
+The filter type may be smoothing, gradient filter, or Laplace filter.
+.le
+.ls (shape = "pyramid") [string, allowed values:  box | pyramid]
+The impulse response shape may be either box or pyramid.
+Pyramid is recommended.
+.le
+.ls (size = 31) [integer, min=1, max=INDEF]
+Maximum size of the impulse response filter.
+In regions of high resolution the actual size is smaller.
+Possible sizes are:  for box:  3,5,9,17,33,65,129 pixels;
+                 for pyramid:  3,5,7,11,15,23,31,47,63,95,127.
+.le
+.ls (threshold = 3.) [real]
+Threshold for significance (see description above).
+.le
+.ls (noise = "additive") [string, allowed values:  additive | poisson]
+Either an additive or Poisson noise model may be assumed.
+.le
+.ih
+EXAMPLES
+1. The image "frame" is adaptively smoothed with a maximum
+filter size of 31x31 pixels.
+The noise statistics are estimated from the whole image
+rather than from a mask (signal is included so care must
+be used when the image has a strong signal!)
+The output image is "result".
+
+.nf
+	pl> adaptive frame result "" s p 31 3 a
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+hfilter
+.endhelp

@@ -1,0 +1,10 @@
+# parameter file for rcombine
+input,s,a,,,, Input image or image template
+output,s,a,,,, Output image root
+operation,s,a,"average","average|sum",, Desired operation
+groups,s,h,-,,, Which groups to combine? (default to all)
+nbin,i,h,INDEF,,, How many groups to bin? INDEF => all
+dataqual,b,h,no,,, Propagate data quality (.cq) images?
+errors,b,h,no,,, Propagate error (.c2) images with .c1 images?
+Version,s,h,"21Nov94",,, Date of installation
+mode,s,h,"ql",,,

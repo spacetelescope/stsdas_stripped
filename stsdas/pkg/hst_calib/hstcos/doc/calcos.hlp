@@ -1,0 +1,218 @@
+.help calcos October2011 calcos
+.nj
+.ih
+NAME
+calcos -- Process COS data through the COS Pipeline calibration.
+.ih
+USAGE
+.nf
+calcos input
+.fi
+.ih
+PARAMETERS
+.ls input [string]
+Input file name or association table name to be processed through calcos.
+.le
+.ls (verbosity = 1) [integer, min=0, max=2]
+Print more messages if verbosity = 2; print very few if verbosity = 0.
+.le
+.ls (savetmp = no) [boolean]
+Save all temporary files created by calcos?
+.le
+.ls (outdir = "") [string]
+Place all the output files in this directory during processing.
+.le
+.ls (find_target = no) [boolean]
+Search for the target spectrum in the Y direction,
+rather than relying entirely on the wavecal offset (keyword shift2[abc])?
+.le
+.ls (shift_file = "") [string]
+This is an optional file that the user may specify in order to
+override (i.e. explicitly set) the values of SHIFT1A, SHIFT1B, or SHIFT1C.
+This should be a text file with five columns; the columns are:
+
+.nf
+    rootname  fpoffset  flash_number  segment/stripe  shift1
+.fi
+
+The first four columns are used for identifying which particular lamp
+exposure is to be overridden;
+however, any or all of those columns may be given as "any"
+(but without quotes), which matches any value.
+All strings are case insensitive.
+Blank lines and lines beginning with "#" will be ignored.
+A single shift file can be used for an entire association;
+that's why rootname is included as a selection criterion.
+The rootname in this case is the portion of the file name
+that precedes the suffix.
+Note that this is the name of a particular exposure,
+not an association name.
+The rootname is taken from the actual name of the raw file,
+rather than from the ROOTNAME keyword,
+so that if the raw file has been renamed without changing the keyword,
+the name in the shift file will be the name that most people would expect.
+It is redundant to specify both rootname and fpoffset;
+both are included to make it easier to set shift1 to the same value
+for all rootnames for a given fpoffset.
+If rootname is specified, fpoffset can be given as "any".
+The flash number is one indexed.
+The keywords (LMP_ON1, etc.) for lamp flashes are one indexed,
+following the FITS convention,
+and the information about the flashes and the shifts
+that is written to the trailer file (and standard output)
+also show the flash number starting with one.
+For those reasons it was felt that mistakes would be less likely
+if one indexing was used for flash number.
+The segment or stripe name should be the complete string
+"FUVA", "FUVB", "NUVA", "NUVB" or "NUVC",
+not just the single letter "A", "B" or "C".
+The shift itself is the pixel offset from
+the template lamp spectrum for FPOFFSET=0 (FP-POS=3);
+a positive shift means the features in the observed spectrum
+are at higher pixel number than the features in the template.
+.le
+.ls (csum = no) [boolean]
+Set 'csum' to yes in order to create the "calcos sum" image.
+Note that this is not an option that many users would need.
+This image will be written to a FITS file with suffix "_csum".
+.le
+.ls (raw_csum = no) [boolean]
+The default is to use thermally and geometrically corrected
+pixel coordinates to create the "calcos sum" image.
+If raw_csum = yes, the raw pixel coordinates will be used instead.
+This parameter will have no effect if csum = no,
+and it is relevant only for FUV data.
+Keyword COORDFRM (coordinate frame) will be added to the
+primary header of the csum file.
+If raw_csum = yes, COORDFRM will be set to "raw",
+and if raw_csum = no, COORDFRM will be set to "corrected".
+.le
+.ls (compress = no) [boolean]
+If csum=yes, setting 'compress' to yes results in
+a csum FITS file that contains a compressed image.
+This uses the on-the-fly compression in pyfits,
+but the algorithm and parameters are the same as in CFITSIO,
+so reading the resulting image using CFITSIO should be transparent.
+.le
+.ls (comp_param = "gzip,-0.01") [string]
+If csum=yes and compress=yes,
+'comp_param' is used to specify the compression parameters.
+This consists of two parts separated by a comma.
+The first part is the type of compression,
+which may be "gzip", "rice", or "hcompress".
+The second part is the quantization level,
+which specifies how the floating-point image values
+are to be converted to integer before compression.
+If the quantization level is positive,
+it is interpreted as a value relative to the RMS noise level
+in the image background.
+A value of 16, for example,
+means that the quantization level will be 1/16 of the noise level.
+If the quantization level is negative,
+it's the actual floating-point increment that corresponds to
+a difference of one in the scaled integer image.
+.le
+.ls (binx = 1) [integer, min=1, max=INDEF]
+If csum=yes, 'binx' gives the binning factor for the X axis
+(the dispersion direction, for spectroscopic data).
+'binx' must be an integral power of 2.
+.le
+.ls (biny = 1) [integer, min=1, max=INDEF]
+If csum=yes, 'biny' gives the binning factor for the Y axis.
+'biny' must be an integral power of 2.
+.le
+.ls (stimfile = "") [string]
+Append stim locations to this file.
+.le
+.ls (livefile = "") [string]
+Append livetime factors to this file.
+.le
+.ls (burstfile = "") [string]
+Append burst information to this file.
+.le
+.ls (version = "") [string]
+When the 'hstcos' package is loaded,
+the calcos version string will be copied to this parameter.
+Note that if the 'calcos' task is unlearned,
+this parameter will be reset to the default, an empty string.
+.le
+
+.ih
+DESCRIPTION
+The task 'calcos' provides routine calibration for COS data.
+Either a single file or a set of observations specified by an association
+table can be processed through 'calcos'.
+
+By setting the appropriate switches in the primary header of the input file,
+either one or all of the calibration processing steps can be performed.
+
+.ih
+INPUT AND OUTPUT FILES
+Association tables are read and interpreted to determine what
+uncalibrated raw files should be processed.
+The relationship between the input files and the output products
+are also specified in the table.
+
+The names of the output files are set by the task.
+However, the user may specify a directory name ('outdir'),
+and all the output files will be written to that directory.
+
+.ih
+REFERENCE FILES AND PROCESSING STEPS
+
+The names of the reference files (images and tables) to be used by 'calcos'
+are specified in the primary header of the input file,
+under the section CALIBRATION REFERENCE FILES.
+
+When an environment variable is used as part of a reference file name
+(e.g. "lref" in FLATFILE = "lref$s7g1700tl_flat.fits"),
+it is essential that the environment variable be set in the Unix shell
+before logging into IRAF, for example:
+
+.nf
+    setenv lref /grp/hst/cdbs/lref/
+.fi
+
+Setting an IRAF environment variable lref simply will not work.
+If the reference files are in the default directory,
+lref can be set to ./
+rather than editing the header
+to remove "lref$" from each of the reference file names.
+The file name may be specified in the header
+using either IRAF notation or Unix notation,
+i.e. either "lref$s7g1700tl_flat.fits" or "$lref/s7g1700tl_flat.fits".
+
+Input and output files to this task depend on which steps are set to PERFORM
+in the input parameter switches in the primary header of the input file.
+The value for a switch may be one of
+(PERFORM | OMIT | COMPLETE | SKIPPED).
+A calibration step will be performed only if
+the switch value is PERFORM (case insensitive).
+In the output file, those keywords which were set to PERFORM in the input
+image and for which processing was succesfully performed
+will be set to COMPLETE.
+
+.ih
+EXAMPLES
+
+1. To calibrate COS observations in the association table "l8aoa2010_asn.fits".
+
+In this case the reference files are in the directory "/grp/hst/cdbs/lref/".
+Note that we must have assigned lref as an environment variable
+before starting the cl.
+
+.nf
+    cl> show lref
+    /grp/hst/cdbs/lref/
+    cl> calcos l8aoa2010_asn.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.nf
+Task written by P. Hodge.
+.fi
+.ih
+SEE ALSO
+.endhelp

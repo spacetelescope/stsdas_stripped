@@ -1,0 +1,122 @@
+.help xytosky Apr2002 stsdas.analysis.dither
+.ih
+NAME
+xytosky -- Translate a 2-D image pixel coordinate to right ascension and 
+declination, optionally applying the distortion coefficients for the detector.
+.ih
+USAGE	
+xytosky input[group]
+.ih
+DESCRIPTION
+This Python task uses the group parameters CRVAL, CRPIX, and the CD matrix 
+coefficients to translate a pixel coordinate to RA and DEC.
+Thus the epoch of RA and Dec is the same as these group parameters.
+In addition, geometric distortion coefficients understood by PyDrizzle,
+and drizzle, can optionally be applied to correct the image position.
+A single position or a file containing a list of positions can be transformed.
+
+This task will only run under PyRAF due to the fact it is written entirely
+in Python.
+
+.ih
+PARAMETERS
+.ls input [string]
+Input image name.  Images are calculated one at a time and wildcards are 
+not supported.  
+If no group number is specified, it assumes the default group of 1.
+.le
+.ls (x) [real]
+X pixel coordinate.  
+
+No value needs to be specified here if a file will be used to provide a list
+of positions. However, if a file is specified, this value will be ignored.
+.le
+.ls (y) [real]
+Y pixel coordinate.
+
+No value needs to be specified here if a file will be used to provide a list
+of positions. However, if a file is specified, this value will be ignored.
+.le
+.ls (coords) [string]
+Name of ASCII file or FITS table containing a list of positions from the
+chip.
+
+If a file is specified, any position specified in "X" and "Y" parameters 
+will be completely ignored.
+.le
+.ls (colnames) [string]
+Names or indices of columns which correspond to X and Y position values.
+This should be a comma-delimited list of values for ASCII table columns
+or a comma-delimited list of names for FITS table columns corresponding
+to 'X' and 'Y' positions respectively.
+
+If none are provided, '1,2' (columns 1 and 2) is assumed for ASCII files
+and 'X,Y' is assumed as the names of the FITS table columns.
+.le
+.ls (linear) = yes [boolean]
+Only perform a standard linear translation, without distortion correction.
+This would be identical to 'xy2rd'. 
+
+If set to 'no', it will rely on the "idckey" keyword to determine which 
+distortion coefficients should be applied to the positions.
+.le
+.ls (idckey) [string]
+Name of the keyword to be used for selecting the distortion coefficients table.
+For ACS data, 'IDCTAB' would be appropriate and for WFPC2 data, 'trauger' would 
+use the trauger distortions coefficients used by the 'drizzle' task.
+.le
+.ls (hms) = yes [boolean]
+Print the output RA in hour-minute-second and DEC in 
+degree-minute-second?
+
+If 'hms=no', output will be in decimal degrees. 
+.le
+.ls (output) [string]
+Name of output file to place results. If this is identical to the input
+filename, the results will be appended to each positions row in the file.
+.le
+.ls (ra) [string]
+The output right ascension.
+.le
+.ls (dec) [string]
+The output declination.
+.le
+.ls (verbose) = yes [boolean]
+Print out the results to the screen in a readable format.
+.le
+.ih
+DESCRIPTION
+This Python task builds on the code developed for PyDrizzle to apply distortion 
+coefficients to image positions during the translation to sky positions
+(RA/Dec.).  Although it does not run the 'drizzle' task, it can use the
+coefficients tables developed for 'drizzle' to correct positions from WFPC2 and
+STIS observations.  
+
+.ih
+EXAMPLES
+1. Calculate RA and DEC of a pixel in the first SCI extension of an ACS image:
+.nf
+
+  --> xytosky j1a012345_raw.fits[sci,1] x=498. y=700.  
+
+.fi
+2. Calculate RA and DEC for objects from the second SCI extension as listed 
+in an ASCII file, and produce output in HMS format:
+.nf
+
+  --> xytosky j1a012345_raw.fits[sci,2] coords='coords.list' hms+
+.fi
+3. Calculate RA and DEC for objects from the first SCI extension as listed 
+in a FITS table, and append the results to the rows of the table:
+.nf
+
+  --> xytosky j1a012345_raw.fits[sci,1] coords='coords.fits' output='coords.fits'
+.fi
+.ih
+BUGS
+This task will only work on 1 extension at a time, for now.
+ 
+.ih
+SEE ALSO
+rd2xy
+.endhelp

@@ -1,0 +1,91 @@
+.help mosdisplay Aug10 stsdas.hst_calib.nicmos
+.ih
+NAME
+mosdisplay -- Display a mosaic of NICMOS or WFC3/IR MultiAccum images
+.ih
+USAGE
+mosdisplay input frame
+.ih
+DESCRIPTION
+Display all the readouts of a MultiAccum image by mosaicing them into a
+single image display buffer, using the "images.tv.display" task.
+Any of the SCI, ERR, DQ, SAMP, or TIME image extensions can be displayed.
+Images starting with the zeroth-read are placed in the display frame buffer
+starting at the upper left and proceeding horizontally to the right and
+vertically down to later readouts.
+If either or both of the "ncols" and "nrows" parameters are undefined, the
+images are arranged in the smallest sized square format possible. If "ncols"
+and "nrows" are defined, the images are layed out as specified.
+
+A subset of the "display" task image scaling parameters are available
+directly to set the desired intensity transfer function parameters.
+Note that any settings will be applied globally to all readouts displayed.
+
+.ih
+PARAMETERS
+.ls input [file]
+Input MultiAccum image to display.
+.le
+.ls frame [integer]
+Display frame to be loaded.
+.le
+.ls (ncols = INDEF) [integer]
+The number of columns in which the images will be displayed.
+This parameter and the parameter "nrows" define the geometry of
+how the images will be placed in the display buffer.
+.le
+.ls (nrows = INDEF) [integer]
+The number of rows in which the images will appear.
+.le
+.ls (extname = "sci") [string, allowed values: sci | err | dq | samp | time]
+Extension name (EXTNAME keyword value) of images to display.
+.le
+.ls (zscale = yes) [boolean]
+Apply an automatic intensity mapping algorithm when loading the images?
+See the "display" task for details.
+.le
+.ls (zrange = yes) [boolean]
+If not using the automatic mapping algorithm (zscale = no) map the full
+range of the image intensity to the full range of the display?
+See the "display" task for details.
+.le
+.ls (z1, z2 = INDEF) [real]
+Minimum and maximum image intensity to be mapped to the minimum
+and maximum display levels. These values only apply when not using
+the automatic or range intensity mapping methods.
+.le
+.ls (number = no) [boolean]
+Overlay IMSET numbers on the displayed images using the "tvmark" task?
+.le
+.ls (tvmcolor = 204) [integer]
+Color for "tvmark" to use when overlaying IMSET numbers.
+.le
+.ls (tvmtxsize = 1) [integer]
+Text size for "tvmark" to use when overlaying IMSET numbers.
+.le
+.ih
+EXAMPLES
+1. Display the 12 SCI images of file n3v801e3q_ima.fits in frame buffer 1.
+The images will be automatically arranged into a 4 x 3 (horizontal x vertical)
+grid and each readout will be autoscaled.
+
+.nf
+ cl> mosdisplay n3v801e3q_ima.fits 1
+.fi
+
+2. Display the 12 DQ images in file n3v801e3q_ima.fits, setting the
+intensity mapping limits.
+
+.nf
+ cl> mosdisplay n3v801e3q_ima.fits 1 ext=dq zsc- zra- z1=0 z2=2048
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, SSB
+.ih
+SEE ALSO
+display, tvmark, mosaic_display
+.endhelp

@@ -1,0 +1,10 @@
+infile, f, a, "", , , 	">input file template"
+inmask, f, a, "", , , 	">input mask template"
+outfile, f, a, "", , , 	">output file template"
+outmask, f, a, "", , , 	">output mask template"
+flatmin, r, a, 0., , ,	">lower limit of allowered flat field value"
+flatmax, r, a, 10., , ,	">upper limit of allowered flat field value"
+
+verbose, b, h, no, , ,	">print out verbose messages?"
+
+mode, s, h, "al"

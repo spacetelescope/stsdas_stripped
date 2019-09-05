@@ -1,0 +1,179 @@
+.help objcalib July94 stsdas.hst_calib.foc.focprism
+.ih
+NAME
+objcalib -- Photometrically calibrate an FOC objective prism image.
+.ih
+USAGE
+objcalib input output obsmode yzero
+.ih
+DESCRIPTION
+This procedure photometrically calibrates and
+wavelength-resamples the input spectrum to create an output spectrum
+which has the units Ergs/s/cm^2/Angstrom vs. wavelength.
+The photometric correction is based on the filters and detector used,
+and the wavelength resampling is performed by applying the
+dispersion curve corresponding to the prism which was used.
+
+The input can be a 1-D or 2-D image,
+an stsdas binary table, or a text file.
+The format of the output spectrum will be based on
+the type of input:  a 1-D image if the input is an image,
+a two-column table if the input is a binary table,
+or a two-column text file if the input is a text file.
+If the image has significant background,
+the background must be subtracted by the user before running 'objcalib'.
+It should be noted that the value of 'yzero' must be
+very well determined in order to avoid systematic errors
+in the photometry of the output spectrum.
+The output of 'objcalib' can be plotted easily
+using the 'sgraph' task in the 'stplot' package.
+.ih
+PARAMETERS
+.ls input = "" [string]
+Name of input spectrum file.
+This may be an image, an stsdas binary table, or a text file.
+If the input is a 2-D image,
+this will be converted to a 1-D array by summing along each image line.
+The original 2-D FOC image should first be rotated
+to align the spectrum with the image Y axis (vertical direction).
+The 'images.rotate' task can be used for this purpose.
+Then a narrow image section (e.g. [126:130,*]) can be appended to
+the image name in order to extract the spectrum.
+If the input is a table or text file,
+only the flux values are read;
+the row number is assumed to be
+the Y pixel number in the original image.
+.le
+.ls output = "" [string]
+Name of output resampled spectrum file.
+This will be a 1-D image
+if the input is either a 1-D or 2-D image
+and will include the header keywords from the input.
+If the input is an stsdas binary table or a text file,
+the output will be a two-column table or text file,
+with the column names for wavelength and flux
+given by 'n_wl' and 'n_flux' respectively.
+In this case, other columns and the header parameters
+will not be copied to output.
+.le
+.ls obsmode = "foc,f/96,f140m,prism1" [string]
+Observation mode.
+List the relay name, each filter, and the prism used.
+If calibrate = yes,
+'objcalib' uses 'synphot' subroutines
+to compute the filter throughputs and sensitivity of the detector,
+and this information is used in the photometric correction.
+Even if calibrate = no,
+the observation mode is used to determine which dispersion curve to use.
+The dispersion curves are listed in the 'dispfiles' pset.
+If the observation was not made with the FOC,
+the name of the dispersion file must be given as
+the value of the 'dispfiles.userprism' parameter.
+There is more information about observation modes in the 'synphot' package.
+.le
+.ls yzero = 100. [real]
+Y pixel coordinate of undispersed image.
+This is where the object would have been if the prism were not in place.
+This value can be negative, i.e. off the image.
+This value is critical for accurate photometric calibration
+and rebinning from pixels to wavelength.
+.le
+.ls (wfirst = 1200.) [real, min=0., max=INDEF]
+Starting wavelength of resampled spectrum.
+.le
+.ls (wlast = 6630.) [real, min=0., max=INDEF]
+Last wavelength of resampled spectrum.
+.le
+.ls (dw = 10.) [real, min=0.001, max=INDEF]
+Bin width of resampled spectrum.
+.le
+.ls (calibrate = yes) [boolean]
+Correct the photometry as well as rebin?  If 'calibrate' is set to no,
+the input spectrum will just be rebinned from pixels to wavelength,
+not photometrically calibrated.
+In this case, the four parameters 'texp', 'encirc', 'graphtab' and 'comptab'
+are not needed, and their values will be ignored.
+.le
+.ls (texp = 900.) [real, min=0., max=INDEF]
+Exposure time.
+This parameter is only used if calibrate = yes.
+.le
+.ls (encirc = 0.5) [real, min=0., max=INDEF]
+Encircled energy fraction.
+This is the fraction of the energy included in
+the extracted spectrum passed to the task as 'input'.
+For pre-COSTAR observations a reasonable value for 'encirc' might be 0.5,
+while 0.85 is more appropriate for post-COSTAR observations.
+This parameter is only used if calibrate = yes.
+.le
+.ls (n_wl = "wavelength") [string]
+If 'input' is a table, then 'output' will also be a table,
+and 'n_wl' is used for the name of the column containing the wavelengths.
+It is not used for reading the input table
+since the input independent variable is pixels.
+.le
+.ls (n_flux = "flux") [string]
+If 'input' is a table,
+'n_flux' is the name of the column containing the input flux values,
+and it is used as the column name when writing output values.
+If 'input' is a text file,
+'n_flux' should be the letter "c" followed by the number of the column
+containing the flux values.
+For example, 'n_wl' and 'n_flux' could be "c1" and "c2" respectively.
+.le
+.ls (dispfiles = "") [string]
+Pset name for the names of the calibration files for dispersion.
+The default files are found in the 'focprism' package directory,
+but you may specify your own files by changing the values in this pset.
+For a non-FOC observation, give the file name as the value of 'userprism'.
+Parameters can be individually changed from the command line or
+can be edited as a group using ":e" from 'eparam objcalib'
+or simply "dispfiles" from the cl.
+.le
+.ls (area = 45238.93416) [real]
+The area in square centimeters of the telescope aperture.
+The default value is for the HST.
+Note that for the HST, the obscuration due to the spider and pads
+is included in the throughput files, not in the aperture area.
+For another telescope the obscuration may be handled either way.
+.le
+.ls (graphtab = "crcomp$hstgraph_*.tab") [string]
+Name of graph table.
+This is only used if calibrate = yes.
+.le
+.ls (comptab = "crcomp$hstcomp_*.tab") [string]
+Name of components table.
+This is only used if calibrate = yes.
+.le
+.ih
+EXAMPLES
+1.  The package 'apextract' has been used to extract the spectrum
+"star.ms" from an near-UV objective prism image
+taken with the F/96 relay and the F140M filter.
+The exposure time was 900 seconds,
+with the un-dispersed image at pixel 175 in the Y direction.
+The re-calibration of this image to a resolution
+of 5 Angstroms would the use the following parameters
+to get the calibrated spectrum "star.out":
+
+.nf
+    st> objcalib star.ms "foc,f/96,f140m,prism2" star.out 175. \
+    >>>   dw=5. texp=900.
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Warren Hack.
+
+A description of the calibration procedure used by 'objcalib'
+can be found in the FOC Science Verification Report,
+available from the Science Instrument Branch (SIB) at STScI.
+This report includes a discussion of the determination of 'yzero'.
+.ih
+SEE ALSO
+calcspec, simprism, apextract
+
+Type "help focprism option=sys" for a higher-level description of
+the 'focprism' package. 
+.endhelp

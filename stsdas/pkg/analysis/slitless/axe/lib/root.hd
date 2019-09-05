@@ -1,0 +1,5 @@
+# Root help directory for the AXE packages.  This dummy package is necessary
+# in order to have `axe' appear as a module in some package, so that the user
+# can type "help axe" (with the 'axe' given as a task).
+_axe           pkg = axe$lib/rootaxe.hd
+_axesim        pkg = axesim$lib/rootaxesim.hd

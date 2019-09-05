@@ -1,0 +1,103 @@
+.help gsky Jun96 stsdas.analysis.dither
+.ih
+NAME
+gsky -- Compute sky using the same mode algorithm used in task "crrej". 
+.ih
+USAGE
+gsky input
+.ih
+DESCRIPTION
+This task implements the mode algorithm used internally in the cosmic
+ray rejection task "crrej". It is essentially a stripped-down version of
+"crrej", with only the sky computation functionality left in place.
+
+The "input" parameter is a list/template of single or multi-group images,
+which can have sections appended to their names. The task outputs the
+computed sky value in each image group in up to three places:
+.ls o
+The image name, group number and sky value are written to standard output
+in tabular form. This option can be disabled by setting task parameter 
+"verbose" to "no".
+.le
+.ls o
+The task attempts to find a group parameter named by parameter "skyname"
+in the input image header. If found, this header parameter is updated
+with the sky value. If not found, the task issues a warning message.
+This feature can be disabled by setting the "skyname" parameter to an
+empty string (skyname="").
+.le
+.ls o
+The task parameter "skyvalue" is always updated with the last image's 
+sky value.
+.le
+
+Aside from that, the task may subtract the computed sky constant value
+from each input image/group. This feature is controlled by task 
+parameter "subsky". If set to `yes' the input images/groups will
+be modified in place, and no sky value will be written to their
+headers, since images are supposed to be sky-free after beign
+processed in this mode. The boolean header keyword "SUBSKY" will be 
+added to the header with value 'T' if the sky was subtracted in place.
+
+Contrary to the "crrej" task algorithm, Data Quality Files associated 
+to the images can be used to flag out pixels in the sky determination.
+These files must be listed in the "masks" task parameter as a file name 
+list/template which matches the input file list. The "dq" pset can
+be used to select the active bits to be used in pixel flagging. 
+If "masks" is left as an empty string, no pixel masking is performed.
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input image list/template.
+.le
+.ls (masks = "") [string]
+Input Data Quality File list/template.
+.le
+.ls (lower = -99.) [real]
+The lower limit of the input data to be used.  Data lower than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no lower limit.
+.le
+.ls (upper = 4096.) [real]
+The upper limit of the input data to be used.  Data higher than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no upper limit.
+.le
+.ls (dq = "") [pset]
+Data quality filter pset.  This parameter set can be used to exclude pixels
+with certain data quality bit values.
+.le
+.ls (subsky = no) [boolean]
+Subtract sky from input image(s) ?
+.le
+.ls (skyname = "") [string]
+If this is set to a group parameter name in the input image, the sky values
+calculated in this task will be used to update that group parameter.
+For WFPC2, this is usually set to 'BACKGRND'.
+.le
+.ls (skyvalue) [real]
+Output sky value. This is the sky value of the last image/group in the
+input list.
+.le
+.ls (verbose = yes) [boolean]
+Print out results at STDOUT ?
+.le
+.ih
+EXAMPLES
+.ih
+REFERENCE
+.ih
+BUGS
+The table output at STDOUT is sorted by group number first and file name
+second. This is the format used by "crrej". If needed, this table can be 
+redirected to a text file and sorted by file name using task "ttools.tsort" 
+in the "tables" package:
+
+.nf
+cl> gsky images*.hhh > temp.txt
+cl> tsort temp.txt c1
+.fi
+.ih
+SEE ALSO
+crrej
+.endhelp

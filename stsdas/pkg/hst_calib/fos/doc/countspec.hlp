@@ -1,0 +1,124 @@
+.help countspec Feb98 stsdas.hst_calib.fos
+.ih 
+NAME
+countspec -- Calculate an FOS countrate spectrum from a calibrated spectrum.
+.ih
+USAGE
+countspec spectrum obsmode output
+.ih
+DESCRIPTION
+The 'countspec' task convolves an absolutely calibrated flux spectrum with
+the throughput functions of the FOS optical components to produce a
+corresponding spectrum that is in units of counts per second per pixel.
+The output is in the form of an STSDAS table containing columns of
+wavelength, flux, and throughput values.
+This task is intended to prepare spectra to be used by the 'bspec' task
+which requires an input spectrum of this form.
+
+This task accesses the Synphot library routines to generate the necessary
+throughput data for the FOS and to generate the fluxed spectral data.
+Hence, the input spectrum parameter to this task can be any legal Synphot
+spectrum expression, such as the name of an existing table
+containing spectral data, or one of the functional forms (blackbody, powerlaw,
+etc.) that Synphot is capable of generating. Other Synphot functions, such
+as the renormalize, "rn", and extinction, "ebmv", functions can also be used
+(see the help page for the Synphot 'calcspec' task for full details of all
+the available functions).
+
+Similarly, the parameter "obsmode" may be any Synphot-style expression
+that specifies the desired FOS observation mode. This will normally be
+a string of the form "fos,4.3,g130h,blue", for example, which includes
+specifications for the desired aperture, grating, and detector. To include
+the effects of COSTAR in the aperture throughput, simply include the
+additional keyword "costar" anywhere within the obsmode string, e.g.
+"fos,4.3,costar,g130h,blue".
+
+The 'bspec' task requires that its input spectral data be multiplied
+by the throughputs of all FOS optical elements EXCEPT for that of the
+grating blaze function. The combined throughput due to grating reflectivity
+and blaze function is contained in the standard CDBS tables accessed by
+the Synphot library. In order to include only the grating reflectivity
+in the instrumental throughput calculated by this task, it is therefore
+necessary to substitute the data for another optical element with similar
+reflectivity. The FOS collimator seems to be a good match, therefore the
+reflectivity of the collimator is automatically substituted in place of 
+the grating.
+
+.ih 
+PARAMETERS
+.ls spectrum [string]
+Input spectrum specification. May be any legal Synphot spectrum expression.
+.le
+.ls obsmode [string]
+Instrument observation mode. May be any legal Synphot-style obsmode
+expression for the FOS instrument.
+.le
+.ls output [file name]
+Output table name. The table will contain three columns labeled "wavelength"
+(units of Angstroms), "flux" (units of counts per second per pixel), and
+"thr" (dimensionless). The last column contains the instrumental throughput
+values used to convert the input flux-calibrated spectrum into detected
+counts.
+.le
+.ls (wavetab = "") [file name]
+Name of an optional wavelength table containing the desired wavelength grid
+on which the output spectrum will be computed. If no table is specified, 
+a default wavelength set is used. The default wavelength set covers the 
+wavelength range 1100 to 8000 Angstroms with a step size of 2 Angstroms 
+per pixel.
+.le
+.ls (grtbl = "mtab$*.tmg") [file name]
+Name of the HST graph table containing the optical layout of the FOS
+instrument. By default, this uses the most recent version installed in
+CDBS.
+.le
+.ls (cmptbl = "mtab$*.tmc") [file name]
+Name of the HST instrument component table listing the names of the tables
+containing the throughput data for each of the FOS optical components.
+By default, this uses the most recent version installed in CDBS.
+.le
+.ls (area = 45238.93416) [real]
+HST telescope area in cm**2. Used to convert absolute fluxes to observed
+counts.
+.le
+.ih
+EXAMPLES
+1. Compute a countrate spectrum from the data for a G2V star contained in
+table number 46 of the Bruzuall, Persson, Gunn, Stryker (BPGS) spectral
+atlas. Renormalize the input spectrum to a V magnitude of 13.5 and store
+the output in table "fos_g2v_spec". Compute countrates for the FOS blue
+detector, using the 4.3" aperture and the g130h grating.
+.nf
+
+  te> countspec "rn(crgridbpgs$bpgs_46,band(v),13.5,abmag)" \
+  >>> "fos,blue,4.3,g130h" fos_g2v_spec
+
+.fi
+
+2. Compute a countrate spectrum for a 3500 degree blackbody using the
+FOS blue detector, the 1.0" aperture, and the g190h grating. Let the
+blackbody spectrum have a V magnitude of 14 and store the results in
+table "fos_bb.tab".
+.nf
+
+  te> countspec "rn(bb(3500),band(v),14,abmag)" "fos,blue,1.0,g190h" \
+  >>> fos_bb.tab
+
+.fi
+.ih
+BUGS
+.ih
+NOTES
+This task uses Synphot datasets which are not normally distributed with
+STSDAS.  These datasets can be retrieved from the STScI ftp site.
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+calcspec, bspec
+.endhelp 

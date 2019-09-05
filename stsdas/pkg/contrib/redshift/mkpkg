@@ -1,0 +1,59 @@
+# Fourier Quotient and Cross Correlation Analysis Tasks
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$set XFLAGS = "-q $(XFLAGS)"
+	$update	libpkg.a
+	$call	fquot
+	$call	xcor
+	;
+
+install:
+	$move	xx_fquot.e stsdasbin$x_fquot.e
+	$move	xx_xcor.e stsdasbin$x_xcor.e
+	;
+
+fquot:
+	$omake	x_fquot.x
+	$link	x_fquot.o libpkg.a -lxtools -o xx_fquot.e
+	;
+
+xcor:
+	$omake	x_xcor.x
+	$link	x_xcor.o libpkg.a -lxtools -o xx_xcor.e
+	;
+
+xcorquot:
+        $omake  lsfun2.f
+        $omake  x_xcorquot.x
+        ;
+
+libpkg.a:
+	fquot.x		fquot.h fquot.com <imhdr.h> <fset.h>
+	getimage.x	fquot.h fquot.com <imhdr.h>
+	gettemps.x	fquot.h fquot.com
+	getspec.x	fquot.h fquot.com
+	fqfit.x		fquot.h fquot.com
+	runsum.f
+	windat.f
+	earlin.f
+	simul.f		
+	fft.f
+	chiper.f
+	cexp1.f
+	info.x		fquot.h fquot.com
+	plotfit.x	fquot.h fquot.com
+	replot.x	fquot.h fquot.com
+	plotspec.x	fquot.h fquot.com
+	summary.x	fquot.h fquot.com
+	xcor_sum.x	fquot.h fquot.com
+	poly.x
+	xcor.x		fquot.h fquot.com <imhdr.h> <fset.h>
+	xcorfit.x	fquot.h fquot.com
+	;

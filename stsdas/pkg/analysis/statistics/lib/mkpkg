@@ -1,0 +1,22 @@
+# Update the lib application code in the statistics package library
+# Author: BALL, 22-DEC-1987
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	agauss.f
+	asparse.x
+	censtat.x
+	chksign.x
+	errdata.x
+	findnull.x
+	matinv.x
+	negate.x
+	reverse.x
+	round.x
+	sort.x
+	swapx.x
+	;

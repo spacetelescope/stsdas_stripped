@@ -1,0 +1,50 @@
+DRIZZLE V1.2 & BLOT V0.6
+
+An IRAF task for variable-pixel linear reconstruction (drizzling)
+and a support task (blot) for the reverse operation.
+
+Andy Fruchter & Richard Hook, 2nd March 1998
+
+*** Note - this is a new version of DRIZZLE which differs in   ***
+*** several minor ways from the previous release (V1.1).       ***
+*** Please read the RELEASE_NOTES_V1.2 files carefully.        ***
+
+This compressed tar file (drizzle1.2+blot0.6.tar.Z) contains the third 
+public release of the "drizzle" image reconstruction task along
+with the second release of the "blot" support task. Drizzle was developed
+for the combination of the Hubble Deep Field HST/WFPC2 data and is
+primarily intended for the processing of "dithered" imaging data. A
+description of the method is available at:
+
+ http://www.stsci.edu/~fruchter/dither/
+
+Blot is an implementation of "reverse drizzling" which can be used
+when combining dithered multiple frames and also detecting and flagging
+cosmic ray events. Please consult the Web for more details. Blot is
+likely to be less widely used than Drizzle and you may wish to remove the
+blot files and not install it.
+
+These versions of Drizzle and Blot are identical to those released within
+the STSDAS "dither" package.
+
+The software consists of two IRAF tasks and is distributed as F77 source code.
+Also supplied are coefficient files used by the tasks for the removal
+of geometrical distortion from HST/WFPC2 and STIS CCD images, and IRAF 
+format help files. Instructions for installation are found in the INSTALL 
+file within the distribution.
+
+The first step is to select a directory where the tasks are to be installed.
+Then the distribution file must be unpacked using the following commands
+which should be valid on most UNIX systems:
+
+uncompress drizzle1.2+blot0.6.tar.Z
+tar xvf drizzle1.2+blot0.6.tar
+
+There should be 17 files (excluding the distribution tar file) along with a 
+directory called "coeffs" which contains five files of geometric 
+distortion files for HST/WFPC2 and STIS-CCD and a README.
+
+Please now follow the instructions in the file INSTALL and read the
+RELEASE_NOTES_V1.2 carefully.
+
+Happy drizzling (and maybe blotting as well)!

@@ -1,0 +1,248 @@
+# ghrs_shp_temps_def.db -- Temperature monitors for GHRS from the SHP
+# 
+# DESCRIPTION
+# This text database defines how to extract and interprete the temperature
+# monitors for the Goddard High Resolution Spectrograph (GHRS) from an
+# observations Standard Header Packet (SHP) image.  See the task
+# "eng2tab" in the STSDAS external package for IRAF for more information.
+# 
+# The monitors choosen are the same as found in the header keywords of the
+# SHP file for an observation under the section "CDBS KEYWORDS"
+# 
+# Each record defines an item to be retrieved from the image data.  Each
+# record contains four fields:
+# 
+# 	descr   -- Description of the item.
+# 	extract -- How to get the monitor value from the shp image.
+# 	format  -- How to interpret the value of the item.
+# 	units   -- Units of the interpreted value
+#
+# The values of the 'extract' and 'format' fields are expressions used
+# to extract item from the image array and to format it into some
+# understandable form.  For a full description of the expressions, see
+# the help for the task "eng2tab" in the ctools package of STSDAS under
+# IRAF. 
+#
+# FORMAT
+# This file conforms to the standard IRAF text database format.  A
+# text database consists of a series of 'records'.  Each record consists
+# of a set of 'fields'.  A record looks like the following:
+# 
+# 	begin record
+# 		field value
+# 		field value
+# 		....
+# 
+# A record starts at a line which has the word "begin" followed by a
+# single word which is the record name.  Each subsequent line is
+# considered a field of the record (unless it is blank or a comment
+# line).  Each field line has the following format: The first word on
+# the line is the name of the field.  Everything else on the line, up to
+# the newline, is the value of the field.  A line can contain
+# approximately 200 characters.  There is no indentation requirement;
+# indentation is present only to humans examine the file.
+#
+# DATABASE
+begin zdebtf
+	extract d[307]
+	descr	Detector electronics box front post amp temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zdebtr
+	extract d[344]
+	descr	Detector electronics box rear post amp temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zdett1
+	extract d[316]
+	descr	Detector 1 temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zdett2
+	extract d[317]
+	descr	Detector 2 temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zdrt
+	extract d[361]
+	descr	Digicon radiator temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zdt11
+	extract	d[366]
+	descr	Det. 1 detector shield temperature #1
+	format	pid11!=2?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zdt12
+	extract	d[367]
+	descr	Det. 2 detector shield temperature #1
+	format	pid11!=2?INDEF:-5.49174e1 + v*(1.34548 + v*(-1.91519e-2 + v*(1.86869e-4 + v*(-1.00689e-6 + v*(2.78842e-9 + v*(-3.04638e-12))))))
+	units	degrees Celsius
+begin zet11
+	extract	d[357]
+	descr	Det. 1 encolsure temperature #1
+	format	pid10!=7?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zet31
+	extract	d[357]
+	descr	Det. 1 enclsure temperature #3
+	format	pid10!=8?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zfiat
+	extract d[352]
+	descr	Fixture interface A temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zfibt
+	extract d[353]
+	descr	Fixture interface B temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zfict
+	extract d[362]
+	descr	Fixture interface C temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zhdc1
+	extract d[332]
+	descr	Detector 1 horizontal deflection current
+	format	lin(v,"0 -1.5225e03 110 1.365e03 136 2.048e03 162 2.73e03 213 4.095e03 255 5.219e03")
+	units	?
+begin zhdc2
+	extract d[333]
+	descr	Detector 2 horizontal deflection current
+	format	lin(v,"0 -1.70625e03 117 1.365e03 143 2.048e03 168 2.73e03 220 4.095e03 255 5.014e03")
+	units	?
+begin zhvpst1
+	extract	d[366]
+	descr	Det. 1 high voltage power supply temperature
+	format	pid11!=0?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zhvpst2
+	extract	d[367]
+	descr	Det. 2 high voltage power supply temperature
+	format	pid11!=0?INDEF:-5.49174e1 + v*(1.34548 + v*(-1.91519e-2 + v*(1.86869e-4 + v*(-1.00689e-6 + v*(2.78842e-9 + v*(-3.04638e-12))))))
+	units	degrees Celsius
+begin zmebt1
+	extract d[343]
+	descr	Main electronics box 1 temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zmebt2
+	extract d[308]
+	descr	Main electronics box 2 temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zobbt
+	extract d[326]
+	descr	Optical bench bulkhead temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zobt11
+	extract	d[357]
+	descr	Det. 1 optical bench temperature #1
+	format	pid10!=3?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zpabt1
+	extract d[334]
+	descr	Det. 1 pre-amp assembly box temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zpabt2
+	extract d[335]
+	descr	Det. 2 pre-amp assembly box temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+begin zpcc1
+	extract	d[273]
+	descr	Det. 1 photocathode current
+	format	lin(v,"0 0 255 +1.96154e2")
+	units	mAmp
+begin zpcc2
+	extract	d[274]
+	descr	Det. 2 photocathode current
+	format	lin(v,"0 0 255 +2.14286e2")
+	units	mAmp
+begin zpcv1
+	extract d[363]
+	descr	Detector 1 photocathode high voltage
+	format	lin(v,"0 0 255 2.5e01")
+	units	kV
+begin zpcv2
+	extract d[364]
+	descr	Detector 2 photocathode high voltage
+	format	lin(v,"0 0 255 2.49e01")
+	units	kV
+begin zriuta
+	extract d[298]
+	descr	RUI A internal temperature
+	format	lin(v,"40 62.1739 91 40 116 30 146 20 172 10 198 0 220 -10 235 -20 245 -30 252 -40 254 -50")
+	units	degrees Celcius
+begin zriutb
+	extract d[299]
+	descr	RUI B internal temperature
+	format	lin(v,"40 62.1739 91 40 116 30 146 20 172 10 198 0 220 -10 235 -20 245 -30 252 -40 254 -50")
+	units	degrees Celcius
+begin zsct1
+	extract	d[357]
+	descr	Det. 1 spectral calibration lamp temperature
+	format	pid10!=0?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+begin zsct2
+	extract	d[358]
+	descr	Det. 2 spectral calibration lamp temperature
+	format	pid10!=0?INDEF:-5.49174e1 + v*(1.34548 + v*(-1.91519e-2 + v*(1.86869e-4 + v*(-1.00689e-6 + v*(2.78842e-9 + v*(-3.04638e-12))))))
+	units	degrees Celsius
+begin ztst11
+	extract	d[358]
+	descr	Det. 1 thermal shelf teperature #1
+	format	pid10!=1?INDEF:-5.49174e1 + v*(1.34548 + v*(-1.91519e-2 + v*(1.86869e-4 + v*(-1.00689e-6 + v*(2.78842e-9 + v*(-3.04638e-12))))))
+	units	degrees Celsius
+begin zcst
+	extract d[325]
+	descr	Carrousel stator temperature
+	format	lin(v,"25 64.375 64 40 74 35 86 30 98 25 112 20 126 15 142 10 172 0 199 -10 220 -20 236 -30 247 -40 253 -50")
+	units	degrees Celcius
+#
+# Because many of the temperatures monitors are multiplexed, i.e. a
+# number of temperatures appear in the same place in the SHP, some condition
+# needs to be satisfied before a value in a certain place can be assumed
+# to be a specific temperature monitor.  These are the "pid10" and "pid11"
+# conditions found in some of the format fields above.  The below entries
+# are used to calculate these conditions.
+#
+begin page
+	extract	syson1=1?page1:page2
+	descr	Page number of the current SHP dump
+	format	v
+	units	page
+begin syson1
+	extract and(shift(d[260],-7),1)
+	descr	System 1 main electronics box on
+	format	word_find(v,"off,on")
+	units	on/off
+begin page1
+	extract (and(d[260],15))
+	descr	System 1 page I.D.
+	format	v
+	units	id
+begin page2
+	extract (and(d[261],15))
+	descr	System 2 page I.D.
+	format	v
+	units	id
+begin nminor
+	extract	d[901]
+	descr	Minor frame number
+	format	v
+	units	frame number
+begin pid10
+	extract	page - int (12 * page / real (nminor + 1 - 10))
+	descr	Page id calculations (n=10)
+	format	v
+	units	page id
+begin pid11
+	extract	page - int (12 * page / real (nminor + 1 - 11))
+	descr	Page id calculations (n=11)
+	format	v
+	units	page id

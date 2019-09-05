@@ -1,0 +1,59 @@
+.help FOC_LINEARITY Jan88 "FOC 5.6"
+
+.ih
+CHAPTER
+FOC_LINEARITY -- discussion of FOC photometric linearity
+
+.ih
+SUMMARY
+Summary for FOC_LINEARITY
+.ls Sections:
+
+.nf
+	Summary
+	Introduction
+	Modeling
+	See also
+.fi
+.le
+
+.ih
+INTRODUCTION
+The FOC suffers from a photometric non-linearity which is strongly influenced
+by the local image content. A flat field will show maximum count rates of
+about 0.5 counts/pix/second for 512 by 512 square pixel images, but a point 
+source can show count rates of 6.0 counts/pix/sec. A simple look-up table for
+each pixel to convert from measured count rate to linear count rate is
+inadequate.
+.ih
+MODELING
+Currently the non-linearity can be modeled quite well by assuming the
+measured count rate will be determined by
+
+.nf
+
+      M(i,j)   =  L(i,j)F( Conv({a}, L ) )
+
+.fi
+
+where Conv is a convolution operator, {a} is a small ( about 10 by 10 )
+kernel, L(i,j) is the linear count rate at pixel (i,j) and M(i,j) is the
+measured count rate. F is a function which may be determined from flat-field
+data, where all the L(i,j) are effectively equal.
+
+The {a} may be determined by comparing two images, one where all pixel count
+rates are in the linear regime and a second where the illumination is a known
+factor higher. This has been done with moderate success for a spare PDA 
+and PFM2. 
+
+The next step is to try to linearize a given image - it has not been
+completed yet.
+.ih 
+SEE ALSO
+From FOC_LINEARITY see also:
+
+.nf
+ITF Calibration            	...... FOC_ITF
+.fi
+
+.endhelp

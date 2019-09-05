@@ -1,0 +1,145 @@
+.help targets Jul93 stsdas.analysis.gasp
+.ih
+NAME
+targets -- Find coordinates of selected targets in the Guide 
+Star Catalog.
+.ih
+USAGE
+targets ra dec width exttab image
+.ih
+DESCRIPTION
+This task will extract guide stars from the CD-ROM catalog in 
+a field, overlay the guide stars on an image, interactively 
+determine a plate solution and read back image coordinates.
+
+The user defines a region of the sky by specifying a center 
+position and a width.  Guide star tables are then copied from 
+the  CD-ROM whenever they contain fields that overlap this 
+region.  Guide stars within the specified region---and 
+optionally within specified brightness limits---are selected 
+from the Guide Star Catalog (GSC) and written to an output table.
+
+The specified region is assumed to overlap an image provided 
+by the user.  With an estimate of the transformation between 
+equatorial and pixel (image or plate) coordinates, the 
+coordinates of the selected guide stars are overlaid on a 
+copy of the user's image.  This produces a marked image that 
+is displayed; the user can then interact with the displayed 
+image to improve the positions of selected stars, compute a 
+plate solution fit, and print the coordinates of selected 
+targets.
+.ih
+PARAMETERS
+.ls ra [real, min=0, max=24]
+Right ascension (in hours) of the field center. Stars within 
+a region of size 'width', centered around 'ra' and 'dec' will 
+be selected from the guide star catalog.
+.le
+.ls dec [real, min=-90, max=90]
+Declination (in degrees) of the field center. Stars within a 
+region of size 'width', centered around 'ra' and 'dec' will 
+be selected from the guide star catalog.
+.le
+.ls width [real, min=0, max=180]
+Field width, in degrees.
+.le
+.ls exttab [file name]
+Name of the output table that will contain extracted guide 
+stars, their magnitudes, equatorial and pixel coordinates, 
+and validity flags.
+.le
+.ls image [file name]
+The image (plate) containing the user's target(s).  This 
+image is assumed to overlap the field specified by 'ra', 
+'dec', and 'width'.  To obtain an initial estimate of the 
+guide star positions on the image, define the coordinate 
+transformation parameters below.
+.le
+.ls (mag1) = INDEF [real]
+Lower magnitude limit---stars dimmer than 'mag1' will be 
+ignored.  If 'mag1=INDEF', do not apply a lower magnitude 
+limit; otherwise, only stars between the limits will be 
+extracted from the guide star catalog.
+.le
+.ls (mag2) = INDEF [real]
+Upper magnitude limit---stars brighter than 'mag2' will be 
+ignored.  If 'mag2=INDEF', do not apply an upper magnitude 
+limit; otherwise, only stars between the limits will be 
+extracted from the guide star catalog.
+.le
+.ls (allcols = no) [boolean]
+Use all GSC columns?  
+
+If this parameter is set to "yes", the task will
+copy all table columns for selected stars
+from the GSC catalog table(s) to the output merged table.  Otherwise,
+copy only coordinates and brightness, the default.
+.le
+.ls (plot = no) [boolean]
+Plot a chart of the extracted guide stars in the selected 
+region?
+.le
+.ls (index = "scidata$index.tab") [file name]
+Name of the CD-ROM index table file for the region.
+.le
+.ls (onestar = yes) [boolean]
+Select stars from one plate only?  
+
+If more than one original 
+guide star plate contains this star, select only one.  If 
+'plateid' is specified, select stars from that plate only,  
+otherwise, take the first star in the table.
+.le
+.ls (plateid = "") [string]
+Plate ID from which stars will be selected from the guide 
+star catalog. 
+.le
+.ls (pixval = INDEF) [real]
+The pixel value to use in overlaying guide star positions in 
+the image.  If 'pixval=INDEF', the task will use a value that 
+is 10% higher than the highest value in the image.  Caution:  
+if you do not specify a value, it will take a substantial 
+amount of time to determine the extreme pixel values.
+.le
+.ls (crpix1) [real]
+X reference pixel (i.e., the pixel coordinate corresponding 
+to RA,DEC).
+.le
+.ls (crpix2) [real]
+Y reference pixel (i.e., the pixel coordinate corresponding 
+to RA,DEC).
+.le
+.ls (xpxsize) [real]
+X pixel size in microns; this is used to convert pixel 
+coordinates to plate coordinates (in millimeters).
+.le
+.ls (ypxsize) [real]
+Y pixel size in microns; this is used to convert pixel 
+coordinates to plate coordinates (in millimeters).
+.le
+.ls (pltscl) [real]
+Plate scale in arcseconds per millimeter; this is used to 
+convert pixel coordinates to plate coordinates (in 
+millimeters).
+.le
+.ls (crota) [real]
+Rotation angle, in degrees, used to convert pixel coordinates 
+to plate coordinates (in millimeters).
+.le
+.ls (ctype1 = "RA") [string]
+X coordinate type.
+.le
+.ls (ctype2 = "DEC") [string]
+Y coordinate type.
+.le
+.ls (boxsize = 7) [integer, min=3]
+Size of the box in which to search for the star center.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+strfits, skymap, display, pltsol, xyeq
+.endhelp

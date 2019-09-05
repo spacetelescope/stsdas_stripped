@@ -1,0 +1,14 @@
+iminfo,b,a,,,,Is there an input image
+image,s,a,,,,Input image name
+coeffile,s,a,,,,Input astrometic solution file
+rdfile,s,a,,,,"Input (ra,dec) file name"
+pix_center,s,a,"iraf","iraf|dss|cos",,"X,Y origin: iraf[1,1]; dss[1.5,1.5]; cos[.5,.5]"
+rcolnum,i,a,,,,ra column number
+dcolnum,i,a,,,,dec column number
+nskip,i,a,,,,Number of lines to skip in rd file
+original,b,h,NO,,,Use original plate solution?
+new,b,h,YES,,,Use new plate solution?
+cdmatx,b,h,NO,,,Use CD matrix values?
+ra_hours,b,h,NO,,,Are RA values in h:m:s?
+xformat,s,h,,,,Output format for X
+yformat,s,h,,,,Output format for Y

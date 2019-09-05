@@ -1,0 +1,13 @@
+# Update the mkphottb application code in the w_calib package library
+# Author: HSU, 6-AUG-1991
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_mkphottb.x 	mkphottb.h
+	mkph_out.x	mkphottb.h	<tbset.h>
+	mkph_dissect.x	mkphottb.h	<ctotok.h>
+	;

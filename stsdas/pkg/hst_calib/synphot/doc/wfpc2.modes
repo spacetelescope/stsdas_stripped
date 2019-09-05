@@ -1,0 +1,90 @@
+WFPC2
+
+The WFPC2 keywords consist of a list of detectors, filters, and 
+miscellaneous keywords. The miscellaneous keywords include the ADC gain
+keywords a2d7 and a2d15, which convert results from units of electrons to
+data numbers (DNs), cal, which accounts for the flat-field response, lrf#,
+which is used for the linear ramp filters, and cont#, which accounts for
+changes in throughput between decontamination events (see below).
+
+The WFPC2 has twelve filter wheels, each of which has five positions, 
+including a clear position. Detector 1 is the PC chip; detectors 2 through 4
+are the Wide Field chips. If a detector is not specified, the default is #4.
+A typical WFPC2 observation mode string would be "WFPC2,F450W,2".
+
+Detectors: 1 2 3 4 
+
+Miscellaneous: a2d7 a2d15 cal cont#
+
+Filter Wheel 1: f122m f157w f160bw f953n 
+
+Filter Wheel 2: f130lp f165lp f785lp f850lp 
+
+Filter Wheel 3: f336w f410m f467m f547m 
+
+Filter Wheel 4: f439w f569w f675w f791w 
+
+Filter Wheel 5: f343n f375n f390n f437n 
+
+Filter Wheel 6: f469n f487n f502n f588n 
+
+Filter Wheel 7: f631n f656n f658n f673n 
+
+Filter Wheel 8: f170w f185w f218w f255w 
+
+Filter Wheel 9: f300w f380w f555w f622w 
+
+Filter Wheel 10: f450w f606w f702w f814w 
+
+Filter Wheel 11: f1042m fqunv fqunv33 fqch4n fqch4n33 fqch4n15 fqch4p15
+                 polq polq_par polq_perp polqn33 polqn18 polqp15
+
+Filter Wheel 12: lrf#
+
+The cont# keyword references a "parameterized" component throughput table,
+meaning that the throughput is a function of some other variable besides
+wavelength. In this case, the extra variable is the Modified Julian Date and
+is used to account for the gradual decline in throughput between
+decontamination events, as well as the sudden increase in throughput
+immediately after a decontamination. Data currently exists from MJD 49347.0
+onwards (26 December 1993), in intervals of approximately 30 days. To use this
+capability in simulations, include the string cont#ddddd in your obsmode
+specification, where ddddd is the desired MJD value (which can be given a
+either an integer or real value). For example, to get the throughput for the
+F336W filter on MJD 49486, use obsmode="wfpc2,f336w,cont#49486". The synphot
+expression evaluator interpolates between the dates for which data exists in
+the table to arrive at an estimate of the throughput on the requested date.
+
+Filter wheel 11 contains 3 specialized quadrant (quad) filters in which each
+quadrant corresponds to a facet of the pyramid, and therefore to a distinct
+camera relay. One quad filter, fquvn, contains four narrowband, redshifted
+[O II] filters. The second, fqch4n, contains four methane (CH4) band filters,
+and the third, polq, contains four polarizing elements. The instrument graph
+table is constructed so that distinct throughput values are automatically
+selected for a given quadrant of the fquvn and fqch4n filters based on the
+selected detector.
+
+Note that all three of the quad filters were designed to map onto a 
+four-faceted WFC configuration. However, in the final design of the instrument,
+with WF quadrant 1 replaced by the PC, it is necessary to rotate the quad
+filters by -33° in order to bring filter quadrant 1 into the WF2 and 3
+relays. In addition, partial rotations of -15° and +15° have been 
+implemented for the methane (CH4) filter in order to bring two of its 
+quadrants into the PC relay, and partial rotations of -18° and +15° have 
+been implemented for the polarizer (pol) filter in order to allow observations
+with different polarization angles (see the WFPC2 Instrument Handbook for more
+details). Unique component keywords have been implemented in the instrument
+graph for the nominal and rotated positions of each of these filters. The
+nominal positions are designated as fquvn, fqch4n, and polq. The rotated
+positions are designated as fquvn33 (-33°), fqch4n33 (-33°), fqch4n15 (-15°),
+fqch4p15 (+15°), polqn33 (-33°), polqn18 (-18°), and polqp15 (+15°).
+
+Filter wheel 12 contains four linearly variable narrowband ramp filters, which
+together cover a total wavelength range of 3700 to 9800 Å. The FWHM of the
+throughput at a given wavelength is typically about 1% of the central
+wavelength. The ramp filters have been implemented as a parameterized component
+in synphot. To use the ramp filters in simulations, use the keyword syntax
+lrf#wwww, where wwww is the central wavelength, in Angstroms, that you desire,
+e.g., obsmode="wfpc2,3,lrf#4861".
+
+

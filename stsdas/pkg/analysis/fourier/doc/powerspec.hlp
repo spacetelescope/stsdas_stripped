@@ -1,0 +1,114 @@
+.help powerspec Oct95 stsdas.analysis.fourier
+.nj
+.ih
+NAME
+powerspec -- Compute the power spectrum of an image.
+.ih
+USAGE
+powerspec input output
+.ih
+DESCRIPTION
+This task will compute the power spectrum or the log
+power spectrum of a 1- or 2-dimensional image.
+The power spectrum is normalized so that
+the sum of the pixel values of the power spectrum
+is equal to the sum of the squares of the pixel values
+of the input image.
+Thus the sum of the power spectrum
+over a given range of frequencies is
+the contribution of those frequencies to
+the variance of the input image.
+
+The independent variable for the power spectrum is frequency,
+and the coordinate parameters in the output header
+give the mapping from pixels to frequency.
+For information about the coordinate parameters,
+type "help fourier option=sys".
+
+For 2-D transforms,
+this task has the option of using scratch images for intermediate results.
+Using scratch images may take longer,
+but it allows the task to function even with limited memory.
+.ih
+PARAMETERS
+.ls input = "" [file name]
+Name of the input data file.
+
+If both real and imaginary parts are to be read,
+the letters "r" and "i" will be appended to 'input'
+to form the names of the images for real and imaginary parts respectively.
+.le
+.ls output = "" [file name]
+Output image created by 'powerspec'.
+
+The "r" character is not appended to this output image
+because a power spectrum has no imaginary part.
+.le
+.ls (inreal = yes) [boolean]
+Use the real part of the input data file?
+.le
+.ls (inimag = no) [boolean]
+Use the imaginary part of the input data file?
+.le
+.ls (center = yes) [boolean]
+Shift the coordinate origin to the middle of the output image?
+.le
+.ls (logpower = no) [boolean]
+Take the logarithm (base 10) of the output values?  When using
+this option, a value of -1000 will be assigned to each pixel
+at which the value of the power spectrum is zero.
+.le
+.ls (inmemory = yes) [boolean]
+For a two-dimensional input image,
+if 'inmemory = yes' the image will be read into a complex array,
+the Fourier transform will be performed on that array in-memory,
+the squared amplitude will be taken to get the power spectrum,
+and the array will be written to the output image.
+This requires one complex word for each pixel.
+The complex array must fit entirely in memory (i.e. no paging)
+because when performing the Fourier transform
+the array is accessed both by rows and by columns.
+If 'inmemory = no', see the description of 'len_blk'.
+
+For 1-D images, 'inmemory' is ignored.
+.le
+.ls (len_blk = 256) [integer]
+Size of a block to be transposed.
+
+For 2-dimensional input images, if 'inmemory = no'
+this task transposes each image into scratch images
+before computing the Fourier transform of the second axis.
+This parameter is the length of the side of a square region that is
+transposed in one step.
+If you get out-of-memory errors,
+you should flush the process cache (flprcache),
+reduce the size of 'len_blk' and try again.
+
+This parameter is ignored for 1-D images or if 'inmemory = yes'.
+.le
+.ls (verbose = yes) [boolean]
+Print input and output image names?
+
+Setting 'verbose=yes' shows you the actual names of the image headers,
+including the "r" & "i" suffixes for real & imaginary parts.
+.le
+.ls (ftpairs = fourier$ftpairs.dat) [file name]
+Name of the file that defines the types of coordinates in a transform pair.
+For example, LAMBDA <--> WAVENUMB.
+.le
+.ih
+EXAMPLES
+1. Compute the logarithm of the power spectrum of an
+image called "civ" (no imaginary part).
+The output log power spectrum is put in an image called "p".
+
+.nf
+	fo> powerspec civ p inimag=no logpower=yes
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help fourier opt=sys" for a higher-level
+description of the 'fourier' package.
+.endhelp

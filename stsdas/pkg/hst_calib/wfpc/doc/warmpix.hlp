@@ -1,0 +1,138 @@
+.help warmpix Sep99 stsdas.hst_calib.wfpc
+.ih
+NAME
+warmpix -- Flag and/or correct hot pixels in WFPC2 images
+.ih
+USAGE
+warmpix input masks tables rej_thresh fix_thresh var_thresh
+.ih
+DESCRIPTION
+This task flags and/or fixes hot pixels in an image.  It requires an 
+input table(s) containing the locations and dark counts for hot pixels 
+that existed around the time of the observations. Each table typically 
+spans an interval of time between decontaminations, and contains hot 
+pixel data derived from dark files taken at several epochs within 
+that period.
+    
+"warmpix" will do the following:
+    
+(1) If a hot pixel has high (or highly variable) dark counts, the pixel 
+value in the science image remains unchanged, unless the parameter 
+"rej_val" is set. The corresponding pixel in the image's data quality
+file (DQF) will have its 10th least significant bit set
+to indicate that it is a "bad" pixel (i.e. logically OR'ed with 512).
+    
+(2) If the hot pixel has a moderate dark count, its value can be fixed
+in the image. A modified dark value is calculated by extrapolating 
+the hot pixel's value between two epochs that cover the time of 
+observation for the image. In addition, the corresponding pixel 
+in the image's DQF has its 11th least significant bit set (i.e. logically 
+OR'ed with 1024) to indicate that the pixel value
+was modified, unless the parameter "fix_dqval" is set to a different value.
+    
+(3) If a pixel has a low dark count, its value and its data quality
+pixel are not modified.
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input image name(s).  These must be WFPC2 images.
+.le
+.ls masks = "" [string]
+Input data quality file name(s) for the WFPC2 images specified above.
+.le
+.ls tables = "" [string]
+Hot pixel table name(s), it/they can be STSDAS table(s), FITS table(s), or 
+text table(s).  The table(s) must have the following five columns:  
+
+.nf
+CHIP	detector number, from 1 to 4 (short).
+X	X coordinate of the hot pixel (short).
+Y	Y coordinate of the hot pixel (short).
+EPOCH	time when the dark measurement(s) was taken, in MJD (double).
+DARK	dark count measured at EPOCH, in DN/sec (real).  A value 
+	of -100 indicates when a decontamination was performed.
+.fi
+
+The table must also be sorted in the following order: CHIP, Y, X, EPOCH.  
+Tables downloaded from STScI's WFPC2 Documentation web page are sorted properly.
+
+Since sorting large tables are very time consuming, we encourage using only 
+one table to process file(s) covering the epoch range of the table, instead 
+of using multiple tables to process many files covering a wide range of epochs. 
+.le
+.ls rej_thresh = 0.1 [real, min = 0.]
+The rejection threshold (DN/sec) for not fixing a hot pixel value.
+Pixels with dark counts higher than this parameter value at EPOCH
+either immediately before or immediately after the date of the
+observation will not be corrected. The science image will remain
+unchanged, and a value of 512 will be logically OR'ed to the corresponding
+pixel in the image's data quality file to indicate that this is
+a bad pixel.
+
+.le
+.ls fix_thresh = 0.003 [real, min = 0.]
+The threshold (DN/sec) for determining if a hot pixel should be fixed.
+Hot pixels with dark counts lower than this level both before and
+after the observation are considered to be fine, and will not be
+changed in the image and its data quality file.
+ 
+Pixels with dark counts that fall between the "fix_thresh" value
+and the "rej_thresh" value will be fixed. But the fix will only occur
+if the difference between the hot pixel values before and after
+the observation is less (in absolute value) than the "var_thresh"
+parameter value. A new dark value will be calculated using the hot
+pixel table, and the science image pixel will be modified accordingly.
+ 
+If the dark and flat field reference files used to calibrate the
+science image (as specified in its header) are available, the 
+calibrated pixel value will be recalculated, using the new dark value.
+If they are not available, the old dark will be assumed to be 0 and the
+old flat field will be assumed to be 1.
+ 
+The data quality pixel corresponding to the "fixed" image's hot pixel will 
+be logically OR'ed by the value specified by the  parameter FIX_DQVAL (see 
+below).
+.le
+.ls var_thresh = 0.003 [real, min = 0.]
+The "variation" threshold in DN/sec. See the description for "fix_thresh".
+.le
+.ls (fix_dqval) = 1024 [short, min = 0]
+Data quality value for fixed pixels. This option allows users to
+specify how the data quality file pixel flags are set for a "fixed"
+hot pixel. Some software packages do not recognize WFPC2-specific
+data quality flags. Therefore, this parameter allows users to set the
+flag to some value that is compatible with their software (for
+example, most good pixel flags are set to 0).  Use fix_dqval=0 if
+no flagging of the fixed pixels is desired.
+.le
+.ls (rej_val) = INDEF [real]
+Pixel value for high dark count hot pixels. If this parameter is
+set  to  INDEF,  the original pixel values are preserved in the image.
+This option allows users to assign a particular value to flag
+uncorrected hot pixels in an image so that these pixels will be
+recognized as "bad" by software that does not use data quality files.
+.le
+.ls (runagain) = no [boolean]
+If an image was processed by this task before, it will be skipped if this 
+parameter is set to 'no'.  The user can force an image to be reprocessed 
+by this task by setting this parameter to 'yes'.
+.le
+.ls (verbose) = yes [boolean]
+Print out verbose messages?
+.le
+.ih
+EXAMPLES
+1. Fix hot pixels in images a.c0h and b.c0h (that are accompanied by their 
+data quality files a.c1h and b.c1h) using the hot pixel tables hp1.tab 
+and hp2.tab.
+ 
+.nf
+wf> warmpix "a.c0h,b.c0h" "a.c1h,b.c1h" "hp1.tab,hp2.tab" 0.1 0.003 0.003
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

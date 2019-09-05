@@ -1,0 +1,469 @@
+.help velocity Apr91 stsdas.contrib.vla
+.ih
+NAME
+velocity - Compute 3 2-D velocity images from a data cube with spatial X and
+Y dimensions and velocity on Z axis. 
+.ih
+USAGE
+velocity imask nrchan timap vpeak vmean vdisp (vvector) 
+(maskcorr) (correct) (vsig) (logfile)
+.ih
+DESCRIPTION
+This script computes the first and second moments of a
+data cube along the velocity (z) axis, i.e., a 
+map of intensity-weighted mean velocity, and a map 
+of the velocity dispersion.
+Also computed is a map of the peak velocity at each spatial (x,y)
+pixel (i.e., for each velocity profile). 
+
+Product images are: velocity
+at peak intensity, the mean velocity, and the dispersion in velocity
+for every velocity profiel of the input data cube.
+
+The velocity dispersion calculation includes a number of
+corrections, the first of which is the profile masking correction.
+The true width of a Gaussian profile which has been masked 
+symmetrically in velocity will be greater than the calculated width
+by some amount which depends on the calculated width and the number
+of channels passed (i.e., the window size).  The ratio of the true to
+calculated width has been determined versus the ratio of the number
+of channels passed to the intrinsic width.  These points were then
+fit by a parabola.  The solution for the intrinsic width as a function
+of the calculated width and the window size has quadratic roots.  The
+positive quadratic root is calculated and is used for correcting the
+dispersions.
+
+Following the profile masking correction is a correction for a
+Guassian velocity smoothing that may have been done to the input
+data cube.  The smoothing in velocity may have been done by the
+receiver (due to bandwidth smearing) or may have been applied at the
+time the image was smoothed with the `smooth.cl' script.
+.ih
+PARAMETERS
+.ls imask [file name]
+Filename of the masked image cube.  Usually this will be a
+product from a run of the `intensity' procedure.  It is meant to 
+be a file which has the original image intensity everywhere
+except where masking has been done, in which case the value
+of the pixel should be zero.
+.le
+.ls nrchan [file name]
+Filename of the channel map containing the sum of the number 
+of channels remaining in the mask profile at every (X,Y) pixel 
+after all corrections have been applied to the mask.  
+.le
+.ls timap [file name]
+The filename of the total intensity map.  This will usually
+be an output from a previous run of the `intensity' procedure.
+.le
+.ls vpeak [file name]
+The filename of the image which will hold the velocities at 
+the peak intensity of every profile of the input image.
+.le
+.ls vmean [file name]
+The filename of the image containing the mean velocity product.
+.le
+.ls vdisp [file name]
+The filename of the image containing the velocity dispersion.
+.le
+.ls (vvector ="") [file name]
+The ASCII file containing a column of velocities.  The first
+velocity is the velocity associated with the first plane of
+the image cube.  Each succeeding velocity value is the 
+velocity associated with the corresponding planes of the
+image cube.  There should be no more and no fewer values 
+than there are pixels along the z axis of the input data cube.
+.le
+.ls (maskcorr = yes) [boolean]
+Apply correction to the dispersion to 
+the effect of masking the velocity
+profiles?
+.le
+.ls (correct = no) [boolean]
+Correct the velocity dispersion to remove effects of any
+Gaussian smoothing to the data in velocity?
+.le
+.ls (vsig = 0.) [real]
+The sigma of the velocity smoothing Gaussian (in pixels).
+.le
+.ls (logfile = "") [file name]
+The output message file name.    
+.le
+.ih
+NOTES
+
+.ls * 
+The user should specify all file names with the full extension 
+".hhh" or ".imh"
+.le
+.ls * 
+To use this IRAF task, load the following packages: 
+
+.nf
+	       images
+	       noao.proto
+	       stsdas.toolbox.tools
+
+.fi
+.le
+.ls * 
+This task may be run as a batch job.  The user should first
+set the logfile parameter to a string value.  Then the
+task may be executed in batch by typing 
+
+.nf
+	velocity mode="h" & batch
+.fi 
+
+	or in the background on a Unix machine by typing
+
+.nf
+		velocity mode="h" &
+.fi
+.le
+.ls * 
+This task requires certain header parameters to be present in the 
+input image.  They are: NAXIS, CDELT3, CRPIX3, and CRVAL3.  NAXIS
+is the dimension of the image, CDELT3 is the spacing along the z
+axis, or the channel width in meters/sec, CRPIX3 is the reference
+channel, and CRVAL3 is the reference velocity at CRPIX3 in units
+meters/sec.
+.le
+.ls * 
+This task took about 27 minutes to run on an uninterupted Sparc 
+station for an input image cube with dimensions 256x256x31.
+.ih
+EXAMPLES
+1.  To get the uncorrected velocity products for the masked image 
+cube 'imask.hhh' where the channel map and total intensity map 
+are 'nrchan' and 'timap', respectively:
+
+.nf
+st> velocity imask.hhh nrchan.hhh timap.hhh vp.hhh vm.hhh vd.hhh
+.fi
+	
+2.  To get the peak velocity, mean velocity, and velocity dispersion
+from the input masked data cube, 'imask.hhh', where the channel 
+velocities are specified in the file 'chanv.txt', where the
+channel map and total intensity map are 'nrchan' and 'timap', 
+respectively, and with no profile masking correction of the 
+velocity dispersion:
+
+.nf
+st> velocity imask.hhh nrchan.hhh timap.hhh vp.hhh vm.hhh vd.hhh \
+>>>  vvector="chanv.txt" mask- corr+ vsig=0.8214 
+.fi
+
+In this example, the masking correction is turned off, and the
+velocity-smoothing correction are turned on (note the plus sign 
+after them), and the Gaussian sigma width is specified explicitly
+since it is a hidden parameter.  This is also true about the 
+'vvector' parameter.
+
+.nf
+
+
+		   Flowchart for VELOCITY.CL algorithm
+		   ===================================
+
+
+1) Parameters to IRAF tasks/scripts:   `parameter'
+2) 3D data cube:  CUBE
+3) 2D data image: PLANE
+
+
+
+			  PEAK VELOCITY PRODUCT
+			  ---------------------
+		
+				START
+				  |
+				  |
+				  |
+	  IMASK CUBE 		  |                  `vvector'
+       masked image cube 	  |	    user input values (optional)
+	           \		  |		     /	
+	            \		  |		    /	
+	             \				   /
+	             	Read the image header and
+                        compute the velocity vector,
+	            or read values from the VVECTOR file
+						    \
+				  |		     \	
+	  IMASK CUBE		  |                   \
+      masked image cube		  |		     `vvector'
+		      \		  |		  velocity vector
+		       \	  |
+ 			\
+			"imcalc [max]" to compute
+			 a plane of peak profile 
+		             intensities.	  \
+		      		                   \
+		     		  |		    \
+		     		  |		     \
+        IMASK CUBE     	          |		      MX PLANE
+      masked image cube		  |		   peak intensities
+		      \		  |		      /
+	`vvector'      \	  |		     /
+	velocities\     \	  |		    /
+		   \     \	 		   /
+		    \     \	 		  /
+		      For each plane of the masked
+		      image cube, highlight the pixels
+		      at peak intensity, and then 
+                      multiply by the channel velocity.
+						\
+				  |         	 \
+				  |		  \
+				  |		   VPEAK CUBE
+		   		  |		  /
+		    		  |		 /
+		     		  		/
+			Project onto a plane by
+		       summing through the VPEAK
+			        cube.      
+				  	    \
+				  |	     \
+				  |	      \
+				  .		VPEAK PLANE
+
+
+
+
+
+
+
+			 MEAN VELOCITY PRODUCT
+			 ---------------------
+
+
+
+
+				  .
+				  |
+				  |
+	   IMASK CUBE     	  |		`vvector'
+	masked image cube 	  |	     velocity vector
+		   \		  |		 /
+		    \ 	 	  |		/
+		     \			       /
+		        Weight velocity by the 
+                              intensity.
+					    \
+				  |	     \
+				  |           \
+	       `deltav' 	  |		VMEAN CUBE
+	              \		  |	      /
+	               \	  |	     /
+			\		    /
+			Sum along the profiles
+	              and multiply by channel width.
+					    \
+				  |	     \
+				  |	      \
+      IMAP PLANE		  |		VMEAN PLANE
+     total intensity		  |	       /
+	 plane   	 	  |	      /
+		   \		  |	     /
+ 		    \		  |	    /
+ 		     \		  	   /
+		     Divide by the Total Intensity
+		          Map to normalize.
+					  \
+				  |	   \
+				  |	    \
+				  |	      VMEAN PLANE 
+				  |		further modified
+				  |
+				  .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+
+
+
+
+
+		       VELOCITY DISPERSION PRODUCT
+		       ---------------------------
+
+				 .
+				 |
+				 |
+				 |
+				 |
+				 |
+	IMASK CUBE               |
+		    \   	 |
+		     \		 |                 `vvector'
+	VMEAN PLANE   \  	 |		velocity vector
+		  \    \	 |		  /
+  		   \ 	\			 /
+	            \ For each velocity plane,  /
+	               Compute the velocity
+               	     difference,square it,and
+   		     weight by masked intensity.
+					    \
+				 |	     \
+				 |	      \		
+	`deltav'		 |		VD CUBE
+	channel width		 |		dispersion cube	
+		   \    	 |             /
+		    \		 |	      /
+		     \			     /
+			Sum along profiles  
+		     to get velocity dispersion
+		   and multiply by channel width.
+					    \
+				 |	     \
+				 |	      \
+				 |	       \
+      IMAP PLANE		 |	        VD PLANE
+    total intensity 		 |	       /
+   	plane	    \		 |	      /
+		     \		 |	     /
+ 		      \			    /
+			Divide by the Total
+			  Intensity Map
+				        \
+				 |	 \
+				 |	  \
+				 |	    VD PLANE
+				 |	 further modified
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+				 |
+* * * * * * * * * * * * Begin Correction Phase * * * * * * * * * * * * * *
+				 |
+				 |
+				 |
+
+			  Correct the dispersion for
+		     ---  masking of velocity profiles?	 -----
+		     |					      |
+		     |				  	      |
+		     |					      |
+		     Y					      N
+    `deltav'	     E			VD PLANE	      O
+  channel width	     S		     current version	      |
+	 \	     |			/		      |
+	  \	     |		       /		      |
+	   \			      /			      |
+            Take the square root and			      |
+            divide the dispersion by 			      |
+	    channel width to get			      |
+	  dispersion in units of pixels		      	      |
+		     		    \  			      |
+		     |		     \			      |
+		     |		      \			      |
+  NRCHAN PLANE       |		      V0D PLANE		      |
+  channel map	     |	              /			      |
+	\	     |		     /			      |
+	 \			    /			      |
+	  \      		   /			      |
+	    Compute the correction			      |
+	    to the dispersion, V0D,			      |
+            as a function of NRCHAN.      		      |
+		     		 \			      |
+                     |		  \			      |
+                     |		   \			      |
+    NRCHAN PLANE     | 		    \			      |
+    	       \     |		   ROOT1 PLANE		      |
+    V0D PLANE 	\    |	         correction values	      |
+         \       \   |	         			      |
+	  \	  \  |	         			      |
+	   \	   \            			      |
+        Mask out negative dispersion values                   |
+        and pixels where the correction		              |
+	is ill-determined (at values of 		      |
+	      NRCHAN < 2*sigmap)			      |
+			     \				      | 
+		     |        \				      |
+		     |         \			      |
+		     |          \			      |
+	ROOT1	     |	       V1D PLANE		      |
+   correction values |	        /			      |
+	  \	     |	       /			      |
+	   \	     |	      / 			      |
+	    \		     /				      |
+	Apply the masking correction (a value		      |
+	between 0 and 1) to the dispersions                   |
+        where the uncorrected dispersion is 		      |
+	well-determined.  Otherwise, leave		      |
+	the uncorrected value, V1D in place.	              |
+			      \				      |
+		     |	       \			      |
+		     |	        \			      |
+		     |	         VD PLANE		      |
+		     |	     corrected dispersion	      |
+		     |	       				      |
+		     |	       				      |
+		      ---------- * ---------------------------
+
+				 |
+				 |
+				 |
+				 |
+	VD PLANE		 |	   	   `deltav'
+     current version		 |		 channel width
+		    \		 |           	    /
+		     \		 |		   /
+		      \		 |		  /
+		       \ 		         /
+		      Convert dispersion to units
+	 	     of km/sec (multiply by channel 
+		       /   width deltav).
+		      /
+		     /		 |
+		    /		 |
+	VD PLANE		 |	     `vsig'
+      further modified	 	 |   sigma of velocity-smoothing
+		   \		 |	    Gaussian
+		    \		 |	   /
+		     \		 |	  /
+		      \			 /
+		   Correct VD for Gaussian velocity
+		    smoothing, if velocity smoothing 
+			   was performed. 
+					\
+				 |	 \
+				 |	  \
+				 |	  VD PLANE 
+				 |	final version
+				 |	 
+				 |
+
+			       FINISH
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+intensity, smooth
+.endhelp

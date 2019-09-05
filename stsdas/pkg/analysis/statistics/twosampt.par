@@ -1,0 +1,9 @@
+# Task parameters for the TWOST task
+
+input,s,a,,,,"> Input file(s)"
+tests,s,h," ",,,"> Names of two-sample tests to perform"
+first,i,h,1,,,"> First group number"
+second,i,h,2,,,"> Second group number"
+kaplan,b,h,no,,,"> Print Kaplan-Meier estimator for each group?"
+verbose,b,h,no,,,"> Full printout desired?"
+mode,s,h,"al",,,

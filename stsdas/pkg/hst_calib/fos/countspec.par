@@ -1,0 +1,8 @@
+spectrum,s,a,,,, Input spectrum
+obsmode,s,a,,,, Instrument mode
+output,s,a,,,, Output table name
+wavetab,s,h,"",,, Wavelength table name
+grtbl,s,h,"mtab$*.tmg",,, Instrument graph table
+cmptbl,s,h,"mtab$*.tmc",,, Instrument component table
+area,r,h,45238.93416,,, Telescope area in cm^2
+mode,s,h,'a',,,

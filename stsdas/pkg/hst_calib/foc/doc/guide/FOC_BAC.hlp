@@ -1,0 +1,54 @@
+.help FOC_BAC Apr88 "FOC 5.1.1"
+.ih
+CHAPTER
+FOC_BAC -- FOC dark count correctiion reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_BAC
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of dark count reference files for RSDP
+and may also be used by Guest Observers to generate calibrations files
+for recalibration. It is discussed in FOC_PHOTOMETRY.
+
+.ih
+FREQUENCY
+
+The BAC (dark count) Calibration will be required ??frequently.
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxbacr1
+generate a BAC file from a dark exposure.
+.le
+
+.ls cxbacrop2
+low level task called by cxbacr1x. This script actually does the processing
+and may be called by a GO who must supply the additional file names.
+.le
+
+.ih 
+SEE ALSO
+From FOC_BAC see also:
+
+.nf
+BAC file creation		...... cxbacr1
+                                ...... cxbacrop2
+BAC verification                ...... FOC_BAC_VER
+.fi
+
+
+.endhelp

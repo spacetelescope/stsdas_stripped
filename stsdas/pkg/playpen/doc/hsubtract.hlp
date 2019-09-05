@@ -1,0 +1,125 @@
+.help hsubtract Dec91 stsdas.playpen
+.ih
+NAME
+hsubtract -- Baade-Lucy background subtraction algorithm.
+.ih
+USAGE
+hsubtract  input background output
+.ih
+DESCRIPTION
+This task implements the Baade-Lucy background subtraction algorithm
+described in "Proceedings of the 1st ESO/ST-ECF Data Analysis Workshop", 
+Garching, April 17-19 
+1989, edited by P.Grosbol, F.Murtagh and R. Warmels, pp 
+169-172. The following is their discussion of the algorithm..
+.ls
+
+"The method depends on the availability of a reference background area,
+either in the same or in a separate image, from which a statistically
+significant histogram of the background, B, can be constructed.  If a
+histogram, H, with identical bins is also computed for the image, I,
+which is to be corrected, the binwise ratio Fk = Bk / Hk for each bin k
+is proportional to the probability Pk that the flux of the image pixels
+in bin k is due to background only. The proportionality constant,,
+alpha, simply is the inverse ratio of the number of pixels Nb, in the
+reference background area, to the number of pixels Nbi in I which are
+due to the background only.
+
+Because of the wide variety of source contents of astronomical images,
+generally no algorithm can be given to calculate Nbi. However, a recipe
+that will provide a reasonable guess for a fair range of applications
+is to determine a scaling factor after multiplication with which the
+background histogram best match the image histogram in the range 1 < k
+< kmax. The choice of the upper cut-off bin kmax (above which sources
+start to make significant contributions) may have to be made by trial
+and error and in any case requires competent judgment of the nature of
+the sources. Once a scaling factor has been found, it may be used as
+the constant of proportionality, alpha, introduced above, and
+probabilities can be computed as Pk = alpha * Bk / Hk for all k.
+
+If Pk >= 1 (an inequality may result from statistical fluctuations),
+none of the pixels in bin k contain any information other than 
+background. In order to correct these pixels for background, they
+simply can be set to zero..
+
+If Pk < 1, only a fraction of the pixels in bin k contain a pure
+background signal. Accordingly, only  alpha * Bk out of a total of Hk
+pixels in the bin may be set to zero. It is of course just the nature of the
+problem that it is impossible to know which pixels these are. One may,
+however, argue that for all  pixels in bin k the probability of their
+flux being due to background only is larger when the the flux in
+the ambient pixels is lower. Conversely, a relatively large flux in nearby
+pixels gives rise to the assumption that the pixel considered contains
+also some valid non-background information. The approach adopted here
+is, therefore, to rank all pixels in bin k according to the flux in
+their respective eight nearest neighboring pixels and then to zero the
+alpha * Bk lowest ranking pixels. For the remaining pixels the
+background contribution must be smaller than Sk, the flux level of bin
+k. We choose to subtract the most probable value, namely the
+expectation value for all bins 1,...,k-1 with flux levels below the one
+from bin k."
+.le
+
+In the 'hsubtract' implementation, the scaling factor alpha is computed
+by equating the cumulative histograms of image and background at
+bin kmax.
+
+The method will achieve optimum  performance only on images that have
+already been corrected for any large  scale (low-frequency) structures
+in the background distribution.
+
+The task can process an image template or list as input. In this case, 
+the output is either a matching list of images or a directory.
+.ih
+PARAMETERS
+.ls input [file name template]
+Input 2-dimensional image section, template, or list of images.
+.le
+.ls background [file name template]
+Input 2-dimensional background image section, template, or list of images.
+The number of images passed to this parameter must be the same as the
+number passed to 'input'.
+.le
+.ls output [file name template]
+Output file name, list or directory.
+Output images are always of type real, regardless of the input image type.
+.le
+.ls min = 0.0 [real]
+Pixels below this value are not included in the histogram computation,
+but are set to zero.
+.le
+.ls max = 10.0 [real]
+Pixels above this value are not included in the histogram computation,
+and are not processed at all.
+.le
+.ls binsize = 1.0 [real]
+Histogram bin size. 
+.le
+.ls kmax = 10.0 [real]
+Upper threshold level. Object and background histograms will be matched
+in bins 1 < k < kmax. Pixels below 'kmax' will be set to zero, pixels above it
+will have background subtracted following the algorithm rules.
+.le
+.ls (verbose = no) [boolean]
+Print file names and processing information?
+.le
+.ih
+EXAMPLES
+1. Subtract background from images 'a0.hhh' thru 'a9.hhh'. Background is in
+between columns 100 and 200, and lines 50 and 150 of the same images.
+Resulting images will be stored in directory 'out/'.
+Compute histograms between -100 and 300 pixel units. Bin size is 10.
+The 'kmax' parameter will be set at 45.:
+
+.nf
+pl> hsubtract a?.hhh a?.hhh[100:200,50:150] out/ min=-100 max=200 \
+>>> binsize=10  kmax=45.
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+.endhelp

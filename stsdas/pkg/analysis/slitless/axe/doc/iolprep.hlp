@@ -1,0 +1,88 @@
+.help iolprep Jun2010 axe
+.ih
+NAME
+iolprep -- prepare input object lists for aXe
+.ih
+USAGE
+.nf
+iolprep mdrizzle_image input_cat dimension_info
+.fi
+.ih
+PARAMETERS
+.ls mdrizzle_image
+Name of the MultiDrizzled image.
+.le
+.ls input_cat
+Name of the input SExtractor catalogue.
+.le
+.ls (dimension_info) [float,float,float,float]
+Numbers to modify the natural image size [left, right, bottom, top].
+.le
+.ih
+DESCRIPTION
+This task generates Input Object Lists for grism/prism images or direct images,
+which can then be used in aXe reduction (e.g. in the tasks axecore
+or sex2gol).
+
+The task analyzes the header of a MultiDrizzled image and extracts the names
+and the drizzle parameters of all input images that were used in the
+drizzling. Then the positions of all objects in the input SExtractor
+catalogue, which corresponds to the MultiDrizzled image, are projected out
+into the coordinate system of each input image and an Input Object List 
+is created for each input image. The Input Object List contains all objects
+located in the area covered by the corresponding input image.
+This area can be influenced by adding or subtracting rows and columns in all
+four directions via the parameter 'dimension_info'. 
+
+The new object catalogues have filenames of the form:
+'<input image name>_<science extention number>.cat', e.g.
+
+.nf
+j90zn5x4q_flt.fits --> j90zn5x4q_flt_1.cat and j90zn5x4q_flt_2.cat
+.fi
+
+for the ACS image 'j90zn5x4q_flt.fits'.
+
+The drizzle coefficients files (such as 'j90zn5x4q_flt_coeffs1.dat' and
+'j90zn5x4q_flt_coeffs2.dat' for the ACS image given above) must be
+present when running the task iolprep. It is most convenient
+to run the task in the directory where the MultiDrizzled
+image was created.
+
+.ih
+EXAMPLES
+1. Create Input Object Lists for all input images used to create the
+MultiDrizzled image 'grappa_f555w_drz.fits', using the SExtractor catalogue
+'grappa.cat' as the input catalogue:
+.nf
+
+     ax> iolprep grappa_f555w_drz.fits grappa.cat
+.fi
+
+2. As in 1, but also include objects with '-100 < x_coo < 0' and 
+'npix_y < y_coo < npix_y + 50' in the Input Object Lists. 'x_coo' and
+'y_coo' are the image coordinates of an object in the input images,
+and 'npix_y' is the number of pixels in the y-direction in the input images.
+.nf
+
+     ax> iolprep grappa_f555w_drz.fits grappa.cat "100,0,50,0"
+
+.fi
+
+
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to the aXe manual for more detailed information about using this task:
+.nf
+
+http://axe.stsci.edu/axe/
+
+.fi
+.ih
+SEE ALSO
+fcubeprep
+.endhelp

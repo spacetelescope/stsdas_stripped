@@ -1,0 +1,28 @@
+# Help Directory for the CONTRIB package
+
+$doc		= "stsdas$pkg/contrib/doc/"
+$acoadd		= "stsdas$pkg/contrib/acoadd/"
+$plucy		= "stsdas$pkg/contrib/acoadd/"
+$redshift	= "stsdas$pkg/contrib/redshift/"
+$slitless	= "stsdas$pkg/contrib/slitless/"
+$spfitpkg	= "stsdas$pkg/contrib/spfitpkg/"
+$vla		= "stsdas$pkg/contrib/vla/"
+
+acoadd		hlp=doc$acoadd.hlp,	src=acoadd$acoadd.f
+plucy		hlp=doc$plucy.hlp,	src=plucy$plucy.f
+slitless 	hlp=slitless$slitless.hlp, src=slitless$splitless.x
+
+redshift	men = stsdas$pkg/contrib/redshift/redshift.men,
+		hlp = ..,
+		pkg = stsdas$pkg/contrib/redshift/redshift.hd,
+		src = stsdas$pkg/contrib/redshift/redshift.cl
+
+spfitpkg	men = stsdas$pkg/contrib/spfitpkg/spfitpkg.men,
+		hlp = ..,
+                sys = stsdas$pkg/contrib/spfitpkg/spfitpkg.hlp,
+		pkg = stsdas$pkg/contrib/spfitpkg/spfitpkg.hd,
+		src = stsdas$pkg/contrib/spfitpkg/spfitpkg.cl
+
+vla		men = stsdas$pkg/contrib/vla/vla.men,
+   		hlp=doc$vla.hlp,	src=vla$vla.cl,
+		pkg=vla$vla.hd

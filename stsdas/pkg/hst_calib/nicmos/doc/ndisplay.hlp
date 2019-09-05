@@ -1,0 +1,49 @@
+.help ndisplay Aug10 stsdas.hst_calib.nicmos
+.ih
+NAME
+ndisplay -- Display a science image and overlay DQ flags
+.ih
+USAGE
+ndisplay image frame
+.ih
+DESCRIPTION
+Display a science image and overlay its associated DQ flags. Originally
+written for NICMOS images, ndisplay can be used for any HST dataset
+using the multi-extension FITS format for storing SCI, ERR, and DQ arrays.
+This is a script that simply calls the IRAF \fIdisplay\fR task to
+display the science image and then calls the \fImarkdq\fR task to mark
+the DQ flags on the displayed image. All parameters for those two tasks can
+be used to control the display characteristics, such as intensity transfer
+function and colors of the marked DQ flags.
+
+The input image name to this task must be that of the science image to
+be displayed. The name of the associated DQ image will be derived from
+the science image name.
+.ih
+PARAMETERS
+.ls image
+Science image to be displayed and marked with DQ flags.
+.le
+.ls frame        
+The frame or image plane number of the display to load.
+.le
+.ih
+EXAMPLES
+1. Display the science image in the calibrated file n3t502cur_cal.fits
+and overlay its associated DQ flags:
+
+    cl> ndisplay n3t502cur_cal[1] 1
+
+2. Display the science image from imset 3 of the intermediate Multiaccum
+file n3t502cur_ima.fits and overlay its DQ flags:
+
+    cl> ndisplay n3t502cur_ima[sci,3] 1
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, SSG/SSB
+.ih
+SEE ALSO
+display, markdq, tvmark
+.endhelp

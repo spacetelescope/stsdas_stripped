@@ -1,0 +1,188 @@
+.help rotfind Apr97 stsdas.analysis.dither
+.ih
+NAME
+rotfind --  Finds rotation angle between two single-group images by
+examining a set of cross-correlation images which span a range of angles.
+.ih
+USAGE
+rotfind  input output
+.ih
+PARAMETERS
+.ls input [string]
+Root name for the cross-correlation image family.
+.le
+.ls output [file name]
+Output ASCII file with results.
+.le
+.ls (xcenter, ycenter = INDEF) [real]
+Position of search box in image. If INDEF, the search box is centered in 
+the image.
+.le
+.ls (boxsize = INDEF) [real]
+Size of box where to search for peak. If INDEF, the full image is scanned
+(thus xcenter,ycenter are not used).
+.le
+.ls (fwhm = 7.) [real]
+FWHM of the Gaussian used to fit cross-correlation peaks.
+.le
+.ls (ellip = 0.05) [real]
+Ellipticity (1 - b/a) of the Gaussian used to fit cross-correlation peaks.
+.le
+.ls (pa = 45.) [real]
+Position angle (in degress) of the Gaussian used to fit cross-correlation 
+peaks. Position angle increases counterclockwise from the +x direction.
+.le
+.ls (fitbox = 7) [int]
+Size of box where the 2-D Gaussian fit takes place.
+.le
+.ls (kellip = yes) [bool]
+Keep ellipticity fixed during fit ?
+.le
+.ls (kpa = yes) [bool]
+Keep position angle fixed during fit ?
+.le
+.ls (intable = "") [file name]
+Optional table with angle vs. peak pairs.
+.le
+.ls (tempdir = "tmp$") [path name]
+Path to directory where temporary files are kept.
+.le
+.ls (interactive = yes) [bool]
+Interactive mode ?
+.le
+.ls (verbose = yes) [boolean]
+Print out log?
+.le
+.ih
+DESCRIPTION
+'Rotfind' examines a set of cross-correlation images, each of which
+was produced by 'crossdriz'  to determine the rotation angle between
+the two original images input into crossdriz.
+
+The set of images produced by 'crossdriz' has one image for each
+of a series of test angles.   The cross-correlation image whose test angle most
+closely approximates the true rotation angle between the original
+images should have the highest  cross-correlation peak.  'Rotfind'
+determines the correct angle by fitting a polynomial function of
+rotation angle to the observed peaks, and then interpolating to
+find the maximum.  The default polynomial is a parabola, since all
+continuously differentiable functions behave like a quadratic near
+a maximum.  After finding the peak rotation angle, 'rotfind' returns
+to the test images  closest in rotation and interpolates intepolates
+the shift in x and y between the two images (note: usually the 
+dependence of shift on rotation angle is extremely small).
+
+The polynomial fitting is performed by the 'nfit1d' task in the
+'stsdas.analysis.fitting' package. This task can be invoked in interactive
+mode and its interactive resources used to perform the fit.  We
+recommend that a new user - and perhaps all users - perform these
+fits in interactive mode.  The :help command will show the various
+options of nfit1d.  Among these are changing the order of the polynomial,
+and the range of the fit.  When changing the order of the polynomial,
+the user may find it helpful to change the default starting value
+of the higher order term from zero, to avoid being caught in a local 
+extremum.
+
+As the user may determine slightly different rotation angles from the
+different groups of a WFPC2 image, the task also supplies the derivative
+of the estimated shift with rotation angle, so that if the user decides
+to employ a sligtly different rotation angle in subsequent analysis,
+he/she can modify the shift appropirately.  In practice, this derivative
+is often negligible when applied to the typically small errors in
+rotation angle.
+
+The search and fit for the cross-correlation peaks on the individual
+images is performed as in 'shiftfind', and the associated parameters are
+the same as in 'shiftfind'.  Users should see the 'shiftfind' help file
+for more information.
+.ih
+EXAMPLES
+Here we run rotfind on a series of 12 crosscorrelation images produced
+by crossdriz.  These images v2x1_01 ... v2x1_12 are successively read
+in and a peak found.  The user the is allowed to examine the fit and
+in this case approves.  An output best fit is found.
+
+.nf 
+di> rotfind v2x1* g2vX.rot
+Cross-corr image template/list (v2x1*.hhh): 
+Output file name (g4i.rot): g2vX.rot
+Making file list...
+Making table with rough peak values...
+Updating peak values with Gaussian fit...
+
+table file:  tmp$dither4646g
+
+Original file:  V2x1g2_01.hhh
+Time:           Thu 09:01:29 13-Nov-97
+Row:            1
+Function:  twodgaus       chi-square: 4.03E9        rms: 61430.21
+Units:     Auto           npts:   49
+Ampl. =  8.379E6          X     =    374.2          FWHM  =    18.05
+Back. =       0.          Y     =    343.3          Ellip =     0.05
+                                                    Ang.  =      45.
+
+Original file:  V2x1g2_02.hhh
+Time:           Thu 09:01:29 13-Nov-97
+Row:            2
+Function:  twodgaus       chi-square: 4.33E9        rms: 63676.75
+Units:     Auto           npts:   49
+Ampl. =  8.534E6          X     =    374.1          FWHM  =    17.11
+Back. =       0.          Y     =    343.4          Ellip =     0.05
+                                                    Ang.  =      45.
+
+Original file:  V2x1g2_03.hhh
+Time:           Thu 09:01:30 13-Nov-97
+Row:            3
+Function:  twodgaus       chi-square: 5.83E9        rms: 73905.38
+Units:     Auto           npts:   49
+Ampl. =  8.689E6          X     =     374.          FWHM  =    16.16
+Back. =       0.          Y     =    343.5          Ellip =     0.05
+                                                    Ang.  =      45.
+.
+.
+.
+.  Original file:  V2x1g2_11.hhh 
+Time:           Thu 09:01:33 13-Nov-97
+Row:            11
+Function:  twodgaus       chi-square: 4.67E9        rms: 66161.11
+Units:     Auto           npts:   49
+Ampl. =  8.669E6          X     =    373.2          FWHM  =    16.38
+Back. =       0.          Y     =    344.1          Ellip =     0.05
+                                                    Ang.  =      45.
+
+Original file:  V2x1g2_12.hhh
+Time:           Thu 09:01:34 13-Nov-97
+Row:            12
+Function:  twodgaus       chi-square: 3.83E9        rms: 59917.18
+Units:     Auto           npts:   49
+Ampl. =  8.526E6          X     =    373.1          FWHM  =    17.21
+Back. =       0.          Y     =    344.1          Ellip =     0.05
+                                                    Ang.  =      45.
+
+
+Final solution:  Xshift   = -22.560116084 	Error = 0.067416587844515
+                 Yshift   = 7.232406536 	Error = 0.098611152042179
+                 Rotation = 2.390201 		Error = 0.003070099
+                  dx/dr   = -0.71599999999989 	dy/dr  = 0.66400000000044
+.fi
+
+.ih
+BUGS
+The 2-D Gaussian peak fitting routine can be quite sensitive to first guess
+values for the Gaussian parameters. If one does not get reasonable results
+using the task's default values, the user should experiment with the
+'boxsize', 'kellip' and 'kpa' controls to restrict the peak search
+to a smaller region and to allow more flexibility in the fit routine.
+.ih
+REFERENCES
+This task was written by I. Busko in collabortion with A. Fruchter.
+More information can be found in 
+ A. S. Fruchter, R. N. Hook, I. C. Busko,  and M. Mutchler,
+1997, "A  Package for the Reduction of Dithered Undersampled Images", in "The
+1997 HST Calibration Workshop", S. Casertano et al.,
+ed. (Baltimore: Space Telescope Science Institute), in press.
+See http://www.stsci.edu/meetings/cal97.
+.ih
+SEE ALSO
+crossdriz, shiftfind, n2gaussfit, nfit1d
+.endhelp

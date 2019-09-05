@@ -1,0 +1,22 @@
+ra,r,a,,0,24,Right Ascension of field center in hours
+dec,r,a,,-90,90,Declination of field center in degrees
+width,r,a,,0,180,Width of field in degrees
+index,f,h,scidata$index,,,Guide Star Catalog index table name
+cdrom_north,s,h,"/data/gsc1",,,Mount point of the North GSC CDROM
+cdrom_south,s,h,"/data/gsc2",,,Mount point of the South GSC CDROM
+region,s,h,"REG_NO",,,Region number column name
+rahlow,s,h,"RA_H_LOW",,,Lower RA limit hours column name
+ramlow,s,h,"RA_M_LOW",,,Lower RA limit minutes column name
+raslow,s,h,"RA_S_LOW",,,Lower RA limit seconds column name
+rahhi,s,h,"RA_H_HI",,,Upper RA limit hours column name
+ramhi,s,h,"RA_M_HI",,,Upper RA limit minutes column name
+rashi,s,h,"RA_S_HI",,,Upper RA limit seconds column name
+decsilow,s,h,"DECSI_LO",,,Lower Dec limit sign column name
+decdlow,s,h,"DEC_D_LO",,,Lower Dec limit degrees column name
+decmlow,s,h,"DEC_M_LO",,,Lower Dec limit minutes column name
+decsihi,s,h,"DECSI_HI",,,Upper Dec limit sign column name
+decdhi,s,h,"DEC_D_HI",,,Upper Dec limit degrees column name
+decmhi,s,h,"DEC_M_HI",,,Upper Dec limit minutes column name
+tablist,f,h,"tblist",,,List of FITS files
+nregions,i,h,0,0,,Number of regions found [output]
+mode,s,h,"al"

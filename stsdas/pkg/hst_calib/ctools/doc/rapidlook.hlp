@@ -1,0 +1,66 @@
+.help rapidlook May90 stsdas.hst_calib.ctools
+.ih
+NAME
+rapidlook -- Display all groups of a multigroup rapid-readout image.
+.ih
+USAGE
+rapidlook input output display  
+.ih
+DESCRIPTION
+The 'rapidlook' task is actually a script that creates and displays a 
+2-dimensional image by stacking 
+the individual groups from a 1-dimensional multigroup image. This task 
+is useful for 
+looking at rapid-readout observations, which can be expected to have a 
+large 
+number of groups. The task will, of course, work with any multigroup 
+file. 
+The surface plot characteristics can be changed by altering parameters 
+in 
+the task, 'surface'; tv display characteristics can be changed by 
+editing the
+'display' task parameter list.
+.ih
+PARAMETERS
+.ls input [file name]
+Input multigroup image name.
+.le
+.ls output [file name]
+Output 2-dimensional image name. If a name is given, the resultant image 
+will
+be saved under that name. If no name is given, i.e., "", a temporary
+image will be created and then deleted at the end of the task.  
+.le
+.ls display [string, allowed values: tv | plot]
+Display mode to be used for viewing the 2-dimensional image. The choices 
+are the
+'surface' plot task in the 'plot' package or the 'display' task in the 
+'tv' 
+package.
+.le
+.ih
+EXAMPLES
+1. This example will stack the groups of 'z00xh903r.d0h' into a 
+2-dimensional image, store 
+it in the image 'dummy.hhh' and display it as an image using the 
+'display' task.
+
+.nf
+  ct> rapidlook z00xh903r.d0h dummy.hhh tv
+.fi
+
+
+2. This example will stack the groups of 'z00xh903r.d0h' into a 
+temporary 
+2-dimensional image and display a surface plot. The 2-dimensional image 
+will not be saved.
+
+.nf
+  ct> rapidlook z00xh903r.d0h "" plot
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+grlist, stack, surface, display
+.endhelp

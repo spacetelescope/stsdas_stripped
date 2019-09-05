@@ -1,0 +1,172 @@
+.help eqxy Feb95 stsdas.analysis.gasp
+.ih
+NAME
+eqxy -- Get pixel coordinates from equatorial positions.
+.ih
+USAGE
+eqxy iminfo image eqfile
+.ih
+DESCRIPTION
+This task will compute the pixel coordinates for a given set 
+of equatorial (i.e., right ascension, declination) 
+coordinates based on the plate solution coefficients.
+The pixel origin convention is set by the 'pixel_center' parameter value.
+Usually this plate solution is in the input image header which is created
+by the Guide Star Selection System (the source of the image).
+The coefficients can be read from an ASCII file ('coeffile')---see the
+help for task 'xyeq'.
+
+Output is sent to the terminal screen and consists of:
+.nf
+*  The RA,DEC input coordinates 
+*  The 'X_nsol','Y_nsol' from the new plate solution
+*  The 'X_osol','Y_osol' from the original plate solution or 
+   the 'X_cd','Y_cd' from the CD matrix values.
+.fi
+
+If you have an image one of these special headers, and you would
+like to create the information for your subimage, run the 
+task 'makewcs' which will generate the CRPIX, CRVAL, and CD
+values.
+.ih
+PARAMETERS
+.ls iminfo [boolean]
+Is there an input image with plate solution coefficients in 
+the header file?
+.le
+.ls image [file name]
+Name of the image that has a set of coefficients with plate  
+solution values in the image header. The keyword names for 
+these values  are AMDX1, AMDX2, AMDY1, AMDY2, etc., 
+also, if 'pltsol' was run it will contain NAMDX1, NAMDY1, etc.
+Values are in units of arcseconds per millimeter.
+.le
+.ls rdfile [file name]
+Name of the input file containing equatorial coordinates 
+values. 
+
+Right ascension is in hours (hh:mm:ss.dd) and 
+declination is in degrees.  This file can be an ASCII file in 
+column form (there should be at least one blank between 
+columns and the row length should not exceed 162 characters). 
+You can define the input file to be STDIN, in which case you 
+will be able to enter values directly from the keyboard; at 
+least two values per input line. If you use STDIN, then press 
+CTRL-Z to end the input session.
+.le
+.ls pixel_center ("iraf") [string]
+Which convention your X,Y will have? If 'iraf' then the center of the
+lower left pixel is (1,1). If 'dss' (Digital Scan Survey) then the 
+center of the lower left pixel is (1.5,1.5). If 'cos', then you
+are using the COSMOS convention which is (0.5,0.5).
+.ls rcolnum [integer]
+Column number in the ASCII file where right ascension values 
+can be found.
+.le
+.ls dcolnum [integer]
+Column number in the ASCII file where declination values can 
+be found.
+.le
+.ls nskip [integer]
+Number of lines to skip at the beginning of the ASCII file.
+.le
+.ls coeffile [string]
+Name of the astrometric solution file.
+.le
+.ls (cdmatx = no) [boolean]
+Use CD matrix values?
+.le
+.ls (new = yes) [boolean]
+Use a new plate solution?
+.le
+.ls (original = no) [boolean]
+Use original plate solution?
+.le
+.ls xformat = "", yformat = ""
+The default output format for the output X and Y. If xformat or yformat
+are undefined, then eqxy uses a default format of %8.2f.
+
+.ih
+FORMATS
+A  format  specification has the form "%w.dCn", where w is the field
+width, d is the number of decimal places or the number of digits  of
+precision,  C  is  the  format  code,  and  n is radix character for
+format code "r" only.  The w and d fields are optional.  The  format
+codes C are as follows:
+    
+.nf
+b       boolean (YES or NO)
+c       single character (c or '\c' or '\0nnn')
+d       decimal integer
+e       exponential format (D specifies the precision)
+f       fixed format (D specifies the number of decimal places)
+g       general format (D specifies the precision)
+h       hms format (hh:mm:ss.ss, D = no. decimal places)
+m       minutes, seconds (or hours, minutes) (mm:ss.ss)
+o       octal integer
+rN      convert integer in any radix N
+s       string (D field specifies max chars to print)
+t       advance To column given as field W
+u       unsigned decimal integer 
+w       output the number of spaces given by field W
+x       hexadecimal integer
+z       complex format (r,r) (D = precision)
+    
+    
+Conventions for w (field width) specification:
+    
+    W =  n      right justify in field of N characters, blank fill
+        -n      left justify in field of N characters, blank fill
+        0n      zero fill at left (only if right justified)
+absent, 0       use as much space as needed (D field sets precision)
+    
+    
+Escape sequences (e.g. "\n" for newline):
+    
+\b      backspace   (not implemented)
+\f      formfeed
+\n      newline (crlf)
+\r      carriage return
+\t      tab
+\"      string delimiter character
+\'      character constant delimiter character
+\\      backslash character
+\nnn    octal value of character
+    
+Examples
+    
+%s          format a string using as much space as required
+%-10s       left justify a string in a field of 10 characters
+%-10.10s    left justify and truncate a string in a field of 10 characters
+%10s        right justify a string in a field of 10 characters
+%10.10s     right justify and truncate a string in a field of 10 characters
+    
+%7.3f       print a real number right justified in floating point format
+%-7.3f      same as above but left justified
+%15.7e      print a real number right justified in exponential format
+%-15.7e     same as above but left justified
+%12.5g      print a real number right justified in general format
+%-12.5g     same as above but left justified
+
+%h	    format as nn:nn:nn.n
+%15h	    right justify nn:nn:nn.n in field of 15 characters
+%-15h	    left justify nn:nn:nn.n in a field of 15 characters
+%12.2h	    right justify nn:nn:nn.nn
+%-12.2h	    left justify nn:nn:nn.nn
+    
+%H	    / by 15 and format as nn:nn:nn.n
+%15H	    / by 15 and right justify nn:nn:nn.n in field of 15 characters
+%-15H	    / by 15 and left justify nn:nn:nn.n in field of 15 characters
+%12.2H	    / by 15 and right justify nn:nn:nn.nn
+%-12.2H	    / by 15 and left justify nn:nn:nn.nn
+
+\n          insert a newline
+.fi
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+xyeq, makewcs, pltsol
+.endhelp

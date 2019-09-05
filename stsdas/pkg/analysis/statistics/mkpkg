@@ -1,0 +1,62 @@
+#   Make the statistics package
+#   Author: BALL, 22-DEC-1987
+#	to include kmestm,lib,twost application(s)
+#   Modified: BALL, 30-DEC-1987
+#	to include bhk,coxreg application(s)
+#   Modified: BALL, 14-Mar-1988
+#	to include bj application
+#   Modified: BALL, 16-Mar-1988
+#	to include twokm application
+#   Modified: BALL, 6-Apr-1988
+#	to include em application
+#   Modified: Biemesderfer, 26 May 88
+#	to include kolmov application
+#   Modified: BSIMON, 18-Nov-92
+#	to use version 1.2 of asurv package
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	statistics.a
+	$call	statistics
+	;
+
+install:
+	$move	xx_statistics.e stsdasbin$x_statistics.e
+	;
+
+statistics:
+linkonly:
+	$omake	x_statistics.x
+
+	# TBLSPP   - SDAS tables I/O library for SPP programs
+
+	$link	x_statistics.o statistics.a \
+		-lstxtools -ltbtables \
+		-o xx_statistics.e
+	;
+
+statistics.a:
+	@lib
+	@bhk
+	@bj
+	@coxreg
+	@em
+	@kmestm
+	@kolmov
+	@spearman
+	@twokm
+	@twost
+	;

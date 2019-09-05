@@ -1,0 +1,61 @@
+.help saolpr May94 playpen
+.ih
+NAME
+saolpr -- Send contents of an SAOImage/IMTOOL display directly to a printer.
+.ih
+USAGE
+saolpr frame
+.ih
+DESCRIPTION
+This is a simple script for printing the contents of an
+SAOImage/IMTOOL display directly to a psikern-supported IRAF printer.
+One can specify where on the page to place the image and whether a
+colormap should be used.
+
+The primary task rendering the image is igi using the 'zsection' and
+'pixmap' commands.  See the help on igi for more information.
+.ih
+PARAMETERS
+.ls frame = 1 [integer]
+Frame to get image from.  For SAOImage, this is not applicable.
+.le
+.ls (saocmap = "") [file name]
+Name of an SAOImage color map, written by SAOImage, to apply to the
+image when printing.  If blank, a default gray scale color map is
+used.
+.le
+.ls (device = "stdplot") [string]
+Name of the psikern-supported hardcopy device.
+.le
+.ls (append = no) [boolean]
+Append this image to a previous plot?
+.le
+.ls (left = 0., right = 1., bottom = 0., top = 1.) [real]
+Position of the image in the display.  The image will be scaled to
+correct for aspect ration differences between image and output device,
+hence the specified positions are used only as guidelines for placing
+the image.  See the igi command 'fitpix' for more information.
+.le
+.ls (min = INDEF, max = INDEF) [real]
+These specify the pixel values that will be mapped to the darkest
+(min) to lightest (max) gray scale value.  If min is greater than max,
+a negative of the image will be produced.  See the igi command
+'zrange' for more information.
+.le
+.ih
+EXAMPLES
+1. Print the current image in SAOImage.
+
+.nf
+	cl> display image 1
+	cl> saolpr 1
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+STSDAS Contact: Jonathan Eisenhamer
+.ih
+SEE ALSO
+dstoim, igi
+.endhelp

@@ -1,0 +1,50 @@
+# Update the cvos systems code in the cvos system library.
+# M.D. De La Pena 27 Jan 1998: Updated to define explicitly the __VMS and 
+# __ALPHA macros.  The NO_UNDERSCORE macro is defined in stsdaslib$mkpkg.inc.
+# M.D. De La Pena 09 Feb 1998: Removed copying of header files to stsdaslib$.
+# Made sure the included header files are surrounded by <>.
+# M.D. De La Pena 26 April 1999: Added two new routines: cvos_maideh.x and
+# cvos_error.x (including error.com).
+# M.D. De La Pena 09 April 2001: Removed references to VMS systems.
+
+
+$checkout libcvos.a ../
+$update   libcvos.a
+$checkin  libcvos.a ../
+
+
+$exit
+
+libcvos.a:
+
+# Why -I../.. ?  When I have multiple versions of iraf on a single machine,
+# this lets me select <iraf.h> by creating a symlink in stsdas/iraf.h
+
+$set XFLAGS = "-Inolibc -I. -I../.. $(XFLAGS)"
+
+	irafsppinit.x
+	irafmn.x
+	imspp.x
+        cvos_maideh.x
+        cvos_error.x    "error.com"
+	c_iraf_priv.c
+	irafinit.c	<c_iraf.h>	<iraf.h>
+	irafcmain.c	<c_iraf.h>
+	setpgrp_hack.c
+	xclio.c		<xclio.h>	<c_iraf_priv.h>
+	xcurfit.c	<xcurfit.h>	<c_iraf_priv.h>
+	xsurfit.c	<xsurfit.h>	<c_iraf_priv.h>
+	xgsurfit.c	<xgsurfit.h>	<c_iraf_priv.h>
+	xnlfit.c	<xnlfit.h>	<c_iraf_priv.h>
+	ximinterp.c	<ximinterp.h>	<c_iraf_priv.h>
+	xgflib.c	<xgflib.h>	<c_iraf_priv.h>
+	ximio.c		<ximio.h>	<c_iraf_priv.h>
+	xtables.c	<xtables.h>	<c_iraf_priv.h>
+	xqpoe.c		<xqpoe.h>	<c_iraf_priv.h>
+        xselector.c     <xselector.h>   <c_iraf_priv.h>
+	xsynphot.c	<xsynphot.h>	<c_iraf_priv.h>
+        xxtools.c       <xxtools.h>     <c_iraf_priv.h>
+	xmwcs.c		<xmwcs.h>	<c_iraf_priv.h>
+	xvops.c		<xvops.h>	<c_iraf_priv.h>
+	;
+

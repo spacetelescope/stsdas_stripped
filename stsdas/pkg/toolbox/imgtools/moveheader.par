@@ -1,0 +1,4 @@
+hdrimage,f,a,"",,,"Image with header keywords"
+piximage,f,a,"",,,"Image with pixel data"
+outimage,f,a,"",,,"Output image"
+mode,s,h,"a",,,

@@ -1,0 +1,14 @@
+The following source files were deleted from the newgeom directory
+on 1993 Jan 25 when newgeom was moved from the focgeom package to
+the focutility package.  The subroutines in these files may be found
+in the calfoc subdirectory.
+
+	boxer.f
+	geocoord.x
+	geoder.x
+	geofindcrpix.x
+	interpb.x
+	logmsg.x
+	negint.x
+	newgeom.x
+	sortcorn.x

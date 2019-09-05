@@ -1,0 +1,36 @@
+Menu for the package stsdas.analysis.dither
+
+        avshift - Averages the shifts measured on the 4 WFPC chips.
+           blot - Image sampling using interpolation (reverse "drizzling").
+	  cgsky - Compute sky using `gsky' plus a correction for histogram truncation.
+      crossdriz - Builds a set of cross-correlation images (shift + rotation).
+          deriv - Take the absolute derivative of an image.
+        driz_cr - Create cosmic ray mask based for dithered data.
+        drizzle - Perform linear image reconstruction using "drizzling".
+       dunlearn - Resets all task parameters to default values.
+          gprep - Transform shifts for one WFPC2 chip into parameters for mosaicing all four chips.
+           gsky - Compute sky using the same mode algorithm used in task "crrej".
+      imextreme - Locates the maximum and minimum pixels in an image.
+      loop_blot - Runs blot for a given list of input and output images.
+      loop_driz - Runs drizzle for a list of input, output, and mask images.
+   multidrizzle - Automated task for performing cosmic-ray rejection
+      mask_head - Attach mask names to image headers; invert mask if requested
+        offsets - Builds cross-correlation image (shift only).
+         precor - Cosmic-ray processing.
+      pydrizzle - Automated Python-based interface for the "drizzle" task
+        rotfind - Finds rotation angle from a set of cross-correlation images.
+      shiftfind - Finds X,Y shifts in a cross-corelation image.
+            sky - Sky processing by "crrej-like" algorithm.\
+           tran - Transform coordinates taking into account distortion
+       tranback - Transform an X,Y position from output to input pixel position using the same conventions as drizzle
+	  traxy - Transform an X,Y position from input to output pixel position using the same conventions as drizzle
+    tweakshifts - Compute residual shifts between images
+	 wcs2dr - Convert WCS header information into drizzle parameters for image registration
+        xytosky - Translate a 2-D image pixel coordinate to right ascension and declination, optionally applying the distortion coefficients for the detector.
+          cdriz @ Pset for the 'offsets' task.
+             dq @ Pset for the 'sky' task.
+    wfpc2_chips @ Pset for 'avshift' and 'gprep' tasks.
+
+
+For more information about the 'dither' package, type 
+"help dither option=sysdoc".

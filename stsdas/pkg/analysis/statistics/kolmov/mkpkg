@@ -1,0 +1,26 @@
+# Update the kolmov application code in the statistics package library
+# Author: C.D.Biemesderfer, 26-MAY-1988
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+generic:
+	$set	GEN = "$$generic -k -p generic/"
+
+	$ifolder (generic/asrt2r.x, asrt2.gx) $(GEN) -t dilrs asrt2.gx $endif
+	;
+
+statistics.a:
+	$ifeq (USE_GENERIC, yes) $call generic $endif
+	@generic
+
+	continuous.x   		<mach.h> 
+	discrete.x     		
+	distribution.x 		<mach.h> 
+	getdata.x      		<tbset.h> 
+	kolmov.x       		
+	oneside.x      		<mach.h> 
+	twoside.x      		<mach.h> <math.h> 
+	;

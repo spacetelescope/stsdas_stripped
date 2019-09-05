@@ -1,0 +1,162 @@
+.help ctools Jul2000 stsdas.hst_calib
+.ih
+NAME
+ctools -- General calibration tools for HST Science Instruments.
+.ih
+DESCRIPTION
+The `hst_calib.ctools' package contains general calibration-related 
+utilities for data produced by the HST Science Instruments (SIs).  This 
+package is automatically loaded whenever the `hst_calib' package is 
+loaded.  Placing these tasks in a separate package 
+emphasizes their utility for more than one 
+instrument, and makes the instrument package menus manageable.  
+
+All of the tasks in this package are useful for data from more than one SI, and 
+many are useful for *ALL* SIs.  The tasks fall into three broad categories: 
+
+.nf
+* Generic tasks for all instruments
+* Tasks used for spectra
+* Tasks used for images
+.fi
+
+The groups are described in the sections below and further details
+are found in the individual task help files.
+.ih
+GENERAL CALIBRATION TOOLS
+A quick summary of the most general tools is given in Table 1.  
+
+.nf
+
+                Table 1.  General Calibration Tools
+  +--------------------------------------------------------------+
+  | Task      | Description                                      |
+  +--------------------------------------------------------------+
+  | chcalpar  | Edit calibration switches and reference files    |
+  | eng2tab   | Extract engineering information from images      |
+  | getcal    | Place calib. switch settings into a p-set        |
+  | putcal    | Place calib. switch settings into data headers   |
+  | groupmod  | Add/delete keywords to/from group param. block   |
+  | hstephem  | Convert ST orbit ephemeris file to STSDAS table  |
+  | rsdaa     | Convert PDB SVDF.DAT file into an STSDAS table   |
+  +--------------------------------------------------------------+
+.fi
+
+Perhaps the most useful tasks in this subset are `chcalpar', and 
+the related tasks `getcal' and `putcal', which provide a generic 
+interface for editing the calibration switch settings for all SIs.  
+These routines are generic because the instrument-specific 
+information -- i.e., which keywords are used for which SIs -- are 
+isolated in the instrument parameter sets.  These tasks are very 
+powerful in that you can edit the current switch settings and 
+the applicable reference files, and then propagate those changes to 
+the headers of many observation sets at once.  
+.ih
+CALIBRATION TOOLS FOR SPECTRA
+The following tools are used to examine FOS and HRS spectra, and 
+to prepare spectral data for analysis with other IRAF or STSDAS tasks.  
+.nf
+
+              Table 2.  Calibration Tools for FOS & HRS
+  +--------------------------------------------------------------+
+  | Task        | Description                                    |
+  +--------------------------------------------------------------+
+  | fwplot      | Plot calibrated flux vs. wavelength            |
+  | mkmultispec | Place dispersion solution into *.c1h headers   |
+  | poffsets    | Determine pixel offsets between spectra        |
+  | rcombine    | Average/sum rapid-read data & propagate errors |
+  | rapidlook   | Display a 1-D multigroup spectrum as 2-D image |
+  | resample    | Resample fluxes to linear wavelength scale     |
+  | specalign   | Resample spectra to same wavelength scale      |
+  | vac2air     | Convert wavelengths from vacuum to air         |
+  +--------------------------------------------------------------+
+.fi
+
+Two of these tasks combine two or more input spectra 
+(e.g., as are obtained in RAPID read-out mode) into one output
+spectrum.  The 
+`specalign' task is more sophisticated in that it can accomodate 
+non-linear dispersion relations and has a better algorithm for 
+distinguishing between the true spectrum, and both random and 
+systematic noise.  The `resample' task, while simpler, is somewhat 
+more robust and can propagate the input errors.  Another important 
+task, `mkmultispec', is used to prepare the flux calibrated spectra 
+for analysis with the `noao.onedspec.splot' task.  `mkmultispec' 
+characterizes the relation between pixels and wavelength with a 
+user-specified function, and then writes the function coefficients 
+into the flux file (*.c1h) header.  
+
+The following tools are used to examine STIS and NICMOS spectra, and 
+to prepare spectral data for analysis with other IRAF or STSDAS tasks.  
+.nf
+
+              Table 3.  Calibration Tools for STIS & NICMOS
+  +--------------------------------------------------------------+
+  | Task        | Description                                    |
+  +--------------------------------------------------------------+
+  | tomultispec | Place dispersion solution into *.imh headers   |
+  | splice      | Splice spectra                                 |
+  | fweight     | Create a weight column for splice              |
+  | sflux       | Create a smoothed continuum spectrum           |
+  | pweight     | Create a weight column for splice              |
+  +--------------------------------------------------------------+
+.fi
+
+The `tomultispec' task is used to prepare spectral data stored in a
+FITS 3-D BINTABLE for analysis with the `noao.onedspec.splot' task.  
+`tomultispec' characterizes the relation between pixels and wavelength with a 
+user-specified function, and then writes the function coefficients 
+into the output flux file (*.imh) header.  
+
+The 'splice' task can be used to splice flux-calibrated spectra together,
+averaging in the overlap regions.
+Weights can be assigned to the input spectra
+using either 'fweight' (which uses a smoothed continuum spectrum)
+or 'pweight' (which uses the phottab throughput table).
+The 'sflux' task can be used to combine spectra and fit a continuum,
+for use as the smoothed continuum spectrum for 'fweight'.
+.ih
+CALIBRATION TOOLS FOR IMAGES
+The following tools can orient FOC and WFPC images 
+and measure the photometric response to isolated stars in the 
+image. The 'msstreakflat' task is an "extended" version of the
+'streakflat' task (hst_calib.wfpc.w_calib) that supports processing
+of WFPC-I, WFPC-II and NICMOS  Earth flats. The 'msbadpix' task can
+be used for detecting and flagging bad pixels in STIS and NICMOS images.
+Currently its output conforms to the format expected by the NICMOS
+calibration pipeline 'calnica'. The 'msreadnoise' task can be used for 
+readout noise measurement in STIS and NICMOS images. Currently its 
+output conforms to the format expected by the NICMOS calibration
+pipeline 'calnica'.
+.nf
+
+              Table 4.  Calibration Tools for FOC & WFPC
+  +-----------------------------------------------------------------+
+  | Task         | Description                                      |
+  +-----------------------------------------------------------------+
+  | enc_counts   | Compute encircled energy for star images         |
+  | msbadpix     | Detects bad pixels in STIS and NICMOS images     |
+  | msreadnoise  | Measures readout noise in STIS and NICMOS images |
+  | msstreakflat | Processing of WFPC and NICMOS Earth flats        |
+  | north        | Print the position angle of an image             |
+  | pprofile     | Plot/print radial profile of encircled energy    |
+  +-----------------------------------------------------------------+
+.fi
+.ih 
+INSTRUMENT-SPECIFIC PACKAGES
+Tasks which are usually useful for only one SI are NOT included in 
+`ctools', but can be found in the 
+package named after that instrument.  It is within these packages 
+that the Routine Science Data Processing (RSDP) calibration code 
+(i.e., the "calXXX" or "calibration pipeline" tasks) can be found.  
+Other tasks in the instrument-specific packages enable users to, 
+e.g., examine FOS or HRS acquisition images, perform post-pipeline 
+data reduction (e.g., for spectropolarimetry), or derive accurate 
+coordinates for stars on WFPC images.  Most of the general plotting 
+and analysis tools that users need to display, analyze and interpret 
+their HST data are available within other packages, such as the 
+`graphics', `analysis', and `toolbox', packages.  
+.ih
+SEE ALSO
+foc, fos, hrs, hsp, wfpc, stis, nicmos
+.endhelp

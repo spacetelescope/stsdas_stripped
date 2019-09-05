@@ -1,0 +1,11 @@
+# Update the tepoch application code in the tools package library
+# Author: HSU, 16-Mar-1998
+
+$checkout tools.a ../
+$update   tools.a
+$checkin  tools.a ../
+$exit
+
+tools.a:
+	t_tepoch.x		epoch.h <tbset.h> <ctype.h> 
+	;

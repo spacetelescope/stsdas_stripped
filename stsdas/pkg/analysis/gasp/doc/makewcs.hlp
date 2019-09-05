@@ -1,0 +1,49 @@
+.help makewcs Feb95 stsdas.analysis.gasp
+.ih
+NAME
+makewcs -- Produce WCS keywords for a dss scanned image plate header.
+.ih
+USAGE
+makewcs  input
+.ih
+DESCRIPTION
+The 'makewcs' task will create the World Coordinate
+System (WCS) keywords in the image header of the Digital Scan Survey
+subimages. These subimages contain the keywords CNPIX1 and CNPIX2 
+indicating the lower left corner of the subimage with respect to the 
+lower left corner of the original image. Early versions of these
+subimage headers had the keywords CRPIX1 and CRPIX2; the program will
+rename these keywords to the new ones CNPIX1 and CNPIX2.
+
+Headers for the original scanned images lack WCS keywords---namely, the
+CD, CRPIX, and CRVAL keywords. The task then takes the plate solution 
+from the image header and calculates
+the CRVAL keyword values for the center of the subimage. The
+CD values are calculated by solving for a grid of 100 equally spaced
+points in the image.
+
+.ih
+PARAMETERS
+.ls input [file name]
+The input image header. This can be one or more images header files. Only
+the header name should be specified. Templates are allowed.
+.le
+.ls (verbose = yes) [boolean]
+Do you want the name of the file header currently being processed to be
+displayed?  Any error messages displayed can then be tracked to the
+offending image.
+.le
+.ih
+EXAMPLES
+1. Calculate the WCS keywords for all images matching the
+template 'nepp*.hhh'. 
+.nf
+	
+     ga> makewcs  nepp*.hhh
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

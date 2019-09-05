@@ -1,0 +1,325 @@
+.help pltsol May93 stsdas.analysis.gasp
+.ih
+NAME
+pltsol -- Calculate the plate solution for a set of positions.
+.ih
+USAGE
+pltsol iminfo image table
+.ih
+DESCRIPTION
+The plate solution program attempts to either fit a set of 
+points (X, Y, and RA)  and (X, Y, and DEC) as minimum sets or  
+the points (X, Y, MAG, COLOR, and RA) and (X, Y, MAG, COLOR, 
+and DEC) as full sets, with a model F(X, Y, MAG, COLOR) 
+described below.
+
+The final coefficients can be written to the input image 
+header (if given) or to an ASCII file, with the graphic colon 
+cursor command ':wcoeff <file>'.
+
+The fit routine is based on the Single Value Decomposition 
+method (as used in the 'svdfit' task), but is modified to 
+handle double precision.  (For more information about this 
+fit method, see the book "Numerical Recipes", by Press et 
+al.)
+
+The set of positions (X,Y) represent pixel offsets from the 
+lower left corner of the image, which is defined as position 
+(1,1). Before performing the fit, pixel values are converted 
+to millimeters with respect to the given reference point 
+(CRPIX1,CRPIX2) and the pixel size in microns. Equatorial 
+coordinates (i.e., RA and DEC) are converted to standard 
+coordinates (i.e., XI and ETA) in arcseconds, given the 
+equatorial coordinates for the reference point 
+(CRVAL1,CRVAL2); following the ST Guide Star Catalog System 
+conventions.
+
+After the first fit, a graph of the residuals 
+(XI_RES,ETA_RES) is plotted on STDGRAPH; other residuals 
+plots can be specified by pressing the 'h' key for (X,XI_RES) 
+in units of (millimeters,arcseconds); 'i' for (X,ETA_RES), 
+'j' for (Y,XI_RES), 'k' for (Y,ETA_RES) and 'l' for 
+(XI_RES,ETA_RES) in units of (arcseconds,arcseconds).
+
+The following list describes available keystroke commands:
+.nf
+
+     Key	Function
+     ---	--------
+     ':'	Colon commands. (See section below for details.)
+     '?'	Help for the different keystroke.
+     '/'	Quick one word loop for the different keys.
+     'c'	Print the values XI, XI_FIT, ETA and ETA_FIT.
+     		for the nearest point from the crosshair.
+     'd'	Delete the nearest point from the crosshair to
+          	allow a new fit without the point.
+     'f'	Redo the fit, plotting the new values
+          	of (XI_RES,ETA_RES).
+     'u'	Undelete a previously-deleted point.
+     'r'	Redraw the graph.
+     'v'	Plot (X,XI_RES), (X,ETA_RES), (Y,XI_RES) and
+          	(Y,ETA_RES) in one window.
+
+	COLON COMMANDS
+	--------------
+        Colon commands begin with the ":" keystroke and 
+        accept arguments.  The following commands are 
+        available: 
+
+	Command     Function
+        -------     --------
+	:model [Nt Value] Print the plate model setting for
+                 the fit. If neither the term number ('Nt')
+                 nor the value ('Value') is given, the entire
+                 model is printed. If 'Nt' is given, the 
+                 value for that term is printed. To change 
+                 the setting for a term give both values 
+                 'Nt' and 'Value' ('1' to be in the fit 
+                 and '0' no play).
+
+	:error [file] Print fit statistics. If a value is 
+                 passed to 'file', then fit statistics are
+                 directed to the file rather than to the 
+                 screen.
+
+	:vshow [file] Display details about the last fit.  If
+                 a value is passed to 'file', then the 
+                 verbose information is written to a file
+                 rather than the screen.
+
+	:cds [file] Show the coefficient values in units of
+                 degrees per pixel. If 'file' is an image name 
+		 the WCS information (i.e. CRPIX(1,2), 
+		 CRVAL(1,2) and CD's) values will be written into 
+		 the header. Any existent values will be overwritten. 
+		 If the parameter 'iminfo' is yes, the WCS info will be
+		 written into the header of the image name specified
+		 in the 'image' parameter, regardless what string
+		 value is 'file'. If this is your case, 'file' needs
+		 to be any string value.
+
+	:wcoeff [file] Write the coefficients of the last fit
+                 to the image header (if any), using the
+                 keywords: 'NAMDX1', 'NAMDX2',...,'NAMDY1',
+                 'NAMDY2', etc.  These values will be in 
+                 units of arcseconds per millimeter. One
+                 value will be written for each term 
+                 chosen from the model.  If a file name
+                 is specified, then coefficients will be
+                 appended to it in ASCII form.
+ 
+.fi
+This program was designed primarily to adjust a plate 
+solution to a subset of a scanned plate from the ST Scanned 
+Plate data base. A data base frame consists of about 14,000 x 
+14,000 pixels and a header containing 
+position, scan, and plate solution information.
+
+Keywords like 'CRPIX1', 'CD11', 'CTYPE1', 'EQUINOX' are created with 
+the subset and are required by the 'pltsol' task. The pixel 
+size is read from the keyword 'XPIXELSZ'.
+
+If your image header does not have these keywords, then you 
+should set 'iminfo=no' and enter the required parameters in 
+the parameter file.
+
+The only way to get fit coefficients is by using the colon 
+cursor command ':wcoeff'. This task does not write the 
+coefficients once you quit the program, unless the command 
+':wcoeff <file>' is issued.				
+.ih
+PARAMETERS
+.ls iminfo [boolean] 
+Is there an input image containing positions of the reference 
+point?  This parameter is REQUIRED.
+.le
+.ls image [file name]
+Name of the image containing reference point positions and 
+pixel sizes.  This parameter is REQUIRED if 
+'iminfo=yes'.
+.le
+.ls tinput [file name] 
+Table name containing the set of positions. This table can be 
+in STSDAS format (with required extension: '.tab') or an ASCII 
+table (extension other than '.tab).  This parameter is REQUIRED. 
+If a STSDAS table is 
+used, it should contain six columns for each object, in the 
+following order:
+.nf
+
+     Column     Contents
+     ------     --------
+     1          X pixel coordinate.
+     2          Y pixel coordinate.
+     3          RA coordinate, in degrees.
+     4          DEC coordinate, in degrees.
+     5          Magnitude.
+     6          Color.
+
+.fi
+The ASCII table is more flexible regarding column positions, 
+and it should contain at least four columns (X, Y, RA, and 
+DEC). The RA coordinate can be in units of either degrees or 
+hours; units are specified in the 'racolumn' parameter. This 
+table CANNOT exceed 162 character per row, and columns should 
+be separated by at least one blank. The ASCII table column 
+position is set by the parameters below. The parameter 
+'nskip' allows table header rows to be skipped before reading 
+the object positions.
+.le
+.ls xcolumn [integer] 
+Number of the column containing the X pixel values. The 
+column numbers are counted from the left side (leftmost 
+column is number 1).  This parameter is REQUIRED if an ASCII 
+table is used.
+.le
+.ls ycolumn [integer] 
+Number of the column containing the Y pixel values. The 
+column numbers are counted from the left side (leftmost 
+column is number 1).  This parameter is REQUIRED if an ASCII 
+table is used.
+.le
+.ls racolumn [(-)integer] 
+Column number containing right ascension coordinates. The 
+column values can be expresed as either floating point values 
+or in the format (DD:MM:SS.ddd) in units of degrees and 
+minutes. To specify units of hours (HH:MM:SS.ddd), give the column number 
+with a minus sign (-).  This parameter is REQUIRED if an 
+ASCII table is used.
+.le
+.ls decolumn [integer]
+Column number containing declination coordinates. The column 
+values can be expresed as either floating point values or in 
+the format (DD:MM:SS.ddd) in units of degrees and minutes.
+This parameter is REQUIRED if an ASCII table is 
+used.
+.le
+.ls magcolumn [integer]
+Column number containing magnitude. This parameter is 
+REQUIRED if an ASCII table is used.
+.le
+.ls colcolumn [integer]
+Column number containing color.  This parameter is REQUIRED 
+if an ASCII table is used.
+.le
+.ls nskip=0 [integer] 
+Number of lines to skip before reading object positions. This 
+parameter is REQUIRED if an ASCII table is used.
+.le
+.ls crpix1 [real] 
+Position of the reference point's X pixel.  This parameter is 
+REQUIRED if 'iminfo=no'.
+.le
+.ls crpix2  [real] 
+Position of the reference point's Y pixel.  This parameter is 
+REQUIRED if 'iminfo=no'.
+.le
+.ls crval1  [real] 
+Position of the reference point's right ascension (in 
+degrees).  This parameter is REQUIRED if 'iminfo=no'.
+.le
+.ls crval2  [real] 
+Position of the reference point's declination (in degrees).  
+This parameter is REQUIRED if 'iminfo=no'.
+.le
+.ls xpixelsz [real] 
+Pixel size in the X direction (in microns). This parameter is 
+REQUIRED if 'iminfo=no'.
+.le
+.ls ypixelsz [real] 
+Pixel size in the Y direction (in microns). This parameter is 
+REQUIRED if 'iminfo=no'.
+.le
+.ls pltscale [real]
+Plate scale (in arcseconds/millimeter). This parameter is 
+REQUIRED if 'iminfo=no'.
+.le
+.ls pmod1 through pmod20 [integer, min=0, max=1]
+These 20 parameters are plate solution terms; they are flags 
+that take either a value of 1 or 0. A value of 1 includes the 
+term; 0 excludes it. 
+
+The following table defines the flags, giving terms to form a 
+complete plate solution. By default, only the first 3 terms 
+are included; additional terms can be included using the 
+graphic cursor or by editing the parameter file. The terms 
+given are for the X direction; Y terms are obtained by 
+switching X and Y.
+.nf
+
+	Parameter	Term
+	-------		----
+	pmod1		X
+	pmod2		Y
+	pmod3		1 (constant term)
+
+	pmod4		X**2
+	pmod5		X*Y
+	pmod6		Y**2
+	pmod7		X**2 + Y**2 
+	pmod8		X**3 
+	pmod9		X*X*Y
+	pmod10 		X*Y*Y
+	pmod11		X**3 
+	pmod12 		X*(X**2 + Y**2) 
+	pmod13 		X*(X**2 + Y**2)**2 
+	pmod14 		MAG 
+	pmod15 		MAG**2
+	pmod16 		MAG**3
+	pmod17 		MAG*X
+	pmod18 		MAG*(X**2 + Y**2) 
+	pmod19 		MAG*X*(X**2 + Y**2) 
+	pmod20 		COLOR 
+.fi
+.ih
+EXAMPLES
+1) We want to get the solution coefficients from a given set of known
+position i.e. (x,y) and (ra,dec). These position are in an ascii
+text file with name 'sample.txt', whose content is:
+.nf
+
+X           Y    J&W  (RA deg)1950   1950(DEC deg)
+114.39     45.70  678 5:32:53.809  -5:26:50.33
+120.84    156.88  669 5:32:53.549  -5:25:42.00
+130.45    359.45  660 5:32:53.175  -5:23:37.43
+144.82    376.97  637 5:32:52.586  -5:23:26.81
+169.60    466.24  608 5:32:51.577  -5:22:32.03
+180.99    474.32  595 5:32:51.105  -5:22:27.05
+215.57    380.13  544 5:32:49.672  -5:23:25.09
+221.23    357.92  531 5:32:49.440  -5:23:38.71
+187.03    273.24  589 5:32:50.837  -5:24:30.64
+197.12    259.96  567 5:32:50.419  -5:24:38.71
+285.32     97.87  437 5:32:46.794  -5:26:18.06
+301.40     96.06  417 5:32:46.129  -5:26:19.14
+306.08    170.09  409 5:32:45.941  -5:25:33.64
+326.66    163.73  385 5:32:45.101  -5:25:37.58
+334.35    157.20  378 5:32:44.789  -5:25:41.69
+
+   If you do 'epar pltsol', the value of the require parameters are:
+
+        iminfo = no              Is there an input image
+        infile = ""              Input image
+       	tinput = "sample.txt"    Input table
+	nskip = 1                Number of lines to skip
+	xcolnum = 1              X column number
+	ycolnum = 2              Y column number
+	racolnum = 4             RA (deg) column number
+	decolnum = 5             DEC column number
+	magcolnum = 0            MAG column number
+	colcolnum = 0            COL column number
+	crpix1 = 180.99          X reference pixel position
+	crpix2 = 474.32          Y reference pixel position
+	crval1 = 5:32:51.105     RA of reference position [degrees]
+	crval2 =  -5:22:27.05    DEC of reference position [degrees]
+	xpixelsz = 25.           Pixel size in X (microns)
+	ypixelsz = 25.           Pixel size in Y (microns)
+	pltscale = 14.           Plate scale in arcs/mm
+
+N.B. If you had RA in HH:MM:SS.ddd the 'racolnum' would be -4.
+.fi
+
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

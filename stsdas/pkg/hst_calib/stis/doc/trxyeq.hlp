@@ -1,0 +1,194 @@
+.help trxyeq Oct2004 stis
+.nj
+.ih
+NAME
+trxyeq -- Correct distortion and translate 2-D image pixel coordinates
+to right ascension and declination.
+.ih
+USAGE	
+.nf
+trxyeq input "x y"
+trxyeq input coords
+.fi
+.ih
+DESCRIPTION
+This task converts one or more pixel locations in an image
+to right ascension and declination.
+The 'coords' parameter value may be the pixel coordinates,
+or it may be the name of a text file containing pixel coordinates.
+
+Normally, the pixel coordinates will first be corrected
+for geometric distortion, as defined by an IDC table,
+before being converted to equatorial coordinates.
+This correction can be disabled by the user
+by setting the 'idctab' parameter to "none".
+It will be disabled by the task
+if the primary header of the image file
+contains a GEOCORR keyword and its value is "COMPLETE",
+or if there is no IDCTAB header keyword (and 'idctab' is null).
+In these cases,
+the task will print "# Note:  no geometric correction"
+(possibly followed by further explantion)
+before printing the results.
+
+The conversion from pixel coordinates to equatorial coordinates
+is then done by using the coordinate parameters
+(e.g. CTYPEi, CRVALi, CRPIXi, CDi_j) in the image header.
+
+Six numbers will be printed to the standard output
+for each pixel location:  the input pixel coordinates
+(as specified by the user),
+the geometrically corrected pixel coordinates,
+and the right ascension and declination.
+.ih
+PARAMETERS
+.ls input [string]
+Input image name.
+Wildcards are not supported;
+the task reads just one image at a time.
+
+For a FITS file, the extension must be specified explicitly,
+unless the image is in the primary header/data unit
+and there are no extensions.
+.le
+.ls coords [string]
+This may be either a pair of numbers or the name of a text file.
+If it is a pair of numbers (separated by one or more blanks),
+they will be interpreted as the X and Y pixel coordinates.
+If it is a text file,
+it should contain two columns, separated by whitespace;
+the first column should be the X pixel coordinates,
+and the second column should be the Y pixel coordinates.
+.le
+.ls (idctab = "") [string]
+The name of a table of image distortion coefficients.
+
+If 'idctab' is null (the default),
+the task will read the IDCTAB keyword in the primary header
+and use that table for the distortion coefficients.
+If there is no IDCTAB keyword in the primary header,
+no correction for geometric distortion will be applied.
+'idctab' may be used to override the value in the header
+or to specify a table for an image that lacks this keyword.
+Following the application of the 'idctab' distortion correction,
+a pixel offset will be added so that the distortion will be zero
+at the reference pixel (CRPIX1,CRPIX2).
+See the description of 'select' for the row selection criteria.
+See ISR ACS 2001-08 for a description of the format
+of this reference table.
+
+If idctab = "none",
+no IDC table will be used,
+and no correction for geometric distortion will be applied.
+.le
+.ls (select = "filter") [string]
+Row selection column.
+
+The IDC table may contain more than one row.
+The row to use will be selected by the value in the DIRECTION column;
+DIRECTION must be "FORWARD".
+A second column, as given by the 'select' parameter,
+can be used as an additional selection criterion.
+If 'select' is not null,
+both an image header keyword and an IDC table column with that name must exist;
+the header and column values will be compared (case insensitive)
+and used in addition to DIRECTION to select the table row.
+The header and column values of 'select' are expected to be strings.
+.le
+.ls (decimals = 4) [int]
+This parameter gives the number of decimal places to be printed
+for the seconds portion of declination, if verbose = yes and hms = yes.
+One additional digit will be printed for right ascension.
+If hms = no,
+the right ascension and declination will both be printed to
+decimals+4 decimal places.
+.le
+.ls (hms = yes) [boolean]
+Print the right ascension and declination in
+hours:minutes:seconds and degrees:minutes:seconds format?
+
+If hms = no, the printed output will be in decimal degrees.
+Note that 'hms' has no effect on the values returned to the
+parameter file as 'ra' and 'dec',
+which will always be in decimal degrees.
+.le
+.ls (verbose = yes) [boolean]
+Print output?  If verbose = no, the task runs silently;
+this option may be useful in scripts
+when processing one pixel location per call to 'trxyeq'.
+Note that the task parameters 'ra' and 'dec'
+will be updated with the right ascension and declination respectively,
+regardless of the value of 'verbose'.
+.le
+.ls (ra) [string]
+The output right ascension, in decimal degrees.
+If 'coords' is a file name
+and the file contains more than one pair of pixel coordinates,
+'ra' and 'dec' will be assigned the equatorial coordinates
+corresponding to the last location read from 'coords'.
+.le
+.ls (dec) [string]
+The output declination, in decimal degrees.
+.le
+.ih
+EXAMPLES
+1. Calculate equatorial coordinates of a pixel in the first extension:
+
+.nf
+  st> trxyeq o4qp9g010_flt.fits[1] "19 53"
+   19.000    53.000     18.6561    53.8123   5:40:21.11976 -69:05:14.6215
+.fi
+
+2. As in example 1, but use syntax that could be useful in a cl script:
+
+.nf
+  st> x = 19
+  st> y = 53
+  st> s1 = str(x) + " " + str(y)
+  st> trxyeq ("o4qp9g010_flt.fits[1]", coords=s1)
+   19.000    53.000     18.6561    53.8123   5:40:21.11976 -69:05:14.6215
+  st> =trxyeq.ra
+85.087998998556
+  st> =trxyeq.dec
+-69.087394855712
+.fi
+
+3. Calculate equatorial coordinates at the corner pixels of the image:
+
+.nf
+  st> trxyeq o4qp9g010_flt.fits[1] coo.lis
+    1.000     1.000      0.6073     2.0061   5:40:20.85229 -69:05:17.0107
+    1.000  1024.000      1.1715  1022.9528   5:40:28.27824 -69:04:43.7535
+ 1024.000     1.000   1022.2416     0.9428   5:40:14.63952 -69:04:37.2290
+ 1024.000  1024.000   1022.7732  1024.0920   5:40:22.08056 -69:04:03.9181
+.fi
+
+4. Calculate equatorial coordinates of a point in the second imset,
+and produce output in decimal degrees:
+
+.nf
+  st> trxyeq o4qp9g010_flt.fits[sci,2] "12.34 56.78" hms=no
+   12.340    56.780     12.0248    57.5976   85.08790362 -69.08754732
+.fi
+
+5. As in example 4, but do not apply geometric correction:
+
+.nf
+  st> trxyeq o4qp9g010_flt.fits[sci,2] "12.34 56.78" idctab=none hms=no
+# Note:  no geometric correction
+   12.340    56.780     12.3400    56.7800   85.08787084 -69.08755130
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+ISR ACS 2001-08, W. Hack and C. Cox,
+"Revised IDCTAB Definition:  Application to HST Data."
+
+The 'trxyeq' task was written by Phil Hodge.
+.ih
+SEE ALSO
+The 'treqxy' task is the inverse of 'trxyeq'.
+The 'ucrpix' task can be used to adjust the CRPIX1 and CRPIX2 keywords
+to improve the accuracy of the coordinate conversion.
+.endhelp

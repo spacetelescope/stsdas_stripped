@@ -1,0 +1,120 @@
+.help prepspec Jan2013 stis
+.ih
+NAME
+prepspec -- Prepare STIS G750L or G750M spectrum for subsequent
+de-fringing procedures 
+.ih
+USAGE
+prepspec inspec 
+.ih
+PARAMETERS
+.ls inspec
+Input (2-D) spectral image to be corrected for fringing
+.le
+.ls (outroot = "")
+Root for output file name. If  this  value  is  null  (the
+default),  the  output  file  names will be constructed from the
+input name.  If 'outroot' ends in "/" it will be interpreted  as
+a  directory,  and the input file name will be appended and used
+as the basis of the output file names.   Otherwise,  the  output
+file  names  will  be  constructed  by appending such strings as
+"_crj.fits" to 'outroot' (or if 'outroot' ends  in  "_raw.fits",
+that string will be replaced by "_crj.fits", etc.).
+.le
+.ls (darkfile = "")
+Name of (reference) superdark image to be used for dark subtraction.  
+If this value is null (the default), the DARKFILE keyword in the main
+header of inspec will be used (in that case, make sure it is
+correctly populated) 
+.le
+.ls (pixelflat = "")
+Name of reference flat field image to perform pixel-to-pixel correction
+.le
+.ls (initgues = "min")
+Initial value estimate for cosmic ray rejection (min|med)
+.le
+.ih
+DESCRIPTION
+PREPSPEC prepares STIS G750L or G750M spectra for subsequent fringe
+correction procedures (tasks mkfringeflat and defringe).
+PREPSPEC is intended only for STIS first-order CCD spectra at
+wavelengths longer than about 700 nm, which suffer from fringing. 
+
+The input 2-D spectral image inspec [typically a STIS fits file
+with "_raw" file suffix, but any file name is allowed] is first run
+through the STIS pipeline calstis in order to perform bias
+subtraction, cosmic ray rejection, dark subtraction, and division by a
+pixel-to-pixel flat field. In case of G750M data, wavelength
+calibration and 2-D rectification is performed as well. An appropriate
+superdark file can be provided as parameter darkfile, as can a
+pixel-to-pixel flat field.  If these reference files are not
+specified, the ones listed in the image header will be used. The
+initial value estimate during cosmic ray rejection can be specified by
+means of parameter initgues. The possible entries are min
+(minimum; the default) and med (median). The log file of the
+calstis reduction steps is written to output file
+prepspec.log.
+
+INPUT AND OUTPUT IMAGES
+    
+The input STIS spectral image inspec must be a (STIS-standard)
+"multi-imset" FITS file, with three extensions (or groups) per imset:
+science (EXTNAME=SCI), error (ERR), and data quality (DQ). PREPSPEC
+will read each imset, calibrate it, and produce a multi-group output
+FITS file. 
+
+The output spectrum is a single-imset STIS FITS file with three
+extensions. The output spectrum must be used as input spectrum to
+tasks mkfringeflat (which optimizes the fringe flat field)  and
+defringe (which performs the final fringe correction).  
+
+.ih
+EXAMPLES
+
+1. Prepare STIS spectrum for subsequent fringe correction
+procedures. Use superdark file "mysuperdark.fits" to provide the most
+up-to-date correction of hot pixels.
+.nf
+
+    cl> prepspec o3st20gdr_raw.fits darkfile="mysuperdark.fits"
+.fi
+
+2. Example of all steps involved in fringe correction for a G750M
+spectrum o3st20gdr_raw.fits and its associated contemporaneous fringe
+flat o3st20gds_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gds_raw.fits normff750M.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gdr_wav.fits"
+    cl> prepspec o3st20gdr_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gdr_sx2.fits normff750M.fits normff750M_fin.fits
+    cl> defringe o3st20gdr_sx2.fits normff750M_fin.fits \
+    >>> outspec="o3st20gdr_final.fits" do_cal-
+.fi
+
+3. Same as 2, but for a G750L spectrum o3st20gda_raw.fits,
+wavecal o3st20gda_wav.fits and contemporaneous fringe flat
+o3st20gdb_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gdb_raw.fits normff750L.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gda_wav.fits"
+    cl> prepspec o3st20gda_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gda_crj.fits normff750L.fits normff750L_fin.fits
+    cl> defringe o3st20gda_crj.fits normff750L_fin.fits \
+    >>> outspec="o3st20gda_defr.fits" do_cal-
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on April 20, 1998.
+Task modified by Paul Barrett on October 21, 2004.
+.fi 
+.ih
+BUGS
+.ih
+SEE ALSO
+calstis, normspflat, mkfringeflat, defringe
+.endhelp

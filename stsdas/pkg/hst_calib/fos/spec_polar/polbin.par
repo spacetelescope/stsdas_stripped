@@ -1,0 +1,14 @@
+# parameter file for polbin
+input,f,a,,,,Input polarimetry file name
+output,f,a,,,,Output root file name
+bin_mode,s,a,,"cerror|cwave|list",,Binning mode
+perror,r,a,,0,100,Linear polarization error per bin (percent)
+bins,i,a,,1,,Number of bins for output spectra
+listfile,s,h,"bins.list",,,Name of bin list file
+refset,i,h,4,1,4,Reference set for bin_mode=cerror
+weight,s,h,uniform,uniform|variance,,Weighting method
+wavcen,r,h,0,0,,Wavelength to center polarization binning
+invlam,b,h,no,,,Bins of equal width in 1/lambda units
+wave,f,h,,,,Name of input wavelength (.c0h) file
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"05Aug94",,,Date of installation

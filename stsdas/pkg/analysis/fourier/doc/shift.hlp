@@ -1,0 +1,89 @@
+.help shift Jan90 stsdas.analysis.fourier
+.ih
+NAME
+shift -- Shift an image by a specified number of pixels.
+.ih
+USAGE
+shift input output shift
+.ih
+DESCRIPTION
+This routine shifts the contents of either a 1- or 
+2-dimensional image by a specified integral number of 
+pixels. The amount of shift can be specified as either 
+"center" or "decenter", in which case the shift will be 
+calculated as it would in other tasks in the 'fourier' 
+package. After shifting the image, this task will update 
+the value of the 'CRPIX1' keyword (and 'CRPIX2' for a 2-
+dimensional image.
+.ih
+PARAMETERS
+.ls input = "" [file name template]
+Names of the image(s) to be shifted.
+
+The convention for real and imaginary parts used 
+elsewhere in the 'fourier' package is ignored for this 
+task. The file name passed to this parameter should be 
+the full file name---no "r" or "i" will be appended. The 
+name must therefore be given twice if both real and 
+imaginary parts are to be shifted, or a wildcard 
+character (such as "*") must be used.
+.le
+.ls output = "" [file name template]
+File names for the shifted output images.
+
+If 'output' is null, then input files will be modified 
+in-place. If any value is passed to 'output', then 
+'output' must be passed the same number of values as 
+were passed to 'input'.  If the same name is given for 
+an input file and its corresponding output file, then 
+that file will be modified in-place.
+.le
+.ls shift = "center" [string]
+Amount of shift, in pixels.
+
+The amount of shift may be given as a number, or it may 
+be either "center" or "decenter". (Only the first letter 
+"c" or "d" is significant). 
+
+A shift of +5 means that the value at pixel 1 will be 
+moved to pixel 6. If 'shift=center', then 'shift' is 
+calculated as (npix/2), where 'npix' is the number of 
+pixels in the image (with fractions truncated). If 
+'shift=decenter', then 'shift' will correspond to a 
+value of (-npix/2)--this will have a different effect 
+from 'shift=center' when npix is an odd number.
+
+If numbers are passed to 'shift' when working with 2-
+dimensional images, then two 
+numbers---separated by whitespace---must be passed; a 
+single value will not be used for both images as is 
+would the "decenter" or "center" options.
+If "center" and "decenter" options are desired, then 
+they can be abbreviated, for example, 
+'shift=center,center' can be abbreviated 'shift=center'. 
+The same shift parameter will be applied to all files, 
+but this can result in different shift VALUES. If 
+'shift=center' or 'shift=decenter', the amount of shift 
+will depend on the size of the file.
+.le
+.ls (verbose = yes) [boolean]
+Display the names of files as they are processed?
+.le
+.ih
+EXAMPLES
+1. The 2-dimensional real and imaginary parts ('hd446r' 
+and 'hd446i') are to be centered in the second axis, but 
+not in the first.  The following will center them in the 
+second axis without changing the first; they are 
+modified in-place:
+
+.nf
+  fo> shift "hd446r,hd446i"  ""  "0 center"
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help fourier opt=sys" for a higher-level 
+description of the 'fourier' package.
+.endhelp

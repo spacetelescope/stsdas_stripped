@@ -1,0 +1,6 @@
+# Help directory for the STECF driztools package (Richard Hook)
+
+$doc = "stecf$driztools/doc/"
+
+steep        hlp=doc$steep.hlp
+satmask      hlp=doc$satmask.hlp

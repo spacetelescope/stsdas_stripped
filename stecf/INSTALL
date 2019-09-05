@@ -1,0 +1,160 @@
+STECF -- An IRAF package of Utilities developed at the ST-ECF
+ 
+Richard Hook, Jeremy Walsh, Norbert Pirzkal & Wolfram Freudling
+
+May 2000 - release of V1.0
+Nov 2000 - release of V1.1
+Jul 2001 - release of V1.2
+
+May 2010 - release of v2.0
+
+We have collected together many of the astronomical applications
+developed as Iraf tasks at the Space Telescope European Coordinating
+Facility (ST-ECF) into an Iraf layered package called "stecf". This 
+package contains several subpackages. One contains a variety of image 
+restoration algorithms including multiple channel and photometric variants 
+of the Richardson Lucy method. In addition a wholly new package ("impol") 
+for the reduction of polarimetric imaging from HST (and ground-based 
+instruments) is made available for the first time. Software for the 
+post-pipeline processing of HST NICMOS data, with particular emphasis on 
+the association and pre-processing of images to be used for grism spectral 
+extraction, and finally a general purpose grism spectral extraction tool 
+are also included. 
+
+The package may be down-loaded from http://www.stecf.org/software/stecf-iraf/
+
+and online help is available from the same place.
+
+After the Revision Notes, you will find installation instructions.
+
+This package is also included in the ESO Scisoft software collection.
+
+A brief description of this package was published in the proceedings
+of ADASS 99 (http://adass.org/adass/proceedings/adass99/P2-21/). This 
+paper is also available at the URL given above.
+
+***************************************************************************
+
+Revision Notes:
+
+First release (V1.0) May 2000.
+Second release (V1.1) November 2000.
+Third release (V1.2) July 2001.
+
+(there were other releases)
+
+Last release (V2.0) May 2010.
+
+ V1.1 - drizzle v1.41 has been removed from the driztools package as it
+        is now available in stsdas.analysis.dither. The "drizzle" variable
+        is now also not set to avoid confusion.
+
+        Impol has been upgraded to V2.0 which includes ACS support.
+
+ V1.2 - new package "specres" from Jeremy Walsh is now included. This is
+        a set of tasks for spectral image restoration and extraction.
+
+ V2.0 - final version of the package before the end of the ST-ECF. Many items were
+        removed (nictools, slitless, most of driztools) as they were either broken or
+        no longer needed. The version of specres was updated.
+
+***************************************************************************
+
+To install this package in your local IRAF system, take the following steps:
+ 
+0)      Make sure that you have the STSDAS and TABLES packages from STScI
+	installed on your system. These are required to build the STECF
+	package.
+
+1)	The package is distributed as a compressed tar archive. The 
+	tar archive may be down-loaded from the above URL. To obtain the 
+	package via ftp (assuming a UNIX computer):
+
+	    % ftp ftp.stecf.org 
+	    login: anonymous
+	    password: [your user name]
+	    ftp> cd pub/iraf
+	    ftp> binary
+	    ftp> get stecf-v1.2.tar.Z  
+	    ftp> quit
+
+2)	Create a directory to contain the STECF external package files.  This
+	directory should be outside the IRAF directory tree and must be owned
+	by the IRAF account.  In the following examples, this root directory
+	is named <directory>/stecf.  Make the appropriate file name 
+	substitutions for your site.
+ 
+3)	Log in as IRAF and edit the extern.pkg file in the hlib directory to
+	define the package to the CL.  From the IRAF account, outside the CL,
+	you can move to this directory with the command:
+
+            % cd $hlib
+
+	Define the environment variable stecf to be the pathname to the stecf
+	root directory.  UNIX pathnames must be terminated with a '/'.
+	Edit extern.pkg to include:
+
+            reset stecf	= <directory>/stecf/
+            task  stecf.pkg   = stecf$stecf.cl
+
+	Near the end of the hlib$extern.pkg file, update the definition
+	of helpdb so it includes the stecf help database, copying the syntax
+	already used in the string.  Add this line before the line containing
+	a closing quote:
+ 
+	    ,stecf$lib/helpdb.mip\
+
+4)      Add to hlib$clpackage.men the package description:
+ 
+            stecf - STECF utilities package from ESO/ST-ECF
+ 
+5)	Unpack the tar file into the STECF root directory.
+
+	On a UNIX system, where ftpdir is the pathname of the directory
+	into which the package was ftp'ed and stecf is the STECF root
+	directory:
+	    % cd $stecf 
+	    % cd ..
+	    % zcat $ftpdir/stecf-v1.2.tar.Z | tar xvf -
+
+	The archive file can be deleted once the package has been
+	successfully installed.
+ 
+6)      Restart IRAF and "cd stecf".
+
+7)	Symbolically link the appropriate binary directory to bin.
+	bin is originally linked to bin.generic for distribution.
+
+        On a SPARCstation running Solaris 2.*, type
+	    cl> mkpkg ssun
+
+        On a PC running Linux, type
+	    cl> mkpkg linux
+
+        Other architectures are available and have corresponding bin.{arch}
+	directories. For additional architectures, make a directory with the 
+	proper bin.{arch} name, and link it to bin
+
+        Note that this package has been built successfully on Solaris 2.6, 
+        HP-UX 10.20 and Linux (Redhat 6.2) and will probably do so on other 
+        architectures although this isn't guaranteed.
+
+8)      Make the package by typing
+	    cl> mkpkg -p stsdas update >&spool
+
+	The spool file should be reviewed upon completion to make sure
+	there were no errors.
+
+9)	Up-to-date hypertext help is available on the Web at
+
+	http://www.stecf.org/software/stecf-iraf/
+
+10)     Problems with the installation should be reported to rhook@eso.org
+
+Richard Hook, May 2000 (based on the rvsao installation instructions written
+			by Doug Mink)
+Updated to V1.1, November 2000.
+Typo fix (in mkpkg line), January 2001
+Updated to V1.2, July 2001
+
+Uodated to final V2.0, May 2010.

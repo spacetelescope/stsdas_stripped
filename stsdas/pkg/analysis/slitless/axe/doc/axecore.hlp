@@ -1,0 +1,186 @@
+.help axecore Aug2008 axe
+.ih
+NAME
+axecore -- generate PET's for a list of images and object lists
+.ih
+USAGE
+.nf
+axecore inlist configs
+.fi
+.ih
+PARAMETERS
+.ls inlist
+List to give input images and object lists.
+.le
+.ls configs
+Name of aXe configuration file(s) to be used.
+.le
+.ls (back = no) [boolean]
+Create also background PET's?.
+.le
+
+GOL2AF parameters:
+.le
+.ls extrfwhm [float]
+Multiplication factor for the object PET's.
+.le
+.ls drzfwhm [float]
+Multiplication factor for the object PET's used later in axedrizzle.
+.le
+.ls (backfwhm) [float]
+Multiplication factor for the background PET's.
+.le
+.ls (orient = yes) [boolean]
+Whether to use tilted extracted. This is the default. When set to "no"
+only vertical extraction (along columns) is performed.
+.le
+.ls (slitless_geom = yes) [boolean]
+Whether to use an extraction orientation which is optimized for
+slitless spectroscopy. Default is "yes".
+.le
+.ls (exclude = no) [boolean]
+Do not even list faint objects (mag>max_mag) in the output.
+.le
+.ls (lambda_mark = 800.0) [float]
+Wavelength in [nm] to apply MMAG_EXTRACT and MMAG_MARK. 
+.le
+
+PETCONT parameters:
+.ls (cont_model = gauss) [gauss|fluxcube|geometric]
+The contamination model to be applied.
+.le
+.ls (model_scale = 3.0) [float]
+Scale factor for the gaussian emission model.
+.le
+.ls (inter_type = linear) [linear|polynomial|spline]
+Interpolation type for the flux values.
+.le
+.ls (lambda_psf = 800.0) [float]
+Wavelength in [nm] A_IMAGE and B_IMAGE was measured at (gauss).
+.le
+
+BACKEST parameters:
+.ls (np) [integer]
+The number of points to use in computing the fitted background.
+.le
+.ls (interp) [integer]
+The type of interpolation to perform. Permitted values and their
+meaning are given in the help of the task "backest".
+.le
+.ls (niter_med) [integer]
+Number of kappa-sigma iterations around the sample median.
+.le
+.ls (niter_fit) [integer]
+Number of kappa-sigma iterations around the fit.
+.le
+.ls (kappa) [float]
+Kappa to use in the kappa-sigma iterations. 
+.le
+.ls (smooth_length) [int]
+Background smoothing length in dispersion direction?
+.le
+.ls (smooth_length) [float]
+FWHM for smoothing in dispersion direction?
+.le
+
+PET2SPC, STAMPS:
+.ls (spectr = yes) [boolean]
+Extract spectra and make stamp images.
+.le
+.ls (adj_sens = yes) [yes|no]
+Adjust sensitivity for extended objects.
+.le
+.ls (weights = no) [yes|no]
+Compute and use optimal weights in 1D extraction.
+.le
+.ls (sampling = drizzle) [drizzle|rectified|trace]
+Which sampling should be used generating the stamp?
+.le
+
+.ih
+DESCRIPTION
+The task applies the various low level aXe tasks on the list of grism images
+given in "imlist". The goal is to generate at least the object PET's
+for the images. To do that "aXecore" calls the aXe tasks "sex2gol", "gol2af"
+and "af2pet". The task also offers the possibility to make background PET's
+for the grism images. Then it also calls "backest" and runs "sex2gol", "gol2af"
+and "af2pet" on the background image to generate the background PET.
+Finally it is also possible to fully extract the PET's down to spectra
+(SPC files) and stamp images (STP file) by setting "spectr=YES". 
+
+The parameters are mostly passed directly to the low level routines as
+indicated in both, the help and the parameter mask.
+
+Even if background PET's are not generated, the task creates BAF files
+for the grism images. In this case however they are identical to the OAF files.
+This behaviour is guided by the fact that "axecore" delivers the input
+for the task "drzprep", and "drzprep" always needs BAF's.
+
+The format of the image list given as 'inlist' is:
+.nf
+grim_image1 object_cat11[,object_cat12] [direct_image1] [dmag1]
+grim_image2 object_cat21[,object_cat22] [direct_image2] [dmag2]
+grim_image3 object_cat31[,object_cat32] [direct_image3] [dmag3]
+.fi
+
+The values dmag are the image specific dmag values used in the task
+"gol2af".
+
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. If the input grism image would be called
+<grism-rootname>.fits, the task creates the files
+.nf
+<grism-rootname>_<science extension>.cat,
+<grism-rootname>_<science extension>.OAF,
+<grism-rootname>_<science extension>.BAF,
+<grism-rootname>_<science extension>.PET.fits, and if specified
+<grism-rootname>_<science extension>.BCK.fits,
+<grism-rootname>_<science extension>.BCK.PET.fits,
+<grism-rootname>_<science extension>.BCK.SPC.fits,
+<grism-rootname>_<science extension>.BCK.STP.fits.
+.fi
+All files are stored in the directory pointed by $AXE_OUTPUT_ROOT.
+.ih
+EXAMPLES
+1) For ACS HRC images:
+.nf
+    ax> axecore inlist="axeprep.lis" configs="HUDF.HRC.conf" back="YES"
+                extrfwhm=4.0 backfwhm=6.0 spectr="YES" rectified="YES"
+.fi
+
+Reduce both, object PET's and background PET's from the images and object
+lists given in "axeprep.lis". Use "mfwhm=4.0" and "mfwhm=6.0" for the
+extraction of the object PET's and background PET's, respectively.
+Also generate the spectra and stamp files for the individual grism images.
+
+2) For ACS WFC images:
+.nf
+    ax> axecore inlist="axeprep.lis"
+                configs="ACS.WFC.CHIP1.conf,ACS.WFC.CHIP2.conf" back="NO"
+                extrfwhm=4.0 spectr="NO"
+.fi
+Generate only the object PET's for the grism images in "axeprep.lis".
+Work on the extensions specified in ACS.WFC.CHIP1.conf and ACS.WFC.CHIP2.conf,
+do not generate the spectra and stamp files for the individual grism
+extensions. in this case the file "axeprep.lis" MUST give at the second column
+TWO object catalogs (separated by a comma) for the configuration files
+"ACS.WFC.CHIP1.conf" and "ACS.WFC.CHIP2.conf", respectively.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+axeprep, drzprep
+.endhelp

@@ -1,0 +1,113 @@
+.help fwplot Sep93 stsdas.hst_calib.ctools
+.ih
+NAME
+fwplot -- Plot calibrated FOS or HRS spectroscopic data.
+.ih
+USAGE
+fwplot flux 
+.ih
+DESCRIPTION
+'fwplot' is a script that uses the task 'sgraph' to plot a single group 
+of a calibrated FOS or HRS flux image against a single group of a calibrated 
+FOS or HRS wavelength image. The corresponding group of the propagated error 
+image may be overplotted. 
+
+Control over the plot characteristics is exercised by editing the parameter 
+sets 'dvpar', 'pltpar', and 'axispar'. (See the help files for
+'sgraph', 'dvpar', 'pltpar', and 'axispar' for information about
+manipulating plots.)
+
+For the purposes of 'fwplot' the plot labels default to: 
+.nf
+
+*  "WAVELENGTH" for the X-axis 
+*  "FLUX" for the Y-axis 
+*  name of the flux image for the title
+.fi
+
+The minimum input required is the name of a flux image. Additionally,
+an image containing the propagated errors and an image containing
+wavelengths may be specified.
+If no wavelength or error image is given, the wavelength and error image 
+names are constructed from the flux image name.  In this case, 
+the flux image must have an extension appropriate to flux 
+calibrated FOS or HRS data, i.e., '.c1h'. Furthermore, there 
+must exist a wavelength image with the same root name as the flux 
+image and an extension of '.c0h' and an error image with the same 
+root name as the flux image and an extension of '.c2h'.
+
+Most of the plotting attributes are found in the psets "axispar" and
+"pltpar".  Due to the way IRAF handles psets and scripts, these
+parameters are not accessible from the command line.  To modify any of
+the parameters, use "eparam" and edit the psets.
+.ih
+PARAMETERS
+.ls flux [image name]
+Calibrated flux image name. Image templates (e.g., wildcards, "@" lists, etc.)
+are not supported.
+.le
+.ls (wave = "") [image name]
+Calibrated wave image name. 
+.le
+.ls (err = "") [image name]
+Calibrated propagated error image name.
+.le
+.ls (title = "") [string]
+Plot title. If left blank (the default) the image name of the calibrated
+flux image will be used as the title. This parameter overrides the 'axispar'
+parameter 'title'.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device to send the graphics output to.
+.le
+.ls (xlabel = "FLUX") [string]
+Label for X-axis. This parameter overrides the 'axispar' parameter 'xlabel'.
+.le
+.ls (ylabel = "WAVELENGTH") [string]
+Label for Y-axis. This parameter overrides the 'axispar' parameter 'ylabel'.
+.le
+.ls (plterr = no) [boolean]
+Overplot the error image as error bars?
+.le
+.ls (dvpar) [pset]
+The device parameters pset.  Parameters indicating what plot device
+the graph should be sent to, etc., are in this pset.
+.le
+.ls (pltpar) [pset]
+Plot attribute pset used by the 'sgraph' task.
+.le
+.ls (axispar) [pset]
+This pset contains the various attributes of how the axis should be
+labeled, etc.
+.le
+.ih
+EXAMPLES
+1. Plot the flux values for the tenth group of calibrated
+image 'z00xh903r.c1h', against the corresponding wavelength values for
+the same observation (found in the image, 'z00xh903r.c0h'). Overplot
+the propagated errors (found in the image, 'z00xh903r.c2h') as error bars.
+
+.nf
+  hr> fwplot z00xh903r.c1h[10] plterr+
+.fi
+
+2. Plot the count rate values for the first group of the FOS
+image 'y00vk101r.c4h', against the corresponding wavelength values for
+the same observation. Modify the label for the Y-axis.
+
+.nf
+  fo> fwplot y00vk101r.c4h ylabel="COUNT RATE"
+.fi
+
+3. Explicitly specify all of the input images to use in plotting
+observation 'yplotest'.
+
+.nf
+  fo> fwplot yplotest.c1h wave=yplotest.c0h err=yplotest.c2h plterr+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+sgraph, dvpar, pltpar, axispar
+.endhelp

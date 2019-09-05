@@ -1,0 +1,14 @@
+Menu for the package stsdas.hst_calib.fos.spec_polar
+
+   calpolar - Perform polarimetry processing of calibrated data.
+comparesets - Compare spectra at different waveplate positions.
+   pcombine - Combine flux calibrated datasets.
+     plbias - Correct linear polarization for bias in Q and U
+     polave - Average Stokes spectra from multiple datasets.
+     polbin - Rebin Stokes and polarization spectra.
+    polcalc - Calculate polarization from Stokes IQUV spectra.
+    polnorm - Normalize Stokes QUV spectra by Stokes I.
+    polplot - Stacked plot of flux and polarization spectra.
+
+(Type "help spec_polar opt=sys" for more information about the 
+ spec_polar package and FOS polarimetry datasets.)

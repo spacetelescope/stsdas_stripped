@@ -1,0 +1,175 @@
+1 entries
+                           KOLMOV Software Notebook
+                           ------------------------
+===============================================================================
+Entry #1    Tom Lougheed      07/24/86  Kolmogorov-Smirnov Test
+
+
+Introduction
+------------
+ 
+I have begun, today, to write the Fortran code for a program which will perform 
+the Kolmogorov-Smirnov test on a column(s) of data.  The purpose of the test is 
+to measure how closely the statistical behavior of a sample (or a population) 
+is approximated either by a distribution function, or by another sample.  
+Appropriate questions one may have in mind when performing the test are "Are 
+the differences between the observed data and my theoretical model normally 
+distributed, with zero mean ?" or "Is the statistical clumping of quazars 
+(sample 1 -- thought by some to be nearby objects) closer to the clumping of 
+distant galaxies (sample 2 -- far away objects) or to the clumping of globular 
+clusters (sample 3 -- nearby objects) ?"
+
+
+Requirements
+------------
+
+The action of the program, will ideally be able to provide all of the options
+listed below; the output in each case is the Kolmogorov statistic, which is the 
+maximum difference in probability between the two sample distributions or 
+between the sample and the proposed distribution; desirable options follow:
+
+
+   (1) Compare two sample input tables.
+
+   (2) Compare a single sample input table with a user-selected 
+       distribution (from a list of common distribution functions).
+       The parameters of the distribution are specified by the user.
+
+   (3) Compare a single sample input table with a user-selected 
+       distribution (again, from a list of common distribution 
+       functions).  The parameters of the distribution are to be
+       calculated from a maximum-likelihood fit to the input table 
+       (or alternatively from a minimization of the Kolmogorov 
+       statistic ?).  In addition to the Kolmogorov statistic, 
+       the determined "best" distribution parameters are returned 
+       to the user.
+
+   (4) Compare a single sample input table with several user-selected
+       distributions.  The parameters of each distribution are to
+       be calculated from a maximum-likelihood fit to the input table
+       (or by minimizing the Kolmogorov statistic, as above).  Output
+       shall be an ordered list, ranging from the "best" distribution
+       with its smallest Kolmogorov statistic, to the "worst"
+       distribution, with its largest Kolmogorov statistic.  The
+       distribution parameters will also be written out.
+
+
+
+The distributions provided in the standard list should include the following:
+
+   (1) Normal (or Gaussian) -- central limit distribution for mean
+       values of large samples.
+
+   (2) Uniform -- default distribution, when all possiblities
+       are assumed equally likely.
+
+   (3) Gamma -- general distribution for data which are bounded 
+       below by zero, but (conceptually) unlimited above.  The
+       chi-square distribution is a special case of the gamma.
+       Closely related to the the Poisson discrete distribution.
+
+   (4) Beta -- general distribution for data which are bounded
+       between two limits.  Closely related to the binomial
+       binomial distribution.
+
+   (5) Pareto (or power law) -- simple in form, it is popular among
+       scientists for the ease with which it may be compared to theory.
+
+
+Provision should be made to provide others, as need arises.  Also, for these
+applications, additional generality should be provided in the form of automatic
+affine transformations for those distributions (gamma, beta, ...) where the 
+location of the origin is important, but not commonly a parameter.
+
+
+Analysis
+--------
+
+Option (1) should be simple to produce, and option (2) should be not much
+harder (with the exception of finding on-hand subroutines to evaluate uncommon
+distribution functions (remember, the DENSITY functions are usually the easy
+ones to evaluate).  Option (3) is simple in the case of the normal (or
+Gaussian) distribution, but may be far more difficult in the case of other
+useful distributions;  the option will also may be very difficult to provide
+and once provided, very time consuming, if the parameters are to be fit to
+reduce the Kolmogorov statistic to a minimum, rather than using a maximum
+likelihood fit, even though the former is more intuitive in this context.
+Option (4) is simply a useful embellishment of option (3), which would allow
+the user to pull the "best" of all (listed) distributions out of the blue;
+it would, however, require a lot of computer time.
+
+In reference to the case where the user does not provide input parameters:
+If one desires the parameters which make the Kolmogorov statistic as small
+as possible, one still may want to calculate a maximum-likelihood estimate
+as a starting value.  Maximum-likelihood estimators have many serendipitous
+properties:  they are usually consistent, efficient, and achieve a minimum-
+variance estimate if one is possible.  (Their only failing is that maximum-
+likelihood estimates are often biased, although the bias is always a 
+diminishing function of the number of datums in the sample;  sometimes the
+formula for the bias is known and can be used to correct the estimate.)
+Because of these good properties, I expect that a maximum-likelihood estimate
+will probably be very close to the estimate of the distribution parameters
+which minimizes the Kolmogorov statistic.  Because the calculation of the
+latter must generally involve time-consuming bounded nonlinear optimization 
+methods, one would probably save computer time by starting with former.
+
+A further important and troubling problem is how to treat the case in which 
+the user knows some of the distribution parameters, but not all.  For such a
+case, the remaining unknown parameters are well defined, and may be determined
+in a manner almost identical to that described above.  However, the burden
+of programming for all the above cases will be increased significantly.  The 
+distributions listed above generally require two parameters (three if a shift 
+of origin is allowed), this will roughly triple (octupple) the programming 
+effort required to provide the extra formulae needed.  Further discussion
+with management is suggested.
+
+
+Schedule
+--------
+
+Work will begin immediately on option (1).  This will probably be completed
+in the month remaining before this writer leaves the  Science Data Analysis 
+System (SDAS) team to participate in another project.  The second option will 
+probably be only partially completed before the writer's departure.  Management
+shall be obliged to resolve the scheduling problem.
+
+
+Needed Utilities
+----------------
+
+The following subroutines will be needed:
+
+For options (1) through (4):  (Many-dimensional ?) Sorting routine.
+
+For option (2):               Cumulative distribution function values
+                              (one for each distribution function).
+
+For options (3) and (4):      Maximum-likelihood estimator routines
+                              (one for each distribution function).
+                              (If a minimum Kolmogorov statistic estimate
+                              of parameters is desired, a nonlinear bounded
+                              optimization routine will be needed as well,
+                              or instead.)  (If the user may specify some
+                              but not all of the parameters, then many
+                              additional estimation routines may be needed).
+
+For option (4):               No additional utilities are required.
+
+
+Concerning the need for additional estimates, if one or some of the parameters
+are fixed by the user, see the analysis section above.
+
+
+Summary
+-------
+
+The first step of the work of coding the Kolmogorov-Smirnov test will commence
+immediately.  Issues concerning advanced options must be resolved.
+
+
+Close
+-----
+
+I remain, on this 24-th day of July, in the year 1986, your humble servant,
+
+Thomas-William Lougheed

@@ -1,0 +1,6 @@
+offtab,s,a," ",,,       ">input offset table"
+dcin,s,a," ",,,		">input disp. coef. table"
+dcout,s,a,"offsetdc",,, ">output disp. coef. table"
+order,i,h,1,0,3,	">order of offset polynomial"
+mincount,r,h,0.0,,,	">Minimum total counts for offset bin"
+mode,s,h,a

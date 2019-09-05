@@ -1,0 +1,54 @@
+STIS
+
+The STIS keywords consist of a list of filters, apertures, gratings,
+central wavelengths, ADC gains, and MJD#.  The aperture and grating
+are required in any observation mode string.  The others are optional.
+The grating selection automatically determines the appropriate
+detector channel.  The ADC gain keywords only apply to the STIS CCD
+modes and are used to convert results from units of electrons to DNs.
+The MJD# keyword applies only to the MAMA grating and imaging modes
+(not the MAMA echelle modes) and is used to handle the time dependent
+sensitivity of the FUV and NUV MAMAs.  The default is to use the
+latest set of throughput values without any extrapolation and the
+result should not differ by more than 2 percent from those that use
+the current date.
+
+
+Filters:   25mama 50ccd f25ciii f25cn182 f25cn270 f25lya f25mgii f25nd3
+           f25nd5 f25ndq1 f25ndq2 f25ndq3 f25ndq4 f25qtz f25srf2
+           f28x50lp f28x50oii f28x50oiii
+
+Apertures: s005x29 s005x31nda s005x31ndb s009x29 s01x003 s01x006
+           s01x009 s01x02 s02x005nd s02x006 s02x006fpa s02x006fpb
+           s02x006fpc s02x006fpd s02x006fpe s02x009 s02x02 s02x02fpa
+           s02x02fpb s02x02fpc s02x02fpd s02x02fpe s02x05 s02x29
+           s03x005nd s03x006 s03x009 s03x02 s05x05 s10x006 s10x02 s2x2
+           s31x005nda s31x005ndb s31x005ndc s36x005n45 s36x005p45
+           s36x06n45 s36x06p45 s52x005 s52x01 s52x02 s52x05 s52x2
+           s6x006 s6x02 s6x05 s6x6 
+
+Gratings:  e140h e140m e230h e230m g140l g140lb g140m g140mb g230l
+           g230lb g230m g230mb g430l g430m g750l g750m prism
+
+Mirrors:   acq ccd fuvmama nuvmama
+
+Central wavelengths:
+           all c1687 c1769 c1851 c1933 c2014 c2095 c2176 c2257 c2338
+           c2419 c2499 c2579 c2659 c2739 c2818 c2898 c2977 c3055 c3134
+           i1884 i2600 i2800 i2828 c1713 c1854 c1995 c2135 c2276 c2416
+           c2557 c2697 c2836 c2976 c3115 i2794 c1978 c2707 i2124 i2269
+           i2415 i2561 c1763 c2013 c2263 c2513 c2762 c3012 i1813 i1863
+           i1913 i1963 i2063 i2113 i2163 i2213 i2313 i2363 i2413 i2463
+           i2563 i2613 i2663 i2713 i2812 i2862 i2912 i2962 c3165 c3423
+           c3680 c3936 c4194 c4451 c4706 c4961 c5216 c5471 i3305 i3843
+           i4781 i5093 c1173 c1222 c1272 c1321 c1371 c1420 c1470 c1518
+           c1567 c1616 c1665 c1714 i1218 i1387 i1400 i1540 i1550 i1640
+           c1425 c1234 c1416 c1598 i1271 i1307 i1343 i1380 i1453 i1489
+           i1526 i1562 c7751 c8975 c10363 c10871 c5734 c6252 c6768
+           c7283 c7795 c8311 c8825 c9336 c9851 i6094 i6581 i8561 i9286
+           i9806 
+
+ADC Gains: a2d1 a2d4
+
+MJD#DDDDD.DD:
+           DDDDD.DD is the modified Julian day, e.g. MJD#50000.00

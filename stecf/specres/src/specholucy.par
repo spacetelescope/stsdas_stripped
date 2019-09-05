@@ -1,0 +1,35 @@
+inpima,f,a,,,,"Name of input flux file"
+errima,f,a,,,,"Name of input statistical error file"
+dqima,f,a,,,,"Name of input data quality file"
+poitab,f,a,,,,"Name of table of X;Y pixel centres and slope of point source spectra
+
+OUTPUT tables and images"
+Rootab,f,a,,,,"Root name for output point source extracted spectrum tables"
+poi_back,b,a,,,,"Output fitted point sources+background (Y) or background only (N)"
+bakima,f,a,,,,"Name of output fitted point source+background or background file"
+bakerr,f,a,,,,"Name of output fitted point source+background or background statistical error file"
+bakdq,f,a,,,,"Name of output fitted point source+background or background data quality file
+
+POINT SPREAD FUNCTION Spectrum and Position"
+psfima,f,a,,,,"Name of input Point Spread Function spectrum file"
+psfmeth,s,a,,,,"Method for fitting PSF peak (C=Centroid; G=Gaussian)"
+psfb,i,a,,,,"Subsampling factor (Y-direction) for PSF image"
+interpol,s,a,"linear",,,"Interpolation method used for shifting PSFs
+
+POSITIONS of Point Source Spectra"
+posmeth,s,a,,,,"Method for fitting input point source peak (E=exact; C=Cross-correlation)"
+icsum,i,a,1,,,"Number of columns of input data to sum for cross-correlation analysis"
+subpix,i,a,,,,"Interpolation factor for transforming from observed to rectified grid
+
+BACKGROUND CHANNEL parameter"
+skernel,r,a,,,,"Sigma of Gaussian for spatial resolution kernel
+
+ITERATIONS and Stopping Criteria"
+niter,i,a,,,,"Number of iterations for point source and 1D background restoration"
+epspoi,r,a,,,,"Stopping criterion for fractional change in spectra of point sources and background per set of iterations"
+epsbac,r,a,,,,"Stopping criterion for fractional change in summed background per set of iterations
+   "
+ntrial,i,a,,,,"No. of Monte Carlo trials for error estimation (>=1)"
+seed,i,h,13,,,"Seed for random number generator"
+dqlim,i,h,100,,,"Limiting data quality value above which to ignore data"
+verbose,b,h,,,,"Report parameters of restoration during execution"

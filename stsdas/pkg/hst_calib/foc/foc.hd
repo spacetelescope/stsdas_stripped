@@ -1,0 +1,16 @@
+# Help directory for the FOC calibration package
+
+$doc    = "stsdas$pkg/hst_calib/foc/doc/"
+$foc 	= "stsdas$pkg/hst_calib/foc/"
+$calfoc		= "stsdas$pkg/hst_calib/foc/calfoc/"
+$focprism	= "stsdas$pkg/hst_calib/foc/focprism/"
+
+focprism	men=focprism$focprism.men,
+		hlp=..,
+		sys=focprism$focprism.hlp,
+		pkg=focprism$focprism.hd,
+		src=focprism$focprism.cl
+
+
+calfoc		hlp=doc$calfoc.hlp,	src=calfoc$calfoc.x
+newgeom		hlp=doc$newgeom.hlp,	src=foc$t_newgeom.x

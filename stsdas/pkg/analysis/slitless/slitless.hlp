@@ -1,0 +1,31 @@
+.help slitless Jul10 stsdas.analysis.slitless
+.ih
+NAME
+slitless -- Slitless spectroscopy package
+.ih
+DESCRIPTION
+The `stsdas.analysis.slitless' package contains two dedicated
+packages to extract slitless data and to simulate slitless data
+
+
+.nf
+
+                Table 1.  HST Slitless Packages
+    +-----------------------------------------------------------+
+    | Package    | Description                                  |
+    +-----------------------------------------------------------+
+    | axe        | Slitless spectroscopy extraction             |
+    | axesim     | Slitless spectroscopy simulation             |
+    +-----------------------------------------------------------+
+.fi
+
+AXE EXTRACTION
+
+
+AXESIM SIMULATION
+
+.ih
+SEE ALSO
+axe, axesim.
+.endhelp
+

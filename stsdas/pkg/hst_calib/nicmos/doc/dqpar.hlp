@@ -1,0 +1,72 @@
+.help dqpar Jun2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+dqpar -- Edit the parameter set to select DQ bit mask settings.
+.ih
+USAGE
+dqpar
+.ih
+DESCRIPTION
+The `dqpar' parameters specify Data Quality (DQ) bit settings for use in
+rejecting pixels in various NICMOS tasks. The individual settings are
+summed and used in a bitwise "and" operation to reject pixels whose DQ
+values contain any of the bits turned on in the pset.
+
+Note that this is a pset, not an executable task; it defines a set of 
+parameters used by other tasks.  Invoking the pset by name runs 
+`eparam' on the parameter set, allowing the user to modify the 
+parameters.  Alternatively, the parameters may be modified on the 
+command line by specifying the pset name and parameter name.  For 
+example, the user can type `dqpar.defect=yes' to turn on the bit setting
+for rejecting pixels containing a DQ flag for bad (hot/cold) pixels.
+Parameters can also be edited by using `eparam' on a calling task
+(e.g., by typing "eparam pedsub"), in which case `dqpar' will appear
+as one of the task parameters; the `dqpar' parameters may then be
+edited by positioning the cursor on the line containing the pset name and
+typing ":e". After editing the pset parameters, type <Cntrl>-Z to return to
+the main task parameter menu.  
+
+.ih
+PARAMETERS
+.ls (rs = yes) [boolean]
+Reject pixels with Reed-Solomon errors?
+.le
+.ls (lin = yes) [boolean]
+Reject pixels with poor linearity correction?
+.le
+.ls (dark = yes) [boolean]
+Reject pixels with poor dark correction?
+.le
+.ls (flat = yes) [boolean]
+Reject pixels with poor flatfield correction?
+.le
+.ls (grot = yes) [boolean]
+Reject pixels affected by grot?
+.le
+.ls (defect = yes) [boolean]
+Reject defective (hot/cold) pixels?
+.le
+.ls (sat = yes) [boolean]
+Reject saturated pixels?
+.le
+.ls (telemetry = yes) [boolean]
+Reject pixels with telemetry dropouts?
+.le
+.ls (badpix = yes) [boolean]
+Reject pixels flagged during calibration?
+.le
+.ls (cray = yes) [boolean]
+Reject pixels affected by a cosmic-ray hit?
+.le
+.ls (source = yes) [boolean]
+Reject pixels containing source signal?
+.le
+.ls (zread = yes) [boolean]
+Reject pixels with zeroth-read signal?
+.le
+.ih
+BUGS
+.ih
+SEE ALSO
+biaseq, nlincorr, pedsky, pedsub
+.endhelp

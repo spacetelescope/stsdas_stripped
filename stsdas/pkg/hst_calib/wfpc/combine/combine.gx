@@ -1,0 +1,426 @@
+include	<imhdr.h>
+include	<imset.h>
+include	<error.h>
+include	<syserr.h>
+include "wpdef.h"
+
+#--------------------------------------------------------------------11 Jun 96--
+.help combine.gx Jun96 wfpc$combine
+.ih
+NAME
+  combine - Initialize variables and call appropriate combine routine
+.endhelp
+#-------------------------------------------------------------------------------
+# COMBINE --	Initialize variables and call appropriate combine routine. 
+#		This routine is based upon the `images.imcombine' package. 
+#
+#  Revision history:
+#	   Nov 90 by RAShaw	Development version
+#	 9 Mar 93 by RAShaw	AVSIGCLIP option was producing incorrect 
+#				results for group 1 when "sigma" image was 
+#				undefined.  Problem traced to "npts" not 
+#				being defined before call to salloc memory 
+#				for "sigdata". 
+#	11 Jun 96 by RAShaw	Change function name from "scale" to avoid 
+#				name conflict with F90 intrinsic function. 
+
+#$for (sirdx)
+$for (silrd)
+procedure combine$t (in, dqf, nimages, out, sigma, option, log)
+
+include "wpcom.h"
+
+# Calling arguments:
+int		log			# Log file descriptor
+pointer		in[nimages]		# IMIO pointers to data
+pointer		dqf[nimages]		# IMIO pointers to Data Quality Files
+int		nimages			# Number of input images
+pointer		out			# Output IMIO pointer
+pointer		sigma			# Sigma IMIO pointer
+int		option			# Combine option
+
+# Local variables:
+bool		bit[8]			# Bit codes for DQF flags
+pointer		curline			# Current line number
+pointer		data 			# Line of input images
+bool		doscale			# Are input images to be scaled/weighted?
+pointer		dqfdata			# Line of DQF images
+real		gain			# Detector gain in DN/photon
+real		gscale			# Scale term in noise model (% of DN)
+real		high			# High sigma cutoff
+int		i, j			# Dummy loop counters
+real		low			# Low sigma cutoff
+int		npts			# Number of pixels per image line
+pointer		oldline			# Previous line number
+pointer		outdata			# Output image line
+real		readnoise		# Additive term in noise model
+pointer		sigdata			# Sigma image line 
+pointer		sp			# Pointer to stack memory
+
+# Functions used:
+bool		clgetb()		# Fetch Boolean keyword from CL
+real		clgetr()		# Fetch real keyword from CL
+pointer		imgnl$t()		# Get Next Line
+$if (datatype != i)
+pointer		imgnli()		# Get Next Line
+$endif
+$if (datatype == sil)
+pointer		impnlr()		# Put Next Line
+$else
+pointer		impnl$t()		# Put Next Line
+$endif
+bool		scalef()		# Determines scales and weights
+
+begin
+	errchk asigclip$t, average$t, crrej$t, maxrej$t, median$t, 
+		minrej$t, mmrej$t, sigclip$t, sum$t, threshold$t
+
+# Fetch user-selected DQF bits.
+	bit[1] = clgetb ("rsbit")		# Reed-Solomon error
+	bit[2] = clgetb ("calbit")		# Calibration file defect
+	bit[3] = clgetb ("defbit")		# Permanent camera defect
+	bit[4] = clgetb ("satbit")		# Saturated pixel
+	bit[5] = clgetb ("misbit")		# Missing data
+	bit[6] = clgetb ("genbit")		# Generic bad pixel
+	bit[7] = clgetb ("crbit")		# Cosmic Ray hit
+	bit[8] = false				# (unused)
+	CRBIT  = 15				# Hardwired, for now
+
+# Convert bit-coded flags to an integer.
+	BADBITS = 0
+	do i = 1, 8
+	    if (bit[i]) BADBITS = BADBITS + 2 ** (i-1)
+
+# Determine scale factors and weights for input images.  Note that these 
+# parameters are not set for option="SUM".
+	BLANK = clgetr ("blank")
+	switch (option) {
+	    case AVERAGE, MEDIAN, MINREJECT, MAXREJECT, MINMAXREJECT: 
+		low  = 0.
+		high = 0.
+	    case CRREJECT: 
+		low       = 0.
+		high      = clgetr ("highreject")
+		readnoise = clgetr ("readnoise")
+		gain      = clgetr ("gain")
+		gscale    = clgetr ("scalenoise") / 100.
+	    case THRESHOLD: 
+		low   = clgetr ("lowreject")
+		high  = clgetr ("highreject")
+		if (low >= high) 
+		    call error (0, 
+			"Bad threshold limits (lowreject >= highreject)")
+	    case SIGCLIP, AVSIGCLIP: 
+		low  = clgetr ("lowreject")
+		high = clgetr ("highreject")
+	}
+	doscale = scalef (in, out, nimages, log, low, high)
+
+####################################################################
+# Allocate stack memory for local variables.
+	call smark (sp)
+#  Bug fix 23 Feb 93 by RAShaw: "data" is an array of TY_POINTER
+#	call salloc (data, nimages, TY_REAL)
+	call salloc (data, nimages, TY_POINTER)
+	call salloc (dqfdata, nimages, TY_POINTER)
+	call salloc (curline, IM_MAXDIM, TY_LONG)
+	call salloc (oldline, IM_MAXDIM, TY_LONG)
+	npts = IM_LEN(out,1)
+	if (sigma == NULL) {
+	    $if (datatype == sil)
+	    call salloc (sigdata, npts, TY_REAL)
+	    $else
+	    call salloc (sigdata, npts, TY_PIXEL)
+	    $endif
+	}
+
+# Initialize local variables.
+	call amovkl (long(1), Meml[curline], IM_MAXDIM)
+	call amovkl (long(1), Meml[oldline], IM_MAXDIM)
+
+# For each line get input image lines and combine them.  Note that, because 
+# the input procedure increments the current line number (cln), the cln must 
+# be copied from the previous line number for each call to impnl or imgnl.
+
+$if (datatype == sil)
+	while (impnlr (out, outdata, Meml[curline]) != EOF) {
+
+# Initialize the output and sigma images to zero.
+#	    call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+#	    j = impnlr (out, outdata, Meml[curline])
+	    call aclrr (Memr[outdata], npts)
+	    if (sigma != NULL) {
+		call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		j = impnlr (sigma, sigdata, Meml[curline])
+	    }
+	    call aclrr (Memr[sigdata], npts)
+	    do i = 1, nimages {
+		call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		j = imgnl$t (in[i], Memi[data+i-1], Meml[curline])
+		if (dqf[1] != NULL) {
+		    call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		    j = imgnli (dqf[i], Memi[dqfdata+i-1], Meml[curline])
+		}
+	    }
+
+# Impose rejection criteria
+	    if (dqf[1] != NULL) {
+
+# Call routine appropriate to combine option.  
+		switch (option) {
+		    case SUM:
+			call error (0, "DQF rejection not supported for SUM")
+		    case AVERAGE:
+			call dqaverage$t (Memi[data], Memi[dqfdata], 
+					Memr[outdata], nimages, npts)
+		    case MEDIAN:
+			call dqmedian$t (Memi[data], Memi[dqfdata], 
+				Memr[outdata], nimages, npts)
+		    case MINREJECT:
+			call dqminrej$t (Memi[data], Memi[dqfdata], 
+					Memr[outdata], nimages, npts)
+		    case MAXREJECT:
+			call dqmaxrej$t (Memi[data], Memi[dqfdata], 
+					Memr[outdata], nimages, npts)
+		    case MINMAXREJECT:
+			call dqmmrej$t (Memi[data], Memi[dqfdata], 
+					Memr[outdata], nimages, npts)
+		    case CRREJECT:
+			call dqcrrej$t (Memi[data], Memi[dqfdata], 
+				Memr[outdata], Memr[sigdata], nimages, npts, 
+				high, readnoise, gain, gscale)
+		    case THRESHOLD:
+			call dqthreshold$t (Memi[data], Memi[dqfdata], 
+				Memr[outdata], nimages, npts, low, high)
+		    case SIGCLIP:
+			call dqsigclip$t (Memi[data], Memi[dqfdata], 
+			Memr[outdata], Memr[sigdata], nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call dqasigclip$t (Memi[data], Memi[dqfdata], 
+			Memr[outdata], Memr[sigdata], nimages, npts, low, high)
+		}
+	    } else if (doscale) {
+
+# Call routine appropriate to combine option.  
+		switch (option) {
+		    case SUM:
+			call error (0, "Weighting not supported for option: SUM")
+		    case AVERAGE:
+			call wtaverage$t (Memi[data], Memr[outdata], nimages, 
+					npts)
+		    case MEDIAN:
+			call scmedian$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MINREJECT:
+			call wtminrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MAXREJECT:
+			call wtmaxrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MINMAXREJECT:
+			call wtmmrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case CRREJECT:
+			call wtcrrej$t (Memi[data], Memr[outdata], Memr[sigdata], 
+					nimages, npts, high, readnoise, gain, 
+					gscale)
+		    case SIGCLIP:
+			call wtsigclip$t (Memi[data], Memr[outdata], 
+					Memr[sigdata], nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call wtasigclip$t (Memi[data], Memr[outdata], 
+					Memr[sigdata], nimages, npts, low, high)
+		    case THRESHOLD:
+			call wtthreshold$t (Memi[data], Memr[outdata], nimages, 
+				npts, low, high)
+		}
+	    } else {
+
+# Call routine appropriate to combine option.  
+		switch (option) {
+		    case SUM:
+			call sum$t (Memi[data], Memr[outdata], nimages, npts)
+		    case AVERAGE:
+			call average$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MEDIAN:
+			call median$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MINREJECT:
+			call minrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MAXREJECT:
+			call maxrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case MINMAXREJECT:
+			call mmrej$t (Memi[data], Memr[outdata], nimages, npts)
+		    case CRREJECT:
+			call crrej$t (Memi[data], Memr[outdata], Memr[sigdata], 
+					nimages, npts, high, readnoise, gain, 
+					gscale)
+		    case SIGCLIP:
+			call sigclip$t (Memi[data], Memr[outdata], Memr[sigdata], 
+					nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call asigclip$t (Memi[data], Memr[outdata], 
+					Memr[sigdata], nimages, npts, low, high)
+		    case THRESHOLD:
+			call threshold$t (Memi[data], Memr[outdata], nimages, 
+					npts, low, high)
+		}
+	    }
+
+# Calculate sigma, with weighting, if appropriate.
+	    if ((sigma != NULL) && (option != CRREJECT) && (option != SUM) && 
+		(option != SIGCLIP) && (option != AVSIGCLIP)) {
+		if (doscale || dqf[1] != NULL) 
+		    call wgtsigma$t (Memi[data], Memr[outdata], Memr[sigdata], 
+					nimages, npts)
+		else 
+		    call sigma$t (Memi[data], Memr[outdata], Memr[sigdata], 
+					nimages, npts)
+	    }
+	    call amovl (Meml[curline], Meml[oldline], IM_MAXDIM)
+	}
+$else
+	while (impnl$t (out, outdata, Meml[curline]) != EOF) {
+
+# Initialize the output and sigma images to zero.
+#	    call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+#	    j = impnl$t (out, outdata, Meml[curline])
+	    call aclr$t (Mem$t[outdata], npts)
+	    if (sigma != NULL) {
+		call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		j = impnl$t (sigma, sigdata, Meml[curline])
+	    }
+	    call aclr$t (Mem$t[sigdata], npts)
+	    do i = 1, nimages {
+		call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		j = imgnl$t (in[i], Memi[data+i-1], Meml[curline])
+		if (dqf[1] != NULL) {
+		    call amovl (Meml[oldline], Meml[curline], IM_MAXDIM)
+		    j = imgnli (dqf[i], Memi[dqfdata+i-1], Meml[curline])
+		}
+	    }
+
+# Impose rejection criteria
+	    if (dqf[1] != NULL) {
+
+# Call routine appropriate to combine option.  Note that sigma clipping is not 
+# supported for complex datatype.  
+		switch (option) {
+		    case SUM:
+			call error (0, "DQF rejection not supported for SUM")
+		    case AVERAGE:
+			call dqaverage$t (Memi[data], Memi[dqfdata], 
+				Mem$t[outdata], nimages, npts)
+		    case MEDIAN:
+			call dqmedian$t (Memi[data], Memi[dqfdata], 
+					Mem$t[outdata], nimages, npts)
+		    case MINREJECT:
+			call dqminrej$t (Memi[data], Memi[dqfdata], 
+					Mem$t[outdata], nimages, npts)
+		    case MAXREJECT:
+			call dqmaxrej$t (Memi[data], Memi[dqfdata], 
+					Mem$t[outdata], nimages, npts)
+		    case MINMAXREJECT:
+			call dqmmrej$t (Memi[data], Memi[dqfdata], 
+					Mem$t[outdata], nimages, npts)
+#		    $if (datatype == rd)
+		    case CRREJECT:
+			call dqcrrej$t (Memi[data], Memi[dqfdata], 
+					Mem$t[outdata], Mem$t[sigdata], nimages, 
+					npts, high, readnoise, gain, gscale)
+		    case SIGCLIP:
+			call dqsigclip$t (Memi[data], Memi[dqfdata], 
+			Mem$t[outdata], Mem$t[sigdata], nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call dqasigclip$t (Memi[data], Memi[dqfdata], 
+			Mem$t[outdata], Mem$t[sigdata], nimages, npts, low, high)
+#		    $endif
+		    case THRESHOLD:
+			call dqthreshold$t (Memi[data], Memi[dqfdata], 
+				Mem$t[outdata], nimages, npts, low, high)
+		}
+	    } else if (doscale) {
+
+# Call routine appropriate to combine option.  Note that sigma clipping is not 
+# supported for complex datatype.  
+		switch (option) {
+		    case SUM:
+			call error (0, "Weighting not supported for option: SUM")
+		    case AVERAGE:
+			call wtaverage$t (Memi[data], Mem$t[outdata], nimages, 
+					npts)
+		    case MEDIAN:
+			call scmedian$t (Memi[data], Mem$t[outdata], nimages, 
+					npts)
+		    case MINREJECT:
+			call wtminrej$t (Memi[data], Mem$t[outdata], nimages, 
+					npts)
+		    case MAXREJECT:
+			call wtmaxrej$t (Memi[data], Mem$t[outdata], nimages, 
+					npts)
+		    case MINMAXREJECT:
+			call wtmmrej$t (Memi[data], Mem$t[outdata], nimages, npts)
+#		    $if (datatype == rd)
+		    case CRREJECT:
+			call wtcrrej$t (Memi[data], Mem$t[outdata], 
+				Mem$t[sigdata], nimages, npts, high, readnoise, 
+					gain, gscale)
+		    case SIGCLIP:
+			call wtsigclip$t (Memi[data], Mem$t[outdata], 
+					Mem$t[sigdata], nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call wtasigclip$t (Memi[data], Mem$t[outdata], 
+					Mem$t[sigdata], nimages, npts, low, high)
+#		    $endif
+		    case THRESHOLD:
+			call wtthreshold$t (Memi[data], Mem$t[outdata], nimages, 
+					npts, low, high)
+		}
+	    } else {
+
+# Call routine appropriate to combine option.  Note that sigma clipping is not 
+# supported for complex datatype.  
+		switch (option) {
+		    case SUM:
+			call sum$t (Memi[data], Mem$t[outdata], nimages, npts)
+		    case AVERAGE:
+			call average$t (Memi[data], Mem$t[outdata], nimages, npts)
+		    case MEDIAN:
+			call median$t (Memi[data], Mem$t[outdata], nimages, npts)
+		    case MINREJECT:
+			call minrej$t (Memi[data], Mem$t[outdata], nimages, npts)
+		    case MAXREJECT:
+			call maxrej$t (Memi[data], Mem$t[outdata], nimages, npts)
+		    case MINMAXREJECT:
+			call mmrej$t (Memi[data], Mem$t[outdata], nimages, npts)
+#		    $if (datatype == rd)
+		    case CRREJECT:
+			call crrej$t (Memi[data], Mem$t[outdata], Mem$t[sigdata], 
+					nimages, npts, high, readnoise, gain, 
+					gscale)
+		    case SIGCLIP:
+			call sigclip$t (Memi[data], Mem$t[outdata], 
+					Mem$t[sigdata], nimages, npts, low, high)
+		    case AVSIGCLIP:
+			call asigclip$t (Memi[data], Mem$t[outdata], 
+					Mem$t[sigdata], nimages, npts, low, high)
+#		    $endif
+		    case THRESHOLD:
+			call threshold$t (Memi[data], Mem$t[outdata], nimages, 
+					npts, low, high)
+		}
+	    }
+
+# Calculate sigma, with weighting, if appropriate.
+	    if ((sigma != NULL) && (option != CRREJECT) && (option != SUM) && 
+		(option != SIGCLIP) && (option != AVSIGCLIP)) {
+		if (doscale || dqf[1] != NULL) 
+		    call wgtsigma$t (Memi[data], Mem$t[outdata], Mem$t[sigdata], 
+					nimages, npts)
+		else 
+		    call sigma$t (Memi[data], Mem$t[outdata], Mem$t[sigdata], 
+					nimages, npts)
+	    }
+	    call amovl (Meml[curline], Meml[oldline], IM_MAXDIM)
+	}
+	$endif
+
+	call sfree (sp)
+	end
+	$endfor
+

@@ -1,0 +1,130 @@
+Release Notes for V2.6 of Drizzle
+
+Richard Hook, ST-ECF, October 2001
+Minor update, December 2001
+
+The previous public release of the Drizzle software was V1.41.
+This note briefly describes the new features introduced since
+then.
+
+Important - this version introduces two new parameters and a 
+new pset (outcont, kernel and dr2gpar). Although the default
+values of these will result in the same behavior as Drizzle
+1.41 (ie, outcont="", kernel="square" and dr2gpar set to the
+default, indentity) it is recommended that you "unlearn drizzle"
+and check any script you may have to include the new parameters.
+
+This version should also be used in conjunction with the matching
+tools - Blot, Traxy, Tranback and Wcs2dr (V1.0 in all cases).
+
+The three main new Drizzle features are Context Images, Multiple
+Kernel support and Secondary Geometric Parameters. These will be 
+briefly described here by quoting the relevant parts of the help
+file for Drizzle The user is also referred to the article in the 
+ST-ECF Newsletter, Number 28, page 4 
+(http://www.stecf.org/newsletter/stecf-nl-28.pdf).
+
+Context Images:
+
+    Versions 2.6 and later of Drizzle include the capability to  produce
+    so-called  "context"  images  as  an  optional data product. Context
+    images encode information about which input image contributes  to  a
+    specific  output  pixel.  This  is done using a simple bitmask where
+    "bit set" means that that image, in the order  they  were  combined,
+    contributed  with non- zero weight to that output pixel. The context
+    image starts as a 32bit integer but  is  extended  as  a  cube  with
+    additional 32 bit deep planes as required.
+
+    Context   images   are  intended  to  allow  the  reconstruction  of
+    information  about  the  input  images  which   contributed   to   a
+    particular output pixel.  For many purposes they will not be needed.
+
+    Output context images are selected in the same way as output weight
+    ones - in this case set the parameter "outcont" to the name for
+    the output context image. If it exists it will be updated.
+
+Multiple Kernels:
+
+    Versions  2.6  and  later of Drizzle include an additional parameter
+    "kernel" which determines the form  of  the  kernel  function  which
+    distributes  weight  in the output. The original classical drizzling
+    corresponds  to  "kernel=square".  Currently  available   additional
+    options for the value of "kernel" are:
+
+       "point"      the kernel is a point so each input pixel
+                    can only contribute to the single pixel which is
+                    closest to the output position. It is equivalent
+                    to the limit pixfrac -> 0. It is very fast.
+
+       "gaussian"   the kernel is a circular gaussian with FWHM equal
+                    to the value of pixfrac, measured in input pixels.
+
+       "turbo"      this is similar to kernel="square" but the box is
+                    always the same shape and size on the output grid and
+                    always aligned with the X and Y axes. This results
+                    in a significant speed increase in some cases.
+
+       "tophat"     the kernel is a circular "top hat" shape of width
+                    pixfrac. In effect only output pixels within pixfrac/2
+                    of the output position are affected.
+
+    It should be noted that none of these new kernels have been extensively
+    tested and they should be used with care. If in doubt stick with the
+    default.
+
+Secondary Geometric Parameters:
+
+    When  combining dithered images one normally begins by measuring the
+    offsets between all the images in a set  so  that  one  can  combine
+    them.  However, quite often one then needs to apply a transformation
+    to the result - for example a  small  "tweak"  in  X,Y  or  a  large
+    rotation  to  put  north  at  the  top. It is very tricky to combine
+    these  two  operations  by  directly  modifying  the  drizzle  input
+    parameters,  particularly  if  rotations  are present. To ease these
+    operations  the  secondary  geometric  parameter   pset   has   been
+    introduced  in  Drizzle V2.6. It is called "dr2gpar" (DRizzle 2ndary
+    Geometrical PARameters) and may be set either using  "epar  dr2gpar"
+    or  via  the  ":e"  command  from  the  dr2gpar line whilst in "epar
+    drizzle".
+
+    The parameters and their default values are:
+
+    dr2gpar.xscale = 1.
+    dr2gpar.yscale = 1.
+    dr2gpar.xsh = 0.
+    dr2gpar.ysh = 0.
+    dr2gpar.rot = 0.
+    dr2gpar.shft_fr = "output"
+
+    Other parameters are in two groups: xscale/yscale and  the  rest.  The
+    scaling  parameters  are  applied on the original pixel grid, before
+    distortion   correction   or   the   primary   linear    geometrical
+    transformations.   This  is  really a "tweak" for rare occasions and
+    should not normally be used.
+
+    The four remaining parameters define a shift and rotation  which  is
+    applied  after  all  other  geometrical  transformations.  They  are
+    defined in the same was as the  primary  geometrical  parameters  of
+    the same name.
+
+    If  these  parameters  are  set  to anything other than the defaults
+    Drizzle will write out a  warning  message  to  prevent  them  being
+    forgotten about.
+
+    The secondary geometrical parameters pset dr2gpar is also used by the
+    other tasks (specifically Blot, Traxy and Tranback).
+
+Additional Changes since V1.41.
+
+A bug on WCS updating in the case of the CD matrix being diagonal
+and no rotation being applied was corrected - this had led to an
+incorrect error message and wrong output WCS.
+
+The code has been re-organised to improve it a little, although
+there is still much room for further improvement! More routines
+are now in the support "drutil.f" file. All geometric transformations
+are carried out by the same routine.
+
+Users should also note that companion tasks - Blot, Traxy, Tranback and Wcs2dr
+(all now in version 1.0) are also available. These now all share the same
+interface library and are fully compatible.

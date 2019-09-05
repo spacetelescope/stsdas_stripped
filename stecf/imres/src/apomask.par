@@ -1,0 +1,8 @@
+output,f,a,,,,Output mask image file name
+xdim,i,a,512,,,X dimension of output
+ydim,i,a,512,,,Y dimension of output
+radius,f,a,12.0,,,Radius of central area set to one
+sigma,f,a,2.0,,,Sigma for roll-off around central area
+k,f,a,0.5,,,Limb darkening parameter
+xpos,f,a,256.0,,,X position for centre of central area
+ypos,f,a,256.0,,,Y position for centre of central area

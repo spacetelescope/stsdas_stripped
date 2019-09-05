@@ -1,0 +1,16 @@
+inimage,f,a,,,,Input image
+gsctable,f,a,,,,Guide star catalog table
+tabcoord,b,h,no,,,"Print existing pixel coordinates in table?"
+update,b,h,no,,,"Update pixel coordinates in table?"
+imtrans,b,h,yes,,,Find coordinate transformation in input image?
+crval1,r,h,,,,X Coordinate at reference pixel
+crval2,r,h,,,,Y Coordinate at reference pixel
+crpix1,r,h,,,,X Reference pixel
+crpix2,r,h,,,,Y Reference pixel
+cdelt1,r,h,,,,X Coordinate increment per pixel
+cdelt2,r,h,,,,Y Coordinate increment per pixel
+crota,r,h,,,,Rotation angle (degrees)
+ctype1,s,h,,,,X Coordinate type
+ctype2,s,h,,,,Y Coordinate type
+
+mode,s,h,"a"

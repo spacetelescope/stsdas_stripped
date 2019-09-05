@@ -1,0 +1,71 @@
+.help dqpar Jul95 stsdas.hst_calib.wfpc
+.ih
+NAME
+dqpar -- Edit the parameter set to select Data Quality File (DQF) flags.
+.ih
+USAGE
+dqpar
+.ih
+DESCRIPTION
+The `dqpar' parameters specify which data quality values are used to
+flag a "bad" pixel in a WF/PC or WFPC2 task.
+For example, when running the task wfixup, setting `rsbit = yes' means 
+all input values that suffered Reed-Solomon errors are "bad" and the task
+will interpolate over these pixels.
+
+Note that this is a pset, not an executable task; it defines a set of 
+parameters used by other tasks.  Invoking the pset by name runs 
+`eparam' on the parameter set, allowing the user to modify the 
+parameters.  Alternatively, the parameters may be modified on the 
+command line by specifying the pset name and parameter name.  For 
+example, the user can type "dqpar.rsbit=no" to ignore the
+Reed-Solomon error data flags.  Parameters can also be edited by 
+using `eparam' on the calling task (e.g., by typing "eparam 
+wfixup"), in which case `dqpar' will appear as one of the task 
+parameters; the `dqpar' parameters may then be edited by positioning 
+the cursor on the line containing the pset name and typing ":e".  
+After editing the pset parameters, type <Cntrl>-Z to return to the 
+main task parameter menu.  
+
+This pset is identical to dqfpar except that there is no file extensions.
+.ih
+PARAMETERS
+.ls (rsbit = yes) [boolean]
+Reject pixels with Reed-Solomon errors (DQ = 1)?
+.le
+.ls (calbit = yes) [boolean]
+Reject pixels with calibration file defects (DQ = 2)?
+.le
+.ls (defbit = yes) [boolean]
+Reject permanent camera defects (DQ = 4)?
+.le
+.ls (satbit = yes) [boolean]
+Reject saturated pixels (DQ = 8)?
+.le
+.ls (misbit = yes) [boolean]
+Reject missing data (DQ = 16)?
+.le
+.ls (genbit = yes) [boolean]
+Reject generic bad pixels (DQ = 32)?
+.le
+.ls (ovrlapbit = yes) [boolean]
+Reject image overlap pixels (DQ = 64)? (WFPC2 only)
+.le
+.ls (crbit = yes) [boolean]
+Reject pixels flagged as cosmic rays (DQ = 128)?  
+.le
+.ls (trapbit = yes) [boolean]
+Reject trap column column pixels (DQ = 256)? (WFPC2 only)
+.le
+.ls (hpbit = yes) [boolean]
+Reject "unfixable" hot pixels (DQ = 512)?  
+.le
+.ls (fixhpbit = yes) [boolean]
+Reject "fixed" hot pixels (DQ = 1024)?  
+.le
+.ih
+BUGS
+.ih
+SEE ALSO
+dqfpar
+.endhelp

@@ -1,0 +1,46 @@
+#* HISTORY *
+#* B.Simon	17-Jul-95	original
+
+# SPECCONV -- Convolve the spectrum with a line from the source
+
+int procedure specconv (nwave, spec, jdx, ndx, ndy, anobj, line)
+
+int	nwave		# i: length of spectrum
+real	spec[ARB]	# i: source spectrum
+int	jdx		# i: line in source to convolve
+int	ndx		# i: x dimension of source
+int	ndy		# i: y dimension of source
+real	anobj[ndx,ndy]	# i: masked source 
+real	line[ARB]	# o: convolved line
+#--
+int	idy, iwave, jwave
+real	lineflux
+
+begin
+	# Set output array to zero
+
+	call aclrr (line, nwave)
+
+	# Calculate line flux
+	# Bypass convolution if source line is all zero
+
+	lineflux = 0.0
+	do idy = 1, ndy
+	    lineflux = lineflux + anobj[jdx,idy]
+
+	if (lineflux <= 0.0)
+	    return (NO)
+
+	# One dimensional convolution
+
+	do iwave = 1, nwave {
+	    jwave = ndy + (iwave - 1)
+	    do idy = 1, ndy {
+		if (jwave <= nwave)
+		    line[jwave] = line[jwave] + anobj[jdx,idy] * spec[iwave]
+		jwave = jwave - 1
+	    }
+	}
+
+	return (YES)
+end

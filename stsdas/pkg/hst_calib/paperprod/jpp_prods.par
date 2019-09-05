@@ -1,0 +1,5 @@
+input, f, a, "", , ,            List of product exposure root names
+output, f, a, "", , ,	        List of unique product rootnames and extensions
+outprods, f, a, "", , ,	        Output list of unique product filenames
+
+mode, s, h, "al"

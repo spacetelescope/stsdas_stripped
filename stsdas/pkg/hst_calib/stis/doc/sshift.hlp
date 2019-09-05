@@ -1,0 +1,60 @@
+.help sshift October2004 stis
+.ih
+NAME
+sshift -- Align a set of dithered spectral images by applying
+integer-pixel shifts in Y.
+.ih
+USAGE
+sshift input
+.ih
+PARAMETERS
+.ls input [string]
+A list of input image filenames, an @-file, or a filename with
+wildcard characters (*). They must be flat-fielded images.
+.le
+.ls (output = "") [string]
+A list of output image filenames. The number of output filenames must
+match the number of input filenames.  If no output is given, then _flt
+substring of the input filename is replaced by the _sfl substring to
+create an output file.
+.le
+.ls (shifts = "") [string]
+A list of integers indicating the number of rows to shift each image.
+.le
+.ls (platescale = 0.0507) [real]
+The size of the unbinned pixel in arcseconds.  Used to convert the
+value of the POSTARG2 keyword to pixels.
+.le
+.ls (tolerance = 0.1) [real]
+The allowed difference between calculated shifts and integer pixel
+shifts (fraction of a pixel).
+.ih
+DESCRIPTION
+A task for aligning the spectral images when integer-pixel
+along-the-slit dithering has been used.  The output images can then be
+combined with ocrreject, which will reject hot pixels in the same way
+that it rejects cosmic rays.  The POSTARG2 and BINAXIS2 keywords are
+used to determine the number of rows to be shifted.  The shifts will
+be toward the center of the CCD.
+.ih
+EXAMPLES
+.ls
+1. Align three imset files using the value of the POSTARG2 keyword.
+.nf
+
+--> sshift o6a5010d0_flt.fits,o6a5010f0_flt.fits,o6a5010g0_flt.fits
+
+or
+
+--> sshift o6a5010[dfg]0_flt.fits
+
+.fi
+.ih
+BUGS
+There are currently no known problems.
+.ih
+REFERENCES
+.ls
+IRAF task written by P. Barrett (STScI)
+.le
+.endhelp

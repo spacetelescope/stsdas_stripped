@@ -1,0 +1,137 @@
+.help splittag October2010 calcos
+.nj
+.ih
+NAME
+splittag -- Split a corrtag file into multiple files.
+.ih
+USAGE
+.nf
+splittag input outroot starttime increment endtime time_list
+.fi
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input corrtag file name.
+For an NUV exposure 'input' will normally be just one name.
+For an FUV exposure you can use a wildcard for the segment letter,
+in order to split the data for both segments
+using the same time specifications.
+.le
+.ls outroot = "" [string]
+The root name for the output files.
+The output file names will consist of 'outroot'
+with "_1", "_2", "_3", etc. appended,
+and with the same suffix and filename extension as the input file.
+.le
+.ls starttime = INDEF [real]
+The time of the first event to extract to the first output file.
+This is in units of seconds, with the same zero point as the input TIME column.
+If starttime = INDEF, the first time in the input TIME column will be used
+(but see 'time_list').
+.le
+.ls increment = INDEF [real]
+Either 'increment' or 'time_list' (but not both) must be specified.
+'increment' is the duration in seconds for each extracted file.
+.le
+.ls endtime = INDEF [real]
+The time of the last event to extract to the last output file.
+This is in units of seconds, with the same zero point as the input TIME column.
+If endtime = INDEF, the last time in the input TIME column will be used
+(but see 'time_list').
+.le
+.ls time_list = "" [string]
+If 'time_list' is specified it will be used,
+and in that case 'starttime', 'increment' and 'endtime' will be ignored.
+'time_list' is a comma- or blank-separated list of values,
+each of which is the start or end of an interval of time
+to be extracted from the input file to an output file.
+The values will be integer or floating point times in seconds;
+however, the strings "start", "stop" or "end" (case insensitive)
+are also allowed.
+"Start" means the first value in the TIME column of the input file.
+"Stop" and "end" are interchangeable and mean the last value
+in the input TIME column.
+If "start" is used it must be the first value in the list.
+If "stop" or "end" is used it must be the last value in the list.
+The values in 'time_list' must be numerically increasing;
+duplicate values are allowed, but the duplicate value will be ignored.
+Note that this syntax does not allow gaps between intervals,
+but the output files for unwanted intervals of time can be deleted.
+.le
+.ls (verbosity = 1) [integer, min=0, max=2]
+Print more messages if verbosity = 2; print very few if verbosity = 0.
+.le
+.ls (version = "") [string]
+When the 'hstcos' package is loaded,
+the calcos version string will be copied to this parameter.
+Note that if the 'splittag' task is unlearned,
+this parameter will be reset to the default, an empty string.
+.le
+
+.ih
+DESCRIPTION
+The task 'splittag' will copy rows from a corrtag file
+to one or more output files,
+with the selection of which rows to copy to which output file
+based on the times of events in the input file.
+The time intervals may be specified in
+one of two ways:  (1) a starting time, increment, and ending time,
+or (2) an explicit list of times.
+
+The values in the TIME column will not be modified
+when rows are copied to the output files,
+and keywords EXPSTART and EXPSTRTJ will also not be changed.
+In contrast to most COS TIME-TAG data,
+the first time in an output file will not always be 0.;
+however, the MJD of any event will still be given by EXPSTART + TIME/86400.
+Keywords EXPTIME, EXPEND and EXPENDJ will (in general) be modified,
+as will the GTI table.
+
+The input file should be a corrtag file rather than a rawtag file,
+and wavecal processing should have been done (WAVECORR should be 'COMPLETE').
+The reason for this is that TAGFLASH is the default mode,
+and it is unlikely that every output file from 'splittag'
+will include all of the flashes.
+If 'splittag' is run on a fully corrected corrtag file,
+then 'calcos' or 'x1dcorr' can be run on the output of 'splittag'.
+You should set WAVECORR = 'OMIT' in the corrtag file, however,
+if you intend to run calcos on the output files from 'splittag',
+to prevent calcos from doing the wavecal processing again.
+
+.ih
+EXAMPLES
+
+1. To split "labq01ibq_corrtag.fits" at 10-second intervals,
+writing the output to "abc_1_corrtag.fits", "abc_2_corrtag.fits", etc.,
+starting at the first time in the TIME column:
+
+.nf
+    cl> splittag labq01ibq_corrtag.fits abc INDEF increment=10 INDEF \
+        time_list=""
+.fi
+
+2. Split "lbb908n5q_corrtag_a.fits" and "lbb908n5q_corrtag_b.fits"
+at specific times.
+For each segment,
+the first output file will contain events with 0 <= TIME < 5,
+the second output file will contain events with 5 <= TIME < 15,
+and the third output file will contain events with 15 <= TIME < 30.
+The output files will have names
+"abc_1_corrtag_a.fits", "abc_1_corrtag_b.fits";
+"abc_2_corrtag_a.fits", "abc_2_corrtag_b.fits";
+"abc_3_corrtag_a.fits", "abc_3_corrtag_b.fits".
+
+.nf
+    cl> splittag lbb908n5q_corrtag_?.fits abc increment=INDEF \
+        time_list = "0,5,15,30"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.nf
+Task written by P. Hodge.
+.fi
+.ih
+SEE ALSO
+.endhelp

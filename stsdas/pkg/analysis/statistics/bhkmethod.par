@@ -1,0 +1,5 @@
+# Task parameters for the BHK task
+
+input,s,a,,,,"> Input file(s)"
+verbose,b,h,n,,,"> Full printout desired?"
+mode,s,h,"al",,,

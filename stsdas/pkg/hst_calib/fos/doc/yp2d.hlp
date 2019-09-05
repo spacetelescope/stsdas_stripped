@@ -1,0 +1,130 @@
+.help yp2d Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+yp2d -- Convert from image pixel number to FOS diode number.
+.ih
+USAGE
+yp2d pixel
+.ih
+DESCRIPTION
+'yp2d' is a script to help determine which diodes contribute to a
+specific pixel.  The pattern information can either be obtained from
+an observation or from the task parameters.  Pixels can be anything
+greater than 0; i.e. if an observation has more than one YSTEP, pixels
+will exist greater than 2064.  These numbers can be entered without
+needing to convert.
+
+Either a single pixel can be converted, or a file containing a list of
+pixels can be converted.  The range of diodes are written to the task
+parameters 'dbeg' and 'dend'.  In case of a list, only the last pixel
+in the list will be reflected in the parameters.
+
+'yp2d' can also produce text output to standard output.  The form of the
+text output is suitable for other tasks that use tables as input.
+
+If a file is specified, it is expected to contain one column of pixel
+numbers.  Comment lines are allowed.
+.ih
+PARAMETERS
+.ls pixel [int]
+The pixel number to convert.  If a file is specified in the parameter
+'plist', the value in this parameter will not be used.
+.le
+.ls (obs = "") [file]
+The name of an FOS observation to retrieve the pattern information
+from.  If blank, the pattern information is taken from the parameters
+'nxsteps', 'overscan', 'fchnl', 'nchnls'.
+.le 
+.ls (plist = "") [file]
+The name of a text file containing a list of pixels to convert.  The
+file should contain one column of pixel numbers.  Lines beginning with
+"#" are considered comment lines and ignored.
+.le
+.ls (nxsteps = 4) [int]
+If no observation is specified, the NXSTEPS desired is retrieved from
+this parameter.
+.le
+.ls (overscan = 5) [int]
+If no observation is specified, the OVERSCAN desired is retrieved from
+this parameter.
+.le
+.ls (fchnl = 1) [int]
+If no observation is specified, the first channel, or diode, that is
+read.  This is necessary to modify if the wavelength range is meant to
+be restricted.  This is used in conjunction with the 'nchnls' parameter.
+.le
+.ls (nchnls = 512) [int]
+If no observation is specified, the number of channels, or diodes, to
+be read.  This is necessary to modify if the wavelength range is meant
+to be restricted.  This is used in conjunction with the 'fcnhl'
+parameter.
+.le
+.ls (dbeg) [int]
+An output parameter.  On task completion, this will be the first diode
+which contributes to the specified pixel.  If a pixel list was given,
+this will contain the beginning diode for the last pixel in the list.
+.le
+.ls (dend) [int]
+An output parameter.  On task completion, this will be the last diode
+which contributes to the specified pixel.  If a pixel list was given,
+this will contain the end diode for the last pixel in the list.
+.le
+.ls (verbose = yes) [bool]
+Tells whether the results of the conversion should be written to
+standard output in table form.
+.le
+.ih
+EXAMPLES
+1. Determine which diodes contribute to pixel 364
+
+.nf
+	cl> yp2d 364
+	# yp2d: nxsteps = 4 overscan = 5 fchnl = 1 nchnls = 512
+	# pixel  dbeg  dend
+	    364    87    91
+	cl> lpar yp2d
+	        pixel = 364  Input pixel number
+	         (obs = "")  Observation to get step pattern from
+	       (plist = "")  File containing a list of pixels to convert
+	     (nxsteps = 4)   NX steps if no obs specified
+	    (overscan = 5)   OVERSCAN if no obs specified
+	       (fchnl = 1)   First channel (diode) to be read
+	      (nchnls = 512) Number of channels (diodes) to be read
+	        (dbeg = 87)  Output: First diode contributing to pixel
+	        (dend = 91)  Output: Last diode contributing to pixel
+	     (verbose = yes) Write results to standard output
+.fi
+
+2. Determine diodes for a list of pixels.
+
+.nf
+	cl> for (i=1000; i<1500; i=i+5) print (i, >> "plist.txt")
+	cl> yp2d plist=plist.txt
+	# yp2d: nxsteps = 4 overscan = 5 fchnl = 1 nchnls = 512
+	# pixel  dbeg  dend
+	   1000   246   250
+	   1005   248   252
+	   1010   249   253
+	...
+.fi
+
+3. Get the pattern information from an observation.
+
+.nf
+	cl> yp2d 364 obs=y2observ.c1h
+.fi
+.ih
+BUGS
+This task is implemented as a cl script and hence is not very fast or
+robust.
+.ih
+REFERENCES
+Jonathan Eisenhamer
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+yd2p, yddintplot
+.endhelp

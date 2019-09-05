@@ -1,0 +1,7 @@
+# define STIS_CNAME   79
+
+# define LINEAR_INTERPOLATION  1
+# define SPLINE_INTERPOLATION  2
+
+# define OUT_OF_MEMORY     3
+# define ARRAY_SIZE_ERROR  4

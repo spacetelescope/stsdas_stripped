@@ -1,0 +1,16 @@
+# Help directory for the GRAPHICS package
+
+$sdisplay	= "stsdas$pkg/graphics/sdisplay/"
+$stplot		= "stsdas$pkg/graphics/stplot/"
+
+sdisplay	men=sdisplay$sdisplay.men,
+		hlp=..,
+		sys=sdisplay$sdisplay.hlp,
+		pkg=sdisplay$sdisplay.hd,
+		src=sdisplay$sdisplay.cl
+
+stplot		men=stplot$stplot.men,
+		hlp=..,
+		sys=stplot$stplot.hlp,
+		pkg=stplot$stplot.hd,
+		src=stplot$stplot.cl

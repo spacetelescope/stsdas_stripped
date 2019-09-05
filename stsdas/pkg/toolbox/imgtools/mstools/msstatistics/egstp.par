@@ -1,0 +1,12 @@
+npix,i,h,0,,,>Number of good pixels
+min,r,h,0.0,,,>Minimum pixel value
+max,r,h,0.0,,,>Maximum pixel value
+sum,r,h,0.0,,,>Sum
+mean,r,h,0.0,,,>Mean
+stddev,r,h,0.0,,,>Standard deviation
+histmidpt,r,h,0.0,,,>Median
+histpeak,r,h,0.0,,,>Mode
+skew,r,h,0.0,,,>Skewness
+kurt,r,h,0.0,,,>Kurtosis
+wmean,r,h,0.0,,,>Weighted mean
+wvar,r,h,0.0,,,>Weighted variance

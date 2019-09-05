@@ -1,0 +1,5 @@
+gsep,r,h,25.0,0,,"grating groove separation (microns)"
+ntot,r,h,1367,0,,"effective number of grooves"
+blza,r,h,1.75,0,,"blaze angle (degrees)"
+inca,r,h,3.475,0,,"incident angle (degrees)"
+mode,s,h,a

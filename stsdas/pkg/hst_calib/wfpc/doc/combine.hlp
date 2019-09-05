@@ -1,0 +1,406 @@
+.help combine Jul93 stsdas.hst_calib.wfpc
+.ih
+NAME
+combine -- Combine images pixel-by-pixel using various algorithms.
+.ih
+USAGE	
+combine input output
+.ih
+DESCRIPTION
+This task is similar to the `images.imcombine' task, but differs in 
+that it excludes certain types of values (such as DQF flagged bad 
+pixels), and it combines groups in multigroup GEIS files; differences 
+between the two tasks will be described in more detail below. 
+
+The input images are combined by averaging or summing pixel-by-pixel 
+to produce the output image.  The input images may first be scaled 
+to a common exposure time or mode, or offset to a common mode before 
+combining.  The average may be weighted by statistical weights based 
+on the exposure time or mode and the number of images previously 
+combined. Deviant pixels may be detected and excluded from the 
+average using one of a number of algorithms.  
+
+The input images are specified by a list or filename template.  The 
+images may be of any size, dimension, and number of groups, but must 
+all be consistent with regard to these attributes.  If scaling by an 
+exposure time it must given in the image headers with the name 
+specified by the parameter `expname'.  
+
+The specified output image is created.  Its header information is 
+copied from the first image in the input image list.  The pixel data 
+type may be specified by the parameter `outtype'.  If no pixel data 
+type is specified then the highest precedence data type in the input 
+images is used.  The data type precedences are short, integer, real, 
+and double in increasing order.  Thus, mixed integer and real images 
+default to a real output image.  The internal arithmetic is real for 
+all data types except double, which is done in the appropriate mode.  
+The output image header will also contain the keyword `NCOMBINE' 
+giving the number of images combined.  This may be used if the output 
+image is later combined with other images.  The exposure time, if 
+specified, will be updated as the weighted average (or sum for the 
+`sum' option) of the input images.  
+
+The associated DQF files may be referenced for pixel rejection in the 
+input images.  Such rejection, or "masking", may be selected for any 
+of the available `combine' options except `sum'.  Note that the DQF 
+files MUST have the same rootname as the input images, they must have 
+the same file extension as specified by the `dqfextn' parameter, and 
+the data must be of type `integer'.  The values are masked by virtue 
+of their DQF flags BEFORE the selected combination operation takes 
+place, i.e., values that are rejected during the `combine' operation 
+are IN ADDITION to rejections based upon DQF values.  The `sigma' 
+image does not include pixels that are rejected for any reason, but 
+will be set to the value of the `blank' parameter if all the values 
+are rejected for a given pixel.  
+
+You can specify which types of pathologies are to be rejected by 
+setting various flags in the `dqfpar' pset.  For example, setting 
+`rsbit = yes' will exclude all input values that suffered Reed-Solomon 
+errors from the combination algorithm, but setting `rsbit = no' 
+includes them in the operation.  The bit-codes are then stored in a 
+32-bit integer constant which is Boolean ANDed with the actual DQF 
+values corresponding to the input values for each pixel.  
+
+A sigma image is produced if a sigma image name is given.  It is the 
+standard deviation of the input image values at each pixel about the 
+mean for that pixel.  Two or more images are required, and the output 
+sigma image will be of type real.  A log is produced if a log file is 
+specified.  To print information on the standard output stream 
+(normally the terminal) the name STDOUT is used.  The log contains a 
+time, the combining options and relevant parameters, a list of the 
+input images, and weight parameters if used, and the name of the 
+output image.
+
+Except when using the `sum' option, the images may be scaled.  There 
+are currently three ways to scale the images.  The images may be 
+scaled to the same exposure time.  If the background level or 
+sensitivity is variable then the images may be either scaled or 
+offset (by a constant) to the same mode.  The mode is determined by 
+sampling up to 100 points per dimension within the specified mode 
+image section.  A scaling correction is used when the overall 
+brightness or sensitivity is varying.  The offset correction is used 
+when the background brightness is varying independently of the object 
+brightness.  When scaling by the mode, the exposure time (and setting 
+of the exposure and offset parameters) is ignored.  Except when using 
+the `median' or `sum' options, the images are combined by averaging.  
+Combining averaging with weighting, scaling, or both will slow things 
+down.
+
+The relationships between the exposure time or mode (or both) and the 
+scaling, offsets, and weights used (and printed in the log output) are 
+given below.
+
+.nf
+    if scale = yes:
+	 scale = <M> / M
+	offset = 0.
+	weight = (N*M)**1/2 / sum {(N*M)**1/2}
+
+    if exposure = yes and offset = no:
+	 scale = <T> / T
+	offset = 0.
+	weight = (N*T)**1/2 / sum {(N*T)**1/2}
+
+    if exposure = no and offset = yes:
+	 scale = 1
+	offset = <M> - M
+	weight = (N/M)**1/2 / sum {(N/M)**1/2}
+
+    if exposure = yes and offset = yes:
+	 scale = <T> / T
+	offset = <T> * (<M/T> - M/T)
+	weight = (N*T/(M/T))**1/2 / sum {(N*T/(M/T))**1/2}
+.fi
+
+where M is the mode of an image, <M> is the average mode over all 
+images, N is the number of images previously combined (using the 
+header keyword `NCOMBINE'), T is the exposure time (with a minimum of 
+0.001 imposed), and <T> is the average exposure time over all images.  
+The operation **1/2 is the square root.  Note that the output image 
+exposure time is correct only for those pixels where no input values 
+were rejected during the combine operation.  While the weighting and 
+scaling will still be correct if some values are rejected, the only 
+way to tell if fewer than N input values were used to determine the 
+output value is the somewhat higher value of the `sigma' image at 
+that pixel.  Finally, note that the scales average to 1, the offsets 
+sum to zero, and the weights sum to 1.  
+
+The `option' parameter is the heart of the task.  It selects from one 
+of a number of algorithms for combining the images.  The list below 
+summarizes the algorithms.
+
+.nf
+	    sum - Sum the input images
+	average - Average the input images
+	 median - Median the input images
+      minreject - Reject the minimum value at each pixel
+      maxreject - Reject the maximum value at each pixel
+      minmaxrej - Reject both the min. and max. values at each pixel
+       crreject - Detect and reject cosmic rays at each pixel
+      threshold - Reject pixels above and below specified thresholds
+	sigclip - Apply a sigma clipping algorithm to each pixel
+      avsigclip - Apply a sigma clipping algorithm to each pixel
+.fi
+
+These algorithms are described in detail in the following sections.  
+The best choice of algorithm depends on the data, the number of 
+images, and the importance of rejecting deviant pixels.  The more 
+complex the algorithm the more time consuming the operation.
+
+The rejection parameters `lowreject', `highreject', and `blank'
+are used by the `threshold', `sigclip', and `avsigclip' 
+algorithms for rejecting deviant pixels; the `crreject' 
+algorithm uses all of the above rejection parameters EXCEPT for 
+`lowreject'.
+
+ALGORITHMS
+
+.ls SUM
+The output image is the sum of the input images.  Do not exceed the range 
+of the short data type when summing if the output data type is short.  
+Summing is the only algorithm in which scaling, weighting, and DQF  
+masking cannot be used, and no `sigma' image is produced.
+.le
+.ls AVERAGE
+The output image is the average of the input images.  Images may be 
+scaled  and weighted, but there is no pixel rejection beyond DQF 
+masking.  A sigma may be calculated if there is more than one 
+non-rejected value.
+.le
+.ls MEDIAN
+The output image is the median of the input images at each pixel.  
+Unless the  images are at the same exposure level they should be 
+scaled.  The sigma image  is based on all the input images and is 
+only an approximation to the  uncertainty in the median estimates.  
+The median of N images is defined to be the (N+1)/2 th value of the 
+sorted pixel values at each point in the images.  Note that this is 
+the average of the two middle values for an even number of images.  
+.le
+.ls MINREJECT, MAXREJECT, MINMAXREJ
+The output image is the average of the input images, excluding the 
+minimum, maximum, or both, respectively, at each pixel.  The images 
+should be scaled and the average may be weighted.  The sigma image 
+requires at least two pixels after rejection of the extreme values.  
+These are relatively fast algorithms and are a good choice if there 
+are many images (i.e., more than 15).  
+.le
+.ls CRREJECT
+The output image is the average of the input images, excluding cosmic 
+rays.  Cosmic rays are excluded at each pixel by rejecting values 
+that exceed the median of the input images by more than `highreject' 
+times sigma at that pixel.  The sigma is estimated from a noise model 
+by finding the quadratic sum of the photon noise, the readnoise, and 
+a `scale' noise that depends linearly upon the median value.  The 
+parameters for the noise model are found in the `noisepar' pset.  The 
+sigma image is the square-root of the variance about that mean, 
+divided by the square-root of the number of non-rejected values.  
+Unless the images are at the same exposure level they should be 
+scaled.  
+
+This routine successfully rejects the large number of cosmic rays 
+found on most paired WF/PC frames, provided that any misalignment 
+between the images is substantially less than a pixel.  
+.le
+.ls THRESHOLD
+The output image is the average of the input images, excluding 
+(before scaling) pixels above and below threshold values specified by 
+the `lowreject' and `highreject' parameters.  The images may scaled 
+and the average weighted.  If all pixels are rejected the specified 
+`blank' value is output.  The sigma image excludes the rejected 
+pixels as well.
+.le
+.ls SIGCLIP
+Input images are combined by applying a sigma clipping algorithm at 
+each pixel.  The images should be scaled.  This only rejects the most 
+highly deviant values and so includes more of the data than the 
+`median' or `minreject' and `maxreject' options.  It works best when 
+many images (more than 10 or 15) are available.  Otherwise the bad 
+pixels bias the sigma significantly.  The mean used to determine the 
+sigmas is based on the `minmaxrej' algorithm to eliminate the effects 
+of bad pixels on the mean; note therefore that this option requires 
+at least 3 input images.   Only one iteration is performed and at 
+most one pixel is rejected at each point in the image (beyond those 
+flagged as bad in the DQFs).  After the deviant pixels are rejected 
+the final mean is computed from the remaining data.  The sigma image 
+also excludes the rejected pixels.  
+.le
+.ls AVSIGCLIP
+The input images are combined with a variant of the sigma clipping 
+algorithm which works well with only a few images.  The images should 
+be scaled.  For each line the mean is first estimated using the 
+`minmaxrej' algorithm; note therefore that this option requires at 
+least 3 input images.  The sigmas at each point in the line are scaled 
+by the square root of the mean--i.e., a Poisson scaling of the noise 
+is assumed.  These sigmas are averaged to get an estimate of the sigma 
+for each image line.  Then the sigma at each point in the line is 
+estimated by muliplying the line sigma by the square root of the mean
+at that point.  As with the sigma clipping algorithm only one 
+iteration is performed and at most one pixel is rejected at each 
+point, beyond those flagged in the DQFs.  The mean is then computed 
+from all the non-rejected  data.  The sigma image also excludes the 
+rejected pixels.
+
+The "avsigclip" algorithm can be a good algorithm for rejecting cosmic 
+rays when the number of images is small.  This algorithm is also very 
+time consuming.  With many images (more than 10 or 15) it might be 
+advisable to use one of the other algorithms (`crreject', `maxreject', 
+`median', `minmaxrej') because of their greater speed.  
+.le
+
+DIFFERENCES BETWEEN THIS TASK AND `images.imcombine'
+
+As mentioned in the first paragraph, there are some important 
+differences between this task and `imcombine':
+.ls 
+1.  This task will combine all groups if the input files are all 
+multi-group GEIS files.  Note that each input file must have the same 
+number of groups.  
+.le
+.ls
+2.  This task will exclude any input values that are flagged in the 
+input Data Quality Files, provided that ALL input images have 
+associated DQFs, that the `usedqf' parameter is set to "yes'" and 
+that the `dqfextn' parameter is appropriately set.  Note that this 
+masking will take place before any values are rejected by virtue of 
+whatever `combine' option is selected.  The user may select which 
+types of pathologies that are flagged in the DQFs will actually be 
+used in the combine operation.  
+.le
+.ls
+3.  If the `crreject' option is selected, the value of `sigma' used to 
+reject deviant pixels is calculated from a noise model.  Those model 
+parameters are set within the `noisepar' pset. 
+.le
+.ih
+PARAMETERS
+.ls input [string]
+List of input images to combine.  This task will combine multi-group 
+(GEIS) files group-by-group, but all images must be the same size and 
+have the same number of groups.
+.le
+.ls output [string]
+Output combined image.
+.le
+.ls (sigma = "") [string]
+Output sigma image.  This is optional: if "" then no sigma image is 
+created.
+.le
+.ls (logfile = "STDOUT") [string]
+Log file.  If "" then no log information produced.  Setting this 
+parameter to "STDOUT" prints log information to the terminal. 
+.le
+.ls (option = "average") [string]
+Type of combining algorithm.  The choices are:
+
+.nf
+      sum - Sum the input images
+  average - Average the input images
+   median - Find the median of the input images
+minreject - Reject the minimum value at each pixel
+maxreject - Reject the maximum value at each pixel
+minmaxrej - Reject the min and max values at each pixel
+ crreject - Detect and reject cosmic rays at each pixel
+threshold - Reject pixels above and below thresholds
+  sigclip - Apply a sigma clipping algorithm to each pixel
+avsigclip - Apply a sigma clipping algorithm to each pixel
+.fi
+.le
+.ls (outtype = "") [string; allowed values: s | i | r | d]
+Output image pixel data type.  The pixel data types are "double", 
+"real", "long", "integer", and "short" with highest precedence first. 
+If none is specified then the highest precedence data type of the 
+input images is used.  The data types may be abbreviated to a single character.
+.le
+.ls (expname = "") [string]
+Image header exposure time keyword.  For images containing a keyword 
+giving an exposure time this information may be used for scaling.  An 
+output exposure time, based on the input image exposure times, is 
+recorded.
+.le
+.ls (exposure = no) [boolean]
+Scale the input images by the exposure times?
+.le
+.ls (scale = no) [boolean]
+Scale the input images by the mode within the mode image section?
+
+Setting 'scale=yes' will override any offset correction.
+.le
+.ls (offset = no) [boolean]
+Add an offset determined from the mode?  
+
+If 'offset=yes', then offsets are used to determine the shift in
+modes of the input images needed to reach the same value.
+.le
+.ls (weight = no) [boolean]
+Use a weighted average?  
+
+The weights are based on the number of images
+previously combined, the exposure time, and any scaling or offset.
+.le
+.ls (modesec = "") [string]
+Image section for computing the mode for scaling or offset corrections.
+If no image section is given then the entire image is sampled.
+.le
+.ls (lowreject = 3.) [real]
+Lower sigma clipping factor used by the sigma clipping algorithms, or 
+the actual rejection threshold for the threshold algorithm.
+.le
+.ls (highreject = 3.) [real]
+Upper sigma clipping factor used by the sigma clipping and the cosmic 
+ray rejection algorithms, or the actual rejection threshold for the 
+threshold algorithm.
+.le
+.ls (blank = 0.) [real]
+Value of output pixel when all input values are rejected.  
+.le
+.ls (usedqf = no) [boolean]
+Reference Data Quality File (DQF) flags to reject values?  If yes, those 
+input pixels flagged with a value other than zero are masked prior to 
+sigma-clipping & combining.  The pathologies are bit-encoded, and the 
+ones to be used can be selected with the "dqfpar" parameters.  
+.le
+.ls (dqfpar = "") [pset]
+Pset name for DQF parameters. 
+.le
+.ls (noisepar = "") [pset]
+Pset name for coefficients of terms in the noise model used in the 
+crreject algorithm.  
+.le
+.ih
+EXAMPLES
+1. Simple combining with default values:
+
+.nf
+    cl> combine @imlist imsum option=sum	# Sum images
+    cl> combine @imlist imave			# Average images
+    cl> combine @imlist imcr option=crreject	# Reject cosmic rays 
+.fi
+
+2. To scale and weight by the exposure time given in the header keyword  
+`EXPTIME':
+
+.nf
+    cl> combine @imlist imave expname=exptime weight=yes
+.fi
+.ih
+BUGS
+This task is currently limited to a maximum of 64 frames to combine at 
+one time.  However, there is also a software limit in the IRAF virtual 
+operating system of about 120 images which may be open at one time, so 
+that the upper limit may be less than 60 frames if the `usedqf' 
+parameter is set.  Finally, if this routine is used to combine 
+processed WFPC or WFPC-2 frames, you may find that a more 
+restrictive limit is imposed by the amount of available disk space.  
+.ih
+REFERENCES
+This task is based upon the (IRAF V2.9) 'images.imcombine task' written 
+by F. Valdes (NOAO).  It was optimized to work on multi-group WFPC 
+and WFPC-2 images, and enhanced to mask data flagged as bad in the 
+associated DQF files, by R.A. Shaw (STScI).  A fairly complete 
+discussion of the enhancement for cosmic-ray rejection can be found 
+in a paper entitled "Noise Model-Based Cosmic Ray Rejection" by 
+R. Shaw and K. Horne (ASP Conf. Ser., 25, 311, 1992.)
+.ih
+SEE ALSO
+dqfpar, noisepar, noisemodel, imcombine
+.endhelp

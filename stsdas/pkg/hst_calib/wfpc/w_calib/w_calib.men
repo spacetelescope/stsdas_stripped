@@ -1,0 +1,12 @@
+Menu for the package `stsdas.hst_calib.wfpc.w_calib':
+
+  flagflat - Flag WF/PC flat field pixels which are abnormally high or low
+     mka2d - Create or modify an A-to-D correction reference file for WF/PC.
+  mkphottb - Create a synthetic photometry lookup table for WF/PC.
+  normclip - Normalize WF/PC flat fields among chips. 
+   psfextr - Extract a subsection of an image to be put in the PSF library.
+streakflat - Generate WF/PC flat field from streak exposures of the Earth.
+     sharp - Measure the sharpness of star images of WFPC1/2
+
+(Type "help w_calib option=sysdoc" for detailed information about the `w_calib'
+package).

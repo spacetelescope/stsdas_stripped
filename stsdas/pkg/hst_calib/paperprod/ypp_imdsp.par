@@ -1,0 +1,5 @@
+rootname, f, a, "", , , 	Input root name
+output, f, a, "", , ,		Output igi file name
+fits, f, a,"", , ,              Image type: FITS or GEIS files?
+
+mode, s, h, "al"

@@ -1,0 +1,110 @@
+.help pet2spc Aug2008 axe
+.ih
+NAME
+pet2spc -- bin contents of a Pixel Extraction Table into 1D spectra
+.ih
+USAGE
+.nf
+pet2spc grism config
+.fi
+.ih
+PARAMETERS
+.le
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Filename of grism/prism extraction configuration file.
+.le
+.ls (usr_bpet = yes) [yes|no]
+Whether to use a background PET file.
+.le
+.ls (adj_sens = yes) [yes|no]
+Adjust sensitivity for extended objects.
+.le
+.ls (weights = no) [yes|no]
+Compute and use optimal weights in 1D extraction.
+.le
+.ls (do_flux = yes) [boolean]
+Whether to perform flux calibration.
+.le
+.ls (out_spc = "") [string]
+Name to use for the output SPC file instead of the default.
+.le
+.ls (drzpath = false) [boolean]
+Use the directory indicated by the system variable $AXE_DRIZZLE_PATH
+to located the input PET and write out the output spectra (SPC).
+.le
+.ls (in_af = "") [string]
+Name to use for the input Aperture file instead of the default.
+.le
+.ls (opet = "") [string]
+Name to use for the input object pixel extraction table file instead 
+of the default.
+.le
+.ls (bpet = "") [string]
+Name to use for the input background pixel extraction table file instead 
+of the default.
+.le
+.ls (out_spc = "") [string]
+Name to use for the output file with the spectra (instead of the default).
+.le
+.ih
+DESCRIPTION
+This task is used to transform the content of an Object Pixel Extraction Table
+(PET) into a set of 1D binned spectra in a Extracted Spectra File (SPC). The 
+binning process is explained in more detail in the aXe manual.
+
+In case that the object PET was created from a grism image with substantial
+sky background, "use_bpet='yes'" extracts a background spectrum
+from the corresponding background PET and subtracts the background from
+the object spectrum.
+
+The sensitivity file to convert from e/s to flux units can be adjusted
+for extended objects ("adj_sens='yes'").
+
+Also optimal weighting (weights='yes') can be used to enhance the
+signal-to-noise ratio. Using quantitative contamination is a
+prerequisite to be able to computing optimal weights.
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input PET would be
+called <grism-rootname>_<science extension>.PET.fits and the output SPC file
+would be <grism-rootname>_<science extension>.SPC.fits. 
+.ih
+EXAMPLES
+1. Extract 1D spectra from the PET which was derived from image
+'test_grism_1.fits'. To give meaningful (without background) result, the
+sky background must have been removed from the grism/prism image before
+creating the PET.
+
+.nf
+  ax> pet2spc test_grism_1.fits SLIM.conf.test.0
+.fi
+
+2. As in 1., but use the background PET to extract and subtract a
+background spectrum from the object spectrum. Apply optimal weights
+in the 1D extraction.
+
+.nf
+  ax> pet2spc test_grism_1.fits SLIM.conf.test.0
+              use_bpet='yes' weights='yes'
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+petff,petcont
+.endhelp

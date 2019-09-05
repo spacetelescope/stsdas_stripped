@@ -1,0 +1,57 @@
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+        $set XFLAGS = "-cfgq $(XFLAGS)"
+        $set LFLAGS = "-xz $(LFLAGS)"
+        $call relink
+        ;
+
+relink:
+	$update trans.a
+	$call convfile
+	;
+
+convfile:
+linkonly:
+	$omake x_convfile.x
+
+	$link x_convfile.o trans.a \
+		-ltbtables -lgilib -lxtools -o xx_convfile.e
+	;
+
+install:
+	$move	xx_convfile.e stsdasbin$x_convfile.e
+	;
+
+trans.a:
+	t_cpsuvx.x		<imhdr.h>
+	t_cpvxsu.x		<imhdr.h>
+	mkpixfile.x
+	gpixfname.x
+	tconvert.x		<error.h> "tconvert.h"
+	tvsminus.x
+	tvsnames.x		<tbset.h>
+	tvssub.x		<mach.h> <tbset.h> "tconvert.h"
+	feed_user.x	        "feed_user.com"
+
+$ifeq (HOSTID, vms)
+	hhhsun_vax.x 		<imio.h> <imhdr.h> "feed_user.com"
+	hhhvax_sun.x		<imio.h> <imhdr.h> "feed_user.com"
+	rimopsf.x		<imio.h> <imhdr.h>
+	tvscopy_vax.x		<mach.h> <tbset.h> "tconvert.h"
+	tvsdata_vax.x		<mach.h> <tbset.h> "tconvert.h"
+$else
+	hsun_vax_SUN.x 		<imio.h> <imhdr.h> "feed_user.com"
+	hvax_sun_SUN.x		<imio.h> <imhdr.h> "feed_user.com"
+	tvscopy_sun.x		<mach.h> <tbset.h> "tconvert.h"
+	tvsdata_sun.x		<mach.h> <tbset.h> "tconvert.h"
+	ieeer.c
+	ieeed.c
+$endif
+	;

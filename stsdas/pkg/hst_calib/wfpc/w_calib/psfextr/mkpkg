@@ -1,0 +1,14 @@
+# Update the psfextr application code in the w_calib package library
+# Author: HSU, 23-JAN-1992
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_psfextr.x
+	psfextr_in.x		
+	psfextr_do.x	<imhdr.h>	<mach.h>
+	psf_header.x	<imhdr.h>
+	;

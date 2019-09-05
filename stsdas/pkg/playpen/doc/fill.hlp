@@ -1,0 +1,99 @@
+.help fill Dec91 stsdas.playpen
+.ih
+NAME
+fill -- Baade-Lucy background "filling" algorithm.
+.ih
+USAGE
+fill  input output
+.ih
+DESCRIPTION
+This task implements the Baade-Lucy method of filling "pits" (pits are
+defined as pixels far
+below the average background) by reshuffling local flux. 
+
+The algorithm seeks to reduce high-frequency noise in the background,
+without loosing high-frequency information on the sources, and
+enforcing strict flux conservation. The method achieves optimum 
+performance only on images that have already been corrected for any large 
+scale (low-frequency) structures in the background distribution.
+
+The following step by step algorithm description is taken directly from 
+Baade-Lucy's paper (see REFERENCES below):
+
+.ls 
+1. Find all pixels with a flux below a given threshold (called
+"recipients"). For each one of them:
+.ls 
+o Examine within a given radius (r) all pixels with a flux above the
+threshold (these are called "donors").
+.le
+.ls 
+o Find all pixels within r of the donor with a flux below the threshold 
+(i.e., further "recipients").
+.le
+.ls 
+o Compute how much flux a donor can contribute to all its recipients while
+(i) contributing equal amounts to all its recipients; (ii) not letting
+its own flux drop below the threshold.
+.le
+.ls 
+o Take the minimum of all possible contributions; subtract it from the donor.
+.le
+.le
+.ls 
+2.  Credit all donations to the recipient.
+.le
+
+The implementation used in this task adopts a simplification: instead of looking
+for pixels a given distance r from the relevant pixel; it looks for
+pixels inside a square box with 'size' pixels on a side, centered in the
+relevant pixel. This reduces the computation time by a significant amount.
+
+The task can process an image template or list as input. In this case, 
+the output is either a matching list of images or a directory.
+.ih
+PARAMETERS
+.ls input [file name template]
+Input 2-dimensional image section, template or list of images.
+.le
+.ls output [file name template]
+Output file name, list or directory.
+Output images are always type real, regardless of input image type.
+.le
+.ls (size = 3) [integer, min=3]
+Size of filtering box. Always an odd number.
+.le
+.ls (threshold = INDEF) [real]
+Pixels below this value will be filled up; pixels above it will "donate"
+flux.
+.le
+.ls (niter = 1) [integer, min=1]
+Number of iterations.
+.le
+.ls (verbose = no) [boolean]
+Print file names and iteration count?
+.le
+.ih
+EXAMPLES
+1. Fill pixels below 50 units in image 'input'. Use a 3 X 3 box size and
+iterate twice.
+
+.nf
+pl> fill  input.hhh output.hhh size=3 threshold=50 niter=2
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+The algorithm is described in:
+.ls
+Grosbel, P., F. Murtagh and R. Warmels (editors), "Proceedings of the 1st 
+ESO/ST-ECF Data Analysis Workshop," Garching,
+April 17-19 1989, pp. 169-172.
+.le
+.ls
+This task was written by I.Busko
+.le
+.ih
+SEE ALSO
+.endhelp

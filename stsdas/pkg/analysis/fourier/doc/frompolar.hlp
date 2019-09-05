@@ -1,0 +1,50 @@
+.help frompolar May91 stsdas.analysis.fourier
+.ih
+NAME
+frompolar -- Convert from amplitude and phase to real and imaginary parts.
+.ih
+USAGE
+frompolar ampl phase output
+.ih
+DESCRIPTION
+This task takes a pair of images,
+the amplitude and phase of a Fourier transform,
+and converts to real and imaginary parts.
+As with other tasks in the 'fourier' package,
+the names of the real and imaginary parts are built by appending
+"r" and "i" respectively to the name specified by the parameter 'output'.
+For each pixel, the real part is the amplitude multiplied by the cosine
+of the phase, and the imaginary part is the amplitude multiplied by
+the sine of the phase.
+The phase is expected to be in radians.
+.ih
+PARAMETERS
+.ls ampl = "" [file name]
+Name of the input amplitude image.
+.le
+.ls phase = "" [file name]
+Name of the input phase image.
+.le
+.ls output = "" [file name]
+Root name of the output image.
+
+The letters "r" and "i" will be appended to the name to form the names
+of the images for real and imaginary parts respectively.
+.le
+.ih
+EXAMPLES
+1. Convert amplitude 'a.hhh' and phase 'ph.hhh' to real part
+'x00w6601rr.d0h' and imaginary part 'x00w6601ri.d0h'.
+
+.nf
+     fo> frompolar a.hhh ph.hhh x00w6601r.d0h
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+topolar
+
+Type "help fourier option=sys" for a higher-level description of
+the 'fourier' package.
+.endhelp

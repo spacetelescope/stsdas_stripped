@@ -1,0 +1,57 @@
+.help uchcoord Feb96 stsdas.hst_calib.wfpc
+.ih
+NAME
+uchcoord -- Update WFPC2 group parameters affected by plate scale, shift, and rotation changes due to PDB updates.
+.ih
+USAGE
+uchcoord input update
+.ih
+DESCRIPTION
+The task updates position related group parameters of WFPC2 images, i.e.
+CD matrices, CRPIX's, CRVAL's, and ORIENTAT.  The plate 
+scales, reference pixel locations, and chip rotation angles stored in the 
+Project Data Base (PDB) and used by the pipeline to 
+populate WFPC2 files have undergone changes since the instrument was first 
+commissioned.  This task updates affected group parameters 
+of earlier observations to more accurate values and therefore cohere with
+images obtained at different epochs.  A history of the updating will be 
+added to the image header.
+
+A new keyword PDBEPOCH will be added or updated in the header.  This keyword
+is the epoch (in Modified Julian date) corresponding to the PDB parameters
+applied or updated to the input image.  Because of this new keyword, if there 
+are more PDB updates in the future, this task will be able to properly handle 
+images already been processed by this task in the past.
+
+This task supersedes the task uchscale and is backward compatible.  If you 
+have used uchscale to update the plate scales on WFPC2 files, this task 
+will recognize the previous update and will not over-correct the plate scale.
+.ih
+PARAMETERS
+.ls input [string]
+Input images.  They must be WFPC2 images.
+.le
+.ls update [boolean]
+Update the group parameters?  If set to 'no', this task will just print out
+the epoch of PDB applied to this image and plate scales.
+.le
+.ih
+EXAMPLES
+1. Update the group parameters of abc.c0h.
+.nf
+wf> uchcoord abc.c0h yes
+.fi
+
+2. Examine the plate scales of all .c0h files.
+
+.nf
+wf> uchcoord *.c0h no
+.fi
+.ih
+REFERENCES
+(1) WFPC2 Instrument Handbook (version 3.0, Jun 1995), Sec. 2.9.
+(2) www.stsci.edu/ftp/instrument_news/WFPC2/Wfpc2_memos/wfpc2_history.html#Plt
+.ih
+SEE ALSO
+uchscale
+.endhelp

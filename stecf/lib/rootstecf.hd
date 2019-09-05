@@ -1,0 +1,37 @@
+# Root entry for the STECF help tree
+
+stecf		men = stecf$stecf.men,
+		hlp = stecf$stecf.men,
+		pkg = stecf$stecf.hd,
+		sys = stecf$stecf.hlp,
+		src = stecf$stecf.cl
+
+impol		men = stecf$impol/impol.men,
+		hlp = stecf$impol/impol.men,
+		pkg = stecf$impol/impol.hd,
+		sys = stecf$impol/impol.hlp,
+		src = stecf$impol/impol.cl
+
+imres		men = stecf$imres/imres.men,
+		hlp = stecf$imres/imres.men,
+		pkg = stecf$imres/imres.hd,
+		sys = stecf$imres/imres.hlp,
+		src = stecf$imres/imres.cl
+
+specres		men = stecf$specres/specres.men,
+		hlp = stecf$specres/specres.men,
+		pkg = stecf$specres/specres.hd,
+		sys = stecf$specres/specres.hlp,
+		src = stecf$specres/specres.cl
+
+driztools	men = stecf$driztools/driztools.men,
+		hlp = stecf$driztools/driztools.men,
+		pkg = stecf$driztools/driztools.hd,
+		sys = stecf$driztools/driztools.hlp,
+		src = stecf$driztools/driztools.cl
+
+nictools	men = stecf$nictools/nictools.men,
+		hlp = stecf$nictools/nictools.men,
+		pkg = stecf$nictools/nictools.hd,
+		sys = stecf$nictools/nictools.hlp,
+		src = stecf$nictools/nictools.cl

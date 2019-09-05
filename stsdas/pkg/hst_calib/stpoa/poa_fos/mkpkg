@@ -1,0 +1,59 @@
+#   Make the POS_FOS package
+#   Author: Anastasia Alexov, July 2000   
+#   Original Author: CDBS, 15-DEC-1987
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#       mkpkg relink            update object library and link
+#       mkpkg linkonly          skip object library updates and just link
+#       mkpkg install           move executable to lib$
+#       mkpkg update            update object library, link, and move to lib$
+
+$call relink
+$exit
+
+debug:
+        $set XFLAGS = "-fgq $(XFLAGS)"
+        $set LFLAGS = "-xz $(LFLAGS)"
+        $call relink
+        $exit
+        ;
+update:
+        $call   relink
+        $call   install
+        ;
+
+relink:
+        $update poa_fos.a
+        $call   relink@poa_calfos
+        $call   relink@fos_pix2wav
+        $call   relink@fos_dispfit
+        $call poa_fos
+        ;
+
+install:
+        $move   xx_poa_fos.e ../bin/x_poa_fos.e
+        $call install@poa_calfos
+        $call install@fos_pix2wav
+        $call install@fos_dispfit
+        ;
+
+linkonly:
+        $call   linkonly@poa_calfos
+        $call   linkonly@fos_pix2wav
+        $call   linkonly@fos_dispfit
+
+poa_fos:
+	$omake  x_poa_fos.x
+	
+        $link   x_poa_fos.o poa_calfos.a \
+                fos_pix2wav.a poa_fos.a fos_dispfit.a\
+                -lsynphot -liraf77 -lf77util -luttables -ltbtables \
+                -lgflib -lgilib -lstxtools \
+                -lxtools \
+                -o xx_poa_fos.e
+        ;
+
+poa_fos.a:
+        @lib
+        ;

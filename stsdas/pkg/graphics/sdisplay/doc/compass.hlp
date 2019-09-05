@@ -1,0 +1,187 @@
+.help compass Jun2000 stsdas.graphics.sdisplay
+.nj
+.ih
+NAME
+compass -- Draw north and east arrows.
+.ih
+USAGE
+compass input output xpos ypos
+.ih
+DESCRIPTION
+This task draws north and east arrows on an image display,
+a graphics display (such as a 'newcont' contour plot),
+or into the image itself.
+The north arrow has an arrow head, and the east arrow does not,
+in order to clearly distinguish the two directions.
+The north and east directions are determined from the CD matrix,
+so they should be correct regardless of the parity of the image
+or whether the pixel spacing is the same for the two axes.
+The image must be two-dimensional.
+
+The arrows will be drawn on the image or graphics display
+if the 'output' parameter is null.
+If an image name is specified by 'output',
+pixel values in the image with that name will be assigned
+(permanently modifying the image)
+in order to draw the north and east arrows.
+.ih
+PARAMETERS
+.ls input [file name template]
+Names of the input images.
+.le
+.ls output [file name template]
+If 'output' is null or blank,
+the arrows will be drawn on the device specified by the 'device' parameter.
+If anything is given as a value for 'output',
+then the arrows will be drawn in images by those names,
+and the number of names in 'input' and 'output' must be the same.
+
+If an output name is the same as an input name,
+the image will be written to in-place.
+Otherwise, the input image will be copied to the output image,
+and the arrows will be drawn in the copy.
+.le
+.ls xpos = 400. [real, min=0, max=INDEF]
+This is the location where the vectors are to be drawn.
+The north and east line segments meet at [xpos,ypos].
+If an image section is specified in an input image name,
+'xpos' and 'ypos' are pixel coordinates in the original image;
+that is, they are not relative to the image section.
+.le
+.ls ypos = 400. [real, min=0, max=INDEF]
+The north and east line segments meet at [xpos,ypos].
+.le
+.ls (angle = "") [string]
+The default value of null (or "INDEF") means
+the task will compute the north and east vectors
+from the coordinate parameters (e.g. the CD matrix)
+in the image header.
+Note that the north and east vectors can be non-orthogonal,
+depending on the image scales in the two axes,
+and east may be either clockwise or counterclockwise from north,
+depending on the parity of the image.
+When drawing into the image itself,
+the vectors will be correct regardless of how the image is displayed.
+
+A specific value of 'angle' may be given.
+This may be necessary if the coordinate parameters describe
+spectroscopic data, for example.
+Note that 'angle' is a character string parameter.
+If the value is numeric,
+it will be used directly.
+As an alternative,
+the value can be the name of an image header keyword,
+in which case the value of that keyword will be used.
+For HST data, keywords ORIENTAT and PA_APER may be appropriate.
+When 'angle' is specified explicitly,
+either by a numeric value or a header keyword,
+the angle is presumed to be the orientation of
+the second image axis (Y) counterclockwise from north,
+and the east vector will be 90 degrees
+counterclockwise from the north vector.
+This option is generally useful, therefore,
+only if the image has the same scale in the two axes
+and the parity matches that of the sky.
+(This description of orientation assumes that
+the image is displayed with the first pixel at the lower left
+and the first axis increasing to the right.)
+.le
+.ls (length = 40.) [real, min=0., max=INDEF]
+The length of the line segments for north and east vectors, in pixels.
+.le
+.ls (width = 3.) [real, min=1.5, max=INDEF]
+The three parameters 'width', 'clearval' and 'lineval'
+are only used when drawing into an image.
+The full width in pixels of the lines to be drawn is specified by 'width'.
+.le
+.ls (clearval = INDEF) [real]
+See the description of 'lineval'.
+.le
+.ls (lineval = INDEF) [real]
+When drawing into an image rather than onto a graphics display,
+'lineval' is the value to put into the image
+for the middle portion of a line.
+The lines have finite width (see 'width'),
+and different values are put into the image near the edges of a line
+in order to reduce the ragged effect of finite pixel size.
+The values taper from 'lineval' in the middle half of a line
+down to 'clearval' at the edge of a line.
+'lineval' may be either larger than or smaller than 'clearval'.
+The default values of INDEF mean that the maximum and minimum data values
+will be used for 'lineval' and 'clearval' respectively,
+resulting in bright lines on a dark background
+if the image is displayed as a positive.
+This is a reasonable default if the image is to be displayed as a negative.
+
+The values are not simply assigned into the image pixels;
+the min or max between the line and image data is taken.
+If clearval < lineval,
+the output is the maximum of the line and the original image;
+similarly, the minimum is used if clearval > lineval.
+The user is advised to think about these parameters
+and the image data values before writing to an image in-place.
+.le
+.ls (verbose = yes) [bool]
+The default is to print the image names and/or the plot device name.
+.le
+.ls (device = "imd") [string]
+If 'output' is null the north and east vectors will be drawn
+on the graphics device specified by 'device',
+which defaults to the image display device.
+When plotting on the image display,
+only one image name may be given as the value of 'input',
+and that image must have already been displayed using the 'display' task.
+If an image section was used for displaying the image,
+the same section should be specified as input to this task.
+.le
+.ls (frame = 1) [integer, min=1, max=INDEF]
+This should be the value of 'display.frame' that was used
+when displaying the image with the 'display' task.
+.le
+.ih
+EXAMPLES
+1.  Draw on the image display using blue lines.
+We assume the image "x0j30406t.d0h" has previously been displayed.
+
+.nf
+    fo> compass x0j30406t.d0h "" 400 400 device="imdblue"
+.fi
+
+2.  Draw onto the image display of o45a13010_crj.fits[1].
+This contains long-slit data,
+so use the header keyword ORIENTAT to get the image orientation.
+
+.nf
+    sd> compass o45a13010_crj.fits[1] "" 500 550 angle="orientat"
+.fi
+
+3.  Draw the lines into a copy "temp.hhh" of "x0j30406t.d0h";
+'compass' will create the "temp.hhh" image.
+
+.nf
+    fo> compass x0j30406t.d0h temp.hhh 400 400
+.fi
+
+4.  Draw the lines into "x0j30406t.d0h" in-place.
+
+.nf
+    fo> compass x0j30406t.d0h x0j30406t.d0h 400 400
+.fi
+.ih
+BUGS
+It may be necessary to gflush before plotting.
+This is because the graphics device is appended to,
+and if another plot has previously been drawn,
+the north and east arrows will be drawn on that device
+using the previous color.
+
+The location of the arrows on an image display
+may differ from [xpos,ypos]
+if an image section that includes subsampling was specified
+as input to the 'display' and 'compass' tasks.
+The directions of the arrows should be correct, however.
+.ih
+SEE ALSO
+Type "help sdisplay option=sys" for a higher-level description of
+the 'sdisplay' package.
+.endhelp

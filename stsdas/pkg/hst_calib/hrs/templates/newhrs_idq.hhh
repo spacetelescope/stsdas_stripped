@@ -1,0 +1,131 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'INTEGER*4'          /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                   18 /                                                
+PSIZE   =                  736 /                                                
+PTYPE1  = 'CRVAL1  '           / right ascension of reference pixel             
+PDTYPE1 = 'REAL*8  '           /                                                
+PSIZE1  =                   64 /                                                
+PTYPE2  = 'CRVAL2  '           / declination of reference pixel                 
+PDTYPE2 = 'REAL*8  '           /                                                
+PSIZE2  =                   64 /                                                
+PTYPE3  = 'CRPIX1  '           / x-coordinate of reference pixel                
+PDTYPE3 = 'REAL*4  '           /                                                
+PSIZE3  =                   32 /                                                
+PTYPE4  = 'CRPIX2  '           / y-coordinate of reference pixel                
+PDTYPE4 = 'REAL*4  '           /                                                
+PSIZE4  =                   32 /                                                
+PTYPE5  = 'CD1_1   '           / partial of the right ascension w.r.t. x        
+PDTYPE5 = 'REAL*4  '           /                                                
+PSIZE5  =                   32 /                                                
+PTYPE6  = 'CD1_2   '           / partial of the right ascension w.r.t. y        
+PDTYPE6 = 'REAL*4  '           /                                                
+PSIZE6  =                   32 /                                                
+PTYPE7  = 'CD2_1   '           / partial of the declination w.r.t. x            
+PDTYPE7 = 'REAL*4  '           /                                                
+PSIZE7  =                   32 /                                                
+PTYPE8  = 'CD2_2   '           / partial of the declination w.r.t. y            
+PDTYPE8 = 'REAL*4  '           /                                                
+PSIZE8  =                   32 /                                                
+PTYPE9  = 'DATAMIN '           / the minimum value of the data                  
+PDTYPE9 = 'REAL*4  '           /                                                
+PSIZE9  =                   32 /                                                
+PTYPE10 = 'DATAMAX '           / the maximum value of the data                  
+PDTYPE10= 'REAL*4  '           /                                                
+PSIZE10 =                   32 /                                                
+PTYPE11 = 'MIR_REVR'           / is the image mirror reversed                   
+PDTYPE11= 'LOGICAL*4'          /                                                
+PSIZE11 =                   32 /                                                
+PTYPE12 = 'ORIENTAT'           / the orientation of the image (deg)             
+PDTYPE12= 'REAL*4  '           /                                                
+PSIZE12 =                   32 /                                                
+PTYPE13 = 'FILLCNT '           / number of segments containing fill             
+PDTYPE13= 'INTEGER*4'          /                                                
+PSIZE13 =                   32 /                                                
+PTYPE14 = 'ERRCNT  '           / number of segments containing errors           
+PDTYPE14= 'INTEGER*4'          /                                                
+PSIZE14 =                   32 /                                                
+PTYPE15 = 'PKTTIME '           / time from the packet ancillary data            
+PDTYPE15= 'REAL*8  '           /                                                
+PSIZE15 =                   64 /                                                
+PTYPE16 = 'CTYPE1  '           / the first coordinate type                      
+PDTYPE16= 'CHARACTER*8'        /                                                
+PSIZE16 =                   64 /                                                
+PTYPE17 = 'CTYPE2  '           / the second coordinate type                     
+PDTYPE17= 'CHARACTER*8'        /                                                
+PSIZE17 =                   64 /                                                
+PTYPE18 = 'MAP_NUM '           / mosaic map number                              
+PDTYPE18= 'INTEGER*4'          /                                                
+PSIZE18 =                   32 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / GROUP PARAMETERS: PODPS                                      
+                                                                                
+                 / HRS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'HRS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'IDQ               ' / file type                                      
+RPTOBS  =                 -999 / number of observation repeats                  
+                                                                                
+                 / HRS PATTERN KEYWORDS                                         
+SRCHSIZE=                 -999 / width of spiral-search in dwell points         
+BRIGHT  =                -999. / upper threshold for star presence (counts)     
+FAINT   =                -999. / lower threshold for star presence (counts)     
+LOCATE  = 'n/a               ' / do a locate after the spiral search            
+MAP     = 'n/a               ' / dwell points at which to image the aperture    
+DELTA_X =                 -999 / x increment for map (deflection units)         
+DELTA_Y =                 -999 / y increment for map (deflection units)         
+PRECISN = 'n/a               ' / number of diodes used to map (HIGH=1,NORMAL=2) 
+STEPTIME=                -999. / exposure time at each dwell point (seconds)    
+                                                                                
+                 / CALIBRATION FLAGS AND INDICATORS                             
+OBSMODE = 'n/a               ' / data mode                                      
+DETECTOR=                 -999 / detector in use (1-2)                          
+GRATING = 'n/a               ' / grating, echelle or mirror in use              
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+PODPSFF = 'n/a               ' / 0=(no podps fill), 1=(podps fill present)      
+STDCFFF = 'n/a               ' / 0=(no st dcf fill), 1=(st dcf fill present)    
+STDCFFP = 'n/a               ' / st dcf fill pattern (hex)                      
+PKTFMT  =                 -999 / packet format code                             
+                                                                                
+                 / APERTURE POSITION                                            
+RA_APER1=                -999. / right ascension of the aperture (deg)          
+DECAPER1=                -999. / declination of the aperture (deg)              
+                                                                                
+                 / FLUX MEASURE                                                 
+ZFLUXM  =                 -999 / flux measurement at end of targ. acq. obs.     
+                                                                                
+                 / EXPOSURE INFORMATION                                         
+EQUINOX = 'n/a               ' / equinox of the celestial coordinate system     
+SUNANGLE=                -999. / angle between sun and V1 axis (deg)            
+MOONANGL=                -999. / angle between moon and V1 axis (deg)           
+SUN_ALT =                -999. / altitude of the sun above Earth's limb (deg)   
+FGSLOCK = 'n/a               ' / commanded FGS lock (FINE,COARSE,GYROS,UNKNOWN) 
+                                                                                
+DATE-OBS= 'n/a               ' / UT date of start of observation (yyyy-mm-dd)   
+TIME-OBS= 'n/a               ' / UT time of start of observation (hh:mm:ss)     
+EXPSTART=                -999. / exposure start time (Modified Julian Date)     
+EXPEND  =                -999. / exposure end time (Modified Julian Date)       
+EXPTIME =                -999. / exposure duration (seconds)--calculated        
+EXPFLAG = 'n/a               ' / Exposure interruption indicator                
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name                         
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

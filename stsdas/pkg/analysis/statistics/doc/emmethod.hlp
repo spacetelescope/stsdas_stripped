@@ -1,0 +1,101 @@
+.help emmethod Sept2002 stsdas.analysis.statistics
+.ih
+NAME
+emmethod -- Compute linear regression for censored data by EM method
+.ih
+USAGE
+emmethod input
+.ih
+DESCRIPTION
+The `emmethod' task calculates linear regression coefficients
+assuming a normal distribution of residuals.  The EM algorithm can
+treat several independent variables if the dependent variable
+contains only one kind of censoring (i.e., upper or lower limits).
+There is considerable uncertainty regarding the error analysis of
+the regression coefficients of the EM method.  This task uses
+analytic formulae based on asymptotic normality.
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files.
+Following each file name is a list of column names in brackets.
+These column names specify which columns in the file
+contain the information used by this task.
+The brackets MUST contain at least three names in the following
+format:  [censor_indicator, independent_vars, dependent_vars].
+If there is more than one independent variable,
+the column names all follow the censor indicator.
+The list should only contain one column of dependent variables,
+which must be the last column in the brackets.
+The censor indicator specifies the censorship of the data point.
+The different kinds of censorship are explained in the `censor' help file.
+If the input file is a table,
+the names in brackets are the table column names.
+If the input file is a text file,
+the names in brackets are the column numbers.
+A title string will be printed if the input file is a table
+containing the header parameter "TITLE".
+.le
+.ls alpha = "0.0" [string]
+This parameter is not used unless the value of the task parameter
+"emestim" is set to "yes".  If it is, this parameter will provide
+initial estimates of the regression coefficients.
+
+Coefficients should be entered as a comma separated list.  The
+first coefficient should be the estimate of the intercept and the
+rest of the coefficients should be the estimates of the slopes of
+the independent variables.  If the number of values in the list is
+less than the number of coefficients, remaining coefficients will
+be set to zero.  If the number of values in the list is greater
+than the number of coefficients, the extra values will be ignored.
+.le
+.ls (tolerance = 1.0E-5) [real, min=0.]
+Tolerance for regression fit.  If the difference between two
+successive estimates of the regression coefficients is less than
+this value for all coefficients, the iteration stops.
+.le
+.ls (niter = 50) [integer, min=1]
+Maximum number of iterations.  The computation stops when the
+maximum number of iterations is performed even if convergence has
+not been achieved.
+.le
+.ls (emestim = no) [boolean]
+User provides initial values for regression coefficients?  If you
+have good estimates of the coefficients, say from a previous run,
+then you may want to set this to "yes".
+.le
+.ls (verbose = no) [boolean]
+Provide detailed output?  The detailed output includes the number
+of data points and the number of censored points and type of
+censorship.
+.le
+.ih
+EXAMPLES
+1. Apply `emmethod' to the data in the table "kriss.tab", using the
+columns "Censor" for the censoring indicator, "LogL1mu" for the
+first independent variable column, "LogL2500A" for the second
+independent variable column, and "LogL2keV" for the dependent
+variable column.  Then use the file "iraslum.dat" (text file),
+columns 1, 2, and 3 (censor, independent, dependent).  Several
+files may be processed sequentially.  The following will compute
+the EM algorithm linear regression fit for the two files indicated:
+
+.nf
+   cl> emmethod kriss.tab[Censor,LogL1mu,LogL2500A,LogL2keV], \
+   >>> iraslum.dat[1,2,3]
+.fi
+.ih
+BUGS
+The code for this task allows a censor indicator of 5,
+which flags a dependent variable that is confined between two values.
+In this case, the input would contain two columns of dependent variables,
+one for the lower limit and the other for the upper limit.
+This option has not been adequately tested, however,
+and in fact it has been known to fail.
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the `statistics' package.
+.endhelp

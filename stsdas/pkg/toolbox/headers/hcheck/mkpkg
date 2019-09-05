@@ -1,0 +1,15 @@
+# Update the hcheck application code in the headers package library
+# Author: B.Simon, 21-MAY-1990
+
+$checkout headers.a ../
+$update   headers.a
+$checkin  headers.a ../
+$exit
+
+headers.a:
+	chkprint.x	<imio.h>
+	cmdsplit.x	"hcheck.h"
+	docheck.x	<evexpr.h>  <error.h>  "hcheck.h"  "hcheck.com"
+	hcheck.x
+	header.x	<ctype.h>  <evexpr.h>  "hcheck.h"  "hcheck.com"
+	;

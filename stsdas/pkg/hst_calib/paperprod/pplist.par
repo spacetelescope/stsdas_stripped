@@ -1,0 +1,10 @@
+rootlist, f, a, "", , , 	Input root name list
+imtypelist, f, a, "", , , 	Input image type list
+output, f, a, "", , ,		Output igi file name
+instr, s, a, "fos", "fos|ghrs|wfpc2|foc|stis|nicmos|acs", ,	Instrument
+selector, s, a, "", "", ,	Output parts selector
+
+timetag, f, h, "", , , 		Time tag
+page, i, h, , , ,		Page number
+
+mode, s, h, "al"

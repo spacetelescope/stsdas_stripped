@@ -1,0 +1,8 @@
+# Root task entry for the stsdas package help tree.  Defines `stsdas' as both a
+# task and a package in the stsdas help database.
+
+stsdas		men  = stsdas$stsdas.men,
+		hlp  = stsdas$stsdas.men,
+		sys  = stsdas$stsdas.hlp,
+		pkg  = stsdas$stsdas.hd,
+		src  = stsdas$stsdas.cl

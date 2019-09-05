@@ -1,0 +1,9 @@
+input,s,a,"",,,"> input binary file"
+output,s,a,"",,,"> output image"
+naxis,i,a,1,1,7,"> number of axes"
+dimen,ai,a,1,7,1,\
+,,"> length of each axis",\
+1,1,1,1,1,1,1
+datatype,s,a,"real","real|integer|short",,"> data type of file"
+offset,i,a,0,0,,"> number of bytes to skip at beginning"
+mode,s,h,"al",,,

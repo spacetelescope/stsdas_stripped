@@ -1,0 +1,50 @@
+#   Make the tools package
+#   Author: R.L. Williamson, 27-Jul-1993
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to bin$
+#	mkpkg update		update object library, link, and move to bin$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	tools.a
+	$call	tools
+	;
+
+install:
+	$move	xx_tools.e stsdasbin$x_tools.e
+	;
+
+tools:
+linkonly:
+	$omake	x_tools.x
+	$set 	LIBS = " "
+	$link	x_tools.o tools.a $(LIBS) \
+		-lxtools -lstxtools -ltbtables \
+		-o xx_tools.e
+
+	;
+
+tools.a:
+	@epoch
+        @fparse
+	@mkapropos
+        @newredshift
+        @tepoch
+	@tprecess
+	@uniq
+	;
+
+calpar.a:
+        @calpar
+        ;

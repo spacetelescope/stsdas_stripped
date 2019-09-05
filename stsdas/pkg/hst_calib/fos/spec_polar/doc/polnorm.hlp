@@ -1,0 +1,74 @@
+.help polnorm Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+polnorm -- Normalize Stokes Q, U, and V by Stokes I.
+.ih
+USAGE
+polnorm input output
+.ih
+DESCRIPTION  
+The 'polnorm' task takes an FOS polarimetry ('c3h') file and normalizes
+the Stokes Q, U, and V parameter spectra by the Stokes I (flux) spectrum.
+The errors in the normalized spectra are also calculated.
+The ouput image is a copy of the input image with the Stokes Q, U, and
+V and their error spectra replaced by the normalized values.  All four sets 
+of Stokes parameter spectra are operated on, i.e. those for pass direction 1, 
+pass direction 2, the merged, and the merged and corrected data sets.
+
+Note that the algorithms used in the tasks 
+'polave', 'polcalc', and 'polbin' to
+compute polarization quantities from Stokes parameters all assume that the
+input Stokes QUV parameters have NOT yet been normalized by Stokes I. 
+Therefore the 'polnorm' task can only be used on polarimetry files AFTER all 
+desired processing by 'polave', 'polcalc', or 'polbin' has been completed.
+
+Because the errors in the Stokes parameters Q, U, and V are independent
+from those in I, the errors in the normalized spectra are
+calculated as follows (for Stokes Q, for example):
+.nf
+
+                             { Qerr**2   Ierr**2 Q**2 }
+      normalized Qerr = sqrt { ------- + -------*---- }
+                             {  I**2      I**2   I**2 }
+
+.fi
+If the values of Stokes I and Ierr for a given pixel are zero, the normalized 
+Stokes QUV and their error values are set to zero.
+.ih
+PARAMETERS 
+.ls input [file name]
+Input image(s).  May be a list or a file name template.  If the input image 
+name extension is not given, an extension of 'c3h' is assumed.
+.le
+.ls output [file name]
+Output image(s).  May be a list, but must contain the same number of elements
+as the input image list.  If the output image name extension is not given, 
+an extension of 'c3h' is assumed.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Calculate normalized Q, U, and V for the FOS polarization image 
+'y15v0403t.c3h' and store the results in 'y15v0403t_norm.c3h'.
+.nf
+
+     sp> polnorm y15v0403t y15v0403t_norm 
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+polave, polbin, polcalc
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

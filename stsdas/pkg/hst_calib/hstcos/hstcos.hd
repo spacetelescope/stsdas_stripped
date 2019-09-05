@@ -1,0 +1,7 @@
+# Help directory for the HSTCOS package
+
+$doc = "stsdas$pkg/hst_calib/hstcos/doc/"
+
+calcos      hlp=doc$calcos.hlp,     src=hstcos$calcos_iraf.py
+splittag    hlp=doc$splittag.hlp,   src=hstcos$splittag_iraf.py
+x1dcorr     hlp=doc$x1dcorr.hlp,    src=hstcos$x1d_iraf.py

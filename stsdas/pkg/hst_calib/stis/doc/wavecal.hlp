@@ -1,0 +1,247 @@
+.help wavecal July2004 stis
+.nj
+.ih
+NAME
+wavecal -- Update science header with MSM offset value from wavecal.
+.ih
+USAGE
+.nf
+wavecal input wavecal
+.fi
+.ih
+PARAMETERS
+.ls input [file name template]
+Name of calibrated science image (basic2d and crreject).
+The headers of this file will be modified in-place.
+.le
+.ls wavecal [file name template]
+Input raw wavecal image file.
+.le
+.ls debugfile [file name template]
+File for calstis4 debug output.
+For echelle data this will be a FITS file,
+but for first-order data it will be a text file
+(and possibly a FITS file as well).
+
+For first-order data,
+a file with the specified name will be created (or appended to),
+and extensive information for testing or debugging
+will be written to the file.
+Verbose output for calstis4 will also be turned on,
+regardless of the value of the 'wavecal.verbose' task parameter.
+If the data were taken with the CCD,
+and if cosmic ray flagging is performed
+(i.e. if the SDQFLAGS keyword includes 8192),
+then a FITS image will also be created,
+and the data quality extension with cosmic rays flagged
+will be written to this image.
+The file name for the data quality image
+will be the value of 'debugfile' with ".fits" appended.
+One output DQ extension will be written for each input image set.
+
+For echelle data,
+the wavecal shifts are determined by
+doing a cross correlation between
+the observed wavecal data and a template.
+If 'debugfile' was specified,
+a file by that name will be created,
+and the template wavecal created by calstis4
+will be saved in the [sci] extension of that file.
+If 'debugfile' does not end in ".fit" or ".fits",
+then ".fits" will be appended.
+
+If 'debugfile' is specified,
+the number of file names must match
+the number of names in 'input' and 'wavecal'.
+.le
+.ls (save_w2d = no) [boolean]
+Save calibrated and 2-D rectified wavecal image
+with MSM offsets written in its SCI extension header?
+.le
+.ls (option = "linear") [string, allowed values = nearest, linear]
+This is the interpolation option for the case that
+the wavecal file contains more than one image set.
+For each image set in the input science file,
+the SHIFTA1 and SHIFTA2 values will be gotten
+from the calibrated wavecal,
+either by selecting the image set
+that is nearest in time (midpoint of exposure) to the science image,
+or by interpolating between wavecal image sets.
+Undefined shifts (-9999.) are not used.
+If linear interpolation was specified
+but there is only one imset in the wavecal file,
+or if the wavecal imsets are not in increasing time order,
+the shifts will be taken from the nearest wavecal.
+The wavecal shifts are never extrapolated;
+the shifts at the nearer endpoint are used
+if the time of a science image falls outside
+the times of all wavecal images.
+The interpolations for SHIFTA1 and for SHIFTA2 are independent;
+undefined shifts in one axis do not affect the other axis.
+.le
+.ls (angle = INDEF) [real, min=-90., max=90.]
+This parameter is only used for echelle data.
+For wavecal data taken with an echelle grating and a long slit
+(specifically 6X0.2),
+the angle of the slit image on the detector can be large.
+It varies from one grating to another,
+and it varies depending on location on the detector,
+so a single value is not representative of the entire image.
+The angles have not been measured for all configurations
+and are known only approximately.
+For long-slit echelle data,
+use this parameter to specify the slit angle,
+in degrees measured clockwise from the Y axis.
+
+Here are some approximate values for the slit angle, in degrees:
+.nf
+    E230M   0.9 to 1.2
+    E230H   4.9 to 6.9
+    E140H  -3.8 to -5.8
+.fi
+.le
+.ls (verbose = no) [boolean]
+Print additional info, including time stamps?
+.le
+.ls (sh_closed = 51126.) [real]
+This is for internal use only and should not be modified.
+'sh_closed' is the date (MJD) after which
+the external shutter was closed for CCD HITM wavecals.
+.le
+.ih
+DESCRIPTION
+The 'wavecal' task determines the Mode Select Mechanism (MSM) offsets
+using a wavecal image
+and writes these offsets to the extension headers of 'input',
+the science file.
+
+'wavecal' operates on the input images the following way.
+First the task runs 'basic2d' on the raw wavecal image.
+Then if the observation is a CCD wavecal using the HITM system,
+and if it was taken before the 'sh_closed' date,
+'wavecal' subtracts the input science image from the wavecal.
+This is done because the detector was exposed to both
+the wavecal and the science image.
+The next step is different depending on whether
+the data were taken with a first-order grating or an echelle.
+For first-order data,
+'x2d' is run on the calibrated wavecal,
+and the MSM offsets are determined from the rectified wavecal image.
+For echelle data,
+the MSM offsets are determined directly from the
+flat-fielded but unrectified wavecal image.
+The MSM offsets are then scaled to reference pixel size
+(in case the wavecal was binned)
+and written to the SHIFTA1 and SHIFTA2 keywords
+in the SCI extension header of the calibrated wavecal.
+Finally, SHIFTA1 and SHIFTA2 (or interpolated values)
+are copied to the extension headers of the input science image.
+
+Warning:  This task must not be run as a background job.
+See the BUGS section for more information.
+
+
+INPUT AND OUTPUT IMAGES
+
+The input files to this task should be a science image
+that has been processed through 'basic2d' and/or 'crreject'
+(i.e. flatfielded and cosmic-ray rejected if applicable)
+and a raw wavecal image.
+The science file will be modified in-place;
+its extension headers will be updated
+to include the MSM offset determined from the wavecal
+(i.e. science header keywords SHIFTA1 and SHIFTA2).
+The data pixels themselves are not modified at all.
+If 'save_w2d' is yes, then the calibrated wavecal file,
+with the MSM offset written in its header, is also saved.
+
+The updated science file can then be used as input for
+1-D extraction ('x1d') and/or 2-D rectification ('x2d').
+
+REFERENCE FILES and PROCESSING STEPS
+
+The names of the reference files (images and tables) to be used by 'wavecal'
+have to be specified in the primary header of the input raw wavecal image,
+under the section CALIBRATION REFERENCE FILES.
+Since the raw wavecal image will be calibrated by 'wavecal',
+it is recommended to use the same calibration
+reference files that were used to calibrate the respective science image.
+
+When an environment variable is used as part of a reference file name
+(e.g. "oref" in PFLTFILE = "oref$h230851ao_pfl.fits"),
+the variable must have been set (in Unix)
+before logging into IRAF,
+and the directory name must include the trailing "/".
+Setting an IRAF environment variable will not work,
+nor will using ! to escape from the cl.
+For example,
+
+.nf
+    setenv oref /data/reffiles/stdata/
+
+    # if the reference files are in the default directory, use
+    setenv oref ./
+.fi
+
+One of the reference files that will be used is the
+"Template Calibration Lamp Spectra Table (LMP)",
+which contains a calibration lamp spectrum.
+This is the template spectrum
+which will be compared with the observed spectrum in the wavecal file
+to determine the offset in the dispersion direction (SHIFTA1).
+The name of the calibration lamp spectrum table
+must be provided in the keyword LAMPTAB in the wavecal header.
+
+.ih
+EXAMPLES
+
+1. To process an associated wavecal of a CCD spectroscopic observation in the
+data set with rootname "o3tt02030" and to write the MSM offset to the
+respective science image.
+Its respective science image has been previously
+2-D calibrated and cosmic-ray rejected.
+The reference files are in the directory "/data/reffiles/stdata/".
+Note that we must have assigned oref as an environment variable in Unix
+before starting the cl, and the value must include the trailing "/".
+
+.nf
+    cl> show oref
+    /data/reffiles/stdata/
+    cl> wavecal o3tt02030_crj.fits o3tt02030_wav.fits
+.fi
+
+2. After running 'wavecal',
+1-D extraction or 2-D rectification
+can be performed on the science image:
+
+.nf
+    cl> x1d o3tt02030_crj.fits output=o3tt02030_x1d.fits
+    cl> x2d o3tt02030_crj.fits o3tt02030_x2d.fits
+.fi
+.ih
+BUGS
+If 'wavecal' is run as a background job
+(e.g. "wavecal x_flt.fits x_wav.fits &"),
+it will almost certainly fail to do what is expected.
+The reason is that it calls other tasks
+('countfiles', 'pickfile' and 'keypar'),
+and it gets the results of those tasks from their parameter files.
+When a job is run in the background, however,
+tasks cannot update their parameter files
+(this is a feature of the cl),
+so when 'wavecal' accesses the
+'countfiles', 'pickfile' and 'keypar' parameter values,
+the values retrieved will be whatever was there
+from the last interactive use of those tasks.
+.ih
+REFERENCES
+.nf
+P. Hodge, March 1997, short memo.
+ICD47, R. Shaw, April 1997.
+Iraf task written by R. Katsanis.
+WAVECAL routines written by P. Hodge.
+.fi
+.ih
+SEE ALSO
+ calstis
+.endhelp

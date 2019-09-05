@@ -1,0 +1,84 @@
+.help waveoffset Jun97 stsdas.hst_calib.fos
+.ih 
+NAME
+waveoffset -- Compute the spectral offset.
+.ih 
+USAGE
+waveoffset input1 wave1 input2
+.ih 
+DESCRIPTION
+This routine computes the offset of a spectrum ('input2') from
+a reference spectrum ('input1') and its wavelength ('wave1'), 
+as a function of wavelength
+and diode position.  The input spectra are divided into a number of
+equally sized bins (specified by the 'nbins' parameter).  
+The second spectrum for each bin is cross-correlated 
+with the corresponding bin in the first spectrum.
+The position of the maximum in the correlation matrix is found.
+An offset is found by locating the maximum of the quadratic through
+that position and its two neighbors.  The offsets for all bins
+are placed in an output table as both diode and wavelength offsets.
+.IH
+PARAMETERS
+.ls input1 [file name]
+Name of the reference spectral data file.
+.le 
+.ls wave1 [file name]
+Name of the wavelength file corresponding to 'input1'.
+.le
+.ls input2 [file name]
+Name of the spectral data file whose offset is to be computed.
+.le
+.ls table = "waveoffset" [file name]
+Name of the output offset table file.  The output table from this task is
+used as input to the 'fitoffsety' task, which corrects dispersion
+coefficients for the offsets.  This table has the following
+columns:
+
+.nf
+   'WAVELENGTH' - Wavelength at the center of each bin (double).
+   'DIODE'      - Diode, or sample position, at bin centers (double).
+   'DELTAW'     - Offsets in wavelength units (double).
+   'DELTAD'     - Offsets in diode units (double).
+   'COUNTS'     - Total counts in bin for 'input2' (double).
+.fi
+.le
+.ls cross = "cross_corr.hhh" [file name]
+Name of the output image containing the correlation values for each bin.
+This image is two-dimensional: the first dimension is the search space 
+(2 * maxdist + 1); the second dimension is the number of bins.
+.le
+.ls (nbins = 5) [integer, min=1, max=100]
+Number of bins into which the data is to be divided.
+.le 
+.ls (maxdist = 10) [integer, min=1, max=100]
+Maximum distance---in data points---in which to search for the best
+correlation.  If the correlation is found at the edge of the
+search area (i.e., at distance 'maxdist'), it is assumed that the
+correlation was not
+found and the values of the offsets are set to INDEF.
+.le
+.ih 
+EXAMPLES
+1. Compute the offset between upper and lower apertures of the spectra
+in file 'h40blue'.  The upper aperture is in the first group of the
+file and the lower aperture in the second group.  The wavelengths for the
+first group are stored in 'wh40blue' (group 1).  Results are written
+to a table called 'offsets.tab'.
+
+.nf
+fo> waveoffset h40blue[1] wh40blue[1] h40blue[2] tab=offsets
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+fitoffsety
+.endhelp

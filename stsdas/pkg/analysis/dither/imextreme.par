@@ -1,0 +1,12 @@
+image,s,a,,,,>input image
+boxsize,r,h,INDEF,,,>size of box to look into
+x,r,h,INDEF,,,>X center of box
+y,r,h,INDEF,,,>Y center of box
+max,r,h,,,,>maximum value
+min,r,h,,,,>minimum value
+xmax,i,h,,,,>X coordinate of maximum
+ymax,i,h,,,,>Y coordinate of maximum
+xmin,i,h,,,,>X coordinate of minimum
+ymin,i,h,,,,>Y coordinate of minimum
+verbose,b,h,yes,,,>print at STDOUT ?
+version,s,h,"14Mar97",,,>date of installation

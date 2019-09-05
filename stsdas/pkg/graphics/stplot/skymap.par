@@ -1,0 +1,41 @@
+# skymap.par
+
+catalog,f,a,"",,,Table name of catalog for stars
+racen,r,a,INDEF,0,24,R.A. of chart center in Hours
+deccen,r,a,INDEF,-90,90,Declination of chart center in degrees
+scale,r,a,INDEF,0,,Scale of chart in "arc/mm
+size,r,a,INDEF,0,80,Full width of chart in degrees
+mirror,b,h,no,,,"Flip chart horizontally?
+
+Catalog psets"
+colnames,pset,h,,,,Table column names pset
+catlim,pset,h,,,,"Catalog limits pset
+
+Chart Elements"
+stars,b,h,yes,,,Draw stars?
+grid,b,h,yes,,,Draw chart grid?
+key,b,h,yes,,,Draw chart key?
+label,b,h,no,,,Label stars with names?
+center,b,h,no,,,"Mark central coordinate?"
+connect,b,h,no,,,"Connect objects with lines?
+
+Chart attributes"
+title,s,h,"",,,"Title"
+objstyle,s,h,"filled","|filled|open|erase|mfill|plus|cross|square|diamond|circle|",,Style of symbols
+bigspot,r,h,0.03,0.001,0.1,Size of brightest stars [NDC]
+smallspot,r,h,0.0002,0.00005,0.01,Size of faintest stars [NDC]
+brightstar,r,h,INDEF,,,Brightest stars plotted [mag]
+faintstar,r,h,INDEF,,,Faintest stars plotted [mag]
+format,s,h,"s=.75",,,Object label text characteristics
+constyle,s,h,"solid","|solid|dash|dotted|dotdash|",,"Line style connecting symbols"
+cenmark,s,h,"plus","|plus|cross|square|diamond|circle|",,"Symbol to mark central coordinate"
+cmsize,r,h,0.01,-80,1,"Size of central mark [degrees or NDC]"
+color,i,h,1,1,16,"Plot color [device-dependent]
+
+"
+device,s,h,"stdgraph",,,Graphics device
+append,b,h,no,,,Append to existing plot?
+interactive,b,h,yes,,,Allow interaction with plot?
+coords,*gcur,h,,,,"Graphics cursor input
+"
+Version,s,h,"10Oct95",,,"Date of installation"

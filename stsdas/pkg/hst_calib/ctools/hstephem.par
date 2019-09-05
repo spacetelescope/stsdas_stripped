@@ -1,0 +1,4 @@
+infile, f, a, "", , , 		">input file template"
+outtable, f, a, "", , ,		">output table name"
+
+mode, s, h, "al"

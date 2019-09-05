@@ -1,0 +1,104 @@
+include "wpdef.h"
+
+#$for (silrdx)
+$for (silrd)
+#################################################################################
+# SIGMA --	Compute sigma line from image lines with rejection.  Based 	#
+#		upon the `images.imcombine' package.				#
+#										#
+#		Development version:	11/90	RAShaw				#
+
+procedure sigma$t (data, mean, sigma, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# Data vectors
+$if (datatype == sil)
+real		mean[npts]		# Mean vector
+real		sigma[npts]		# Sigma vector (returned)
+$else
+PIXEL		mean[npts]		# Mean vector
+PIXEL		sigma[npts]		# Sigma vector (returned)
+$endif
+int		nimages			# Number of images to combine
+int		npts			# Number of pixels per image line
+
+$if (datatype == sil)
+real		sig, pixval
+$else
+PIXEL		sig, pixval
+$endif
+int		i, j			# Loop counters
+int		ncount			# Number of non-rejected values @pixel
+
+begin	do i = 1, npts {
+	    sig    = 0.
+	    ncount = nimages
+	    do j = 1, nimages {
+		pixval = Mem$t[data[j]+i-1]
+		if (IS_INDEF (pixval))
+		    ncount = ncount - 1
+		else
+		    sig = sig + (pixval - mean[i]) ** 2
+	    }
+	    if (ncount > 1)
+	        sigma[i] = sqrt (sig / (ncount - 1))
+	    else
+	        sigma[i] = BLANK
+	}
+end
+
+#################################################################################
+# WGTSIGMA --	Compute scaled and weighted sigma line from image lines with 	#
+#		rejection.  Based upon the `images.imcombine' package.		#
+#										#
+#		Development version:	11/90	RAShaw				#
+
+procedure wgtsigma$t (data, mean, sigma, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# Data vectors
+$if (datatype == sil)
+real		mean[npts]		# Mean vector
+real		sigma[npts]		# Sigma vector (returned)
+$else
+PIXEL		mean[npts]		# Mean vector
+PIXEL		sigma[npts]		# Sigma vector (returned)
+$endif
+int		nimages			# Number of images to combine
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Loop counters
+int		ncount			# number of non-rejected values @pixel
+$if (datatype == sil)
+real		sig, pixval
+$else
+PIXEL		sig, pixval
+$endif
+real		sumwts
+
+begin
+	do i = 1, npts {
+	    ncount = 0
+	    sig    = 0.
+	    sumwts = 0.
+	    do j = 1, nimages {
+		pixval = Mem$t[data[j]+i-1]
+		if (!IS_INDEF (pixval)) {
+		    ncount = ncount + 1
+		    sig    = sig + WTS[j] * (pixval / SCALES[j] - ZEROS[j] - 
+				mean[i]) ** 2
+		    sumwts = sumwts + WTS[j]
+		}
+	    }
+	    if (ncount > 1)
+	        sigma[i] = sqrt (sig / sumwts * ncount / (ncount - 1))
+	    else
+	        sigma[i] = BLANK
+	}
+end
+$endfor

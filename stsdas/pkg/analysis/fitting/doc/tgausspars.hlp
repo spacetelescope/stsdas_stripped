@@ -1,0 +1,73 @@
+.help tgausspars Jul90 stsdas.analysis.fitting
+.ih
+NAME
+tgausspars -- Edit the parameters for fitting a 2-d Gaussian function.
+.ih
+USAGE
+tgausspars
+.ih
+PARAMETERS
+.ls (a = 0.) [real]
+Initial guess for the background.
+.le
+.ls (ampl = INDEF) [real]
+Initial guess for the amplitude above background. If INDEF, the maximum 
+value found in the image will be used.
+.le
+.ls (xcent = INDEF) [real]
+Initial guess for the X center position. If INDEF, the task will use 
+the mid point in the X axis.
+.le
+.ls (ycent = INDEF) [real]
+Initial guess for the Y center position. If INDEF, the task will use 
+the mid point in the Y axis.
+.le
+.ls (fwhm = INDEF) [real]
+Initial guess for the full-width half-maximum (FWHM). If INDEF, the task
+will set it to 1/100 of the X axis size.
+.le
+.ls (ellip = 0.) [real, min=0., max=1.]
+Initial guess for the ellipticity.
+.le
+.ls (theta = 0.) [real]
+Initial guess for the position angle.
+.le
+.ls (boxsize = 40) [int, min=2, max=180]
+Size of square window, centered at (xcent,ycent), which defines the 
+fitted area. If either 'xcent' or 'ycent' is set to INDEF, the task
+will set 'boxsize' to be equal to the smaller of the image's X or Y
+axis. This may cause too many pixels to be included in the fit, which
+can slow down the computation in a significant way.
+.le
+.ls (va = no) [boolean]
+Vary background?
+.le
+.ls (vampl = yes) [boolean]
+Vary amplitude?
+.le
+.ls (vxcent = yes) [boolean]
+Vary X center position?
+.le
+.ls (vycent = yes) [boolean]
+Vary Y center position?
+.le
+.ls (vfwhm = no) [boolean]
+Vary FWHM?
+.le
+.ls (vellip = no) [boolean]
+Vary FWHM ellipticity ?
+.le
+.ls (vtheta = no) [boolean]
+Vary FWHM position angle?
+.le
+.ih
+.ih
+BUGS
+.ls
+If ANY parameter is set to INDEF, all other parameter settings will be ignored. 
+Thus, in order to set any parameter to a non-default value, ALL parameters must
+be set to non-INDEF values.
+.le
+SEE ALSO
+n2gaussfit, funcform
+.endhelp

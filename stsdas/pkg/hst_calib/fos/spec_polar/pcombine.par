@@ -1,0 +1,8 @@
+# parameter file for pcombine
+input,f,a,,,,Input image list
+output,f,a,,,,Output image name
+weight,s,h,uniform,uniform|variance,,Weighting method
+rejlim,i,h,0,0,800,Data quality rejection limit
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"22Jun94",,,Date of installation
+mode,s,h,"ql",,,

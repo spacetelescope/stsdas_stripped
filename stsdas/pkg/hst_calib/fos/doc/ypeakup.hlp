@@ -1,0 +1,79 @@
+.help ypeakup Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+ypeakup -- Plot positions of a ACQ/PEAK FOS observation
+.ih
+USAGE
+ypeakup root
+.ih
+DESCRIPTION
+'ypeakup' produces a graph and listing of the offsets, in arcseconds,
+used by an FOS ACQ/PEAK observation.
+.ih
+PARAMETERS
+.ls root [string]
+The rootname of the FOS ACQ/PEAK observation to analyze.  Only one can
+be specified.
+.le
+.ls (plot = yes) [boolean]
+Produce a plot of the positions.
+.le
+.ls (v2v3off = no) [boolean]
+Only calculate the offsets in V2/V3 space.  If "no", then offsets will
+be computed in both V2/V3 and in X/Y space, both in arcseconds.
+.le
+.ls (pos_tab = "") [file name]
+If specified, the name of the table to create containing the X/Y
+offset positions.
+.le
+.ls (short_title = no) [boolean]
+Place only a short title on the plot.
+.le
+.ls (igi_script = "") [file name]
+If specified, the name of a file that will be created containing the
+igi script that will produce the plot.  If specified, no plot will
+actually be seen; the 'igi' task will need to be run with this file as
+input.
+.le
+.ls (xoff) [Output: real]
+This parameter will contain the value of the offset in X chosen as
+the location of the target.
+.le
+.ls (yoff) [Output: real]
+This parameter will contain the value of the offset in Y chosen as
+the location of the target.
+.le
+.ls (v2off) [Output: real]
+This parameter will contain the value of the offset in V2 chosen as
+the location of the target.
+.le
+.ls (v3off) [Output: real]
+This parameter will contain the value of the offset in V3 chosen as
+the location of the target.
+.le
+.ih
+EXAMPLES
+1. Produce a plot of the FOS ACQ/PEAK observation 'y15i0206t'
+
+.nf
+  fo> ypeakup y15i0206t
+.fi
+.ih
+BUGS
+This task is written as a cl script and is therefore slow and not
+robust; needs to be written as a compiled task.
+
+There is a period of time, from June 20, 1995 to November 19,
+1995, where the necessary keywords in the image headers for ACQ/PEAKS
+where not populated correctly.  If this task is run for any of those
+observations, the results will be nonsensical.
+.ih
+REFERENCES
+Author: Jonathan Eisenhamer, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+.endhelp

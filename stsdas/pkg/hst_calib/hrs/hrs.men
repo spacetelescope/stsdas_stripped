@@ -1,0 +1,13 @@
+Menu for the package stsdas.hst_calib.hrs
+
+    calhrs - Pipeline calibration for HRS.
+    dopoff - Calculate on-board Doppler compensation for specalign.
+     obsum - Produce brief, time-ordered summary of groups in data.
+    reflux - Apply new absolute sensitivity corrections to HRS spectra.  
+showspiral - Build and display spiral-search map.
+ spiralmap - Build spiral-search map.
+   tacount - Calculate observed count rate for target acquisition.
+   waveoff - Determine offset between calibrated wavelength and WAVE spectra.
+  zwavecal - Create new wavelength dispersion based on WAVE spectra.
+
+(Type "help hrs opt=sys" for more information about the 'hrs' package).

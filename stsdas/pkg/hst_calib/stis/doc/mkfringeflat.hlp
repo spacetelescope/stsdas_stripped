@@ -1,0 +1,230 @@
+.help mkfringeflat Jan2013 stis
+.ih
+NAME
+mkfringeflat -- Match fringes in STIS fringe flat to those in science data
+.ih
+USAGE
+mkfringeflat inspec inflat outflat
+.ih
+PARAMETERS
+.ls inspec
+Input science 2-D spectral image (typically created by prepspec)
+.le
+.ls inflat
+Input fringe flat field image (typically created by normspflat)
+.le
+.ls outflat
+Output fringe flat field image
+.le
+.ls (do_shifts = yes)
+Shift flat field to match fringes in science spectrum?
+.le
+.ls (beg_shift = -0.5)
+Starting shift for shift determination
+.le
+.ls (end_shift = 0.5)
+End shift for shift determination
+.le
+.ls (shift_step = 0.1)
+Step through range of shifts for shift determination
+.le
+.ls (do_scales = yes)
+Scale fringe amplitude in flat field to match fringes in science spectrum?
+.le
+.ls (beg_scale = 0.8)
+Starting scale for scale determination
+.le
+.ls (end_scale = 1.2)
+End scale for scale determination
+.le
+.ls (scale_step = 0.04)
+Step through range of scales for scale determination
+.le
+.ls (extrloc = INDEF)
+Central line (row) to be extracted from 2-D spectrum. (INDEF only
+applicable to point source spectra)
+.le
+.ls (extrsize = INDEF)
+Number of lines (rows) to be extracted from 2-D spectrum. (INDEF only
+applicable to point source spectra)
+.le
+.ls (opti_spreg = "INDEF")
+Spectral range (first:last, e.g., 82:1106) for normalizing science
+spectrum.
+.le
+.ls (rmsregion = "725:900")
+Spectral range (first:last) in which to measure RMS'es.
+.le
+.ih
+DESCRIPTION
+This task provides the second (and last) step towards the creation of a
+"fringe flat" image that can be used to eliminate the fringes that are
+present in STIS first-order CCD spectra at wavelengths longer than
+about 700 nm. This task is suitable for flat field images that have
+been normalized by means of task normspflat (which supports both
+contemporaneous flat field images and library flat field images).
+
+The actual fringe correction is performed by issuing task
+defringe for which output image outflat of MKFRINGEFLAT is
+an input parameter.
+
+The main goal of this task is to determine the best match between the
+fringes in the input flat field image inflat and those in the
+science spectrum inspec. NOTE: It is advised to prepare the
+science spectrum by means of task prepspec.
+
+The match is made in two separate steps, which can be issued
+independently by means of boolean switches do_shifts and
+do_scales:
+(1) if do_shifts = yes, determine the offset along the dispersion
+direction between the flat field image and the science spectrum. This
+is done empirically as follows: After shifting the flat field image
+along the dispersion direction by discrete steps (the range and
+increment of which are specified by input parameters beg_shift,
+end_shift and shift_step, respectively), the science
+spectrum is divided by each individual shifted flat field. The "flatfielded"
+science spectra is subsequently normalized by a spline fit to their
+"continuum" (for which a suitable spectral range can be provided in
+input parameter opti_spreg, see below for more information), and
+the variance of the "flatfielded" science spectra is measured in the
+spectral range specified by input parameter rmsregion, which
+should be a spectral range devoid of (strong) spectral lines. IT IS
+IMPORTANT TO CHOOSE THIS PARAMETER CAREFULLY. After collecting the
+variances of the flatfielded spectra, a inverse-variance-weighted
+shift is calculated and applied to the input flat field image.
+(2) if do_scales = yes, determine the best match between the fringe
+amplitude in the flat field image with the fringe amplitude in the science
+spectrum. This is equivalent to a correction for scattered light (see
+STIS Instrument Science Report 98-16 for an extensive discussion). This
+match is done empirically as follows: After scaling the amplitude of
+the fringes in the flat field image by discrete factors (the range and
+increment of which are specified by input parameters beg_scale,
+end_scale and scale_step, respectively), the science
+spectrum is divided by each scaled flat field. The "flatfielded"
+science spectra are subsequently normalized by a spline fit to their
+"continuum" after which the variance of the "flatfielded"
+science spectra is measured (similar to case (1) above, using the same input
+parameters opti_spreg) and rmsregion). After collecting
+the variances of the flatfielded spectra, a inverse-variance-weighted
+shift is calculated and applied to the input flat field image.
+
+The parameter opti_spreg is the spectral region used by the task to
+perform a spline fit to the continuum of the spectrum of the science
+target in_spec. Although the spline fit will ignore pixels that
+have a value more than 5 sigma different from the local average, it is
+advised NOT to include strong (and broad) spectral lines in
+opti_spreg. The default "INDEF" setting will select the full
+spectral region covered by the input spectrum.
+
+SPECTRAL 1-D EXTRACTIONS
+
+The task allows for user-specified as well as `default' 1-D
+extractions, through the parameters extrloc and
+extrsize. When parameter extrloc is INDEF, the task will
+search for the center of the brightest object in the central 20% of
+the CCD along the slit and assign the fitted peak pixel as the center
+of the extraction (which is mostly appropriate for single point
+sources in the center of the slit). When extrsize is INDEF, the
+task will extract the `default' number of pixels perpendicular to the
+dispersion direction. This default extraction size is 11 pixels for a
+long-slit spectrum. In case a short-slit fringe flat is used (i.e.,
+using the 0.3X0.09 or 0.2X0.06 slits), the extraction size is chosen
+to stay within the spatial extents of those slits, i.e., 9 and 7
+pixels respectively.
+Note that in cases of extended objects or off-center point sources,
+the INDEF settings for extrloc and extrsize are very
+likely to be inadequate; in those cases, it is advised to provide
+appropriate values for extrloc and extrsize.
+
+INPUT AND OUTPUT IMAGES
+
+The input STIS science spectral image is assumed to be a FITS "imset"
+file, with three extensions in an imset: science (EXTNAME=SCI), error
+(ERR), and data quality (DQ). As far as the input flat field image is
+concerned, MKFRINGEFLAT can handle FITS imset files with three
+extensions as well as "old-fashioned" FITS files (with only one
+extension). The output FITS file only has one extension.
+
+.ih
+EXAMPLES
+
+1. Match the fringes in a STIS flat field image to those in a STIS
+point source spectrum by shifting the flat field along the dispersion and
+by scaling the fringe amplitude.
+.nf
+
+    cl> mkfringeflat science.fits flat.fits flat_matched.fits
+.fi
+
+2. Same as 1, for a specified off-center extraction and a
+non-default range of shifting factors.
+.nf
+
+    cl> mkfringeflat science.fits flat.fits flat_matched.fits \
+    >>> beg_shift=0.4 end_shift=1.4 scale_step=0.2 extrloc=610 extrsize=5
+.fi
+
+3. Same as 1, but only by scaling the fringe amplitude, with a
+non-default range of scaling factors.
+.nf
+
+    cl> mkfringeflat science.fits flat.fits flat_matched.fits \
+    >>> do_shifts- beg_scale=1.00 end_scale=1.20 scale_step=0.04
+.fi
+
+4. Same as 1, but perform the normalization of the science spectrum
+for a non-default spectral range
+.nf
+
+    cl> mkfringeflat science.fits flat.fits flat_matched.fits \
+    >>> opti_spreg="500:1000"
+.fi
+
+5. Same as 1, but determine the variance of the normalized spectra
+within a non-default spectral range
+.nf
+
+    cl> mkfringeflat science.fits flat.fits flat_matched.fits \
+    >>> rmsregion="500:1000"
+.fi
+
+6. Example of all steps involved in fringe correction for a G750M
+spectrum o3st20gdr_raw.fits and its associated contemporaneous fringe
+flat o3st20gds_raw.fits:
+.nf
+
+    cl> normspflat o3st20gds_raw.fits normff750M.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gdr_wav.fits"
+    cl> prepspec o3st20gdr_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gdr_sx2.fits normff750M.fits normff750M_fin.fits
+    cl> defringe o3st20gdr_sx2.fits normff750M_fin.fits \
+    >>> outspec="o3st20gdr_final.fits" do_cal-
+.fi
+
+7. Same as 6, but for a G750L spectrum o3st20gda_raw.fits,
+wavecal o3st20gda_wav.fits and contemporaneous fringe flat
+o3st20gdb_raw.fits:
+.nf
+
+    cl> normspflat o3st20gdb_raw.fits normff750L.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gda_wav.fits"
+    cl> prepspec o3st20gda_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gda_crj.fits normff750L.fits normff750L_fin.fits
+    cl> defringe o3st20gda_crj.fits normff750L_fin.fits \
+    >>> outspec="o3st20gda_defr.fits" do_cal-
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on April 3, 1998.
+Task modified by Paul Barrett on October 21, 2004.
+Task modified by Phil Hodge on April 20, 2011.
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+normspflat, prepspec, defringe
+.endhelp

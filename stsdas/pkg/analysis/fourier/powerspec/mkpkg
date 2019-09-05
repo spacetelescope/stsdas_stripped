@@ -1,0 +1,13 @@
+# Update the autocorr and powerspec application code in the fourier
+# package library.
+# Author:  C.D.Biemesderfer, 13-JUN-1988
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	powerspec.x    		<imhdr.h> ../fourier.h ../fterr.h powerspec.h
+	ftsmallp.x    		<imhdr.h> ../fourier.h powerspec.h
+	;

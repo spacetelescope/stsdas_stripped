@@ -1,0 +1,26 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    2 /                                                
+PSIZE   =                   64 /                                                
+                                                                                
+                               / HRS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'HRS     '           / instrument                                     
+FILETYPE= 'DQ INIT'            / data quality initialization file               
+HEADNAME= 'ZDQIFILE2.R5H'      / reference file set header filename             
+DATANAME= 'ZDQIFILE2.R5D'      / reference file set data filename               
+DATE    = '                  ' / date this file originated (yyyy-mm-dd)         
+                                                                                
+                               / HRS DATA REDUCTION KEYWORDS                    
+DETECTOR=                    1 / detector (1-2)                                 
+                                                                                
+                               / HRS DATA QUALITY KEYWORDS                      
+USEAFTER= '        '           / use this file for obs. taken on/after this date
+PEDIGREE= 'INFLIGHT'           / data source (INFLIGHT,GROUND,MODEL,DUMMY) &date
+DESCRIP = 'Description of where the reference data is from'                     
+                                                                                
+END                                                                             

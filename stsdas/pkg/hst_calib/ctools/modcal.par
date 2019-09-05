@@ -1,0 +1,4 @@
+keywords,pset,a,,,,"Pset containing calibration parameters"
+accept,s,ql,"no","|no|yes|abort",,"Accept the current parameters?"
+result,s,hl,"no","|no|yes|abort",,"Result of accept question"
+Version,s,h,"21Jul97",,,"Date of Installation"

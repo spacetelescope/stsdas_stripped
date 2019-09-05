@@ -1,0 +1,5 @@
+image,f,a,"",,,Input image file
+members,s,a,"",,,Which group members to plot
+title,s,h,"",,,Plot title to override default
+border,r,h,3,0,25,"Fraction of plot size to add as border [%]"
+device,s,h,"stdgraph",,,Graphics device

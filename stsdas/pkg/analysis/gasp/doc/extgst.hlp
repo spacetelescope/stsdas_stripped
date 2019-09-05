@@ -1,0 +1,116 @@
+.help extgst Aug93 stsdas.gasp
+.ih
+NAME
+extgst -- Extract rows from one or more guide star tables.
+.ih
+USAGE
+extgst intablist outable ra dec width
+.ih
+DESCRIPTION
+Select guide stars from one or more guide star tables and 
+write them to a new STSDAS table.  The user specifies a list 
+of input table names as a file name template.  The input 
+table(s) are assumed to be output from the 'sgscind' task, 
+i.e., one or more STSDAS tables containing guide star regions 
+from the CD-ROM Guide Star Catalog.  The 'extgst' task uses 
+the specified region center and width to define a field from 
+which to select stars from the input tables.  One may also 
+specify a pair of magnitudes; only stars within these limits 
+are selected from the catalog. Coordinates and magnitudes of 
+the selected stars are written to a new STSDAS table.  
+
+By default, only the coordinates and magnitudes from the GSC catalog
+tables are saved in the output table.  The allcols paramater may be
+toggled to permit saving all of the columns from the GSC into the
+output merged table.
+
+Note that the GSC coordinates are equinox J2000; this should also be
+true of the input field center.  See the precess tasks to precess
+coordinates.
+
+.ls Table Columns
+The columns in the GSC catalog region table are described as follows:
+.nf
+
+Column Name    Data Type   Print Format   Units
+------ ----    ---- ----   ----- ------   -----
+RA_HRS         Double      %11.2h         hours
+RA_DEG         Double      %11.1h         degrees
+DEC_DEG        Double      %11.1h         degrees
+MAG            Real        %6.1f          magnitudes
+GSC_ID         Integer     %5d
+PLATE_ID       String      %-4s
+POS_ERR        Real        %5.1f          degrees
+MAG_ERR        Real        %4.2f          magnitudes
+MAG_BAND       Integer     %2d
+CLASS          Integer     %1d
+MULTIPLE       String      %-1s
+
+.fi
+The first column, RA_HRS does not appear in the GSC tables on the CD,
+but is written to the output tables by extgst.  It contains the same
+R.A. coordinates as RA_DEG, but the units are hours rather than
+degrees.  If allcols=no, then only the first four columns are written
+to the output table.
+
+See the stsdas.tools package, the tlcol task in particular for more
+information regarding the attributes of table columns.
+.le
+
+.ih
+PARAMETERS
+.ls intablist [file name template]
+List of input tables to search.  This parameter can take a 
+list of files (delimited by commas), wildcard characters to 
+specify a group of files, or the name of a list file that 
+contains the names of files to be searched. 
+.le
+.ls outable [file name]
+Output STSDAS table containing selected stars.
+.le
+.ls ra [real, min = 0, max = 24]
+Right ascension of field center in hours, equinox J2000.
+.le
+.ls dec [real, min = -90, max = 90]
+Declination of field center in degrees, equinox J2000.
+.le
+.ls width [real, min = 0, max = 180]
+Width of field (in degrees).
+.le
+.ls (mag1 = INDEF) [real]
+Upper brightness limit (in magnitude).  If both 'mag1' and 
+'mag2' are passed INDEF values, the search will be 
+unrestricted. 
+.le
+.ls (mag2 = INDEF) [real]
+Lower brightness limit in magnitude.   If both 'mag1' and 
+'mag2' are passed INDEF values, the search will be 
+unrestricted. 
+.le
+.ls (onestar = yes) [boolean]
+Use only one entry for a given star?
+.le
+.ls (plateid) [boolean]
+Guide star plate ID.  If 'onestar= es' and 'plateid' is 
+specified, then use only stars from this plate.
+.le
+.ls (allcols = no) [boolean]
+Use all GSC columns?  If yes, copy all table columns for selected stars
+from the GSC catalog table(s) to the output merged table.  Otherwise,
+copy only coordinates and brightness, the default.
+.le
+.ls (nstars = INDEF) [integer]
+The number of stars selected.  This is an output parameter.
+.le
+.ih
+EXAMPLE
+.ih
+BUGS
+.ih
+SEE ALSO
+regions, targets,  sgscind
+
+
+Type "help gasp opt=sys" for more information about using the 'gasp'
+package and the Guide Star Catalog.
+.endhelp

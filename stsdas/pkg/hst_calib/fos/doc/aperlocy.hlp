@@ -1,0 +1,191 @@
+.help aperlocy Jun97 stsdas.hst_calib.fos
+.ih 
+NAME
+aperlocy -- Analyze a FOS target acquisition image.
+.ih 
+USAGE
+aperlocy input table
+.ih 
+DESCRIPTION
+This routine will determine the location of a source in a Faint
+Object Spectrograph (FOS) target acquisition image.
+Results will either be placed in a new table or appended to an
+existing table.  The following information about the
+image is extracted by this task:
+.nf
+
+o  The left and right edge positions of the signal, computed as 
+   the location where the flux is 1/2 the maximum flux in the 
+   X-profile of the image (computed by summing image lines).
+
+o  The upper and lower edge positions in the Y-profile, as
+   computed by summing samples in each line.
+
+o  The X-center and Y-center (i.e., the midpoint of the edge
+   positions on each axis).
+
+o  The X and Y flux-weighted centroid of the image.
+ 
+o  The X and Y centers computed by cross-correlating the X and
+   Y profiles with templates of user-specified widths.
+
+o  The area of the image, computed as:
+      (right_edge - left_edge) * (lower_edge - upper_edge)
+ 
+o  The total flux in the image.
+
+.fi
+Output units are selectable.
+One option is for units of diodes in the X-direction and deflection
+(ybase) units in the Y-direction and the other option is for units
+of image pixels in both the X and Y directions.
+
+In the event that both apertures of a paired aperture are viewed in a
+single image, the image will be divided, and each aperture processed
+separately.  The first image will be from Y-positions 'yfirst' to 
+'ymiddle', and the second from Y-positions 'ymiddle' to 'ylast'.
+.ih 
+PARAMETERS
+.ls input [file name template]
+The name of the file containing the FOS image to be analyzed.
+Input data must be sorted by ascending Y-position.
+Normally, the data will be a single multiple group image or a two-dimensional
+image.
+.le
+.ls table = "apertab" [file name]
+The name of the output table to be written or to which data will
+be appended.  This table will have the following columns:
+
+.nf
+     'APER_ID'    - Aperture name.
+     'APER_POS'   - Aperture position (single, lower, or upper).
+     'LEFT_EDGE'  - Location of left edge.
+     'RIGHT_EDGE' - Location of right edge.
+     'UPPER_EDGE' - Upper edge location.
+     'LOWER_EDGE' - Lower edge location.
+     'X_CENTER'   - Center computed from edges (or on-board
+		    deflection calibration of 'SC1' and 'SC2').
+     'Y_CENTER'   - Center computed from edges or the on-board
+		    deflection calibration.
+     'X_CENTROID' - Centroid in the X-direction.
+     'Y_CENTROID' - Centroid in the Y-direction.
+     'X_CROSSCOR' - Center in X from cross-correlation.
+     'Y_CROSSCOR' - Center in Y from cross-correlation.
+     'AREA'       - Area of aperture computed from edge positions.
+     'FLUX'       - Total flux in the image.
+     'TIME'       - Spacecraft packet time (for first line of data).
+.fi
+.le
+.ls (tabstat = "write") [string, allowed values: write | append]
+Output table status.  If "append", then the
+results will be written to the end of an existing table; in
+this case, the input map must be for the same aquisition
+mirror mode as the information previously stored in the table.  When
+"write" is indicated, a new output table is created having the name
+specified by the 'table' parameter.
+.le 
+.ls (pixels = no) [boolean]
+Switch that selects output units. The default setting results in units
+of diodes in the X direction and deflection (ybase) units in the Y
+direction. Setting 'pixels = yes' will give output data in units of
+image pixels for both the X and Y directions.
+.le
+.ls (yfirst = 0.0) [real]
+The first Y-position to be used for computing the aperture location.
+If 'pixels = no' this value is assumed to be in ybase units, otherwise
+it is assumed to be in pixels.
+For a paired aperture, 'yfirst' gives the first position
+for the lower aperture. If no value is specified for this parameter (i.e.,
+it is set to 0), then 'yfirst' is set to the first Y-position in the input 
+image.
+.le
+.ls (ylast = 0.0) [real]
+The last Y-position to use for computing the aperture location (in
+either ybase or pixel units).
+For a paired aperture, 'ylast' gives the location of the last 
+Y-position to be used for the second, or upper, aperture.  If 'ylast = 0'
+then it will be set to the last Y-position in the input image.
+.le
+.ls (ymiddle = 0.0) [real]
+The Y-position separating the upper and lower apertures of a 
+paired aperture.  This parameter is only used if the 'aperpos'
+parameter is set to "both".
+.le
+.ls (d1 = 0.0) [real]
+The first diode (or X pixel) position to use.  
+This parameter can be used to limit the region in the X-direction where 
+processing is to be done.  If 'd1 = 0',
+then the region starts at the first data point.
+.le
+.ls (d2 = 512.0) [real]
+The last diode (or X pixel) to use.  
+If 'd2 = 512', then the region of data used will end at the last data
+point in the image.
+.le
+.ls (aperpos = "both") [string, allowed values: upper | lower | both]
+This parameter specifies which aperture of an
+aperture pair is to be used.  For single apertures, this parameter is ignored.
+.le
+.ls (twidthx = INDEF) [integer, min=1, max=49]
+Cross correlation template width (in pixels) for the X-direction.
+This parameter must be passed an odd value, otherwise it will be incremented 
+before processing.
+If 'twidthx = INDEF', then the task will calculate a suitable value using
+twidthx = NXSTEPS + 1, where NXSTEPS is the number of x-substeps employed
+in the observation. NXSTEPS is read from the input image header.
+.le 
+.ls (twidthy = INDEF) [integer, min=1, max=99]
+Cross correlation template width (in pixels) for the Y-direction.
+This parameter must be passed an odd value, otherwise it will be incremented 
+before processing.
+If 'twidthy = INDEF', then the task will calculate a suitable value using
+twidthy = 256/YSPACE, where YSPACE is the number of deflection units
+between each ystep in the image. YSPACE is read from the input image header.
+.le
+.ih
+EXAMPLES
+1. Process a single aperture using all groups of the observation 
+image 'fosmap.c1h'.  Create a new table called 'apertab' for the results.
+The results will be in units of diodes and ybases.
+
+.nf
+fo> aperlocy fosmap.c1h apertab
+.fi
+
+2. Process another image called 'fosmap2.c1h',
+appending the results to 'apertab'; process both apertures of a
+paired aperture. Separate the apertures at Y-position equal to 1600.
+ 
+.nf
+fo> aperlocy fosmap2.c1h apertab tabstat=append ymiddle=1600
+.fi
+
+3. Process only the lower aperture of a paired aperture image called
+'y13c1234t.c1h'. Restrict the search to a y-axis upper limit corresponding
+to a y-position of -244 ybase units.
+
+.nf
+fo> aperlocy y13c1234t.c1h apertab ylast=-244 aperpos=lower
+.fi
+
+4. Process only the lower aperture of a paired aperture image restricting
+the search to a y-axis upper limit of 32 pixels. Also have the results
+computed in units of pixels.
+
+.nf
+fo> aperlocy y13c1234t.c1h apertab pixels=yes ylast=32 aperpos=lower
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+apscale
+.endhelp

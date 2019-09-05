@@ -1,0 +1,10 @@
+input,s,a,"",,,"Names of input corrtag files"
+outdir,s,h,"",,,"Output directory name"
+update_input,b,h,no,,,"Update keywords in input corrtag files?"
+find_target,b,h,no,,,"Search for target spectrum?"
+cutoff,r,h,0.,,,"Cutoff for sigma of found location"
+location,s,h,"",,,"Locations at which to extract spectra"
+extrsize,s,h,"",,,"Extraction heights"
+verbosity,i,h,1,0,2,"Set more or fewer messages"
+version,s,h,"",,,"Date of Installation"
+mode,s,h,"al",,,

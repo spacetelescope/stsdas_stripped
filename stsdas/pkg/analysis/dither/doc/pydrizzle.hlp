@@ -1,0 +1,237 @@
+.help pydrizzle Sept03 stsdas.analysis.dither
+.ih
+NAME
+pydrizzle v4.4 -- Automated Python-based interface for the "drizzle" task
+.ih
+USAGE
+pydrizzle input
+.ih
+PARAMETERS
+.ls input = "" [file name]
+The name of the input image file or association table which is to be "drizzled".
+.le
+.ls output = "" [file name]
+The name for the output data image desired by the user to replace the default
+value computed by PyDrizzle.
+.le
+.ls (section) [string]
+Specification of the image chip to be drizzled from the input image(s).
+This can be given either as the FITS extension name, such as 'sci,1', or
+as the group ID, such as '1' or '2'. Additionally, a comma-separated list 
+of integer values can be given as well, and will be interpreted as the
+FITS EXTVER value.  The default will be to process all chips of each 
+input image.
+.le
+.ls (prodonly = yes) [boolean]
+This parameter determines whether to use the output product specified in an ASN 
+table as the input to PyDrizzle (when set to 'yes'), or use the inputs
+to the ASN table as the inputs to PyDrizzle (when set to 'no').
+.le
+.ls (kernel = "square") [string]
+The form of the kernel function used to distribute flux onto the output
+image. The options are currently
+square|point|gaussian|turbo|tophat|lanczos3. Square is the default. 
+See the 'drizzle' help page for more information about the different kernels.
+.le
+.ls (units = "counts|cps") [string]
+Whether the units of the output image are counts or counts-per-second.
+Default value will be 'cps' to best support mosaicing of images where not
+all pixels will have the same combined exposure time.
+.le
+.ls (pixfrac = "1.0") [real]
+A real number between 0 and 1 giving the
+size of the footprint, or "dropsize", of a pixel in units of the
+input pixel size.   If pixfrac is set
+to less than 0.001 it is reset to 0.001 for processing. 
+In the case of kernels which are not "square" this parameter is used
+to define the FWHM of the kernel function in units of the input pixels.
+For the "point" kernel this value is meaningless and is ignored.
+.le
+.ls (rotate = no) [boolean]
+Specify whether the output should be rotated. This rotation gets handled 
+directly by 'drizzle' during the transformation.
+.le
+.ls (orient = 0.0) [real]
+The absolute orientation on the sky of the output image's Y-axis, if the 
+output image will be rotated.
+.le
+.ls (psize) [real]
+The size of the output pixels in arcseconds.
+.le
+.ls (ra) [real]
+Right ascension of the output image's reference pixel to override the
+default value computed by PyDrizzle.
+.le
+.ls (dec) [real]
+Declination of the output image's reference pixel to override the
+default value computed by PyDrizzle.
+.le
+.ls (xsize) [integer]
+The size in X of the output pixel grid. This value will override the 
+default value computed by PyDrizzle. 
+.le
+.ls (ysize) [integer]
+The size in Y of the output pixel grid. This value will override the 
+default value computed by PyDrizzle. 
+.le
+.ls (bits_single = 0) [integer]
+Integer sum of all the DQ bit values from the input image's DQ array 
+that should be considered 'good' when building the weighting mask for use
+when 'single=yes'. 
+
+A value of 'INDEF' indicates no mask
+should be created from DQ information, except for WFPC2 data. 
+For WFPC2, only the edge mask will be generated for the 
+pyramid on WFPC2 data and no static mask will be generated for any other
+data.
+.le
+.ls (bits_final = 0) [integer]
+Integer sum of all the DQ bit values from the input image's DQ array 
+that should be considered 'good' when building the weighting mask for 
+final drizzling (when 'single=no'). 
+
+A value of 'INDEF' indicates no mask
+should be created from DQ information, except for WFPC2 data. 
+For WFPC2, only the edge mask will be generated for the 
+pyramid on WFPC2 data and no static mask will be generated for any other
+data.
+.le
+.ls (wt_scl = 'exptime') [string]
+Weighting factor for input image. If wt_scl=exptime then wt_scl will be set
+equal to the exposure time found in the image header.   This is the
+standard operation and is recommended. It is also possible to give
+wt_scl=expsq for weighting by the square of exposure time. The latter is
+optimal for read-noise dominated images.
+.le
+.ls (in_units = "counts|cps") [string]
+Whether the units of the input image are counts or counts-per-second.
+Default value is 'counts'. 
+.le
+.ls (idckey = "idctab") [string]
+Keyword to use for selecting the reference file which contains
+the distortion coefficients for the data. 
+.le
+
+.ls (clean = yes) [boolean]
+Specify whether or not to remove the temporary files created by PyDrizzle
+to run 'drizzle' on the input data.
+.le
+.ls (save = no) [boolean]
+Specify whether or not to keep the original output files created by 'drizzle'.
+.le
+.ls (build = yes) [boolean]
+Specify whether or not to PyDrizzle should combine the separate 'drizzle' output
+files into a single multi-extension format FITS file.  This combined output
+file will contain a SCI (science), a WHT (weight), and a CTX (context) 
+extension.
+.le
+.ih
+DESCRIPTION
+PyDrizzle provides a semi-automated interface for computing the parameters
+necessary for running 'drizzle' and for controlling the operation of 'drizzle'
+based on those parameters. It was written using Python and relies on the Python 
+interface to the IRAF environment, PyRAF, for its operation. As a result, 
+this task can only be run under PyRAF.
+ 
+This task understands how to work with single images, sub-array images,
+dither associations and mosaic associations for WFPC2, STIS, NICMOS and 
+ACS observations.
+This task controls the operation of the image combination method known
+formally as 
+variable-pixel linear reconstruction and informally as "drizzling"
+(http://www.stsci.edu/~fruchter/dither/drizzle.html). A more detailed
+explanation of 'drizzle' can be found in the help file for that task.
+
+Processing dithered or mosaiced data with PyDrizzle gets handled through the use
+of ACS/NICMOS-style association tables.  These tables are simple binary FITS
+tables with a few columns to specify the input exposures and the rootname of the
+output exposure, along with any residual offset or rotation relative to the
+headers WCS information necessary to get precise alignment when drizzling
+the data together.  Another Python task, 'buildasn', was written as part of the 'pydrizzle'
+package to help a user build an association table from a set of observations in
+a user's directory.  This can then be used as input to PyDrizzle to combine all
+those observations in one step.
+
+The 'drizzle' task has a rather daunting number of parameters to allow it
+to handle many different cases.  Most of that complexity now gets handled
+by PyDrizzle by allowing the user to simply specify their desired output
+image parameters. This allows the user to control the size of the output
+image, the RA and Dec of the reference position of the output image (which
+defaults to the center), and even the orientation and pixel scale, without
+having to worry how it affects the parameters needed for running 'drizzle'.
+
+It will still allow the user the option to vary 'drizzle'
+task parameters which control how the combination gets performed, such as
+"kernel" and "pixfrac".  The input data gets interrogated to then determine 
+the shifts, rotations, and scaling factors necessary to produce the desired
+output image and feeds them to the 'drizzle' task automatically.  PyDrizzle
+does NOT involve any modification of the 'drizzle' task and merely runs
+'drizzle' as a separate process after setting it up with the computed
+parameters.
+
+All the parameters used in the processing are present in output image 
+header for each drizzling operation that was performed. The world coordinate 
+system is also modified to reflect the shifts,
+scale changes and rotations applied. This is done when the output file is
+created, subsequent drizzle runs "on top" of the same file will not modify the 
+WCS items in the header further. Furthermore, PyDrizzle updates the exposure
+time of the output image to correctly match the true combination of the input
+observations. 
+
+This task was written by Warren Hack (STScI) with considerable debugging, 
+design review support and code contributions from: John Blakeslee (JHU), 
+Gerhardt Meurer(JHU) and Richard Hook (ST-ECF). 
+
+PyDrizzle can be referenced in publications by citing:
+.nf
+
+Hack, W. J. 2002, "PyDrizzle: Using Python to Simplify Running the IRAF Task
+'drizzle'", ADASS XI, ASP Conference Series, 281, 197.
+
+.fi 
+
+An initial description of the use of PyDrizzle on ACS data in the pipeline
+can be found in the ACS Data Handbook, available online through the 
+ACS Instrument WWW page at:
+.nf
+http://www.stsci.edu/instruments/acs
+.fi
+
+The ACS Instrument WWW page at STScI also provides examples of PyDrizzle being
+used on ACS data. 
+
+The 'drizzle' task, though, is a collaborative effort between Andy Fruchter and
+Richard Hook.  The task was written by Richard Hook (ST-ECF, rhook@eso.org). 
+Andy Fruchter (STScI, fruchter@stsci.edu) 
+thought up most of the ideas used. For more information see:
+.nf
+
+http://www.stsci.edu/~fruchter/dither/drizzle.html
+.fi
+
+or the following reference which should be
+given when citing the method in a publication which makes
+use of it:
+.nf
+A.S. Fruchter & R. N. Hook, 1998, "Drizzle: A Method for the Linear 
+Reconstruction of Undersampled Images", astro-ph/9808087, accepted for 
+publication in the February 2002 PASP
+
+.fi
+.ih
+EXAMPLES
+.nf
+
+1: Combine the calibrated observations from an ACS dithered
+association given by 'jdither_asn.fits' whose output rootname is 'jdither'.
+
+--> pydrizzle jdither_asn.fits mode=h
+
+This will read the association table, extract the default output name,
+extract the name of the calibrated product for each dither position,
+compute all the shifts, and run drizzle on each observation. The result
+will be written out to 'jdither_drz.fits' as a multi-extension FITS file.
+
+.ih
+SEE ALSO
+.endhelp

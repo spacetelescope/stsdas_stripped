@@ -1,0 +1,35 @@
+.help readgeis Sep03  pyraf
+.ih
+NAME
+readgeis -- Convert GEIS files to extension FITS files
+.ih
+USAGE
+![path]readgeis.py input output
+.ih
+DESCRIPTION
+This Python task converts GEIS file(s) to extension FITS file(s).
+Since this is a Python task, to run it stand-alone, it must be invoked by 
+an escape(!).  It can also be used in the Python environment as a module.
+
+To find out the path of this task inside pyraf, first you need to:
+
+import readgeis
+
+then type:
+
+readgeis
+
+it will show the path of the task, e.g. /usr/python/pyraf/lib/, you 
+can now run the task stand-alone:
+
+!/usr/python/pyraf/lib/readgeis.py input output
+
+or 
+
+!/usr/python/pyraf/lib/readgeis.py -h 
+
+to get the detailed help.
+
+.ih
+SEE ALSO
+.endhelp

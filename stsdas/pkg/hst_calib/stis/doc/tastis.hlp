@@ -1,0 +1,316 @@
+.help tastis June2003 stis
+.ih
+NAME
+tastis -- Analyze STIS target acquisition images.
+.ih
+USAGE
+tastis input
+.ih
+DESCRIPTION
+The task 'tastis' will print general information about
+each input target acquisition image, and will analyze both
+types of STIS target acquisitions:  ACQs and ACQ/PEAKs.
+
+The ACQ procedure is described in "STIS Onboard CCD Target
+Acquisitions (ACQ)" in the chapter on Target Acquisition
+(currently chapter 8) in the STIS Instrument Handbook.
+A section under "Target Acquisition Data" in the HST Data
+Handbook for STIS (currently Section 5.7.2) explains how to
+examine ACQ data.
+
+The ACQ/PEAK procedure is described in "Onboard Target-Acquisition
+Peakups (ACQ/PEAK)" in the chapter on Target Acquisition (currently
+chapter 8) in the STIS Instrument Handbook.  A section under
+"Target Acquisition Data" in the HST Data Handbook for STIS
+(currently Section 5.7.3) explains how to examine ACQ/PEAK data.
+
+For an ACQ, target positions in global and local (subarray)
+coordinates and the total flux of the target in the maximum checkbox
+during both acquisition phases (coarse and fine) are displayed;
+the location of the reference aperture
+(used during the fine locate phase) is also displayed.
+For an ACQ/PEAK, the lowest flux measured during the peakup steps
+(the pedestal),
+the flux at each step after subtraction of the pedestal,
+and the total and pedestal-subtracted flux in the post-slew
+confirmation image are displayed.
+
+The task will calculate the slews performed during the acquisition,
+check and compare fluxes measured in the images, and provide
+warnings of possible problems which could indicate a failure of the
+acquisition.  Tests are made to find signs that the presence of more
+than one brightness peak confused the acquisition; to see if the
+images are either saturated or below the flux levels recommended for
+adequate signal to noise; to verify that the lamp illuminated the
+slit in the last stage of the ACQ; and to find indications of
+abnormal exposures in the telemetry.
+
+If update=yes, keywords are added to the header to make problems
+easier to locate in batch processing.  Warnings are given if the
+spt file is not present when tastis is run.  In that case, for ACQs,
+some information will be missing from the printout and the value of
+the keyword DATAFLAG will be set to UNKNOWN; for ACQ/PEAKs, the
+processing will not occur.  Keywords are populated and success or
+warning messages are given as follows:
+.nf
+____________________________________________________________________
+.fi
+
+ACQ:
+
+ACQSTAT = OK and the following message is given if all of these conditions are met:
+
+.nf
+   ACQ_RAT  = OKRATIO  (0.75 < flux fits[4]/fits[1] < 1.25)
+   ACQ_SLEW = OK_SLEW  (fine slew < 4 pix)
+   ACQ_LAMP = OK_LAMP  (GOODMAX in raw.fits[7] > 1900 DN)
+   ACQ_SAT  = UNSAT    (GOODMAX in raw.fits[4] < 32000 DN)
+   DATAFLAG = TDF_Up   (OCSTDFX in spt.fits[1] = TDFUp)
+.fi
+
+Your ACQ appears to have succeeded, as the fluxes in the coarse
+and fine stages agree within 25% and the fine slews were less than
+4 pixels as expected
+
+ACQSTAT = FAILED (suspected failure that should be checked) and
+the appropriate message is given if any of these conditions is met:
+
+   ACQ_RAT = LORATIO, HIRATIO  (flux fits[4]/fits[1] <0.75, >1.25)
+
+The fluxes in the maximum checkbox in the fine and coarse stages
+differ by more than 25%.  This may indicate a problem with your
+acquisition.
+
+   ACQ_SLEW = BIGSLEW  (fine slew > 4 pix)
+
+The fine slew (to center the target in the reference aperture) is
+larger than 4 pixels.  This may indicate a problem with your
+acquisition.
+
+   ACQ_LAMP = LO_LAMP  (GOODMAX in raw.fits[7] < 1900 DN)
+
+The flux in the third image of the ACQ is lower than the typical
+value for the lamp; the image should be checked to see if the lamp
+was illuminated.
+
+   ACQ_SAT = SAT  (GOODMAX in raw.fits[4] >32000 DN)
+
+Saturation of pixels in the second image may have affected the
+final centering.
+
+   DATAFLAG = TDFdown  (OCSTDFX in spt.fits[1] = TDFDown)
+
+Telemetry indicates that the intended exposures may not have been
+performed.  Check the images for signal.
+.nf
+____________________________________________________________________
+.fi
+
+ACQ/PEAK:
+
+ACQSTAT = OK and the following message is given if all of these
+conditions are met:
+
+.nf
+   ACQP_FLX = OK_FLUX
+   ACQP_RAT = OKRATIO
+   ACQP_END = OK_END
+   ACQP_SAT = UNSAT
+   DATAFLAG = TDF_Up
+.fi
+
+The confirmation image has a flux between 0.8 and 2.0 times the
+maximum flux in the peakup, which is typical of a successful
+ACQ/PEAK.
+
+ACQSTAT = FAILED and the appropriate message is given if any of
+these conditions is met:
+
+   ACQP_FLX=LO_FLUX for OBSTYPE=IMAGING (confirmation flux <1250 DN)
+
+The flux in the confirmation image is __% of the recommended
+minimum of 1250 DN for a direct-light ACQ/PEAK.
+The signal-to-noise in the ACQ/PEAK may be inadequate for an accurate
+centering.
+
+   ACQP_FLX=LO_FLUX for OBSTYPE=SPECTROSCOPIC (confirmation flux <20000 DN)
+
+The flux in the confirmation image is __% of the recommended
+minimum of 20000 DN for a dispersed-light ACQ/PEAK.
+The signal-to-noise in the ACQ/PEAK may be inadequate for an accurate
+centering.
+
+   ACQP_RAT = LORATIO, HIRATIO  (confirm flux/max flux <0.8, >2.0)
+
+The flux in the confirmation image is only __% of the maximum flux
+in the ACQ/PEAK scan.  Percentages below 80% often indicate problems
+in the ACQ/PEAK.
+
+The flux in the confirmation image is __% greater than the maximum
+flux in the ACQ/PEAK scan.  An excess greater than 100% indicates
+problems in the ACQ/PEAK.
+
+   ACQP_END = HI_END
+
+The maximum flux in the sequence occurred at one end.  This may
+indicate that the target was beyond that end or that a neighboring
+object affected the acquisition.
+
+   ACQP_SAT = SAT  (GOODMAX raw.fits[1] >32000 DN)
+
+Some pixels in the confirmation image were saturated.
+If saturation also occurred in any of the peakup steps, it may have
+affected the centering.
+
+   DATAFLAG = TDFdown  (OCSTDFX in spt.fits[1] = TDFDown)
+
+Telemetry indicates that the intended exposures may not have been
+performed.  Check the images for signal.
+
+.nf
+____________________________________________________________________
+.fi
+.ih
+PARAMETERS
+.ls input [file name template]
+The name of the input STIS target acquisition raw image;
+the spt file is also required for ACQ/PEAK files.
+It can take wildcards.
+Note that the task will ignore non-acquisition data when
+processing from a wildcard list.
+.le
+.ls (update = no) [boolean]
+Update ACQSTAT keyword in input files?  If 'update' is set to yes,
+each input file will be opened read/write,
+and an ACQSTAT keyword will be written to the primary header.
+If a possible problem was detected for that file,
+the value for ACQSTAT will be "FAILED";
+otherwise, ACQSTAT will be set to "OK".
+A keyword will also be created and populated for each test
+that is used to determine the value of ACQSTAT, as described above.
+These keywords are convenient when using 'hselect'
+to print summary information for batch processing.
+.le
+.ih
+EXAMPLES
+
+1. To run the task on all the files in the current directory.
+The task will only read the ACQ and ACQ/PEAK images sitting in
+the current directory.
+
+.nf
+cl> tastis *raw.fits
+==========================================================================
+O48X02TPQ       HST/STIS    MIRVIS     50CCD               ACQ/POINT
+prop: 7721      visit: 2    line: 10   target: FEIGE110
+obs date, time: 26/10/97    06:54:20   exposure time:  0.10
+ACQ params:     bias sub: 1510   checkbox: 3      method: FLUX CENTROID
+subarray (axis1,axis2):   size=(100,100)          corner=(488,467)
+--------------------------------------------------------------------------
+Coarse locate phase:           Target flux in max checkbox (DN): 11446
+
+		       global          local
+		    axis1 axis2     axis1 axis2
+Target location:    541.0  530.9    54.0  64.9
+
+		    axis1 axis2     axis1  axis2         V2      V3
+		      (pixels)        (arcsec)            (arcsec)
+Estimated slew:      5.6  14.2     0.285  0.723        0.713 -0.309
+--------------------------------------------------------------------------
+Fine locate phase:            Target flux in max checkbox (DN): 11002
+
+		       global            local
+		    axis1 axis2     axis1 axis2
+Target location:    535.3  516.9    48.3  50.9
+Ref ap location:    535.5  516.5    16.5  15.5
+
+		    axis1 axis2     axis1  axis2         V2      V3
+		      (pixels)        (arcsec)           (arcsec)
+Estimated slew:     -0.2   0.4     -0.010  0.020       0.007 -0.022
+--------------------------------------------------------------------------
+Total est. slew:     5.4  14.6     0.275  0.743         0.720 -0.331
+--------------------------------------------------------------------------
+Your ACQ appears to have succeeded, as the fluxes in the coarse
+and fine stages agree within 25% and the fine slews were less than
+4 pixels as expected
+
+==========================================================================
+==========================================================================
+O48X02TQQ       HST/STIS    MIRVIS        52X0.05             ACQ/PEAK-UP
+prop: 7721      visit: 2    line: 20   target: FEIGE110
+obs date, time: 26/10/97    07:01:51   exposure time:  0.10
+ACQ params:     bias sub: 1510                  method: MAX-FLUX-CENTROID
+subarray (axis1,axis2):   size=(32,32)          corner=(520,501)
+--------------------------------------------------------------------------
+Scan type: LINEARAXIS1                  Step size (mas): 36
+
+       210       702      4622      4869      1246       466         0
+
+
+		    axis1 axis2     axis1  axis2         V2   V3
+		      (pixels)        (arcsec)           (arcsec)
+Estimated slew:      2.1   0.0     0.107  0.000      0.075  0.075
+Flux in post-slew confirmation image: (9377) - Pedestal: (3065) = 6312 DN
+--------------------------------------------------------------------------
+The confirmation image has a flux between 0.8 and 2.0 times the
+maximum flux in the peakup, which is typical of a successful ACQ/PEAK.
+
+==========================================================================
+.fi
+
+2. Here is an example where the acquisition may have failed.
+
+.nf
+cl> tastis o8gn10mmq_raw.fits
+
+==========================================================================
+o8gn10mmq       HST/STIS    MIRVIS     F28X50LP             ACQ/POINT
+prop: 9619      visit: 10    line: 10   target: HZ43
+obs date, time: 2002-06-08    09:04:56   exposure time:  0.90
+dom GS/FGS: 0199601446F2    sub-dom GS/FGS: 0199600544F3
+ACQ params:     bias sub: 1510   checkbox: 3      method: FLUX CENTROID
+subarray (axis1,axis2):   size=(100,100)          corner=(485,467)
+--------------------------------------------------------------------------
+Coarse locate phase:           Target flux in max checkbox (DN): 2848
+
+                       global          local
+                    axis1 axis2     axis1 axis2
+Target location:    516.3  505.0    32.3  39.0
+
+                    axis1 axis2     axis1  axis2         V2      V3
+                      (pixels)        (arcsec)            (arcsec)
+Estimated slew:     -17.8  -11.7    -0.905 -0.593       -1.059 -0.221
+--------------------------------------------------------------------------
+Fine locate phase:            Target flux in max checkbox (DN): 4262
+
+                       global            local
+                    axis1 axis2     axis1 axis2
+Target location:    530.0  471.3    46.0   5.3
+Ref ap location:    537.8  515.4    21.8  14.4
+
+                    axis1 axis2     axis1  axis2         V2      V3
+                      (pixels)        (arcsec)           (arcsec)
+Estimated slew:     -6.5  -44.1     -0.332 -2.240      -1.819  1.350
+--------------------------------------------------------------------------
+Total est. slew:    -24.3  -55.8    -1.237 -2.833        -2.878  1.129
+--------------------------------------------------------------------------
+The fine slew (to center the target in the reference aperture) is larger
+than 4 pixels.  This may indicate a problem with your acquisition.
+
+The fluxes in the maximum checkbox in the fine and coarse stages differ
+by more than 25%.  This may indicate a problem with your acquisition.
+
+==========================================================================
+.fi
+.ih
+REFERENCES
+.nf
+STIS Instrument Handbook, chapter 8.
+HST Data Handbook for STIS, sections 5.7.2 and 5.7.3.
+'tastis' routines written by R. Katsanis & R. Downes, based on software
+written by G. Hartig.
+.fi
+.ih
+SEE ALSO
+
+.endhelp

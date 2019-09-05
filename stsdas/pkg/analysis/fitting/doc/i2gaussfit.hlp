@@ -1,0 +1,74 @@
+.help i2gaussfit May91 stsdas.analysis.fitting
+.ih
+NAME
+i2gaussfit -- Iterative 2-dimensional Gaussian fit to noisy image data.
+.ih
+USAGE
+i2gaussfit input output
+.ih
+DESCRIPTION
+This is a script task that fits a 2-dimensional Gaussian to one image. 
+In noisy data, the standard 'n2gaussfit' task usually must be used more than
+once, fitting each Gaussian parameter separately until convergence is
+met. In this kind of data, wrong results can be generated when simultaneously
+fitting all parameters when the initial guess is not very near the solution.
+This task calls 'n2gaussfit' successively in
+a loop, fitting each parameter in the following order:
+.nf
+
+ 1.    Fit amplitude and background, keep center and fwhm fixed.
+ 2.    Fit center, keep everything else fixed.
+ 3.    Fit fwhm, keep everything else fixed.
+ 4.    Go back to (1), repeat the loop 'niter' times.
+ 5.    Fit all parameters simultaneously.
+
+.fi
+The amoeba fitting method is used. In the fifth step, coefficient errors 
+can be estimated by using the 'errors' parameter. Results at each individual 
+step can be displayed at the terminal using the 'verbose' parameter. The 
+task uses a temporary table in the current directory for storing intermediate 
+results.
+
+The remaining parameters needed for the fit must be defined using
+the 'n2gaussfit' parameter file, and the 'tgausspars' pset.  In
+particular, starting conditions can be input from the pset or from a
+previously obtained table row, as usual in 'n2gaussfit'.  The
+ellipticity parameters 'ellip' and 'theta' are read from the pset or
+table, but are kept fixed during the fitting loop.  (See the 'n2gaussfit'
+help page for details.) 
+.ih
+PARAMETERS
+.ls input [file name]
+Image to be fitted.
+.le
+.ls output [file name]
+Name of the STSDAS table to which fitting information will be written.
+If an empty string is used, no output is written to the table.
+.le
+.ls (niter = 2) [integer, min=1]
+Number of times loop (i.e., steps 1 through 5, described above) 
+will be executed.
+.le
+.ls (errors = yes) [boolean]
+Estimate coefficient errors at step 5?
+.le
+.ls (verbose = yes) [boolean]
+Display results of each individual iteration?
+.le
+.ih
+EXAMPLES
+1. Fit a 2-dimensional Gaussian to a section of the image 'test' and store 
+the fit results in the file 'testfit.db' in the user's home directory:
+
+.nf
+  fi> i2gaussfit test[100:500,256:300] home$testfit.db
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+n2gaussfit
+.endhelp

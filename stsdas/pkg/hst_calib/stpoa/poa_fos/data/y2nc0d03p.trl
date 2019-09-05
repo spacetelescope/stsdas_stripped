@@ -1,0 +1,59 @@
+DPPBAN-***************************************************** TRAILER FILE *****************************************************
+DPPSTA--------------------------------------------- DATA PARTITIONING STARTED ---------------------------------------------
+DPPSTR-DATA PARTITIONING STARTED: 9-APR-95 17:49:44 .
+DPPOBS-Observation Identification: Program Number 2NC , Observation Set Number 0D , Observation Number 03
+DPPCAT-Msg Artifacts Catalog: DCF Msg 28 contained data for Info Set File with Root Name of Y2NC0D03P
+DPPIST-Missing pkts processing is complete, processed 24 science pkts, detected 0 as missing
+DPVWM1-Weighted Quality Measure of 0 was calc for errors reported in Quality & Acctg Capsule entries for Info Set
+DPPNPR- 26 packets expected, 26 packets received ( 1 SHPs, 1 UDLs, 0 Bad pkts) for Info Set Y2NC0D03P
+DPPEND-DATA PARTITIONING ENDED: 9-APR-95 17:50:41 .
+DPPFIN--------------------------------------------- DATA PARTITIONING COMPLETED -------------------------------------------
+CPE0ST-------------------------------------------- DATA EDITING STARTED -----------------------------------------------------
+CPESTR-DATA EDITING STARTED 9-APR-95 17:52:26 FOR Y2NC0D03P.
+DPE4PC- 0 fill source packets were inserted by PODPS.
+DPE4DC-In Y2NC0D03P, 0 source packets were found that contain fill data inserted by the ST DCF.
+DPERSC-CP34SE: ...and 0 packets were found to have segments without Reed Solomon corrections
+CPEEND-DATA EDITING ENDED 9-APR-95 17:52:26 FOR Y2NC0D03P.
+CPE0EN--------------------------------------------- DATA EDITING COMPLETED -----------------------------------------------------
+CPG0VS--------------------------------------------- DATA EVALUATION STARTED -----------------------------------------------
+DPVSTR-DATA EVALUATION STARTED 9-APR-95 17:56:44 FOR Y2NC0D03P.
+DPVEND-DATA EVALUATION ENDED 9-APR-95 17:56:47 FOR Y2NC0D03P.
+DPVF01-Flag & Indic Mismatch for SS_NCHNL. Error Weight set to 1.
+DPVF03- Predicted value is 512; actual value is 510.
+DPVWM2-Weighted Quality Measure of 1 was calc for discrepancies between predicted & actual Flags & Indicators for Info Set
+DPVOKK-Info Set quality was OK as Weighted Quality Measure of 1 did not exceed Quality Threshold of 9
+CPG0VE--------------------------------------------- DATA EVALUATION COMPLETED ---------------------------------------------
+CGAI00-
+CGAI03---------------------------------FAINT OBJECT SPECTROGRAPH GENERIC CONVERSION BEGINNING-----------------------------------
+CGAI00-
+CGAT01-Routine CGSFOS, version 35.2.B , will perform generic conversion
+CGAT02-GENERIC CONVERSION BEGINNING: processing information set Y2NC0D03P
+CGAT03-CGSFOS START: 9-APR-95, 17:56:47
+CGAW06-No error values detected in flags and indicators
+CGAI06-SHP generic conversion has completed successfully
+CGAI07-UDL generic conversion has completed successfully
+CGAC01-Mismatch between FOS predicted and actual flags and indicators
+CGAC02-Generated new FOS reference file catalog : CCC:[SIS.FOS]Y2NC0D03P.CTX
+CGAI08-SCI generic conversion has completed successfully
+CGAI22-DQM generic conversion has completed successfully
+CGAT04-GENERIC CONVERSION TERMINATING: successful completion
+CGAT09-CGSFOS END: 9-APR-95, 17:58:04
+CPG0EN--------------------------------------------- GENERIC CONVERSION COMPLETED -----------------------------------------------
+CCAI00-
+CCAI03-------------------------------------FAINT OBJECT SPECTROGRAPH CALIBRATION BEGINNING--------------------------------------
+CGAI00-
+CCAI07-CALIBRATION BEGINNING: processing information set Y2NC0D03P
+CCAI11-CCSFOS START: 9-APR-95, 17:58:06
+CCAIRI- *** CALFOS - Version 1.3.2.3 ***
+CCAIRI- Y2NC0D03P Begin CALFOS for input file rootname: ycal:y2nc0d03p
+CCAIRI- Y2NC0D03P output file rootname: ycal:y2nc0d03p
+CCAIRI- Y2NC0D03P Data quality initialization done using yref$b2f1308by.r5h
+CCAIRI- Y2NC0D03P and yref$b2f1308jy.r5h
+CCAIRI- Y2NC0D03P Conversion to count rates using DDTFIL yref$d9h1244ay.r4h
+CCAIRI- Y2NC0D03P Deadtime coefficients
+CCAIRI- Y2NC0D03P Q0= 0.96200001E-05 Q1= 0.18260000E-09 F= 52000.
+CCAIRI- Y2NC0D03P Saturation limit = 57000. observed counts/second
+CCAIRI- Y2NC0D03P Reference file PEDIGREE information:
+CCAIRI- Y2NC0D03P No information available
+CCAIRI- Y2NC0D03P Reduction completed for input file ycal:y2nc0d03p
+CCAI10-CALIBRATION END: 9-APR-95, 17:59:19

@@ -1,0 +1,27 @@
+# README for stsdas$data/fits
+
+# The FITS files in this directory are read using the read_fits.cl script in 
+# this directory, converted to GEIS images and STSDAStables and moved to the
+# scidata directory which points to the correct architecture for your machine.
+# Here is a lists of the fits files, what they are called in the scidata 
+# directory, and where they are used in stsdas. Note that the NICMOS and WFPC2
+# PSF images used by the synphot.simulators.simimg and simspec tasks are NOT
+# converted to GEIS format, but are simply copied to scidata in FITS format.
+
+FITS File            Resultant File             Where Used
+cosiaf.fits	     cosiaf.tab		      	stplot.siaper 
+czptnelinec.fits     czptnelinec.tab		hst_calib.hrs.waveoff
+czscoffc.fits        czscoffc.tab		hst_calib.hrs.zwavefit
+de200.fits	     de200.tab			analysis.timeseries.delaytime
+foc.fits	     foc.hhh			Sample FOC Image
+fos.fits	     fos.hhh			Sample FOS Spectra
+hrs.fits             hrs.hhh			Sample HRS Spectra
+hsp.fits	     hsp.hhh			Sample HSP Data
+lftemplate.fits      lftemplate.hhh		hst_calib.fos.
+nic*_psf_*.fits      nic*_psf_*.fits            synphot.simulators.simimg
+saa.fits	     saa.tab			playpen.hstpos
+wfpc2_*.fits         wfpc2_*.fits               synphot.simulators.simimg
+wfpcc0.fits          wfpc.c0h			Sample WFPC C0H file
+wfpcc1.fits          wfpc.c1h			Sample WFPC C1H file
+xmatrix.fits	     xmatrix.hhh		hst_calib.fos.tarestore
+ymatrix.fits	     ymatrix.hhh		hst_calib.fos.tarestore

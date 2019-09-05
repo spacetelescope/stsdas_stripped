@@ -1,0 +1,80 @@
+.help repos Jul93 stsdas.analysis.gasp
+.ih
+NAME
+repos -- Overlay guide star positions and compute a plate 
+solution.
+.ih
+USAGE
+repos image gsctab
+.ih
+DESCRIPTION
+This task is used to overlay  guide stars on an image and 
+interactively determine a plate solution and read back image 
+coordinates.
+
+The user selects a region of the sky by specifying a center 
+position and a region width.  With an estimate of the 
+transformation between equatorial and pixel (image or plate) 
+coordinates, the coordinates of the selected guide stars are 
+overlaid on a copy of the user's image.  This marked image is 
+displayed and the user interacts with the display to improve 
+the positions of selected stars, compute a plate solution 
+fit, and print coordinates of selected targets.
+.ih
+PARAMETERS
+.ls image [file name]
+Name of the input image.
+.le
+.ls gsctab [file name]
+Name of the guide star table.
+.le
+.ls (pixval1) [real]
+Value used to represent a marked pixel.
+.le
+.ls (pixval2) [real]
+Value used to represent a marked pixel.
+.le
+.ls (imtrans) [boolean]
+Find the coordinate transformation in the input image?
+.le
+.ls (crval1) [real]
+X coordinate of the reference pixel.
+.le
+.ls (crval2) [real]
+Y coordinate of the reference pixel.
+.le
+.ls (crpix1) [real]
+X reference pixel.
+.le
+.ls (crpix2) [real]
+Y reference pixel.
+.le
+.ls (cdelt1) [real]
+X coordinate increment (per pixel).
+.le
+.ls (cdelt2) [real]
+Y coordinate increment (per pixel).
+.le
+.ls (crota) [real]
+Rotation angle (in degrees).
+.le
+.ls (ctype1) [string]
+X coordinate type.
+.le
+.ls (ctype2) [string]
+Y coordinate type.
+.le
+.ls (boxsize = 11) [integer, min=3]
+Box size in which to search for star center.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+display, pltsol, xyeq
+
+Type "help gasp opt=sys" for a description of the 'gasp' package and
+the Guide Star Catalog.
+.endhelp

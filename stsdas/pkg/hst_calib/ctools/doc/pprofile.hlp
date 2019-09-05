@@ -1,0 +1,319 @@
+.help pprofile Jul95 stsdas.hst_calib.ctools
+.nj
+.ih
+NAME
+pprofile -- Make radial profile and encircled energy plots.
+.ih
+USAGE
+pprofile input xc yc background target
+.ih
+DESCRIPTION
+This task is based on a Fortran program written by Robert Jedrzejewski
+and includes a subroutine written by Dieter Schertl.
+The azimuthally averaged profile and the encircled energy
+are computed with respect to a point in an image.
+The point may be specified exactly with parameters 'xc' and 'yc',
+or those parameters may be taken as initial estimates to be improved by
+the MPC algorithm as used by the 'imcntr' task.
+A background value is subtracted from each pixel
+before the profile and encircled energy are calculated.
+The profile is normalized by dividing by the center value,
+and the encircled energy is normalized by dividing by the 'target' value.
+
+The default is to plot both the profile and encircled energy,
+but either plot or both may be skipped.
+The X axis is distance in arcseconds.
+For the profile plot, the Y axis may be either logarithmic or linear.
+The Y axis will be linear for the encircled-energy plot.
+After making each plot, the task brings up the interactive cursor.
+You may continue by hitting return, space bar, or any lower-case key,
+or you can use the upper-case keys for the standard cursor mode functions,
+such as "Z" to zoom, "=" to print.
+The profile is plotted first, and then the encircled energy is plotted.
+After that the task prompts
+"change background and replot?"  If you respond with "no",
+the task terminates.  If you say "yes",
+you will be prompted for new values for 'background' and 'target',
+and the plots are redrawn.
+
+The profile and encircled energy may also be written to an output text file.
+One option, therefore, is to write the output to a file and make no plots.
+
+The profile is an array of values at one-pixel increments in radius
+from the PSF center.
+The radius is the distance from the star image center to
+the middle of the one-pixel-wide annulus.
+The encircled energy includes values out to radius+0.5.
+Two slightly different algorithms are used to compute the profile.
+For radii greater than 100 pixels,
+the full pixel value is added to the profile bin number
+which is the nearest integer to the radius.
+For smaller radii,
+the pixel value is distributed between the two nearest profile bins
+using the fractional part of the radius as a weight.
+The profile is then normalized by dividing by
+the first value in the profile array,
+which is the value for zero distance from the center.
+
+The radial distance is normally converted from pixels to arcseconds
+based on the known image scales of the FOC relays.
+The task determines the relay by getting the value of the OPTCRLY
+(and possibly also CAMMODE) header keyword.
+If this keyword is absent or is not "F48" or "F96",
+or if 'xunits="pixels"',
+the radial distance is left in units of pixels.
+This is the only FOC instrument dependence.
+This task can be used with any 2-D image
+by setting the values of the parameters 'xunits' and 'imscale'.
+.ih
+PARAMETERS
+.ls input [string]
+The name of the input image.
+This parameter may be the name of a single image,
+or it may be an "@" sign followed by the name of a text file
+containing one or more file names (see below),
+or it may be "STDIN" or "@STDIN".
+Note that this is not a true file name template.
+
+If only a single image name is given,
+then the cl parameters 'xc', 'yc', 'background' and 'target'
+are read to get the values for the image specified.
+If the @filename syntax (or STDIN) is used instead,
+the values are taken from the input text file.
+Blank lines and lines beginning with # are ignored.
+Each line of the file may contain the following five items:
+.nf
+	(1) an image name,
+	(2) the X location of the PSF center,
+	(3) the Y location of the PSF center,
+	(4) the background value to subtract,
+	(5) the target value for the encircled energy.
+.fi
+The four numerical values are floating-point numbers,
+and INDEF is an allowed value.
+Only the image name is required.
+If either the background or target is not specified,
+the value will be taken from the cl parameter with that name.
+If the center location is not specified,
+the location of the maximum pixel value in the image is used.
+
+If more than one image is listed in the file,
+they should all have been taken by the same FOC relay,
+as specified by the value of the header keyword OPTCRLY.
+Images which differ from the first in the list in this regard will be skipped.
+.le
+.ls xc = INDEF [real]
+'xc' and 'yc' are the X and Y coordinates of the center of the PSF, in pixels.
+If either of these values is INDEF,
+then the center will be taken as
+the location of the maximum data value in the image.
+See also 'improve_pos'.
+.le
+.ls yc = INDEF [real]
+The Y coordinate of the PSF, in pixels.
+.le
+.ls background = 0. [real]
+This value will be subtracted from each pixel of the image.
+.le
+.ls target = 100. [real, min=1.e-10, max=INDEF]
+The encircled energy is normalized by dividing by this value
+and multiplying by 100 to give percent.
+To get a curve that reaches 100% at the edge of the PSF,
+'target' should be the total number of counts in the PSF.
+The default gives values of encircled energy in counts,
+rather than in percent of the total counts in the PSF.
+
+Note that when plotting the encircled energy,
+if the value of 'target' is too small,
+the entire curve may be above the range from zero to 'eymax',
+in which case the plot will appear blank.
+.le
+.ls (stddev = no) [boolean]
+Should the standard deviations of the profile also be computed and plotted?  
+
+These are the standard deviations of the values, not of the mean,
+and they are normalized the same way the profile is normalized,
+by dividing by the profile value at the center.
+The standard deviation at the center pixel may be printed but is not plotted.
+The standard deviations may be helpful when using this task
+to determine the background level for a PSF;
+if the standard deviations increase toward the edge of the image,
+that implies that the background is not uniform.
+.le
+.ls (improve_pos = yes) [boolean]
+Call the Mountain Photometry Code centering algorithm to refine
+the 'xc' and 'xy' values?
+
+If there is only one input image,
+these new 'xc' and 'yc' values will be written back into the parameter file.
+.le
+.ls (cboxsize = 9) [integer, min=1, max=INDEF]
+If 'improve_pos = yes',
+then 'cboxsize' gives the size of the square region of the image
+which is used to find a more accurate position for the PSF.
+.le
+.ls (rmax = 210) [integer, min=2, max=INDEF]
+The profile and encircled energy are computed for
+radii starting at zero and extending to 'rmax'-1 pixels,
+or to the edge of the image if that is closer.
+.le
+.ls (pymax = 1.05) [real]
+Upper limit for profile plot.
+'pymax' and 'pymin' are the values for a linear Y axis.
+If 'logy = yes' then the plot limits are taken as
+the base 10 logarithms of 'pymax' and 'pymin'; however,
+if 'pymax' is zero or negative, 0.2 is used for the log upper limit,
+and if 'pymin' is zero or negative, -5 is used for the log lower limit.
+.le
+.ls (pymin = -0.05) [real]
+Lower limit for profile plot.
+.le
+.ls (eymax = 110.) [real]
+Upper limit for the encircled energy plot, in percent.
+A value of 'ymax = 110' is reasonable if 'target' is correct.
+The lower limit for the plot is zero.
+.le
+.ls (plot_what = "both") [string, allowed values: both | profile |
+energy | neither ]
+
+This allows the user to specify that the task should plot
+both the profile and encircled energy, or either one alone, or neither.
+If 'plot_what="neither"', then a value should be specified for 'outfile'.
+.le
+.ls (outfile) [string]
+If a value is given for this parameter,
+then the radius, profile and encircled energy
+will be written to the file with this name for each input image.
+The standard deviation of the profile will also be written if 'stddev=yes'.
+If the file already exists, the current output will be appended.
+.le
+.ls (xunits = "arcsec") [string, allowed values: pixels | arcsec]
+
+Units used for the X axis.
+The default is to plot (and print) the X axis values in arcseconds,
+but setting xunits="pixels" forces the X axis to be in pixels.
+See also 'imscale'.
+.le
+.ls (imscale = INDEF) [real]
+This parameter is ignored if 'xunits="pixels"'.
+If 'xunits="arcsec"' then 'imscale' is gotten to allow the user to
+override the scale associated with the FOC focal ratio,
+or to use this task with non-FOC images.
+If 'imscale=INDEF' (the default) then the scale for the X-axis
+is determined from the value of the image header keyword OPTCRLY.
+(Eventually the task will be changed to get F_RATIO instead.)  If
+OPTCRLY is not present in the header or its value is neither
+"F48" nor "F96", then the units for the X axis will be pixels.
+For OPTCRLY = "F48" the scale is 0.04497 arcsec/pixel.
+For OPTCRLY = "F96" the CAMMODE keyword is gotten to distinguish
+between f/96 and f/288,
+for which the scales are 0.02237 and 0.00746 arcsec/pixel respectively.
+If 'xunits="arcsec"' and 'imscale' is not INDEF then
+that value (arcseconds/pixel) will be used as the scale for the X axis.
+.le
+.ls (logy = yes) [boolean]
+Should the Y axis be the (base 10) logarithms of the profile?  
+
+The
+encircled energy will be linearly scaled regardless of 'logy'.
+.le
+.ls (verbose = yes) [boolean]
+Print the image name, center position actually used,
+value of PSF at center, background value, and target?
+.le
+.ls chg_back = yes [boolean]
+Change background and replot?  
+
+Whenever the task is run,
+the user is prompted for this query mode parameter.
+This gives you the option of changing the background that is subtracted
+and the target counts for encircled energy
+and recomputing the profile and encircled energy.
+.le
+.ls bck [real]
+Background value to subtract.
+This query mode parameter is used to interactively get a new value
+for the background in the case that 'chg_back = yes'.
+The user should not set this value using 'eparam'
+because it will be overwritten by the current value of 'background'.
+.le
+.ls tgt [real]
+This query mode parameter is used to interactively get a new value
+for the target counts in the case that 'chg_back = yes'.
+The user should not set this value using 'eparam'
+because it will be overwritten by the current value of 'target'.
+.le
+.ls (device = "stdgraph") [string]
+The plot device.
+This may be set to "stdplot" to get hardcopy plots
+instead of making the plots interactively.
+.le
+.ih
+EXAMPLES
+1.  Plot the radial profile but not encircled energy of three images.
+The names and background levels are typed in from the standard input,
+but the location of the PSF and the target are not specified.
+The location is therefore determined initially by the maximum pixel
+and then refined using the 'imcntr' algorithm.
+
+.nf
+	fo> pprofile STDIN plot_what="profile"
+	fo> f430w_a  INDEF  INDEF  0.72		# These four lines
+	fo> f430w_b  INDEF  INDEF  1.2		# are typed in
+	fo> f430w_c  INDEF  INDEF  2.7		# by the user.
+	fo> ^Z					# (That's an EOF.)
+.fi
+
+2.  Print but don't plot the first 10 values of the profile
+and encircled energy of 'f430w_a'.
+
+.nf
+	fo> pprofile f430w_a 272 246 0.87 200000 rmax=10 \
+	>>>    plot_what="neither" outfile="STDOUT"
+.fi
+
+3.  The text file output from 'pprofile' is shown below
+for an input image "flat1" filled with the constant value one.
+The 'target' value was set to 100
+so the encircled energy would just be the sum of the counts.
+A fourth column was added using 'tcalc'
+with tcalc.equals = "3.141592653589793 * (c1 + 0.5)**2",
+where "c1" is the value in the first column, i.e., the radius.
+The third and fourth columns should be equal,
+so this shows what kind of error can be expected.
+
+.nf
+	fo> pprofile flat1 23 41 0 100 improve_pos=no xunits=pixels
+
+# flat1, center = [23.000,41.000]
+# value = 1., background = 0., target = 100.
+#       radius        profile  encircled energy
+            0.             1.             1.       0.7854
+            1.             1.        7.34315       7.0686
+            2.             1.        19.7977      19.6350
+            3.             1.        38.8574      38.4845
+            4.             1.        63.2675      63.6173
+            5.             1.        95.8515      95.0332
+            6.             1.        132.851     132.7323
+            7.             1.        176.809     176.7146
+            8.             1.        227.368     226.9801
+            9.             1.        281.678     283.5287
+           10.             1.           349.     346.3606
+           11.             1.           421.     415.4756
+           12.             1.           489.     490.8739
+           13.             1.           577.     572.5553
+           14.             1.           665.     660.5199
+           15.             1.           749.     754.7676
+.fi
+.ih
+BUGS
+The task prints a peculiar message as it terminates.
+.ih
+REFERENCES
+This task was written by Phil Hodge
+based on a Fortran program written by Robert Jedrzejewski.
+.ih
+SEE ALSO
+Type "help focphot opt=sys" for a higher-level description of the 
+'focphot' package.
+.endhelp

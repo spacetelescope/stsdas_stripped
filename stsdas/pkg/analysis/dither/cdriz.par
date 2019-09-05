@@ -1,0 +1,5 @@
+margin,i,h,50,0,,Margin to chop off
+tapersz,i,h,50,1,,Edge region to taper
+rotation,r,h,0.,,,Rotation angle
+pad,b,h,no,,,Pad image to prevent wraparound effects ?
+

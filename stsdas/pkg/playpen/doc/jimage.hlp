@@ -1,0 +1,120 @@
+.help jimage May95 stsdas.playpen
+.nj
+.ih
+NAME
+jimage -- Convert jitter information into an image.
+.ih
+USAGE
+jimage intable output nx ny
+.ih
+DESCRIPTION
+This task reads U2 and U3 coordinates of the HST pointing
+from two columns in a table
+and creates an image that reflects that "jitter" information.
+Different rows of the input table give the HST pointing at different times.
+The image is intended to show what would be observed for a point source
+using a telescope with no aberrations or diffraction.
+The image is normalized to a volume of one.
+The coordinate information put into the image header gives the
+translation between pixel coordinates and (U2,U3).
+
+It is assumed that the input table contains the (U2,U3) coordinates
+where the HST is pointing at different times.
+If the rotation ('angle') is given as zero,
+the values in the 'u2col' column are converted to the first image axis,
+and the negative of the values in the 'u3col' are converted
+to the second image axis.
+The information from OMS (e.g. the .cmj table)
+may contain columns with names implying
+that they contain (V2,V3) coordinates.
+These may be the same as the (U2,U3) where the telescope is pointing,
+or they may be opposite in sign,
+or they may differ by 90 degrees, or worse.
+At the time of writing this is still uncertain.
+
+For computing the CD matrix for the output image,
+the column units are gotten from the input table.
+If the units are "degrees", "arcseconds", "ms" or "milliarcseconds"
+(minimum match is allowed),
+then the appropriate scale factor is applied
+so the CD matrix will be in degrees per pixel.
+If the unit strings for the two columns are not the same,
+or if the units are not recognized,
+then arcseconds will be assumed.
+
+Several keywords are written to the output image header.
+These include the name of the input table,
+the names of the columns, the column units,
+and the task parameters 'angle' and 'flip_u3'.
+The total number of rows from the input table
+(i.e. the non-INDEF rows) is saved as NTOTAL,
+while the number of those points
+that were off the edge of the image is NMISSED.
+NTOTAL is also used for normalization;
+if NMISSED = 0 then the sum of the pixel values in the image will be one.
+Two values of RMS of the jitter data are computed,
+since in general the jitter ball is not circularly symmetric.
+These are the RMS along the major and minor axes of the jitter ellipse,
+and they are saved as SIGMA_A and SIGMA_B respectively.
+The position angle of the major axis is also computed and saved as POSANGLE.
+.ih
+PARAMETERS
+.ls intable [file name]
+A table containing U2 and U3 positions as a function of time.
+The U2 and U3 coordinates are taken from columns with names
+given by the parameters 'u2col' and 'u3col' respectively.
+.le
+.ls output [file name]
+The name of the image to be created.
+.le
+.ls nx = 64 [integer, min=1, max=INDEF]
+Size of the X dimension of the output image.
+The image to be created will have size 'nx' by 'ny'.
+.le
+.ls ny = 64 [integer, min=1, max=INDEF]
+Size of Y dimension of output image.
+The image to be created will have size 'nx' by 'ny'.
+.le
+.ls (pixsize = 0.005) [real, min=0., max=INDEF]
+The size of a pixel of the image to be created.
+The units are the same as the units of the U2, U3 values
+in the table, such as arcseconds.
+The default (in arcseconds) is about equal to the RMS jitter.
+The pixel size for FOC f/96 is 0.02237 arcseconds, for example.
+.le
+.ls (angle = 34.56) [real]
+The angle in degrees measured clockwise from the image X (sample) direction
+to the U2 direction as projected on the sky.
+Some values are:  FOC f/96, 34.56; FOC f/48, 159.42.
+.le
+.ls (u2col = "si_v2") [string]
+Column name in 'intable' for the U2 values.
+.le
+.ls (u3col = "si_v3") [string]
+Column name in 'intable' for the U3 values.
+.le
+.ls (flip_u3 = yes) [boolean]
+Flip the U3 coordinates?  If the input jitter data are U2 and U3
+(or V2 and V3), then 'flip_u3' should be set to yes;
+the U3 coordinates will then be "flipped"
+by subtracting from the median of the U3 values.
+.le
+.ih
+EXAMPLES
+1.  Create a jitter image "jb.hhh" for FOC f/48 from table "jb.tab"
+but with pixels 10 times smaller than the actual pixels (0.045 arcseconds)
+in order to see the structure of the jitter.
+
+.nf
+  pl> jimage jb.tab jb.hhh 100 100 pixsiz=0.0045 angle=159.42
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+The algorithm for computing the RMS and position angle
+of the jitter ellipse was based on code written by Kavan Ratnatunga.
+.ih
+SEE ALSO
+.endhelp

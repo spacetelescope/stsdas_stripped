@@ -1,0 +1,11 @@
+# Update the apscale application code in the fos package library
+# Author: CDBS, 4-MAR-1988
+
+$checkout fos.a ../
+$update   fos.a
+$checkin  fos.a ../
+$exit
+
+fos.a:
+	ytascl.f       		
+	;

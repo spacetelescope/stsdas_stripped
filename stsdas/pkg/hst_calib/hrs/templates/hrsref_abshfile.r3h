@@ -1,0 +1,31 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    1 /                                                
+PSIZE   =                   32 /                                                
+                                                                                
+                               / GROUP PARAMETERS: PODPS CALIBRATION            
+PTYPE1  = 'APERTURE'           / aperture name: LSA, SSA                        
+PDTYPE1 = 'CHARACTER*4'        / datatype of parameter 1                        
+PSIZE1  =                   32 / number of bits in parameter 1                  
+                                                                                
+                               / HRS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'HRS     '           / instrument                                     
+FILETYPE= 'ABSOLUTE FLUX'      / absolute flux calibration file set             
+HEADNAME= 'ZABSFILE2.R3H'      / reference file set header filename             
+DATANAME= 'ZABSFILE2.R3D'      / reference file set data filename               
+DATE    = '                  ' / date this file originated (yyyy-mm-dd)         
+                                                                                
+                               / HRS DATA REDUCTION KEYWORDS                    
+GRATING = 'G140M   '           / grating, echelle, or mirror in use             
+                                                                                
+                               / HRS DATA QUALITY KEYWORDS                      
+USEAFTER= ''                   / use this file for obs. taken on/after this date
+PEDIGREE= 'INFLIGHT'           / data source (INFLIGHT,GROUND,MODEL,DUMMY)&date 
+DESCRIP = 'Description of where the reference data is from'                     
+                                                                                
+END                                                                             

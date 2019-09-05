@@ -1,0 +1,80 @@
+.help axegps Jun2004 axe
+.ih
+NAME
+axegps -- compute the spectral properties of a single pixel
+.ih
+USAGE
+.nf
+axegps grism config beam_ref xval yval
+.fi
+.ih
+PARAMETERS
+.ls grism
+Name of the grism image.
+.le
+.ls config
+Name of aXe configuration file used to create the OAF.
+.le
+.ls beam_ref
+The beam to define the spectral solutions.
+.le
+.ls xval [integer]
+The x-coordinate of the pixel.
+.le
+.ls yval [integer]
+The y-coordinate of the pixel.
+.le
+.ih
+DESCRIPTION
+This task computes the spectral properties of a single pixel in the
+context of the beam to define the local spectral properties and
+the configuration file which defines the global spectral properties
+on the grism image.
+
+.nf
+The tasks lists:
+  1. the wavelength at pixel center
+  2. the dispersion at pixel center
+  3. the trace distance of the section point
+  4. the distance of the pixel center to the section point
+  5. the data value of the pixel.
+.fi
+
+"axegps" works on the .OAF file. The corresponding OAF file and the reference
+beam therein must therefore exist (run "sex2gol" and "gol2af") before
+axegps can give a result.
+
+For numerical reasons a solution can only be guaranteed within the bounding
+box of the specified beam. The extraction width as specified with the
+parameter '-mfwhm=' in "gol2af" has an influence on the bounding box.
+In case that you do not get the desired information for the pixel of your
+interest you may repeat "gol2af" with a larger value of '-mfwhm=' to make the
+bounding box sufficiently large. The corner points which define the bounding
+box of the beam are listed in the output such that the user can understand
+why the pixel information could not be computed.
+
+.ih
+EXAMPLES
+.nf
+   ax> axegps grism="j8m822qhq_flt.fits" config="HUDF.HRC.conf"
+              beam_ref="3A" xval=102 yval=588
+.fi
+
+Print the spectral properties of the pixel 102,588 on the grism image
+"j8m822qhq_flt.fits", using the beam "3A" as the reference beam.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+sex2gol, gol2af
+.endhelp

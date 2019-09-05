@@ -1,0 +1,11 @@
+# Update the lucy application code in the restore package library.
+# Author: R. Williamson, 15-Aug-1991
+
+$checkout restore.a ../
+$update   restore.a
+$checkin  restore.a ../
+$exit
+
+restore.a:
+        lucy.x		<imhdr.h> <error.h> "lucyfft.h"
+        ;

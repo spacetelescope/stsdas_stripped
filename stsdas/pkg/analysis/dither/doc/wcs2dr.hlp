@@ -1,0 +1,138 @@
+.help wcs2dr Dec04 stsdas.analysis.dither
+.ih
+NAME
+wcs2dr v1.9 -- Convert WCS header information into drizzle parameters
+          for image registration
+.ih
+USAGE
+wcs2dr images refim  
+.ih
+PARAMETERS
+.ls images = "" [file name]
+A list of input image files which are to be registered with the
+reference image. Only the image header is read from these
+to obtain the WCS information. This list can be specified using
+wildcards, a comma-separated list or by using an "@file".
+.le
+.ls refim  = "" [file name]
+The name of the reference image file with which the input image is
+to be registered. Only the image header is read to obtain the WCS
+information.
+.le
+.ls (coeffs = "") [file name]
+The distortion correction coefficients file associated with the input
+images. This is the standard drizzle format and must be the same for
+each of the input images. It is assumed that this file would be applied
+when subsequently drizzling.
+.le
+.ls (xgeoim = "") [file name]
+The name of an additional distortion correction image, in the X-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the X direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (ygeoim = "") [file name]
+The name of an additional distortion correction image, in the Y-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the Y direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (refcoefs = "") [file name]
+The distortion correction coefficients file associated with the reference
+image. This is the standard drizzle format. 
+.le
+.ls (lambda = 500.0) [real]
+The wavelength associated with the coefficients files if they are in
+the Trauger form for WFPC. Otherwise this is ignored.
+.le
+.ls (style = "line") [string]
+The style for the output listing. It can be either "para" in which
+case the result will be a series of lines each of which can be given
+to the IRAF cl to set the appropriate drizzle parameter or "line"
+in which case the results will be displayed as a table with column 
+headings.
+.ih
+DESCRIPTION
+This task uses the world coordinate information in the headers of
+a list of images and reference image to deduce the parameters which must be
+given to the "drizzle" task to register the input images with the
+reference.
+
+Only the linear part of the WCS is used. This is assumed to consist
+of eight values - CRVAL1/2, CRPIX1/2 and the four elements of the
+CD matrix (CD1/2_1/2). It is further assumed that the two images are
+in TAN projection (although nor necessarily with the same reference
+point).
+
+The transform is deduced by starting with a unit square at the center
+of the input image. The position of each corner of this square is then 
+rigorously transformed, via equatorial coodinates, into a pixel position
+on the reference grid. A check is made to see whether the result is
+significantly non-square (ie, where there are differences in the X and
+Y scale or skew is present) and if so the user is informed. The shift of
+the center of the pixel, along with the measured rotation and scale
+change are then displayed in the form which the drizzle task needs. The
+user is also informed the values for the drizzle parameters shft_un,
+shft_fr and align which must be used.
+
+The coefficients files for both the input and the references images are
+also included in the transformations.
+.ih
+EXAMPLES
+.nf
+If "files" is a list of images which are to be aligned with the reference
+image "ref" then suitable drizzle parameters can be deduced using:
+
+cl> wcs2dr @files ref style="para"
+#
+drizzle.data="test1"
+drizzle.shft_fr="output"
+drizzle.shft_un="output"
+drizzle.align="center"
+drizzle.xsh=   552.733
+drizzle.ysh=   482.749
+drizzle.scale=     1.009
+drizzle.rot=    -2.871
+#
+drizzle.data="test2"
+drizzle.shft_fr="output"
+drizzle.shft_un="output"
+drizzle.align="center"
+drizzle.xsh=   532.142
+drizzle.ysh=   498.043
+drizzle.scale=     1.009
+drizzle.rot=    -2.871
+#
+drizzle.data="test3"
+drizzle.shft_fr="output"
+drizzle.shft_un="output"
+drizzle.align="center"
+drizzle.xsh=   519.552
+drizzle.ysh=   378.566 
+drizzle.scale=     1.009
+drizzle.rot=    -2.871
+
+or alternatively:
+
+cl> wcs2dr test ref style="line"
+# Image             xsh     ysh      scale    rot
+# Note: shft_fr="output" shft_un="output" align="center"
+test1            552.733  482.749    1.009   -2.871
+test2            532.142  498.043    1.009   -2.871
+test3            519.552  378.566    1.009   -2.871
+cl> 
+
+where in this case "files" contains:
+
+test1
+test2
+test3
+.fi
+
+.ih
+TIMINGS
+It is, as one would expect, very quick!
+.ih
+SEE ALSO
+drizzle, blot, traxy, tranback
+.endhelp

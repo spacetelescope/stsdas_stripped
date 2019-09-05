@@ -1,0 +1,122 @@
+.help axeprep Aug2008 axe
+.ih
+NAME
+axeprep -- prepare grism images for the aXe reduction
+.ih
+USAGE
+.nf
+axeprep inlist configs
+.fi
+.ih
+PARAMETERS
+.ls inlist
+List to give input images and object lists
+.le
+.ls configs
+Name of aXe configuration file(s) to be used
+.le
+.ls (backgr = yes) [boolean]
+Subtract sky background?
+.le
+.ls (backims) [string]
+Sky background image(s)
+.le
+.ls (backped) [string]
+Pedestal sky images (for NOMCOS only)
+.le
+.ls (mfwhm) [float]
+Multiplicative factor to be applied to the object fwhm's in masking
+.le
+.ls (norm = yes) [boolean]
+Normalize grism image (by exposure time)?
+.le
+.ls (gaincorr = no) [boolean]
+Apply gain correction (for NICMOS only)?
+.le
+.ih
+DESCRIPTION
+Each of the input images given in 'inlist' will be prepared for further
+reduction with aXe. The task provides some important keywords and
+is mandatory if later on 'axedrizzle' will be used.
+
+Axeprep does three processing steps which can be switched on/off
+independently:
+
+.nf
+    -- background subtraction --
+    The beams of bjects given in the object list(s) are masked out on
+    both, the grism image and the corresponding master sky background.
+    Then the properly scaled master sky background is subtracted from the
+    grism image.
+.fi
+
+.nf
+    -- normalization --
+    Normalize the science extension(s) of the grism images by the
+    exposure time. AXe works on science exposures in cps.
+.fi
+
+The format of the image list given as 'inlist' is:
+.nf
+grim_image1 object_cat11[,object_cat12] [direct_image1] [dmag1]
+grim_image2 object_cat21[,object_cat22] [direct_image2] [dmag2]
+grim_image3 object_cat31[,object_cat32] [direct_image3] [dmag3]
+.fi
+
+The (comma separated) list of configuration files must correspond to
+the comma separated list of background images and the object lists
+given in 'inlist'.
+.ih
+FILE NAMING CONVENTION
+Axeprep uses default names for the mask files with the cosmic ray flagged
+pixels. The name convention is the same as used in MultiDrizzle,
+e.g. the flagg image for the science extension no. 2 of the frame
+'j8m81cd9q_flt.fits' is expected to be 'j8m820leq_flt_sci1_mask.pl'.
+
+.ih
+EXAMPLES
+1) For ACS HRC images:
+.nf
+    ax> axeprep inlist="axeprep.lis" configs="HUDF.HRC.conf" dq='YES'
+                backims="cr_2.cmb.fits" backgr="YES" fwhm="2.0"
+                norm="YES"
+.fi
+
+Perform dq update, background subtraction and normalization on the images
+and object lists specified in 'axeprep.lis', using the master sky
+"cr_2.cmb.fits". Multiply the fwhm of the objects by two for the masking
+of the beams.
+
+
+2) For ACS WFC images:
+.nf
+    ax> axeprep inlist="axeprep.lis"
+                configs="ACS.WFC.CHIP1.conf,ACS.WFC.CHIP2.conf" dq='YES'
+                backims="ssky.5.v9.fits,ssky.2.v9.fits" backgr="YES"
+                fwhm="2.0" norm="YES"
+.fi
+
+Perform dq update, background subtraction and normalization on the images
+and object lists specified in 'axeprep.lis', using the master sky
+"ssky.5.v9.fits" for the chip (and extension number) specified in
+"ACS.WFC.CHIP1.conf" and the master sky "ssky.2.v9.fits" for the extension
+specified in "ACS.WFC.CHIP2.conf". Multiply the fwhm of the objects by two
+for the masking of the beams. The file "axeprep.lis" MUST give at the second
+column TWO object catalogs (separated by a comma) for the configuration
+files "ACS.WFC.CHIP1.conf" and "ACS.WFC.CHIP2.conf", respectively.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+axecore
+.endhelp

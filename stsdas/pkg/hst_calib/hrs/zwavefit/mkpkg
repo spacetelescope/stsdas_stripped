@@ -1,0 +1,16 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+	t_wavefit.x	<error.h> "wf.h"
+	wfoffb.x	<error.h> <tbset.h> "wf.h"
+	wfrtab.x	<error.h> <tbset.h> "wf.h"
+	wf.x		"wf.h"
+	wfmwtb.x	<tbset.h> "wf.h"
+	wfot.x		<error.h> <tbset.h> "wf.h"
+	wfowtb.x	"wf.h"
+	wfwavt.x	<error.h> "wf.h"
+	zdc.f
+;

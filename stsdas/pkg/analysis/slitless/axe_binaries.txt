@@ -1,0 +1,9 @@
+# table of what binaries to use for axe
+# col 1 = value of IRAFARCH
+# col 2 = name of file with binaries in it
+#
+# the build scripts use this file to get the right version of the axe binaries
+
+ssun		aXe-2.1local.ssun.tar.gz
+redhat		aXe-2.1local.redhat.tar.gz
+macintel	aXe-2.1bin.macintel.tar.gz

@@ -1,0 +1,33 @@
+# Update the tools package library
+# Author: B.Simon 12-NOV-97
+
+$call libupdate
+$exit
+
+debug:
+	$set XFLAGS = "-fgq $(XFLAGS)"
+	$set LFLAGS = "-z $(LFLAGS)"
+	$call standalone
+	;
+
+standalone:
+	$omake x_rdsiaf.x
+	$call libupdate
+	$link x_rdsiaf.o ../tools.a -lstxtools -ltbtables -o rdsiaf.e
+	$move rdsiaf.e ../rdsiaf.e
+	;
+
+libupdate:
+	$checkout tools.a ../
+	$update   tools.a
+	$checkin  tools.a ../
+	;
+
+tools.a:
+	fmtlist.x
+	getaper.x	
+	nextaper.x	<tbset.h>
+	rdsiaf.x	
+	readaper.x	<tbset.h>
+	siaftab.x	<tbset.h>
+	siaftrim.x

@@ -1,0 +1,7 @@
+infile, f, a, "", , , 	">input file template"
+inmask, f, a, "", , , 	">input mask template"
+outmask, f, a, "", , , 	">output mask template"
+boxsize, i, a, 10, 1, ,	">box size used in averaging"
+sigma, r, a, 2., 1., ,	">factor used to exclude extreme pixel values"
+
+mode, s, h, "al"

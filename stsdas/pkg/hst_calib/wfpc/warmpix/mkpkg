@@ -1,0 +1,14 @@
+# Update the warmpix application code in the wfpc package library
+# Author: HSU, 24-MAR-1995
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_warmpix.x	warmpix.h	<tbset.h>
+	warm_check.x	warmpix.h	<imhdr.h>	
+	warm_in.x
+	warm_do.x	warmpix.h	<mach.h>
+	;

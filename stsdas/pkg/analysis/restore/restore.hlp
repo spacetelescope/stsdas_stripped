@@ -1,0 +1,60 @@
+.help restore Aug93 stsdas.analysis.restore
+
+The 'restore' package contains tasks to deconvolve or filter 
+1- or 2-dimensional images.
+
+The 'lucy' task generates a deconvolved image from an input image and  
+point spread function (PSF).  The output image will be the same size as 
+the input image unless an optional larger output size is specified by the
+user.  The PSF image must contain the same number of dimensions as the
+the input image, but the actual dimensions are not required to match the 
+input image.  If a background (sky) image or mask image are given, their 
+dimensions must match those of the input image.  If a model image is 
+specified its dimensions must match the output image size.  When the
+optional background image is specified the lucy task will require 6 real 
+and 2 complex arrays, i.e. a 512x512 image will require 10 MB of array space.
+
+The ' mem' task restores images by the Maximum Entrophy Method.  The input
+images are mainly (1) the degraded image (e.g., from the WF/PC of the HST),
+(2) the point spread function image, and optionally (3) the model image.
+The input parameters are the readout noise and adu (the A/D conversion
+constant).  The output image is the final converged MEM image, or it
+may be an interim result which may be used as a model to run the task
+again.
+
+The 'sclean' task implements the sigma-CLEAN deconvolution algorithm of
+W. Keel (PASP 1991, 103,723).  The task includes some additional features
+not contained in Keel's code: (1) the optional convolution with the 
+"restored beam", (2) the optional addition of the residual map to
+CLEAN map, and (3) a much faster algorithm.
+
+The 'wiener' task applies a Fourier noniterative deconvolution filter to
+2-dimensional images.  The filter includes the familiar inverse, Wiener,
+geometric mean and parametric forms. Type "help wiener opt=sys" to see a
+more detailed explanation on filter characteristics, limitations and
+usage. You may use the task with its default parameter settings,
+supplying only the required parameters. However, to fully exploit the task 
+(and hopefully achieve better restorations), reading 
+the 'opt=sys' help pages is highly recommended.
+
+The 'hfilter' task implements a simple realization of an adaptive low-pass
+noise filter based on the H-transform.  The H-transform is a form of image
+coding based on the Haar transform, which keeps a tight one-to-one
+relationship between "pixels" in the transform space and data pixels
+in the image space.  With it, it is possible to design filters that 
+adapt themselves to the local signal-to-noise and spectral properties of 
+the data.  A complete description of the technique can be found in the
+references in the help page. 
+
+The 'adaptive' task, written by G.M. Richter at ESO,
+reduces the noise in portions of an image without reducing the resolution
+of sharp features.  The local signal-to-noise ratio as a function of
+decreasing resolution is evaluated via the H-transform in the following
+way.  At a given point in the image, mean gradients and curvatures over
+different scale lengths (obtained from the H-coefficients of different
+orders) are compared to the corresponding expectation values of the
+noise.  The order for which this signal-to-noise ratio exceeds a specified
+level indicates the local resolution scale length of the signal, and this
+determines the size of the filter to apply at this point.
+.endhelp
+

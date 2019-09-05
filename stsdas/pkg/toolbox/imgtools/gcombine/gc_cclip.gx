@@ -1,0 +1,677 @@
+include	"../gcombine.h"
+
+define	MINCLIP		2	# Mininum number of images for algorithm
+
+$for (sird)
+# G_ACCDCLIP -- Reject pixels using CCD noise models about the average
+#
+# CYZhang 8 June, 1994, based on images.imcombine
+# P. Greenfield, 13 September, 1996. Fix problem where median was not
+#	being computed for combine=median & mclip=yes
+
+procedure g_accdclip$t (data, id, nimages, n, npts, average, szuw, nm)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image ID pointers
+int	nimages			# Number of images
+int	n[npts]			# Number of good pixels
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	average[npts]		# Average
+$else
+PIXEL	average[npts]		# Average
+$endif
+pointer	szuw			# Pointer to scaling structure
+pointer	nm			# Pointer to noise model structure
+
+real	r
+PIXEL	low, high
+int	i, j, k, l, n1, n2, idj, id1, id2, nk, minkeep, lrej, ii
+$if (datatype == sil)
+real	d1, d2, dd1, dd2, sum, a, s, s1, s2, v1, v2, zero
+data	zero /0.0/
+$else
+PIXEL	d1, d2, dd1, dd2, sum, a, s, s1, s2, v1, v2, zero
+data	zero /0$f/
+$endif
+pointer	sp, resid, ip1, ip2, dp1, dp2
+
+include	"../gcombine.com"
+
+begin
+	# If there are no pixels go on to the combining.  Since the unweighted
+	# average is computed here possibly skip the combining later.
+
+	# There must be at least max (1, NKEEP) pixels.
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	
+	# lrej is the least number of available pixels for rejection to
+	# be allowed.
+	lrej =  max (MINCLIP, minkeep+1)
+
+	if (nimages < lrej) {
+	    DOCOMBINE = true
+	    return
+	} else if (DOWTS || G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = true
+	else
+	    DOCOMBINE = false
+
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+
+	# There must be at least two pixels for rejection.  The initial
+	# average is the low/high rejected average except in the case of
+	# just two pixels.  The rejections are iterated and the average
+	# is recomputed.  Corrections for scaling may be performed.
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (NKEEP < 0)
+		minkeep = max (0, n1 + NKEEP)
+	    else
+		minkeep = min (n1, NKEEP)
+	    # Number of pixels surviving from masking and thresholding 
+	    # smaller than the least required number of pixels for rejection,
+	    # rejection becomes irrelevant.
+	    lrej = max (MINCLIP, minkeep+1)
+	    if (n1 <= (lrej-1)) {
+		if (!DOCOMBINE) {
+		    if (n1 == 0)
+			average[i] = BLANK
+		    else {
+			sum = zero
+			do j = 1, n1 
+			    sum = sum + Mem$t[data[j]+k]
+			average[i] = sum /n1
+		    }
+		}
+		next
+	    }
+
+	    if (n1 == 2) {
+		dp1 = data[1]+k
+		ip1 = id[1]+k
+		d1 = Mem$t[dp1]
+		id1 = Memi[ip1]
+		d2 = Mem$t[data[2]+k]
+		id2 = Memi[id[2]+k]
+		dd1 = (d1 + Memr[ZEROS(szuw)+id1-1]) * Memr[SCALES(szuw)+id1-1]
+		dd2 = (d2 + Memr[ZEROS(szuw)+id2-1]) * Memr[SCALES(szuw)+id2-1]
+		if (!DOCOMBINE)
+		    average[i] = (d1 + d2) / 2.0
+		s1 = sqrt(Memr[RDNOISE(nm)+id1-1])
+		s2 = sqrt(Memr[RDNOISE(nm)+id2-1])
+		if ((dd1>0. && dd1<=HSIGMA*s1 || dd1<0. && dd1>=-LSIGMA*s1) &&
+		    (dd2>0. && dd2<=HSIGMA*s2 || dd2<0. && dd2>=-LSIGMA*s2)) 
+		    next
+		if (d1 < d2 && dd1>-LSIGMA*s1) {
+		    if (!DOSCALE) {
+			a = max (zero, d1)
+			call g_nmvar (a, v1, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1 * 2.)
+		    } else {
+			a = max (zero, (d1 + Memr[ZEROS(szuw)+id1-1]) * 
+			    Memr[SCALES(szuw)+id1-1])
+			call  g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			a = max (zero, (d1 + Memr[ZEROS(szuw)+id2-1]) * 
+			    Memr[SCALES(szuw)+id2-1])
+			call  g_nmvar (a, v2, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1/Memr[SCALES(szuw)+id1-1]**2+
+			    v2/Memr[SCALES(szuw)+id2-1]**2)
+		    }
+		    if (s <= zero) 
+			call error (0, "Noise model parameters incorrect")
+		    r = (d2 - d1) / s
+		    if (r > HSIGMA) {
+			if (!DOCOMBINE)
+			    average[i] = d1
+			n[i] = 1
+		    } 
+		    next
+		} else if (d1>d2&& dd2>-LSIGMA*s2) {
+		    if (!DOSCALE) {
+			a = max (zero, d2)
+			call g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			s = sqrt (2. * v1)
+		    } else {
+			a = max (zero, (d2 + Memr[ZEROS(szuw)+id1-1]) * 
+			    Memr[SCALES(szuw)+id1-1])
+			call  g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			a = max (zero, (d2 + Memr[ZEROS(szuw)+id2-1]) * 
+			    Memr[SCALES(szuw)+id2-1])
+			call  g_nmvar (a, v2, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1/Memr[SCALES(szuw)+id1-1]**2+
+			    v2/Memr[SCALES(szuw)+id2-1]**2)
+		    }
+		    if (s <= zero) 
+			call error (0, "Noise model parameters incorrect")
+		    r = (d1 - d2) / s
+		    if (r > HSIGMA) {
+			n[i] = 1
+			dp2 = data[2]+k
+			ip2 = id[2]+k
+			Mem$t[dp1] = d2
+			Mem$t[dp2] = d1
+			Memi[ip1] = id2
+			Memi[ip2] = id1
+			if (!DOCOMBINE)
+			    average[i] = d2			
+		    }
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2<-LSIGMA*s2 && d1<d2) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (!DOCOMBINE) 
+			average[i] = d2
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2<-LSIGMA*s2 && d1>d2) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			average[i] = d1
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2>HSIGMA*s2 && abs(d1)>d2) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (!DOCOMBINE) 
+			average[i] = d2
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2>HSIGMA*s2 && abs(d1)<d2) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			average[i] = d1
+		    next
+		} else if (dd1>HSIGMA*s1 && dd2<-LSIGMA*s2 && abs(d2)<d1) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (!DOCOMBINE) 
+			average[i] = d2
+		    next
+		} else if (dd1>HSIGMA*s1 && dd2<-LSIGMA*s2 && abs(d2)>d1) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			average[i] = d1
+		    next
+		}
+	    }
+	    repeat {
+		# Average of the only two good pixels
+		if (n1 == 2) {
+		    sum = Mem$t[data[1]+k]
+		    sum = sum + Mem$t[data[2]+k]
+		    a = sum / 2
+	    	} else {
+	    	# Unweighted average with the high and low rejected
+		    low = Mem$t[data[1]+k]
+		    high = Mem$t[data[2]+k]
+		    if (low > high) {
+			d1 = low
+			low = high
+			high =d1
+		    }
+	        # Find low and high with masked bad pixels excluded
+		    sum = zero
+		    do j = 3, n1 {
+		        d1 = Mem$t[data[j]+k]
+		        if (d1 < low) {
+			    sum = sum + low
+			    low = d1
+			} else if (d1 > high) {
+			    sum = sum + high
+			    high = d1
+			} else
+			    sum = sum + d1
+	    	    }
+		    a = sum / real(n1 - 2)
+		    sum = sum + low + high
+	    	}	
+		n2 = n1
+		for (j=1; j<=n1; j=j+1) {
+		    dp1 = data[j] + k		
+		    ip1 = id[j] + k
+		    d1 = Mem$t[dp1]
+		    idj = Memi[ip1]
+		    		
+		    if (!DOSCALE) {
+			s = max (zero, a)
+			call g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			s = sqrt (s1)
+			# Use de-scaled median as signal for noise model
+			# then scale the sigma to get it for scaled images
+		    } else {
+			s = max (zero, Memr[SCALES(szuw)+idj-1] *
+				(a + Memr[ZEROS(szuw)+idj-1]))
+			call  g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			s = sqrt (s1) / Memr[SCALES(szuw)+idj-1]
+		    }
+		    # Deviation measured in number of sigmas
+		    if (s <= zero) 
+			call error (0, "Noise model parameters incorrect")
+		    r = (d1 - a) / s
+		    if (r < -LSIGMA || r > HSIGMA) {
+			Memr[resid+n1] = abs(r)	
+			# Swap rejected ones to top of array, keep track IDs
+			if (j < n1) {
+			    dp2 = data[n1] + k
+			    Mem$t[dp1] = Mem$t[dp2]
+			    Mem$t[dp2] = d1
+			    ip2 = id[n1] + k
+			    Memi[ip1] = Memi[ip2]
+			    Memi[ip2] = idj 
+			    j = j - 1
+			}
+			sum = sum - d1
+			n1 = n1 - 1
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+	    # When n1 = n2 no further rejection needed; when n1 > lrej, update
+	    # n2 to the new n1, and compute new mean, then repeat rejection.
+	
+	    # If less than minkeep are retained, add some back in.
+	    if (n1 < minkeep) {
+		nk = minkeep
+		# Shuffle the part of data array from n1+1 to nk
+		# so that residuals increase with increasing j and
+		# the data with the smallest residuals are put in
+		# the cells of indices of n1+1, n1+2, ..., up to nk. 
+		for (j=n1+1; j<=nk; j=j+1) {
+		    dp1 = data[j] + k
+		    ip1 = id[j] + k
+		    r = Memr[resid+j]
+		    ii = 0
+		    do l = j+1, n2 {
+			s = Memr[resid+l]
+			if (s < r + TOL) {
+			    if (s > r - TOL)
+			    # Tolerate similarly smallest pixels even
+			    # if it means to keep more than nkeep pixels
+			    	ii = ii + 1
+			    else {
+			    # Swapping the pair so that the data with
+			    # smaller residual is in the (n1+1)'th cell,
+			    # while the one of larger residual will be
+			    # used for next pair comparison.
+				ii = 0
+				Memr[resid+l] = r
+				r = s
+				dp2 = data[l] + k
+				d1 = Mem$t[dp1]
+				Mem$t[dp1] = Mem$t[dp2]
+				Mem$t[dp2] = d1
+				ip2 = id[l] + k
+				idj = Memi[ip1]
+				Memi[ip1] = Memi[ip2]
+				Memi[ip2] = idj
+			    }
+			}
+		    }
+		    # After the smallest residual is found in the
+		    # (n1+1)'th cell, it is added back.
+		    sum = sum + Mem$t[dp1]
+		    n1 = n1 + 1
+		    nk = max (nk, j+ii)
+		}
+	    }
+	    n[i] = n1
+	    if (!DOCOMBINE)
+		if (n1 > 0)
+		    average[i] = sum / n1
+		else
+		    average[i] = BLANK
+	}
+
+	call sfree (sp)
+end
+
+
+# G_MCCDCLIP -- Reject pixels using CCD noise models about the median
+#
+# CYZhang 8 June, 1994, based on images.imcombine
+
+procedure g_mccdclip$t (data, id, nimages, n, npts, median, szuw, nm)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image updated DQF pointers
+int	nimages			# Number of images
+int	n[npts]			# Number of good pixels
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	median[npts]		# Median
+$else
+PIXEL	median[npts]		# Median
+$endif
+pointer	szuw			# Pointer to scaling structure
+pointer	nm			# Pointer to noise model structure
+
+int	i, j, k, l, n1, n2, n3, nl, nh, idj, minkeep, lrej, id1, id2
+$if (datatype == sil)
+real	a, r, d1, d2, dd1, dd2, med, s, s1, s2, v1, v2, zero
+data	zero /0.0/
+$else
+PIXEL	a, r, d1, d2, dd1, dd2, med, s, s1, s2, v1, v2, zero
+data	zero /0$f/
+$endif
+pointer	sp, resid, dp1, dp2, ip1, ip2
+
+include	"../gcombine.com"
+
+begin
+	# There must be at least max (MINCLIP, NKEEP+1) pixels.
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	
+	# lrej is the least number of available pixels for rejection to
+	# be allowed.
+	lrej =  max (MINCLIP, minkeep+1)
+	
+	if (nimages < lrej) {
+	    DOCOMBINE = true
+	    return
+	} else if (DOWTS || G_COMBINE == C_AVERAGE ) #fix for median calc.
+	    DOCOMBINE = true			     #problem. PG.
+	else					     #		
+	    DOCOMBINE = false			     #
+
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+
+	# Compute median and sigma and iteratively clip.
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    nl = 1
+	    nh = n1
+	    if (n1 == 2) {
+		dp1 = data[1]+k
+		ip1 = id[1]+k
+		d1 = Mem$t[dp1]
+		id1 = Memi[ip1]
+		d2 = Mem$t[data[2]+k]
+		id2 = Memi[id[2]+k]
+		dd1 = (d1 + Memr[ZEROS(szuw)+id1-1]) * Memr[SCALES(szuw)+id1-1]
+		dd2 = (d2 + Memr[ZEROS(szuw)+id2-1]) * Memr[SCALES(szuw)+id2-1]
+		s1 = sqrt(Memr[RDNOISE(nm)+id1-1])
+		s2 = sqrt(Memr[RDNOISE(nm)+id2-1])
+		if (!DOCOMBINE)
+		    median[i] = (d1 + d2) / 2.0
+		if ((dd1>0. && dd1<=HSIGMA*s1 || dd1<0. && dd1>=-LSIGMA*s1) &&
+		    (dd2>0. && dd2<=HSIGMA*s2 || dd2<0. && dd2>=-LSIGMA*s2))
+		    next
+
+		if (d1 < d2 && dd1>-LSIGMA*s1) {
+		    if (!DOSCALE) {
+			a = max (zero, d1)
+			call g_nmvar (a, v1, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1 * 2.)
+		    } else {
+			a = max (zero, (d1 + Memr[ZEROS(szuw)+id1-1]) * 
+			    Memr[SCALES(szuw)+id1-1])
+			call  g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			a = max (zero, (d1 + Memr[ZEROS(szuw)+id2-1]) * 
+			    Memr[SCALES(szuw)+id2-1])
+			call  g_nmvar (a, v2, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1/Memr[SCALES(szuw)+id1-1]**2+
+			    v2/Memr[SCALES(szuw)+id2-1]**2)
+		    }
+		    if (s <= zero) 
+			call error (0, "Noise model parameters incorrect")
+		    r = (d2 - d1) / s
+		    if (r > HSIGMA) {
+			if (!DOCOMBINE)
+			    median[i] = d1
+			n[i] = 1
+		    } 
+		    next
+		} else if (d1>d2&& dd2>-LSIGMA*s2) {
+		    if (!DOSCALE) {
+			a = max (zero, d2)
+			call g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			s = sqrt (2. * v1)
+		    } else {
+			a = max (zero, (d2 + Memr[ZEROS(szuw)+id1-1]) * 
+			    Memr[SCALES(szuw)+id1-1])
+			call  g_nmvar (a, v1, Memr[RDNOISE(nm)+id1-1],
+				Memr[GAIN(nm)+id1-1], Memr[SNOISE(nm)+id1-1))
+			a = max (zero, (d2 + Memr[ZEROS(szuw)+id2-1]) * 
+			    Memr[SCALES(szuw)+id2-1])
+			call  g_nmvar (a, v2, Memr[RDNOISE(nm)+id2-1],
+				Memr[GAIN(nm)+id2-1], Memr[SNOISE(nm)+id2-1))
+			s = sqrt (v1/Memr[SCALES(szuw)+id1-1]**2+
+			    v2/Memr[SCALES(szuw)+id2-1]**2)
+		    }
+		    if (s <= zero) 
+			call error (0, "Noise model parameters incorrect")
+		    r = (d1 - d2) / s
+		    if (r > HSIGMA) {
+			n[i] = 1
+			dp2 = data[2]+k
+			ip2 = id[2]+k
+			Mem$t[dp1] = d2
+			Mem$t[dp2] = d1
+			Memi[ip1] = id2
+			Memi[ip2] = id1
+			if (!DOCOMBINE)
+			    median[i] = d2			
+		    }
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2<-LSIGMA*s2 && d1<d2) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (DOCOMBINE) 
+			median[i] = d2
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2<-LSIGMA*s2 && d1>d2) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			median[i] = d1
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2>HSIGMA*s2 && abs(d1)>d2) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (!DOCOMBINE) 
+			median[i] = d2
+		    next
+		} else if (dd1<-LSIGMA*s1 && dd2>HSIGMA*s2 && abs(d1)<d2) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			median[i] = d1
+		    next
+		} else if (dd1>HSIGMA*s1 && dd2<-LSIGMA*s2 && abs(d2)<d1) {
+		    n[i] = 1
+		    dp2 = data[2]+k
+		    ip2 = id[2]+k
+		    Mem$t[dp1] = d2
+		    Mem$t[dp2] = d1
+		    Memi[ip1] = id2
+		    Memi[ip2] = id1
+		    if (!DOCOMBINE) 
+			median[i] = d2
+		    next
+		} else if (dd1>HSIGMA*s1 && dd2<-LSIGMA*s2 && abs(d2)>d1) {
+		    n[i] = 1
+		    if (!DOCOMBINE) 
+			median[i] = d1
+		    next
+		}
+	    }
+	    repeat {
+		n2 = n1
+		n3 = nl + n1 / 2
+
+		if (n1 == 0)
+		    med = BLANK
+		else if ( mod(n1, 2) == 0) {
+		    med = Mem$t[data[n3-1]+k]
+		    med = (med + Mem$t[data[n3]+k]) / 2.0
+		} else
+		    med = Mem$t[data[n3]+k]
+
+		if (NKEEP < 0)
+		    minkeep = max (0, n1 + NKEEP)
+		else
+		    minkeep = min (n1, NKEEP)
+	
+		# lrej is the least number of available pixels for rejection to
+	    	# be allowed.
+	    	lrej =  max (MINCLIP, minkeep+1)
+		if (n1 >= lrej) {
+		    for (; nl <= n2; nl=nl+1) {
+			idj = Memi[id[nl]+k]
+			d1 = Mem$t[data[nl]+k]
+			if (!DOSCALE) {
+			    s = max (zero, med)
+			    call g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			    s = sqrt (s1)
+		    	    # Use de-scaled median as signal for noise model
+			    # then scale the sigma to get it for scaled images
+			} else {
+			    s = max (zero, Memr[SCALES(szuw)+idj-1] *
+				(med + Memr[ZEROS(szuw)+idj-1]))
+			    call  g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			    s = sqrt (s1) / Memr[SCALES(szuw)+idj-1]
+			}
+			# Deviation measured in number of sigmas
+			if (s <= zero)
+			    call error (0, "Noise model parameters incorrect")
+			r = (med - d1) / s
+			if (r <= LSIGMA)
+			    break
+			Memr[resid+nl] = r
+			n1 = n1 - 1
+		    }
+		    for (; nh >= nl; nh=nh-1) {
+			idj = Memi[id[nl]+k]
+			d1 = Mem$t[data[nh]+k]
+			if (!DOSCALE) {
+			    s = max (zero, med)
+			    call g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			    s = sqrt (s1)
+		    	    # Use de-scaled median as signal for noise model
+			    # then scale the sigma to get it for scaled images
+			} else {
+			    s = max (zero, Memr[SCALES(szuw)+idj-1] *
+				(med + Memr[ZEROS(szuw)+idj-1]))
+			    call  g_nmvar (s, s1, Memr[RDNOISE(nm)+idj-1],
+				Memr[GAIN(nm)+idj-1], Memr[SNOISE(nm)+idj-1))
+			    s = sqrt (s1) / Memr[SCALES(szuw)+idj-1]
+			}
+			# Deviation measured in number of sigmas
+			if (s <= zero)
+			    call error (0, "Noise model parameters incorrect")
+			r = (d1 - med) / s
+			if (r <= HSIGMA)
+			    break
+			Memr[resid+nh] = r
+			n1 = n1 - 1
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+	    # When n1 = n2 no further rejection needed; when n1 > lrej, update
+	    # n2 to the new n1, and compute new median, then repeat rejection.
+
+	    # If less than minkeep are retained, add some back in.
+	    while (n1 < minkeep) {
+		if (nl == 1)
+		    nh = nh + 1
+		else if (nh == n[i])
+		    nl = nl - 1
+		else {
+		    r = Memr[resid+nl-1]
+		    s = Memr[resid+nh+1]
+		    if (r < s) {
+			nl = nl - 1
+			r = r + TOL
+			if (s <= r)
+			    nh = nh + 1
+			if (nl > 1) {
+			    if (Memr[resid+nl-1] <= r)
+				nl = nl - 1
+			}
+		    } else {
+			nh = nh + 1
+			s = s + TOL
+			if (r <= s)
+			    nl = nl - 1
+			if (nh < n2) {
+			    if (Memr[resid+nh+1] <= s)
+				nh = nh + 1
+			}
+		    }
+		}
+		n1 = nh - nl + 1
+	    }
+
+	    # Get the final number of good pixels
+	    n[i] = n1
+	    # Compact array to have a number of (nl-1) good pixels on the
+	    # top moved to the bottom where (nl-1) bad ones just rejected
+	    # occupied so that one can do, say, averaging, rather than median
+	    if (n1 > 0 && nl > 1 && G_COMBINE != C_MEDIAN) {
+		j = max (nl, n1 + 1)
+		do l = 1, min (nl-1, n1) {
+		    Mem$t[data[l]+k] = Mem$t[data[j]+k]
+		    Memi[id[l]+k] = Memi[id[j]+k]
+		    j = j + 1
+		}
+	    }
+
+	    # Get median for output if "median combine" is chosen
+	    if (G_COMBINE == C_MEDIAN)
+		median[i] = med
+	}
+
+	# Flag that the median is computed.
+	if (G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = false
+	else
+	    DOCOMBINE = true
+
+	call sfree (sp)
+end
+$endfor

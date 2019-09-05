@@ -1,0 +1,108 @@
+.help imdisp_pos Dec91 stsdas.graphics.sdisplay
+.ih
+NAME
+imdisp_pos -- Determine the location of an image within the image display.
+.ih
+USAGE
+imdisp_pos image
+.ih
+DESCRIPTION
+This task is used to determine the viewport coordinates needed when 
+specifying a viewport on the image display so that it will cover the image. 
+This is necessary because the graphics I/O (GIO) and the image display 
+tasks lack communication.
+.ih
+PARAMETERS
+.ls image [file name]
+The image specified for the image display task.  The syntax used to specify 
+this parameter should be exactly the same as that used in the 'image' 
+parameter in the 'images.tv.display' task.
+.le
+.ls (left = INDEF) [real]
+This is a task parameter that will return the left side of the viewport 
+where the image is displayed.
+.le
+.ls (right = INDEF) [real]
+This is a task parameter that will return the right side of the viewport 
+where the image is displayed.
+.le
+.ls (bottom = INDEF) [real]
+This is a task parameter that will return the bottom side of the viewport 
+where the image is displayed.
+.le
+.ls (top = INDEF) [real]
+This is a task parameter that will return the top side of the viewport 
+where the image is displayed.
+.le
+.ls (section = "") [string]
+The modified image specification containing the section of the image
+that actually appears in the display.
+.ih
+EXAMPLES
+In the following examples, the display is configured for a 512x512
+frame buffer.
+
+1. Determine where a 300 x 300 image is located in the display:
+.nf
+
+cl> images
+im> tv
+tv> stsdas
+st> playpen
+pl> display image300 1
+pl> imdisp_pos
+pl> lpar imdisp_pos
+image = "image300" Displayed image specification
+(left = 0.2074363976717) Left side of viewport, NDC
+(right = 0.79256361722946) Right side of viewport, NDC
+(bottom = 0.2074363976717) Bottom side of viewport, NDC
+(top = 0.79256361722946) Top side of viewport, NDC
+(section = "image300[1:300,1:300]") Section actually displayed
+.fi
+
+2. Determine where an 800 x 800 image is that overflows the display frame
+buffer.
+.nf
+
+pl> display image800 1
+pl> imdisp_pos
+pl> lpar imdisp_pos
+image = "image800"    Displayed image specification
+(left = 0.)             Left side of viewport, NDC
+(right = 1.)             Right side of viewport, NDC
+(bottom = 0.)             Bottom side of viewport, NDC
+(top = 1.)             Top side of viewport, NDC
+(section = "image800[145:656,145:656]") Section actually displayed
+.fi
+
+3. Determine where an 800 x 800 image is diplayed within a
+square that is 80% of the display size.
+.nf
+
+pl> display image800 fill+ xsize=.8 ysize=.8
+pl> imdisp_pos
+pl> lpar imdisp_pos
+image = "image800"    Displayed image specification
+(left = 0.1001251488924) Left side of viewport, NDC
+(right = 0.90012508630753) Right side of viewport, NDC
+(bottom = 0.099874846637249) Bottom side of viewport, NDC
+(top = 0.89987480640412) Top side of viewport, NDC
+(section = "image800[1:800,1:800]") Section actually displayed
+.fi
+.ih
+BUGS
+This task uses a "restricted interface" to the image display.  If the
+image display interface ever changes, this will meet a horrible and
+untimely death.  However, if a change does occur, it will be to
+incorporate both graphics and image display into a nice, neat package,
+and this task will no longer be needed.
+
+Another bug relates to the fact that graphics and image display are
+not integrated.  Graphics overlays onto the image display suffer from
+various roundoff errors.  Only setting the parameter 'display.fill=no' will 
+produce 
+a reasonable match between graphics and image display.
+.ih
+SEE ALSO
+display, imdkern
+.endhelp

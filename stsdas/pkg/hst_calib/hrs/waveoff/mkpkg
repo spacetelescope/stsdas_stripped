@@ -1,0 +1,17 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+	t_waveoff.x	<cif.h>
+	line.x		<tbset.h>
+	waveof.x	<cif.h> <imhdr.h>
+	wocore.x
+	womaxr.x
+	woofft.x
+	woprew.x
+	offsets.x	<tbset.h>
+	;
+
+

@@ -1,0 +1,11 @@
+input1,f,a,"",,,>First list with input dark exposures 
+input2,f,a,"",,,>Second (matched) list with input dark exposures 
+output,f,a,"",,,>Output NOISE file
+kclip,r,h,4.,0.,,>Threshold for sigma-clip algorithm
+nclip,i,h,0,0,,>No. of iterations in sigma-clip algorithm
+cleanfrac,r,h,0.,0.,1.,>Fraction of outliers to clean off
+extver,i,h,1,1,,>EXTVER in input files (MULTIACCUM only)
+memory,i,h,20,1,,>Available memory (Mbytes)
+process,b,h,yes,,,>Process files ? (or just check them ?)
+verbose,b,h,yes,,,>Verbose ?
+version,s,h,"04Mar97",,,>Date of installation

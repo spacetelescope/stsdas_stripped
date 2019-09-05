@@ -1,0 +1,63 @@
+.help describe Sept91 stsdas
+.ih
+NAME
+describe -- Display a description of the named task(s) or package(s).
+.ih
+USAGE
+describe template
+.ih
+DESCRIPTION
+The 'describe' task is a shortcut for viewing only the DESCRIPTION section
+of a help file for any STSDAS task or package. It produces the same output
+as you would get by typing "help task section=description", but offers a 
+more intuitive way of getting the information.
+.ih
+PARAMETERS
+.ls template [string]
+Name of the task to be described. This may be a template with wildcards,
+and task names may be abbreviated. Multiple tasks may be specified by
+separating task names with a comma. Package names may also be specified with
+a period separating the package from the task. The general form of the pattern
+is:
+
+   package.task
+
+For example, you could type "describe fits.st*" and
+descriptions would be displayed for both the 'strfits' and the 'stwfits'
+tasks in the 'fitsio' package since both these tasks match the specified
+template. In practice, you may not wish to specify more than one task at
+a time because the descriptions will be concatenated rather than being
+separated. 
+
+If no package name is specified (with the "."), the task assumes you are
+looking for a task in the current package.
+The standard pattern
+matching metacharacters, i.e., "*?[]", are permitted in patterns.
+Simple patterns are assumed to be abbreviations.
+.le
+.ih
+EXAMPLES
+1. Describe the 'grpcopy' task in the 'tools' package:
+
+.nf
+	cl> describe tools.grpcopy
+or
+	cl> describe grpcopy
+or
+	cl> describe grpc
+.fi
+
+2. Describe the 'dqfpar' and 'noisepar' tasks in
+the 'wfpc' package. Send the output to your default printer.
+
+cl> describe wfpc.*par | lpr
+
+.ih
+BUGS
+On some systems, typing the next command keystroke before the end-of-page
+prompt is printed may result in the character being echoed (messing up the
+output) and then ignored when raw mode is enabled for the prompt.
+.ih
+SEE ALSO
+examples, help
+.endhelp

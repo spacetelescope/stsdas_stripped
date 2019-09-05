@@ -1,0 +1,13 @@
+# Update the imcalc application code in the imgtools package library
+# Author: R. Williamson, 24-Aug-1993
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	convbx.x
+	t_mkgauss.x <fset.h> <imhdr.h> <mach.h> <math.h>
+	outbx.x	
+	;

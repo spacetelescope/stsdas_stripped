@@ -1,0 +1,18 @@
+auto,b,h,yes,,,">automatic gain ?"
+beta,r,h,1.,0.,,">gain (fixed)"
+alpha,r,h,0.,0.,,">regularization parameter"
+positivity,b,h,yes,,,">turn on positivity constraint ?"
+adap,s,h,"update","|none|fixed|update",,">spatial adaptivity control mode"
+activity,s,h,"",,,">image with spatial adaptivity control information"
+atune,r,h,1.,,,">spatial adaptivity tuning parameter"
+adu,r,h,0.,0.,,">detector gain (electrons/DN)"
+noise,r,h,0.,0.,,">detector readout noise (e-, or DN if adu=0)
+
+PSF PARAMETERS"
+nlpsf,b,h,y,,,">noiseless psf ?"
+px0,r,h,INDEF,-1.,,">center of psf on frame (pixels)"
+py0,r,h,INDEF,-1.,,""
+mask,r,h,INDEF,1.,,">psf masking radius (pixels)
+"
+mode,s,h,al
+

@@ -1,0 +1,10 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+	t_zavgtemp.x	<error.h> <cif.h>
+	ztk.x		"zt.h"
+	ztot.x		<error.h> <tbset.h> "zt.h"
+;

@@ -1,0 +1,6 @@
+input,s,a,"",,,"SDAS table(s) containing file names"
+colnames,s,a,"",,,"Table column names containing file names"
+instr,s,a,"","fgs|hsp|wfpc|wfp2|foc|fos|hrs|multi",,"HST instrument name"
+directory,s,h," ",,,"Renamed files will be placed in this directory"
+verbose,b,h,yes,,,"Print new file name?"
+mode,s,h,"al",,,

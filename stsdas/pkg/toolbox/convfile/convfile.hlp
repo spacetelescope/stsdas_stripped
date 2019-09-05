@@ -1,0 +1,19 @@
+.help convfile Jul93 stsdas.tools
+This package contains tasks to change images from one machine-dependent
+format to another.  Current tasks will:
+
+.ls 
+o  Convert Sun binary format GEIS images to VAX binary format.
+.le
+.ls 
+o  Convert VAX binary format GEIS images to Sun binary format.
+.le
+.ls
+o  Convert STSDAS tables from Sun to VAX format.
+.le
+.ls
+o  Convert STSDAS tables from VAX to Sun format.
+.le
+
+Other conversions may be added in future releases.
+.endhelp

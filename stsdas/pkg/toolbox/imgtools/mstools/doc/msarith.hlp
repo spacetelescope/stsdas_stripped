@@ -1,0 +1,200 @@
+.help msarith Jun10 stsdas.toolbox.imgtools.mstools
+.ih
+NAME
+msarith -- Image arithmetic with IMSET files
+.ih
+USAGE	
+msarith operand1 op operand2 result
+.ih
+DESCRIPTION
+This task performs simple arithmetic on NICMOS, STIS, ACS and WFC3 images,
+taking proper care of propagating into the result the Data Quality and errors 
+arrays from the operands, and, in the NICMOS and WFC3/IR case, the times and
+samples arrays as well. The basic operation is
+.nf
+
+	operand1 op operand2 = result
+.fi
+
+where the 'op' operator can be addition, subtraction, multiplication or
+division. 
+
+'operand1' can be one NICMOS, STIS, ACS or WFC3 file (single or multi-IMSET),
+a list 
+of (single or multi-IMSET) files, or a numeric constant. 'operand2' can be 
+one NICMOS, STIS, ACS or WFC3 file, a matching list of files, or a numeric
+constant. 
+The numeric constant can have an optional associated error specified within 
+parenthesis, as in "2.5(0.3)". 'result' can be either one file, a matching 
+list of files or a directory. In this last case each output file will have 
+the same name as the corresponding file in 'operand1' (or 'operand2' if
+'operand1' is a numeric constant). 'operand2' can also be one single file 
+when 'operand1' expands into a list of files. 
+
+The default action when operating upon multi-IMSET files is to match IMSETs
+in 'operand1' and 'operand2' that have the same EXTVER number. This number
+must be a sequential number that goes from 1 to the value of the NEXTEND
+keyword divided by 3 (in STIS, ACS and WFC3/UVIS files) or 5 (in NICMOS 
+and WFC3/IR files). This behavior
+can be modified by the 'list1' and 'list2' task parameters. They accept
+comma-delimited strings that list the desired IMSETs to be operated upon,
+and in which order they have to be operated. The 'list2' parameter must 
+list either the same number of IMSETs of 'list1', or just a single IMSET.
+In this case this single IMSET will be operated against all listed IMSETs
+in 'list1'. If one of the operands is a numeric constant, the 'list' 
+parameter for the other operand can be used to select a sub-set of IMSETS
+to operate upon. It is the user responsibility to know in advance which 
+IMSET identification numbers (same as EXTVER numbers) are present in the 
+files input to this task. See the EXAMPLES section below.
+
+If both operands are files, their matching IMSETs must have the same axis 
+lengths. Image sections are *NOT* supported in this version. The resultant 
+output primary header is taken from 'operand1', with HISTORY records appended. 
+
+Division-by-zero exception is checked at the SCI pixel operation as well 
+as inside the individual operations involving error propagation. The SCI 
+result is specified by the 'divzero' parameter and the ERR result is set to 
+zero. If the Data Quality Flag of the divisor is non-zero, it is propagated
+into the output DQ array. If it is zero, the output's DQ is set to either
+BADPIX (NICMOS) or DATALOST (STIS) value. Square root errors result in a 
+zeroed ERR value, but no data Quality bit is set.
+
+The 'verbose' parameter sets the verbosity level. A value of zero switches
+off all messages and most warnings. A value of 1 enables warnings, messages 
+and, in case division by zero is detected, the output of a counter with the 
+total number of pixels (in each IMSET) where the exception happened. A value 
+of 2 enables also the output of x,y coordinates for each pixel affected by 
+division by zero.
+
+In STIS, ACS and WFC3/UVIS IMSETs the science arrays are operated in the usual
+way, the error
+arrays are combined pixel-by-pixel in quadrature (thus they are assumed
+to be independent), and the Data Quality Flags are pixel-by-pixel 
+Boolean-ORed.
+
+In NICMOS and WFC3/IR data, arithmetic operations may be performed in the usual
+mode as above, (that is, without regard to pixel content), or may be performed 
+taking into account that NICMOS and WFC3/IR pixels can carry information in 
+either raw counts or count rate units, and each pixel has its own, independent 
+integration time. The goal is to keep calibration information intact as the 
+data progresses through a series of arithmetic operations. The following 
+table summarizes how each operation acts on each NICMOS or WFC3/IR array. 
+
+.nf
+Operation/        SCI       ERR         DQ           TIME     SAMP
+2nd operand
+
+ADD/IMAGE         ADD(*1)  COMB.(*1)    OR          ADD       ADD
+SUB/IMAGE         SUB      COMB.        OR          1st op.   1st op.
+MULT/IMAGE        MULT     COMB.        OR          1st op.   1st op.
+DIV/IMAGE         DIV      COMB.        OR          1st op.   1st op.
+
+ADD/CONST.        ADD      COMB.       ---         ---        ---
+SUB/CONST.        SUB      COMB.       ---         ---        ---
+MULT/CONST.       MULT     COMB.       ---         MULT(*2)   ---
+DIV/CONST.        DIV      COMB.       ---         DIV(*2)    ---
+
+(*1) if pixels are in raw counts ->  add raw counts
+     if pixels are in count rate ->  translate count rate to counts in 
+                                     both input images; add counts and 
+                                     integration times; translate result
+                                     back to count rate.
+
+(*2) if pixels are in raw counts ->  multiply/divide time array by constant.
+     if pixels are in count rate ->  copy time from input image.
+.fi
+
+As with STIS and ACS data, errors are combined in quadrature and Data Quality
+Flags are Boolean-ORed. Integration times and number of samples are either 
+added together or copied from 'operand1'. 
+
+If 'operand1' is a numeric constant, the DQ, TIME and SAMPL arrays are
+copied from 'operand2'.
+
+The main control for telling the task how to interpret NICMOS and WFC3/IR pixel
+content is parameter 'crate'. However, to minimize operational errors, the task 
+looks for the BUNIT keyword in the SCI array and takes the proper
+action according to its value. If the keyword is found, its value is
+checked in both images and against the 'crate' parameter. If both images
+have the keyword valued to "COUNTS/S", count rate mode is chosen regardless
+of whatever is set in 'crate'. If however the task finds incompatible or
+wrong BUNIT values in the images, or no keyword in any one of them, it 
+adopts the operation mode designated by the 'crate' parameter. Similar
+actions take place when one of the operands is a constant. Warning messages 
+are issued to inform the user of possible inconsistencies. The task also 
+checks the value of BUNIT against standard NICMOS and WFC3/IR file name suffixes 
+("_raw",  "_cal", "_flt", "_bkg", "_cmp" and "_mos") and warns the user if any 
+inconsistency is found (but proceeds with the computation as specified by 
+BUNIT and/or 'crate').
+.ih
+PARAMETERS
+.ls operand1 [file name template]
+Either a list of files or a numeric constant with optional 
+error in the form "constant(error)". Image sections are *NOT* allowed.
+.le
+.ls op    
+Operator to be applied to the operands.  The allowed operators
+are "+", "-", "*" and "/".
+.le
+.ls operand2 [string]
+Either a list of files or a numeric constant with optional 
+error in the form "constant(error)". Image sections are *NOT* allowed.
+.le
+.ls result [file name list/directory]
+List of resultant files.
+.le
+.ls (list1 = "") [string]
+Comma-delimited list of IMSETS in 'operand1'. The default ("") is to use
+all existing IMSETS, but in this case they have to be numbered sequentially 
+starting from 1.
+.le
+.ls (list2 = "") [string]
+Comma-delimited list of IMSETS in 'operand2'. The default action is the
+same as for 'list1'. If one single IMSET is specified, it will be used
+to operate against all selected IMSETs from 'operand1'. 
+.le
+.ls (crate = no) [bool]
+Operate in count rate mode ? (NICMOS and WFC3/IR only)
+.le
+.ls (divzero = 0.) [real]
+Replacement value for division by zero.  When the denominator is zero
+or nearly zero the result is replaced by this value.
+.le
+.ls (verbose = 1) [int, min=0, max=2]
+Verbosity level.
+.le
+.ih
+EXAMPLES
+1. Subtract all IMSETs in file2.fits from the corresponding IMSETs in 
+file1.fits.
+
+.nf
+> msarith file1.fits - file2.fits result.fits 
+.fi
+
+2. Subtract IMSETs number 3 and 17 in file2.fits from IMSETs number 1 and 12 
+in file1.fits.
+
+.nf
+> msarith file1.fits - file2.fits result.fits list1="1,12" list2="3,17"
+.fi
+
+2. Subtract IMSET number 1 in file1.fits from all IMSETs in the same file.
+
+.nf
+> msarith file1.fits - file1.fits result.fits list2="1"
+.fi
+
+3. Find the inverse of IMSETs 1, 3 and 5 in file file1.fits.
+
+.nf
+> msarith 1 / file1.fits result.fits list2="1,3,5"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I. Busko.
+.ih
+SEE ALSO
+.endhelp

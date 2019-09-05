@@ -1,0 +1,10 @@
+input, f, a, "", , ,		input image name
+#output, f, a, "", , ,		output file name
+lower, r, a, 0.01, 0, 1,	lower limit of the usable histogram
+upper, r, a, 0.99, 0, 1,	upper limit of the usable histogram
+nbins, i, a, 1000, 1, ,		number of bins in the histogram
+
+hmin, r, h, , , ,	output minimal pixel value of the usable histogram
+hmax, r, h, , , ,	output maximal pixel value of the usable histogram
+
+mode, s, h, "al"

@@ -1,0 +1,18 @@
+# Parameters for siaper
+
+image,f,a,,,,"image name to use for WCS"
+
+apertures,s,h,"@stsdaslib$siaper_def_apers.txt",,,"List of apertures to display"
+center_ap,s,h,"ota",,,"Aperture which should be at specified RA/DEC"
+ra,s,h,"",,,"Right Ascension of the center aperture (HMS)"
+dec,s,h,"",,,"Declination of the center aperture (DMS)"
+roll,r,h,0,,,"roll angle : degrees east of north for V3 axis"
+
+wcspars,pset,h,,,,"WCS definition parameters"
+siaf,f,h,"stsdas$data/fits/cosiaf.fits",,,"PDB SIAF table"
+
+dvpar,pset,h,,,,"Device parameters"
+
+sky_project,b,h,y,,,"Invert V3 for sky projection?"
+
+Version,s,h,"9Aug95",,,"Date of installation"

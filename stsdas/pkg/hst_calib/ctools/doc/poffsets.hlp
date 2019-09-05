@@ -1,0 +1,491 @@
+.help poffsets Nov98 stsdas.hst_calib.ctools
+.ih 
+NAME
+poffsets -- Determine pixel offsets.
+.ih 
+USAGE
+poffsets input output
+.ih 
+DESCRIPTION
+This routine computes the pixel offsets between a list of input
+spectra either by utilizing the wavelength calibration data ('c0h') whereby 
+the offset is a prediction based upon the differences in the wavelength scales,
+or by explicitly cross-correlating the spectral arrays.  In order to obtain 
+reliable pixel offsets using a cross-correlation technique, the spectral 
+arrays must contain features which have a strong enough spectral 
+signature for a correlation technique to use for registration.  In the event 
+the features are weak or the spectrum is essentially featureless, predicted 
+offsets should be determined using the wavelength calibration information.
+
+The specific purpose for this task is to find pixel shifts between GHRS 
+FP-SPLIT observations; this information is needed by the 'specalign' task
+to combine the individual components of the observation.  However, there 
+is nothing GHRS-specific about this task that would prevent its use on 
+general spectra.  
+
+'Poffsets' determines the shifts between a "zero-point" spectrum and the
+list of spectra specified by the parameter 'input'.  The zero-point
+is determined in one of two ways.  If a spectrum is specified in the
+parameter 'zero_point', the spectrum is defined as the zero-point of
+the shifts.  If the 'zero_point' parameter is not specified, the first
+spectrum in the list specified by the 'input' parameter is taken to be
+the zero-point spectrum.  Shifts are then determined between each
+spectrum in the input list and the zero-point spectrum.  The shifts
+are calculated as:
+
+.nf
+        shift = input - zero-point
+.fi
+
+If the wavelength data are to be used to determine the predicted pixel 
+offsets, the data must be wavelength calibrated ('c0h'), and consequently, the 
+shifts will be based upon the differences in the wavelength arrays.  In order 
+to utilize this option, the "usecorr" parameter must be set to "no" so that 
+the cross-correlation is not performed.  In addition, the following parameters
+must be set accordingly: 'image = "wave"', 'wsource' must be either 
+"image" or "wcs", and 'interactive = no'.
+
+Alternatively, a cross-correlation technique can be applied to the data in 
+order to determine the offsets explicitly.  In this instance, the spectral
+arrays must contain significant features that can be used for registration
+purposes.  If performing an explicit cross-correlation of the spectra 
+to determine the offsets, the spectra are each divided into a user-specified 
+number of equal sections, and a separate offset is computed for each section.  
+The final offset is the average of the offsets of each section.  
+The user has the option to smooth the data using a simple boxcar smoothing 
+algorithm before the correlation is done.
+The size of the smoothing box is specified by the parameters
+'zero_fwidth' and 'fwidth'.  'zero_fwidth' specifies the size of the
+smoothing box for the zero-point spectrum.  'fwidth' specifies the
+size of the smoothing box for each of the input spectra.
+
+The shifts are then determined by a linear cross-correlation.  The correlation 
+used in this task is the normalized mean and variance correlation given by
+the following equation:
+ 
+.nf
+		    TOTAL{(x[i] - xmean) * (y[i - k] - ymean)}
+	corr[k] = ------------------------------------------------
+		    SQRT(TOTAL{(x[i] - xmean)**2}) *
+		         SQRT(TOTAL{(y[i - k] - ymean)**2})
+ 
+	where:
+		corr[k] - measure of correlation at offset k
+		   x[i] - values in the first spectrum
+		  xmean - mean value of X in the region
+			  being correlated
+		   y[i] - values in the second spectrum
+		  ymean - mean value of Y in the region being
+			  correlated
+	       TOTAL{ } - sum over i
+.fi
+
+The peak of the correlation is determined in one of four ways:  
+.ls
+1) 
+The
+first method is by finding the maximum correlation within a window
+around the zero shift point.  This mode of operation is chosen by
+setting the parameter 'method = max'.  The size of the window in which
+the maximum correlation is searched is defined by the parameter
+'window'.  For example, with the default of 'window = 100', the
+maximum correlation is searched for within shifts of -100 pixels to
++100 pixels.  The maximum value for 'window' is half the size of the
+spectrum. 
+.le
+.ls 
+2 and 3)
+The next two methods of finding the peak correlation depend on the
+fact that the individual spectra have been wavelength calibrated.  The
+two methods are selected by setting 'method' to "wave" and 'wsource'
+to either "image" or "wcs".  If 'wsource = image', then the wavelengths
+are read from separate files specified by the 'zero_wave' and
+'wavelength' parameters.  The 'zero_wave' parameter specifies the
+image or table that defines a list of wavelengths for the zero-point
+spectrum defined in the 'zero_point' parameter.  Similarly, the list
+of images or tables specified in the 'wavelength' parameter
+defines lists of wavelengths for each spectrum listed in the 'input'
+parameter.
+
+If 'wsource = wcs', the wavelengths are defined by the world coordinate
+system (WCS) information found in the headers of the zero-point
+spectrum and input spectra.
+
+For either 'wsource = image' or 'wsource = wcs', an initial guess at the 
+shift between spectra is calculated by examining the amount of wavelength 
+shift, and a cross-correlation is then calculated between spectra.
+However, the peak correlation is sought only around the
+predicted shift.  The size of the search area is determined by the value of
+the parameter 'delta'.  For example, if the wavelength scales of two
+spectra indicate a shift of +50 pixels and 'delta = 20', the peak correlation 
+will be expected to be somewhere between shifts of +30 to +70 pixels.
+.le
+.ls 
+4)
+The final method of finding the peak correlation is by graphical interaction 
+and is discussed below.
+.le
+
+Regardless of how the integral peak of the correlation function is
+determined, the shift is computed to sub-pixel precision using
+quadratic refinement (i.e., the offset is the position of the maximum
+of the quadratic through the peak value and its two neighbors).
+
+For each input spectrum, the correlation can be calculated for a number
+of different equally-sized sections.  The number of sections used is
+determined by the parameter 'sections'.  If the value of 'sections' is
+greater than one, each input spectrum and the zero-point is split into
+the number of sections specified.  A shift is determined for each
+section.  A sigma-rejection based iterative process is used to refine
+the average shift.  After the average is calculated, individual shifts
+are rejected if they are n-sigma away from the average.  The n-sigma is
+specified by the parameter 'nsig'.  If 'nsig = 1', all shifts greater
+than one sigma from the average are rejected.  The average is
+recomputed with the remaining shifts.  The iteration continues until
+one of two conditions are met: either no shifts are rejected, or the
+number of iterations has reached the maximum specified in the
+parameter 'niter'.  This final average is then the shift between
+the spectra.  If 'niter' is zero, no rejection takes place.  If
+'niter' is INDEF, iterations continue until no more rejections take
+place.
+
+The output of this task is a table, specified by the parameter
+'output'.  The columns of this table are as follows:
+
+.nf
+    FILE    -- The file name of the spectrum.
+    GROUP   -- The group of the file containing the spectrum.
+    SHIFT   -- The shift of this spectrum from the zero point.
+    WAVE    -- The wavelength file associated with FILE.
+    WGROUP  -- Group of the wavelength file.
+    WSHIFT  -- The shift in wavelengths, i.e., the initial guess,
+               between the zero-point and current wavelength files.
+.fi
+
+The one user header parameter of the table is
+
+.nf
+    ZEROPT  -- The image name of the zero point spectrum.
+.fi
+
+If the table named by the 'output' parameter does not exist, it is created.  If it does exist, then
+the entries are simply appended to the table.  Also, the zero point spectrum
+is taken from the user header parameter "ZEROPT", regardless of the
+value of the task parameter "zero_point".  ZEROPT ensures that all
+shifts in the current table share a common zero point spectrum.  If the
+table exists, but does not contain the necessary columns, an error occurs.
+
+.ls SPECIAL OPTIONS
+
+The previous description explained the entire algorithm for determining
+shifts between spectra. The following description will explain some
+special options that most users will not need, but that some might
+find useful in certain situations.
+
+If one wants to see the correlations calculated for each section
+of each spectrum, then a file name should be specified in the
+parameter 'correlations'.  A table is created, with each column
+containing a correlation.  The columns are named 'cX' where X is a
+number 1 through the number of correlations calculated.  The
+correlations are in the same order as the input spectra.  If the
+parameter 'sections' is greater than 1, for any input spectrum, then
+the correlations are for each section.  See the EXAMPLES section for
+examples of how this table can be used.
+
+Another special option is specified by the 'verbose' parameter.
+When 'verbose = yes', the 'poffsets' task  prints out informational messages 
+about shift guesses, sigma rejection, final shifts calculated for each
+spectrum, and whether granularity offsets can be calculated.  If 
+one does not want to see these messages, set 'verbose =
+no'.  Only error messages will then be printed.
+.le
+
+.ls INTERACTIVE MODE
+
+The final method of determining the shift is through graphical
+interaction.  This is chosen by setting the parameter 'interactive'
+to "yes".  The parameter 'usecorr' must also be "yes".  The 'device'
+parameter specifies the type of graphical device being used.
+
+In interactive mode, each calculated correlation is displayed on the
+graphics device.  If the parameter 'method' is "wave", the
+predicted shift is marked with a line labeled "guess".  If a shift is
+calculated, a line marked "initial" shows where the calculated shift
+is.  Finally, the shift that will be written to the output table is
+marked by the line labeled "current".  For each new section, or spectrum,
+displayed, the "initial" and "current" lines will be the same.
+
+The following key commands are available to change the shift
+calculated:
+
+.ls ?
+Help:  List of the available cursor key commands.
+.le
+.ls d
+Delete Shift:  This key undefines the shift for the current
+correlation.  If the correlation is one of many sections for the
+current 
+spectrum, it will not be included in the final shift average.  If this
+is the only section for a spectrum, no shift will be output for the
+spectrum.  An informational message will be displayed indicating that
+no shift for this section is present.
+.le
+.ls m
+Mark New Shift:  The shift is set to the X-position of the graphics
+cursor, with quadratic refinement.  A line will appear, called
+"current" at the new location of the current shift.
+.le
+.ls n
+Go To Next Section:  If there is more than one section specified for
+the current spectrum, 
+this key will go to the next section.  If there is only one section
+(the default), this key has no effect.
+.le
+.ls p
+Go To Previous Section:  If there is more than one section specified
+for the current spectrum, this key will go to the previous section.
+If there is only one section (the default), this key has no effect.
+.le
+.ls q or EOF character
+Go To The Next Correlation:  If there are more sections for the
+current spectrum, the next section correlation is displayed.  If there
+are no more sections, the first section of the next spectrum is
+displayed.  If all the spectra have been processed, the task ends,
+writing the shifts to the output table.
+.le
+.ls r
+Restore Original Shift:  Resets the shift for the current correlation
+to the same value as was originally calculated, i.e., the shift marked
+by the line labeled "initial".
+.le
+.ls s
+Show Cursor Coordinates:  This just echoes the current location of the
+graphics cursor.  There is no effect on the calculated shifts.
+.le
+.le 
+
+.ls LISTS
+
+Many parameters specify lists, or a sequence of values to use.  The list
+that drives the 'poffsets' task is the list of input files
+specified in the 'input' parameter.  The list is made up of
+comma-separated file names or "at" file names.  If a file is preceded
+by the "@" character, it is assumed that the file contains a further
+list of file names, each on a separate line.  If any of the files are
+multigroup images and a group is not explicitly specified, each group
+of the file is used.  Hence the total input list is ultimately
+the list of each data file and all its groups.
+
+The input list is the driving list of the task.  The list of images
+specified by the 'wavelength' parameter is matched, file for file,
+with the input list.  This effects multigroup files.  If
+the number of groups in the current input file is the same as the
+current wavelength file, then group corresponds to group.  However, if
+the input file has fewer groups than the wavelength, the last groups of
+the wavelength file will not be applied to any input file.  If the
+number of groups is greater, then the last group of the wavelength file
+is applied to each of the remaining groups of the input file.
+Finally, if there are not enough wavelength files for input files, the
+last wavelength file is applied to each remaining input file.
+.le
+.ih 
+PARAMETERS
+.ls input [file name template]
+List of input files. Shifts will be found for each file in the list or
+matching the template.
+.le 
+.ls output [file name]
+Name of the table that will contain the shift calculations.  If the
+table does not exist, it is created.  If it exists and has the correct
+columns, the information is appended.  If the table exists, but the
+columns do not exist, an error message is displayed.
+.le 
+.ls (method = "wave") [string, allowed values: wave | max]
+The method to use for determining the shifts.  If "wave" is chosen, a comparison
+between wavelength scales is used as an initial guess to the shift.
+If "max" is selected, the maximum correlation, within a
+window specified by parameter 'window' is used.
+.le
+.ls (wsource = "image") [string, allowed values: none | image | wcs]
+
+The source of the wavelength information.  If set to "none", then
+no wavelengths
+are looked for and the wavelength-related columns in the output table
+will not be written.  If set to "image", then the parameters "zero_wave" and
+"wavelengths" are used to find images or tables of wavelengths to use.
+If set to "wcs", then the World Coordinate information located in the input
+images is used.
+.le
+.ls (wavelength = "") [file name template]
+List of images or tables containing wavelength tables used to
+determine initial guess of shift if parameter 'method = wave'.  If
+none are specified, files ending with the extension ".c0h" are
+searched for the wavelength information.
+.le
+.ls (zero_point = "") [file name]
+The spectrum that represents the "zero shift".  If not specified, the
+first spectrum of the input list is used as the zero-point.
+.le
+.ls (zero_wave = "") [file name]
+The image or table containing the wavelength information for the
+zero-point spectrum if parameter 'wsource = wave'.
+.le
+.ls (delta = 20) [integer]
+When using wavelengths to predict shifts, this is the number of pixels
+on each side of the predicted shift to look for the maximum
+correlation.
+.le
+.ls (window = 100) [integer]
+When using 'method = max', this is the maximum shift to look for.
+.le
+.ls (fwidth = 1) [integer]
+Optional mean filter width to apply to the input spectra before
+cross-correlation is performed. This parameter can be used 
+to match the resolutions of the input spectra and the zero-point
+spectrum.  This parameter must be passed an odd number. If an even
+number is passed, it will be incremented by one.
+.le 
+.ls (zero_fwidth = 1) [integer]
+Optional mean filter width to apply to the zero-point spectrum before
+cross-correlation is performed.  This parameter can be used to
+match the resolutions of the input spectra and the zero-point
+spectrum.  This parameter must be passed an odd number.  If an even
+number is passed, it will be incremented by one.
+.le
+.ls (sections = 1) [integer, min=1, max=100]
+The number of equally-sized sections into which to divide the spectra.
+Correlations are done in each section and the resulting shifts are
+averaged together to determine the spectrum's shift.  See parameter
+'nsig' and 'niter'.
+.le 
+.ls (niter = INDEF) [integer]
+The maximum number of shift rejection iterations that can occur.
+.le
+.ls (nsig = 1.0) [real]
+The number of sigma deviation a shift for an individual section must
+be within the average to remain valid.
+.le
+.ls (verbose = yes) [boolean]
+Print out informational messages about the spectral shifts and how
+they are determined?
+.le
+.ls (usecorr = no) [boolean]
+Compute the correlation between the input spectra and the zero-point
+spectrum?  
+
+If 'usecorr = no', then the following parameters must also be set
+accordingly: 'method = "wave"', 'wsource' is either "image" or "wcs", 
+and 'interactive = no'.  Under these circumstances, a cross-correlation is 
+not computed, and the shift is a prediction based only upon the differences in 
+the wavelength arrays.  This option must be used for weak or featureless 
+spectra.  
+
+If 'method = "max"', this parameter must be set to "yes".
+.le
+.ls (correlations = "") [file name]
+Name of the table that will contain the correlations computed during
+shift determination.
+.le
+.ls (interactive = no) [boolean]
+Use interactive graphics to determine what the shift is between the
+input and zero-point spectra?
+.le
+.ls (device = "stdgraph") [string]
+The graphics devices to use for interactive mode.
+.le
+.ls (cursor = "") [*gcur]
+Source of the graphics cursor input.  By default, the cursor input
+comes from the graphics cursor of the specified device.
+.le
+.ih 
+EXAMPLES
+1. Compute the shifts between all the groups of the GHRS observation
+Z0X2345T.  Place the output in table 'z0x2345t_shift.tab'.  Note that
+the default 'method = wave' and 'wsource = image', hence 'poffsets' will
+use the file
+'z0x2345t.c0h' to determine the wavelength scale.  The zero-point
+spectrum will be the first group of the spectrum, 'z0x2345t.c1h[1]'.
+
+.nf
+        cl> poffsets z0x2345t.c1h z0x2345t_shift.tab
+.fi
+
+2. Compute the shifts between all the groups of the GHRS observation
+Z0X2345T.  Place the output in table 'z0x2345t_shift.tab'.  Note that
+the default 'method = wave' and 'wsource = image', therefore the task will
+use the file 
+'z0x2345t.c0h' to determine the wavelength scale.  The zero-point
+spectrum will be the last group of the spectrum, 'z0x2345t.c1h[4]'.
+
+.nf
+        cl> imhead z0x2345t.c1h l-
+        z0x2345t.c1h[1/4][2000][real]: Z0X2345T[1/4]
+        cl> poffsets z0x2345t.c1h z0x2345t_shift.tab \
+            zero_point=z0x2345t.c1h[4]
+.fi
+
+3. This is the same as example 1, however, the correlations will be
+written out to the table 'corr.tab'.  The output table will contain
+four columns, one correlation for each group, in columns named "c1"
+through "c4".  An example of graphing the third correlation is done
+with sgraph.
+
+.nf
+        cl> imhead z0x2345t.c1h l-
+        z0x2345t.c1h[1/4][2000][real]: Z0X2345T[1/4]
+        cl> poffsets z0x2345t.c1h z0x2345t_shift.tab correlations=corr.tab
+        cl> sgraph "corr.tab c3"
+.fi
+
+4. This is the same as example 3, however, instead of the default of
+1 section per spectrum, there will actually be 5 sections used.  Hence
+the output table will contain 4 * 5 = 20 correlations (one for each
+section of each group).  Then 'sgraph' will be used to graph the
+correlation of the fourth section of the third group.  This is column
+number (3 - 1) * 5 + 4 = 14
+with 'sgraph'.
+
+.nf
+        cl> poffsets z0x2345t.c1h z0x2345t_shift.tab \
+            correlations=corr.tab sections=5
+        cl> sgraph "corr.tab c14"
+.fi
+
+5. Compute the predicted shifts based upon the calibrated wavelengths between 
+all the groups of the GHRS observation ZWEAK_DATA.  Place the offset output 
+in the table 'zweak_data.tab'.  Note that the default 'method = wave' 
+and 'wsource = image', hence 'poffsets' will use the file 'zweak_data.c0h'
+to determine the wavelength scale.  The zero-point spectrum will be the 
+first group of the spectrum, 'zweak_data.c1h[1]'.  In order to turn the
+cross-correlation off, "usecorr" must be set to "no".
+
+.nf
+        cl> poffsets zweak_data.c1h zweak_data.tab usecorr=no
+.fi
+.ih
+REVISIONS
+The default setting for the "usecorr" parameter has been set to "no" 
+as of November 1998.  Under these circumstances, the offsets determined between 
+the FP-SPLIT spectral arrays will be based upon the wavelength data which 
+must be wavelength calibrated ('c0h'). 
+.ih    
+CAUTION
+This task was originallly written with the idea that a cross-correlation will 
+be performed on the data to determine the offsets between
+the spectral arrays, thereby explicitly taking into account any shifts
+in the wavelength scale due to observational conditions (i.e., thermal
+drifts or magnetic field effects).  However, it is not possible to achieve 
+a statistically significant cross-correlation on data with weak features.  In
+this instance, only the predicted offsets based upon the wavelength scale
+should be used (i.e., 'usecorr = no').  If there is any doubt 
+as to which technique is better for one's data, it is recommended that the 
+offsets be determined using both techniques, and the data be examined (after 
+being combined with 'specalign') for comparison.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+specalign, dopoff
+.endhelp

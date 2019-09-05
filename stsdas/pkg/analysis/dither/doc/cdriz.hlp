@@ -1,0 +1,37 @@
+.help cdriz May98 stsdas.analysis.dither
+.ih
+NAME
+cdriz -- Pset with parameters for 'offsets' task.
+.ih
+USAGE
+cdriz
+.ih
+PARAMETERS
+.ls (margin = 50) [int, min=0]
+To avoid using the image edges, which in WFPC2 images are often quite noisy,
+the cross-correlation can be computed from a
+subsection of the input and reference images. The task uses a 
+subsection which is the original image stripped down of this margin size.
+The cross-correlation images will have their size smaller than the input
+images, by the same amount.
+.le
+.ls (tapersz = 50) [int, min=1]
+Size of cosine bell tapering window used in the (already sectioned) image.
+.le
+.ls (rotation = 0.0) [real]
+Rotation angle between images.
+.le
+.ls (pad = no) [boolean]
+Pad images with zeros to prevent wraparound effects ? If selected, this will
+increase the amount of memory and execution time use by the task.
+.le
+.ih
+DESCRIPTION
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+offsets, crossdriz
+.endhelp

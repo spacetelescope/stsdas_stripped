@@ -1,0 +1,48 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+debug:
+	$set XFLAGS="-g -q $(XFLAGS)"
+	$set LFLAGS="$(LFLAGS) -/Bdynamic"
+	$call relink
+	;
+
+relink:
+	$set XFLAGS="-DNATIVE_IRAF -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_pedsub.c ../lib/nicmos.h
+	$update	libpedsub.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_pedsub.o libpedsub.a ../lib/libnicmos.a \
+		-lhstio -lcvos -lc \
+		-o xx_pedsub.e
+		;
+
+install:
+	$move xx_pedsub.e stsdasbin$x_pedsub.e
+	;
+
+libpedsub.a:
+	dcquad.c		"pedsub.h"
+	eqquads.c		"pedsub.h"
+	findped.c		"pedsub.h"
+	gaussfit.c		"pedsub.h"
+	n_getstatr.c		"pedsub.h"
+	n_history.c		"pedsub.h"
+	n_inputpar.c		"pedsub.h"
+	n_pedsub.c		"pedsub.h"
+	n_singlefile.c		"pedsub.h"
+	spread.c		"pedsub.h"
+	spoly.c			"pedsub.h"
+	storeped.c		"pedsub.h"
+	transform.c		"pedsub.h"
+	;

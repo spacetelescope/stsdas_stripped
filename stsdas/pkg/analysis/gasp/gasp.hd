@@ -1,0 +1,24 @@
+# Help directory for the STSDAS.GASP package.
+
+$gasp		= "stsdas$pkg/analysis/gasp/"
+$doc		= "stsdas$pkg/analysis/gasp/doc/"
+$pltsol		= "stsdas$pkg/analysis/gasp/pltsol/"
+$xyeq		= "stsdas$pkg/analysis/gasp/xyeq/"
+$eqxy		= "stsdas$pkg/analysis/gasp/eqxy/"
+
+pltsol		hlp=doc$pltsol.hlp,	src=pltsol$pltsol.x
+xyeq		hlp=doc$xyeq.hlp,	src=gasp$t_xyeq.x
+eqxy		hlp=doc$eqxy.hlp,	src=gasp$t_eqxy.x
+makewcs		hlp=doc$makewcs.hlp,	src=gasp$t_makewcs.x
+
+extgst		hlp = doc$extgst.hlp,	src = gasp$t_extgst.x
+intrep		hlp = doc$intrep.hlp,	src = gasp$t_intrep.x
+sgscind		hlp = doc$sgscind.hlp,	src = gasp$t_sgscind.x
+pxcoord		hlp = doc$pxcoord.hlp,	src = gasp$t_pxcoord.x
+
+regions		hlp = doc$regions.hlp,	src = gasp$regions.cl
+stgindx		hlp = doc$stgindx.hlp,	src = gasp$stgindx.cl
+targets		hlp = doc$targets.hlp,	src = gasp$targets.cl
+copyftt		hlp = doc$copyftt.hlp,	src = gasp$copyftt.cl
+
+getimage	hlp = doc$getimage.hlp,	src = gasp$getimage.cl

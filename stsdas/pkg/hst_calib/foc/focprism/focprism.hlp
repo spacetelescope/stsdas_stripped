@@ -1,0 +1,20 @@
+.help focprism Mar94 stsdas.hst_calib.foc.focprism
+.ih
+DESCRIPTION
+The 'objcalib' task can be used to reduce an objective prism image.
+This reduction involves three basic steps:
+
+.nf
+    * Extract the spectrum from the image
+    * Create the photometric calibration file
+    * Convert the extracted spectrum into units of wavelength and
+      flux (ergs cm-2 sec-2 A-1)
+.fi
+
+The 'simprism' task can be used to create a simulated objective prism image.
+.ih
+BUGS
+.ih
+SEE ALSO
+calcspec, objcalib, simprism
+.endhelp

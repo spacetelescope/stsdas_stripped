@@ -1,0 +1,27 @@
+Menu for the package stsdas.hst_calib.nicmos
+
+     asnexpand - Expand ASN tables to include extra ASC columns.
+        biaseq - Equalize bias levels in MultiAccum readouts.
+       calnica - Pipeline calibration for single NICMOS images.
+       calnicb - Pipeline calibration for NICMOS associations.
+CalTempFromBias - Calculate the temperature from the bias.
+      iterstat - Iteratively compute and print image statistics
+        markdq - Mark DQ flags on a displayed image.
+    mosdisplay - Display a mosaic of MultiAccum image readouts.
+      ndisplay - Display a science image with DQ flags superimposed.
+nic_rem_persist - Remove bright earth persistence persistence from NICMOS images.
+       nicpipe - Process images through various stages of CALNICA.
+        pedsky - Subtract pedestal and sky from NICMOS images.
+        pedsub - Subtract pedestal from NICMOS images.
+        pstack - Plot a stack of pixel values from a MultiAccum image.
+        pstats - Plot a stack of MultiAccum image statistics.
+      puftcorr - Remove Staypuft signal from a raw NICMOS image
+      rnlincor - Correct for count rate dependent nonlinearity
+      saaclean - Remove SAA persistence signal from a NICMOS image
+       sampcum - Accumulate a MultiAccum image from a set of sample differences.
+      sampdiff - Compute first differences of samples in a MultiAccum image.
+      sampinfo - Print sample information for a MultiAccum image.
+      nicdqpar @ NICMOS Data Quality bits (pset).
+   statregions @ image statistics regions (pset).
+
+(Type "help nicmos opt=sys" for more information about the nicmos package).

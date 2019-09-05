@@ -1,0 +1,61 @@
+.help imextreme Mar97 stsdas.analysis.dither
+.ih
+NAME
+imextreme -- Finds the maximum and minimum values in an image.
+.ih
+USAGE
+imextreme  image
+.ih
+PARAMETERS
+.ls image [file name]
+Input image.
+.le
+.ls (boxsize = INDEF) [real]
+Size of centralized box to look into. If INDEF, the full array is scanned.
+.le
+.ls (x = INDEF) [real]
+Center of box to look into. If INDEF, the array center is used.
+.le
+.ls (y = INDEF) [real]
+Center of box to look into. If INDEF, the array center is used.
+.le
+.ls (max) [real]
+Output maximum value.
+.le
+.ls (min) [real]
+Output minimum value.
+.le
+.ls (xmax) [int]
+X position of maximum value.
+.le
+.ls (ymax) [int]
+Y position of maximum value.
+.le
+.ls (xmin) [int]
+X position of minimum value.
+.le
+.ls (ymin) [int]
+Y position of minimum value.
+.le
+.ls (verbose = yes) [boolean]
+Print results at STDOUT ?
+.le
+.ih
+DESCRIPTION
+Locates the maximum and minimum pixel values in an image array and
+reports the values and coordinates both at STDOUT and at CL task parameters.
+.ih
+EXAMPLES
+.nf
+di> imextreme pos1_cr.hhh
+Maximum = 4000.  at (123,1)
+Minimum = -558.7901  at (204,35)
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+.endhelp

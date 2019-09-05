@@ -1,0 +1,24 @@
+# This mkpkg file builds tastis as a host program.
+
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+linkonly:
+	$set XFLAGS = "-Inolibc $(XFLAGS)"
+	$omake tastis.c <c_iraf.h> <xclio.h> <ximio.h> tastis.h
+
+	$set LFLAGS = "-H -z $(LFLAGS)"
+	$link tastis.o \
+		-lcvos \
+		-o xx_tastis.e
+	;
+
+install:
+	$move xx_tastis.e stsdasbin$x_tastis.e
+	;

@@ -1,0 +1,91 @@
+.help zavgtemp Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+zavgtemp -- Average temperature header keywords for list of images
+.ih
+USAGE
+zavgtemp input output
+.ih
+DESCRIPTION
+'zavgtemp' averages the values of header parameter keywords from an
+input list of images, writing or appending the results to a table.
+Though designed for GHRS observations, there is nothing GHRS-specific
+about the task.
+.ls INPUT
+The input is a list of images from which to read the header keywords.
+The keywords are assumed to contain numeric data.
+
+Which keywords to access is specified in the parameter 'keywords'.  If
+blank, a default set of keywords, the temperature monitors for GHRS
+observations, is used.  These keywords are as follows:
+
+.nf
+	ZRIUTA	ZRIUTB	ZDETT1	ZDETT2	ZDEBTF
+	ZDEBTR	ZPABT1	ZPABT2	ZMEBT1	ZMEBT2
+	ZFIAT	ZFIBT	ZFICT	ZCST	ZSCT1
+	ZSCT2	ZHVPST1	ZHVPST2	ZDT11	ZDT12
+	ZDRT	ZOBBT
+.fi
+
+The number of values included in the average for each keyword is kept
+separately for each keyword.  Hence, if a value for a particular
+keyword cannot be accessed from a particular image, the average will
+be properly calculated.  If a keyword is not found in any of the input
+images, a value of 'INDEF' will be written to the output table.
+.le
+.ls OUTPUT
+The average value for each keyword is written out to a table.  The
+column names are the same as the keywords that were averaged.  If an
+average cannot be calculated for a particular keyword, 'INDEF' will be
+written.  This is the case when a keyword does not appear in any of
+the input images.
+.le
+.ih
+PARAMETERS
+.ls input [image name template]
+The 'input' is a list of images from which to get the keywords.  A
+single image header file, a list of comma-separated header files, a
+wildcard-specified image name template, or
+an "@" followed by a file name of a file containing a list of image
+header files, one per line, to be accessed.
+.le
+.ls output [table name]
+The table to write the average values to.  If the table does not
+exist, it is created.  If it does exist, the information is appended
+to the table.  If columns for any of the keywords do not exist, they
+will be created; 'INDEF' will fill any rows for which the column does
+not have values.
+.le
+.ls (ext = ".c1h") [string]
+If any image names do not have an extension, this extension will be
+appended to the image name to create a header file name for which
+'zavgtemp' will look.
+.le
+.ls (keywords = "") [string]
+List of header parameter keywords to average.  If blank, a default set
+of 'keywords', the temperature monitors for GHRS observations, will be
+used (see discussion).  The 'keywords' may be a space or comma separated
+list of 'keywords', or an "@" followed by a file which contains the
+'keywords', one per line, to average.  The file should be used if the
+number of characters in the keyword list exceed 68 characters.
+.le
+.ih
+EXAMPLES
+1. Calculate the average temperatures for a series of GHRS
+observations.
+
+.nf
+	cl> zavgtemp z*.c1h avg.tab
+.fi
+.ih
+REFERENCES
+Refer to the references in the package level help.  Type "help hrs
+option=sys".
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+hedit, hselect, zwavecal
+.endhelp

@@ -1,0 +1,20 @@
+# IR, Optical, and Radio Luminosities of Normal, Starburst, and Seyfert Galaxies
+#  group_ind censor_ind Luminosities
+#  0=normal, 1=starburst, 2=seyfert
+#
+   0   0     28.5
+   0   0     26.9
+   0  -1     29.7
+   0  -1     28.1
+   0   0     30.1
+   0  -1     27.6
+   1  -1     29.0
+   1   0     29.0
+   1   0     30.2
+   1  -1     32.4
+   1   0     28.5
+   1   0     31.1
+   2   0     31.9
+   2  -1     32.3
+   2   0     30.4
+   2   0     31.8

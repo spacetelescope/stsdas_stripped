@@ -1,0 +1,14 @@
+# Update the normclip application code in the w_calib package library
+# Author: HSU, 25-Aug-1992
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_normclip.x	
+	norm_in.x    	
+	norm_do.x	normclip.h
+	norm_check.x	normclip.h	<imhdr.h>	
+	;

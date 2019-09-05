@@ -1,0 +1,499 @@
+.help siaper Aug95 stsdas.graphics.stplot
+.ih
+NAME
+siaper -- Draw the scientific instrument apertures for Hubble Space Telescope.
+.ih
+USAGE
+siaper image
+.ih
+DESCRIPTION
+The 'siaper' task draws the science instrument apertures of the Hubble
+Space Telescope (HST) on the specified graphics device.  This task can
+be used to create overlays of the HST Field-of-View (FOV) onto images.
+
+Aperture plots may overlay an image on the output device (using the
+'imdkern' task in the IRAF 'plot' package). This is done by first
+displaying the image with the 'display' task, and then drawing the
+aperture with 'siaper'.
+
+There is no real communication between 'display' and 'siaper'.
+Therefore, you must tell both tasks how to position the image and the
+overlay.  The 'disconlab' task in the STSDAS 'graphics.sdisplay'
+package can be used to combine the aperture plot with other graphics,
+simplifying the overlay process.
+
+.ls Apertures
+The aperture specifications are those defined in the Project Data Base
+(PDB) Science Instrument Aperture File (SIAF).  STSDAS is shipped with
+a FITS file containing this aperture file---it should have been
+converted to a STSDAS table during installation.  Refer to the
+examples on how to access this file.
+
+The naming scheme of the apertures is non-obvious due to a 10
+character limit imposed by the PDB.  In general, each aperture
+contains a substring indicating which instrument it belongs to,
+beginning with the single letter designation of the instrument.  The
+general categories are as follows:
+				   
+.nf
+	ota          - HST FOV
+	fgs          - FGS
+	xf96, x96    - FOC f96
+	xkf96, xk96  - Post-COSTAR FOC f96
+	xf288, x28   - FOC f288
+	xkf288, xk28 - Post-COSTAR FOC f288
+	xf48, x48    - FOC f48
+	xkf48, xk48  - Post-COSTAR FOC f48
+	ybl, yrd     - FOS Blue/Red detectors
+	ykbl, ykrd   - Post-COSTAR FOS Blue/Red detectors
+	z	     - GHRS
+	zk	     - Post-COSTAR GHRS
+	v	     - HSP
+	wwf, wpc     - WF/PC
+	uwf, upc     - WF/PC II
+.fi
+
+There are over 586 apertures specified in the SIAF.  The SIAF itself
+is used by the HST ground system specifically for target acquisitions
+and interactive offset information.  The SIAF also contains older
+definitions of some of the apertures for historical purposes.
+Finally, some apertures have never been rigorously defined due to
+instrument problems or simple lack of use.  Hence a number of the
+apertures are not useful for overlay purposes.  Below is a discussion,
+per instrument, of the "real" physical apertures.
+
+Two files, found in stsdaslib$ and distributed with STSDAS, contain
+lists of some of the "real" apertures.  The file siaper_def_apers.txt
+contains the major apertures for Post-Costar.  The file
+siaper_def_apers_pc.txt contain the major Pre-Costar apertures.
+
+.ls ota - HST Field-Of-View (FOV)
+This aperture specifies the limit of the HST FOV.
+.le
+.ls fgs - Fine Guidance Sensors
+The apertures "fgs1", "fgs2", and "fgs3" are the "pickles" of the
+corresponding FGS'.  Simply specifying "fgs" in the 'aperture'
+parameter will draw all three FGS apertures.
+.le
+.ls xkf96, xk96 - FOC f96
+The aperture "xkf96" defines the circular entrance aperture to the f96
+camera.
+
+"xk96n512", "xk96n256", and "xk96n128" are the normal or unzoomed
+512x512, 256x256, and 128x128 image formats.  The zoomed formats
+replace the "n" with "z".
+.le
+.ls xkf288, xk28 - FOC f288
+The aperture "xkf288" defines the circular entrance aperture to the f288
+camera.
+
+"xk28n512", "xk28n256", and "xk28n128" are the normal or unzoomed
+512x512, 256x256, and 128x128 image formats.  The zoomed formats
+replace the "n" with "z".
+.le
+.ls xkf48, xk48 - FOC f48
+The aperture "xkf48" defines the circular entrance aperture to the f48
+camera.  Note that the actual entrance aperture is not circular.
+However, the SIAF table represents apertures using only simple
+geometric forms.  Since this aperture is not an image mask, the
+circular approximation is acceptable.
+
+"xk48n512", "xk48n256", and "xk48n128" are the normal or unzoomed
+512x512, 256x256, and 128x128 image formats.  The zoomed formats
+replace the "n" with "z".
+.le
+.ls FOC Occulting Fingers and Slit
+FOC entries which end with "_4" or "_8" are apertures used when the
+target is to be placed behind the 0.4 or 0.8 occulting fingers for the
+f96 and f288 cameras.
+
+FOC entries which end with "a4" or "a8" are apertures used when
+acquiring targets for occulting or spectroscopy modes of the FOC for
+the f96 or f288 cameras.
+
+FOC f48 entries which end with "s" are apertures used to acquire and
+place targets on the slit.
+.le
+.ls ykbl, ykrd - FOS Blue/Red detectors
+All apertures are identified by their pre-COSTAR size, where the
+decimal point is replaced by and underscore, "_".  For example, the
+blue side 4.3 aperture is specified as "ykbl4_3".
+
+The paired apertures have either "pra" or "prb" appended to the name
+corresponding to the pair identification, A or B.
+
+The bar apertures have "bar" in their designation.
+
+Finally, the apertures "ykbl" and "ykrd" alone define the circular
+entrance apertures to the FOS in the HST FOV.
+.le
+.ls GHRS
+The GHRS apertures start with "zk" (or just "z" for pre-COSTAR).  The
+numbers "1" and "2" correspond to the detector.
+"zk2" is the circular aperture for the GHRS but is not an image mask.
+
+"zk1n2_0" and "zk2n2_0" is the Large Science Aperture (LSA) for each
+detector.
+
+"zk1n_25" and "zk2n_25" is the Small Science Aperture (SSA) for each
+detector.
+
+The "n" can be replaced by "a" to use the apertures related to the
+attenuated mirrors.  The other apertures are used for engineering
+purposes.
+.le
+.ls WF/PC II
+"upc1" is the PC.
+
+"uwf2", "uwf3", and "uwf4" are the wide-field chips.
+
+Note that the chips overlay each other when all plotted.  This is due
+to the fact that the edges near the pyramid do not appear on the sky.
+The SIAF has defined the full sizes of the chips but has positioned them
+such that their appropriate areas are illuminated by the sky.
+
+The optimum apertures for the methane quad filters are identified by
+names which begin with "ufqch".
+
+The optimum apertures for the polarizer have "pol" in their names.
+
+The optimum apertures for the redshifted OII filter are identified by
+names beginning with "ufqu".
+
+The Woods filter optimum apertures begin with "uf160".
+.le
+.le
+.ls Aperture String Matching
+Due to the large number of apertures, a regular expression matching
+technique is used.  In general a string of characters will match to
+any aperture that contains the string of characters.  For example,
+"xyz" will successfully match the strings "xyz", "abcxyz", "xyzabc",
+or "axyzb".  The pattern matching commands are as follows:
+
+.nf
+	^     - Matches the beginning of the line.
+	$     - Matches the end of the line.
+	*     - Matches zero or more occurrences of the 
+		proceeding character.
+	?     - Matches any single character.
+	[xy]  - Match a character if it appears in the list of
+		characters "xy".
+	[^xy] - Match a character if it does not appear in the
+		list of characters "xy".
+.fi
+
+See the EXAMPLE section for use of pattern matching.
+.le
+.ls SIAF Table
+There are 125 columns defined in the SIAF table.  The only column the
+user needs to be aware of is the column SIAP_ID.  This column contains
+the name of the apertures.  To examine the table for aperture names,
+use the command tread as follows:
+
+.nf
+	cl> tread stsdas$data/scidata/cosiaf columns=siap_id
+.fi
+
+To get a printout of the column, use tprint:
+
+.nf
+	cl> tprint stsdas$data/scidata/cosiaf columns=siap_id
+.fi
+.le
+.ih
+PARAMETERS
+.ls image [file name]
+An image containing the world coordinate system (WCS) information
+needed to properly scale and rotate the HST apertures.  Usually the
+image on which the apertures will be overlaid.  If blank, the WCS
+information will be taken from the parameters in the 'wcspars' pset.
+.le
+.ls (apertures = "@stsdaslib$siaper_def_apers.txt") [string]
+A list of aperture names to be plotted.  The names may be separated by 
+spaces or commas.  See the Aperture description above for a list of
+common aperture names.
+
+The names can also be placed in a text file.  To specify the file name
+as the parameter value proceeded with the "@" character.  The
+default value "@stsdaslib$siaper_def_apers.txt" specifies a file.
+.le
+.ls (center_ap = "ota") [string]
+The aperture which will be located at the specified right ascension and 
+declination.  The default aperture is the ota, or the
+V1 axis.  Any aperture can be specified.  This parameter does not
+support pattern matching; a exact aperture name needs to be specified.
+
+The center aperture will not be drawn.  If the center aperture is to
+be plotted, it must also be included in the 'apertures' parameter.
+.le
+.ls (ra = "") [string]
+The right ascension (in H:M:S format) at which the center aperture
+will be located.  The default RA is the reference RA in the image's
+WCS.
+.le
+.ls (dec = "") [string]
+The declination (in D:M:S format) at which the center aperture will be
+located.  The default DEC is the reference DEC in the image's WCS.
+.le
+.ls (roll = 0.) [real]
+The spacecraft roll measured in degrees east from north.  The
+default is zero degrees roll.
+.le
+.ls (wcspars = "") [pset]
+Parameter set (pset) for specifying a different WCS if the image is
+not specified or does not contain WCS information.  Type "help
+wcspars" for more information.
+.le
+.ls (siaf = "") [file name]
+The STSDAS table containing the PDB SIAF file.  This file contains the
+aperture names and positioning information needed to draw the
+apertures.
+.le
+.ls (dvpar = "") [pset]
+The 'dvpar' pset contains generic parameters specifying the plot
+device, location of plot on the device, and whether to append this
+plot to a previous plot.  The parameters used from the 'dvpar' pset
+are described below:
+.ls (device = "stdgraph") [string]
+The graphics device used to display the apertures.  Usually, if this is
+being overlaid on an image, the device is one of the "imd"
+devices.  (Type "help plot.imdkern" for details).
+.le
+.ls (left = INDEF), (right = INDEF), (bottom = INDEF), (top = INDEF) [real]
+The device viewport, in normalized device coordinates (from 0.0 to 1.0
+inclusive).  If not specified, a viewport is chosen that will fill
+the graphics display such that a circle will appear as a circle.
+.le
+.ls (append = no) [boolean]
+Overlay aperture on previous graph without initializing graphics device?
+
+If the graphics are to be overlaid on an 'imtool' display, 'append'
+should be set to "no".
+.le
+.ls (fill = no) [boolean]
+Fill the viewport to the size set by the left, right, bottom, and top
+parameters?
+
+If 'fill = no', the default, then the viewport is sized to preserve the
+aspect ratio of the image. 
+.le
+.le
+.ls (sky_project = yes) [boolean]
+Invert the HST V3 axis for sky projection?  If yes, the HST FOV is
+inverted, as it is when projected through the HST OTA onto the sky.
+For situations where input WCS does not require this inversion, such
+as a unitary WCS or to simply produce plots of the HST FOV, one can
+set this to "no" to simplify the WCS creation.
+.le
+.ih
+EXAMPLES
+The next few examples demonstrate general usage of the task.
+
+1. Getting the default SIAF table.  In general, the table should be
+located in stsdas$data/scidata/cosiaf.dat.  It is possible that the
+file was not created by the STSDAS system administrator when STSDAS
+was installed.
+
+If this is the case, the distributed FITS file should be located in
+stsdas$data/scidata/fits/cosiaf.fits.  A user can use this file to
+create their own version of cosiaf.tab as follows:
+
+.nf
+	cl> cd home$
+	cl> strfits stsdas$data/scidata/fits/cosiaf.fits "" \
+	>>> cosiaf.tab oldirafname+
+.fi
+
+If the STSDAS administrator has "stripped" the installation, the FITS
+files will no longer be present.  In this case, contact STScI on how
+to obtain a new copy.
+
+2. Display the default apertures on an image displayed on either Imtool,
+SAOimage, or Ximtool.  The V1 axis, center of the HST FOV, will be
+placed at the reference coordinate in the image's WCS.  This position
+is specified by the keywords CRVAL1 and CRVAL2.
+
+.nf
+	cl> display dev$wpix 1 xsize=0.8 ysize=0.8 fill+
+        cl> siaper dev$wpix device=imd left=.1 right=.9 \
+	>>> bottom=.1 top=.9
+.fi
+
+Note that the task "stsdas.graphics.sdisplay.disconlab" automates
+display and overlay of apertures on an image.  The above could be
+accomplished by:
+
+.nf
+	cl> disconlab dev$wpix cont=no label=no doapers=yes
+.fi
+
+Note that the image dev$wpix covers an area just larger than the WF/PC
+II, hence most of the other apertures fall outside the image.
+
+3. On dev$wpix, place the FOC f96 on the reference
+coordinate of the image WCS. Show only the 512x512 normal format.
+
+.nf
+	cl> display dev$wpix 1 xsize=0.8 ysize=0.8 fill+
+        cl> siaper dev$wpix apertures=xkf96,xk96n512$ \
+	>>> center_ap=xk96n512 \
+	>>> device=imd left=.1 right=.9 bottom=.1 top=.9
+.fi
+
+4. Same as example number 3.  However, place the aperture on the
+object located at R.A=13:28:01.2, Dec=47:29:49.7.  Also, roll the HST by
+~35 degrees to place the 512x512 aperture parallel to North and East.
+Do this with only the relevant image section.
+
+.nf
+	cl> display dev$wpix[1:160,380:512] 1 xsize=0.8 ysize=0.8 fill+
+        cl> siaper dev$wpix[1:160,380:512] apertures=xkf96,xk96n512$ \
+	>>> center_ap=xk96n512 ra=13:28:01.2 dec=47:29:49.7 roll=35 \
+	>>> device=imd left=.1 right=.9 bottom=.1 top=.9
+.fi
+
+The following examples demonstrate how to specify apertures, in
+particular using the regular expression syntax.
+
+Note that all the following examples do not use an image, but the
+contents of the pset 'wcspars'.  The default "wcspars" pset is not
+used, but a pset called "siaper_defwcs".  This pset defines a WCS
+transformation for a region, measured in arcseconds, which just covers
+the HST FOV.  These are examples of simply creating plots of the HST
+FOV without an image.
+
+5. Display every aperture found in the SIAF file.
+
+.nf
+	cl> siaper "" apertures=* wcspars=siaper_defwcs \
+	>>>sky_project=no
+.fi
+
+6. Specify a file as the source of aperture names.  The file in the
+example, stsdaslib$siaper_def_apers_pc.txt, is distributed with
+STSDAS.  It contains a list of apertures prior to the first Service
+Mission, SM94, or Pre-COSTAR.
+
+.nf
+	cl> siaper.wcspars=siaper_defwcs
+	cl> siaper.sky_project=no
+	cl> siaper "" apertures=@stsdaslib$siaper_def_apers_pc.txt
+.fi
+
+7. Matching groups of apertures.  All the apertures for a particular
+instrument will be plotted on separate graphs.  Since each
+instrument is identified by the leading character, the match needs to
+be forced at the beginning of line.  The use of the "^" accomplishes
+this task.  Also, for each plot, the ota will be included.  Each
+command will plot, respectively, the apertures for the FGS', FOC f96,
+FOC f288, FOC f48, GHRS, and WF/PC II.
+
+.nf
+	cl> siaper.wcspars=siaper_defwcs
+	cl> siaper.sky_project=no
+	cl> siaper "" apertures=ota,^fgs
+	cl> siaper "" apertures=ota,^xk96,xkf96
+	cl> siaper "" apertures=ota,^xk28,xkf288
+	cl> siaper "" apertures=ota,^xk48,xkf48
+	cl> siaper "" apertures=ota,^zk
+	cl> siaper "" apertures=ota,^u
+.fi
+
+8. Matching an exact aperture.  Since the default matching will match
+a string to anywhere in an aperture name, it may be necessary to
+further constrain the match to get an exact aperture.  For example, to
+plot the 512x512 image format of the FOC F96, the end of line match
+needs to be specified, "xk96n512$".  If one just specified,
+"xk96n512", the following apertures would be matched: xk96n512,
+xk96n512_4, xk96n512a4, xk96n512_8, and xk96n512a8.  Compare the plots
+from the following two commands.
+
+Note: the "=gcur" command can be used to zoom the plots to see more
+detail.
+
+.nf
+	cl> siaper.wcspars=siaper_defwcs
+	cl> siaper.sky_project=no
+	cl> siaper "" apertures=xk96n512$
+	cl> siaper "" apertures=xk96n512
+.fi
+
+9. Complicated matching.  Draw all the FOC f96 512x512 formats, both
+zoomed and normal.  This happens to be two, xk96n512 and xk96z512.
+Since the single character, "n" or "z", is the wildcard, use the "?"
+pattern match.  Also match the end of line to avoid the occulting
+finger apertures.
+
+.nf
+	cl> siaper.wcspars=siaper_defwcs
+	cl> siaper.sky_project=no
+	cl> siaper "" apertures=xk96?512$
+.fi
+
+The following examples discuss the use of the wcspars parameters.
+
+10. This example demonstrates the use of the wcspars parameters.  This
+example will use wcspars to reproduce the information that is found in
+image dev$wpix.  This should reproduce example 2.  Note that no image
+is specified to siaper and the default wcspars pset is used
+(wcspars="").
+
+.nf
+	cl> display dev$wpix 1 xsize=0.8 ysize=0.8 fill+
+	cl> wcspars.ctype1 = "ra---tan"
+	cl> wcspars.ctype2 = "dec--tan"
+	cl> wcspars.crpix1 = 257.75
+	cl> wcspars.crpix2 = 258.93
+	cl> wcspars.crval1 = 201.94541667302
+	cl> wcspars.crval2 = 47.45444
+	cl> wcspars.cd1_1 = -2.1277777E-4
+	cl> wcspars.cd2_2 = 2.1277777E-4
+	cl> wcspars.log_x1 = 1
+	cl> wcspars.log_x2 = 512
+	cl> wcspars.log_y1 = 1
+	cl> wcspars.log_y2 = 512
+        cl> siaper "" wcspars="" device=imd left=.1 right=.9 \
+	>>> bottom=.1 top=.9
+.fi
+
+11. This examples explains the values found in the siaper_defwcs
+pset. The goal of this transformation is to create a plot of the HST
+FOV in V2-V3 coordinates.  The "logical" or "pixel" space will be
+V2-V3 in arcseconds.  Since the V1 axis is at the center of V2-V3,
+both the CRPIX and CRVAL values are 0.0, the origin of V2-V3.
+
+The CTYPE values are set to "linear".  There is no need to complicate
+things any more.
+
+siaper assumes the WCS is a transformation between degrees and
+"pixels".  Since our "pixels" in this case are arcseconds, the
+transformation found in the CD matrix is the conversion from degrees
+to arcsecond, 1/3600.  Since no rotation exists, the cross terms of
+the CD matrix are zero.
+
+Finally, the size of the "logical" space needs to be defined.  The HST
+FOV is just less than 1800 arcseconds in diameter.  Since V2-V3 is
+centered on (0,0), the logical domain to be covered is from -950 to
++950.  One may note that the Y axis is reversed.  This is because,
+as convention in most HST documentation, V2-V3 is shown with V3
+increasing downward.
+
+The effect of this transformation is to cancel the transformation in
+siaper from arcseconds to the assumed units of degrees of an image's
+WCS.  If one were to use "=gcur" to query the positions of the
+plotted apertures, the reported positions will be the V2-V3
+coordinates as specified in the SIAF.
+.ih
+BUGS
+The SIAF is not the best suited for overlay capability.  The
+information is present, but the large number of apertures and lack of
+definition provided for each aperture is not user-friendly.
+Unfortunately, this file is the only official source of aperture
+characteristics at the Institute.
+.ih
+REFERENCES 
+Jonathan Eisenhamer, STSDAS 
+.ih
+SEE ALSO
+dvpar, wcspars, display, imdkern,tread 
+.endhelp

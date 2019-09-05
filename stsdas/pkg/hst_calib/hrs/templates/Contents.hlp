@@ -1,0 +1,62 @@
+.help templates Aug98 hrs
+.ih
+NAME
+templates -- Directory containing header templates.
+.ih
+DESCRIPTION
+This directory contains various image headers to be used as templates
+for creating new images and text files containing general information.
+Some are used by specific tasks and others are used as examples for
+creating images containing specific data.
+
+The following headers are used by the reference images used in CALHRS.
+All of these headers are preceded by "hrsref_", followed by the header
+keyword name that specifies what calibration reference file it is, and
+ending with the extension appropriate for final installation into
+CDBS.  These files were updated and made to conform to the information in
+ICD-47 by Michele De La Pena and Lisa Sherbert in April 1997.
+
+.nf
+	hrsref_diohfile.r0h -- Diode response image
+	hrsref_phchfile.r1h -- Photocathode response image
+	hrsref_vighfile.r2h -- Vigetting response image
+	hrsref_abshfile.r3h -- Absolute sensitivity image
+	hrsref_nethfile.r4h -- Absolute flux wavelength image
+	hrsref_dqihfile.r5h -- Data quality initialization image
+.fi
+
+In order to maintain historical consistency, the following files are 
+copies to the above listed files.  These files previously were software
+links, but due to issues with RCS, actual copies of the files were
+generated on 03 September 1998 (MDD).
+
+.nf
+	hrsdio.hhh   -> hrsref_diohfile.r0h
+	hrsphc.hhh   -> hrsref_phchfile.r1h
+	hrsvig.hhh   -> hrsref_vighfile.r2h
+	hrsabs.hhh   -> hrsref_abshfile.r3h
+	hrsnet.hhh   -> hrsref_nethfile.r4h
+	hrsdqi.hhh   -> hrsref_dqihfile.r5h
+        phchfile.r1h -> hrsref_phchfile.r1h
+.fi
+
+The following headers are used by the task newhrshdrs for modifying
+GHRS observation headers produced September 1991 to the current form
+of the data headers.  See the help for "newhrshdrs" for more
+information.
+
+.nf
+	newhrs_edq.hhh -- Conversion for the EDQ files.
+	newhrs_ext.hhh -- Conversion for the EXT files.
+	newhrs_idq.hhh -- Conversion for the IDQ files.
+	newhrs_img.hhh -- Conversion for the IMG files.
+	newhrs_sci.hhh -- Conversion for science data.
+	newhrs_sdq.hhh -- Conversion for the SDQ files.
+	newhrs_shp.hhh -- Conversion for the SHP files.
+	newhrs_udl.hhh -- Conversion for the UDL files.
+.fi
+
+The file amp2diode.txt is a table containing the GHRS unscrambling
+table.  See the top of the file for more information.
+
+.endhelp

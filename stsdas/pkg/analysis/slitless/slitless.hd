@@ -1,0 +1,14 @@
+# Help directory for the SLITLESS package
+
+$axe		= "stsdas$pkg/analysis/slitless/axe/"
+
+axe		men=axe$axe.men,
+		hlp=..,
+		sys=axe$axe.hlp,
+		pkg=axe$axe.hd,
+		src=axe$axe.cl
+axesim		men=axe$axesim.men,
+		hlp=..,
+		sys=axe$axesim.hlp,
+		pkg=axe$axesim.hd,
+		src=axe$axesim.cl

@@ -1,0 +1,6 @@
+input, f, a, "", , ,		input file list name
+output, f, a, "", , ,		output file list name
+tmproot, s, a, "", , ,		temporary file root name
+instrume, s, a, "", , ,		instrument
+
+mode, s, h, "al"

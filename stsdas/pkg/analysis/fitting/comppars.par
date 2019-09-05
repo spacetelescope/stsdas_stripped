@@ -1,0 +1,16 @@
+# Composite function parameters.
+#
+index,r,h,INDEF,,,>initial guess for power law index
+pampl,r,h,INDEF,,,>initial guess for power law amplitude at ref. x
+pref,r,h,INDEF,,,>reference x axis value for power law 
+temp,r,h,INDEF,10.,300000.,>initial guess for bbody temperature
+bampl,r,h,INDEF,,,>initial guess for bbody amplitude at ref. x
+bref,r,h,INDEF,,,>reference x axis value for bbody
+vindex,b,h,yes,,,>vary power law index ?
+vpampl,b,h,yes,,,>vary power law amplitude ?
+vpref,b,h,no,,,>vary power law reference ?
+vtemp,b,h,yes,,,>vary bbody temperature ?
+vbampl,b,h,yes,,,>vary bbody amplitude ?
+vbref,b,h,no,,,>vary bbody reference ?
+version,s,h,"10Feb90",,,>date of installation
+mode,s,h,al

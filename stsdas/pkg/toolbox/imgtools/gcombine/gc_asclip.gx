@@ -1,0 +1,617 @@
+include	"../gcombine.h"
+
+define	MINCLIP		3	# Minimum number of images for this algorithm
+
+$for (sird)
+# G_AAVSIGCLIP -- Reject pixels using an average sigma about the average
+# The key is to find the propotionality coefficient, A, where
+#  sigma**2 = A * signal. Assuming it holds for an image line and
+# across the image stack to be combined, then we have 
+#  A = <sigma**2 / (signal)>. After obtaining A, we can go back to
+# use the first equation to figure out the Poisson scaled noise.
+#
+# CYZhang 8 April, 1994, based on images.imcombine
+
+procedure g_aavsigclip$t (data, id, nimages, n, npts, average, szuw)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image updated DQF pointers
+int	nimages			# Number of images
+int	n[npts]			# Number of good pixels
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	average[npts]		# Average
+$else
+PIXEL 	average[npts]
+$endif
+pointer	szuw			# Pointer to scaling structure
+
+int	i, j, k, l, n1, n2, idj, nk, minkeep, lrej, ii
+$if (datatype == sil)
+real	low, high, r, d1, sum, a, s, s1, s2, ksi, one, zero
+data	one, zero /1.0, 0.0/
+$else
+PIXEL	low, high, r, d1, sum, a, s, s1, s2, ksi, one, zero
+data	one, zero /1$f, 0$f/
+$endif
+pointer	sp, sums, resid, dp1, dp2, ip1, ip2
+
+include	"../gcombine.com"
+
+begin
+	# If there are insufficient pixels go on to the combining.
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	
+	# lrej is the least number of available pixels for rejection to
+	# be allowed.
+	lrej =  max (MINCLIP, minkeep+1)
+	
+	if (nimages < lrej) {
+	    DOCOMBINE = true
+	    return
+	}
+
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+	$if (datatype == sil)
+	call salloc (sums, npts, TY_REAL)
+	$else
+	call salloc (sums, npts, TY_PIXEL)
+	$endif
+
+	# Since the unweighted average is computed here possibly skip combining
+	# When weighted average or median is required, must call combine
+	if (DOWTS || G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = true
+	else
+	    DOCOMBINE = false
+	
+	# Compute the unweighted average with the high and low rejected and
+	# the poisson scaled average sigma.  There must be at least three
+	# pixels at each point to define the average and contributions to
+	# the mean sigma.  Corrections for differences in the image
+	# scale factors are done.
+	
+	s2 = zero
+	n2 = 0
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (n1 < 3)
+		next
+	    # Unweighted average with the high and low rejected
+	    low = Mem$t[data[1]+k]
+	    high = Mem$t[data[2]+k]
+	    if (low > high) {
+		d1 = low
+		low = high
+		high =d1
+	    }
+	    # Find low and high with masked bad pixels excluded
+	    sum = zero
+	    do j = 3, n1 {
+	        d1 = Mem$t[data[j]+k]
+	        if (d1 < low) {
+		    sum = sum + low
+		    low = d1
+		} else if (d1 > high) {
+		    sum = sum + high
+		    high = d1
+		} else
+		    sum = sum + d1
+	    }
+	    a = sum / real(n1 - 2)
+	    sum = sum + low + high
+	
+	    # Poisson scaled sigma accumulation with masked bad pixels excluded
+	    s1 = zero
+	    if (DOSCALE) {
+		do j = 1, n1 {
+		    d1 = Mem$t[data[j]+k]
+		    idj = Memi[id[j]+k]
+		    ksi = max (one, (a + Memr[ZEROS(szuw)+idj-
+			1]) / Memr[SCALES(szuw)+idj-1])
+		    s1 = s1 + (d1 - a) ** 2 / ksi
+		}
+	    } else {
+		ksi = max (one, a)
+		do j = 1, n1
+		    s1 = s1 + (Mem$t[data[j]+k] - a) ** 2 / ksi
+	    }
+	    # s2 is the sum of the A's for all points in a line
+	    if (n1 > 1)
+		s2 = s2 + (s1 / real (n1 - 1))
+	    else
+		s2 = s2 + s1
+	    n2 = n2 + 1
+	    # Save the average and sum for later.
+	    average[i] = a
+	    $if (datatype == sil)
+	    Memr[sums+k] = sum	    
+	    $else
+	    Mem$t[sums+k] = sum
+	    $endif
+	}
+
+	# Here is the final proportionality coefficient
+	if (n2 > 0)
+	    s = sqrt (s2 / real (n2))
+	else
+	    return
+
+	# Reject pixels.
+	# There must be at least three pixels at each point for rejection.
+
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (NKEEP < 0)
+		minkeep = max (0, n1 + NKEEP)
+	    else
+		minkeep = min (n1, NKEEP)
+	    # Number of pixels survived from masking and thresholding 
+	    # smaller than the least required number of pixels for rejection,
+	    # rejection becomes irrelevant.
+	    lrej =  max (MINCLIP, minkeep+1)
+	    if (n1 <= (lrej-1)) {
+		if (!DOCOMBINE) {
+		    if (n1 == 0)
+			average[i] = BLANK
+		    else {
+			sum = zero
+			do j = 1, n1 
+			    sum = sum + Mem$t[data[j]+k]
+			average[i] = sum /n1
+		    }
+		}
+		next
+	    }
+
+	    a = average[i]
+	    $if (datatype == sil)
+	    sum = Memr[sums+k]
+	    $else
+	    sum = Mem$t[sums+k]
+	    $endif
+
+	    repeat {
+		n2 = n1
+		if (s > zero) {
+		    if (DOSCALE) {
+		    	for (j=1; j<=n1; j=j+1) {
+		    	    dp1 = data[j] + k		
+		    	    ip1 = id[j] + k
+		   	    d1 = Mem$t[dp1]
+		    	    idj = Memi[ip1]
+		    		
+			# Use de-scaled median as signal for noise model
+			# then scale the sigma to get it for scaled images
+			    s1 = s * sqrt (max (one, (a + 
+				Memr[ZEROS(szuw) +
+				idj-1]) / Memr[SCALES(szuw)+idj-1]))
+			# Deviation measured in number of sigmas
+			    r = (d1 - a) / s1
+			    if (r < -LSIGMA || r > HSIGMA) {
+			    	Memr[resid+n1] = abs(r)	
+			# Swap rejected ones to top of array, keep track IDs
+			        if (j < n1) {
+			    	    dp2 = data[n1] + k
+			    	    Mem$t[dp1] = Mem$t[dp2]
+			    	    Mem$t[dp2] = d1
+			    	    ip2 = id[n1] + k
+			    	    Memi[ip1] = Memi[ip2]
+			    	    Memi[ip2] = idj 
+			    	    j = j - 1
+			    	}
+			        sum = sum - d1
+			        n1 = n1 - 1
+			    }
+		        }
+		    } else {
+			s1 = s * sqrt (max (one, a))
+		    	for (j=1; j<=n1; j=j+1) {
+		    	    dp1 = data[j] + k		
+		   	    d1 = Mem$t[dp1]
+			# ksi is a constant, it may be dropped out of A's when
+			# no scaling, so there may be no need to multiply 
+			# sqrt of ksi for sigma!!
+			# Deviation measured in number of sigmas
+			    r = (d1 - a) / s1
+			    if (r < -LSIGMA || r > HSIGMA) {
+			    	Memr[resid+n1] = abs(r)	
+			# Swap rejected ones to top of array, keep track IDs
+			        if (j < n1) {
+			    	    dp2 = data[n1] + k
+			    	    Mem$t[dp1] = Mem$t[dp2]
+			    	    Mem$t[dp2] = d1
+				    ip1 = id[j] + k
+			    	    ip2 = id[n1] + k
+				    idj = Memi[ip1]
+			    	    Memi[ip1] = Memi[ip2]
+			    	    Memi[ip2] = idj 
+			    	    j = j - 1
+			    	}
+			        sum = sum - d1
+			        n1 = n1 - 1
+			    }
+		        }
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+	    # When n1 = n2 no further rejection needed; when n1 > lrej, update
+	    # n2 to the new n1, and compute new mean, then repeat rejection.
+
+	    # If less than minkeep are retained, add some back in.
+
+	    if (n1 < minkeep) {
+		nk = minkeep
+	    # Re-arrange the part of data array deom n1+1 to nk
+	    # so that residuals increase with increasing j and
+	    # the data with the smallest residuala are at n1+1
+	    # n1+2, ..., up to nk. 
+		if (DOSCALE) {
+		    for (j=n1+1; j<=nk; j=j+1) {
+			dp1 = data[j] + k
+			ip1 = id[j] + k
+			r = Memr[resid+j]
+			ii = 0
+			do l = j+1, n2 {
+			    s = Memr[resid+l]
+			    if (s < r + TOL) {
+			    	if (s > r - TOL)
+				# Tolerate similarly smallest pixels even
+				# if it means to keep more than nkeep pixels
+				    ii = ii + 1
+			    	else {
+				# Swapping the pair
+				    ii = 0
+			    	    Memr[resid+l] = r
+			    	    r = s
+			    	    dp2 = data[l] + k
+			    	    d1 = Mem$t[dp1]
+				    Mem$t[dp1] = Mem$t[dp2]
+				    Mem$t[dp2] = d1
+				    ip2 = id[l] + k
+				    idj = Memi[ip1]
+				    Memi[ip1] = Memi[ip2]
+				    Memi[ip2] = idj
+				}
+			    }
+			}
+			# After the smallest residual is found at the
+			# (n1+1)'th, it is added back.
+			sum = sum + Mem$t[dp1]
+			n1 = n1 + 1
+			nk = max (nk, j+ii)
+		    }
+		} else {
+		    # Re-arrange the part of data array deom n1+1 to nk
+		    # so that residuals increase with increasing j and
+		    # the data with the smallest residuala are at n1+1
+		    # n1+2, ..., up to nk. 
+		    for (j=n1+1; j<=nk; j=j+1) {
+		    	dp1 = data[j] + k
+		    	r = Memr[resid+j]
+			ii = 0
+		    	do l = j+1, n2 {
+		    	    s = Memr[resid+l]
+		    	    if (s < r + TOL) {
+			    	if (s > r - TOL)
+				# Tolerate similarly smallest pixels even
+				# if it means to keep more than nkeep pixels
+			    	    ii = ii + 1
+		     	    	else {
+				# Swapping the pair
+				    ii = 0
+			    	    Memr[resid+l] = r
+			    	    r = s
+			    	    dp2 = data[l] + k
+			    	    d1 = Mem$t[dp1]
+				    Mem$t[dp1] = Mem$t[dp2]
+				    Mem$t[dp2] = d1
+		 		    ip1 = id[j] + k
+				    ip2 = id[l] + k
+				    idj = Memi[ip1]
+				    Memi[ip1] = Memi[ip2]
+				    Memi[ip2] = idj
+		    		}
+			    }
+			}
+			# After the smallest residual is found at the
+			# (n1+1)'th, it is added back.
+			sum = sum + Mem$t[dp1]
+			n1 = n1 + 1
+			nk = max (nk, j+ii)
+		    }
+	    	}
+		if (n1 > 1)
+		    a = sum / real(n1)
+	    }
+
+	    # Save the average if needed.
+	    n[i] = n1
+	    if (!DOCOMBINE) {
+		if (n1 > 0)
+		    average[i] = a
+		else
+		    average[i] = BLANK
+	    }
+	}
+
+	call sfree (sp)
+end
+
+
+# G_MAVSIGCLIP -- Reject pixels using an average sigma about the median
+# The key is to find the propotionality coefficient, A, where
+#  sigma = sqrt (A * signal). Assuming it holds for an image line and
+# across the image stack to combine, then we have 
+#  A = <sigma**2 / signal>. After obtaining A, we can go back to
+# use the first equation to figure out the Poisson scaled noise.
+#
+# CYZhang 8 April, 1994, based on images.imcombine
+
+procedure g_mavsigclip$t (data, id, nimages, n, npts, median, szuw)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# IDs
+int	nimages			# Number of images
+int	n[npts]			# Number of good pixels
+int	npts			# Number of output points per line
+$if (datatype == sil)
+real	median[npts]		# Median
+$else
+PIXEL	median[npts]		# Median
+$endif
+pointer	szuw			# Pointer to scaling structure
+
+
+int	i, j, k, l, n1, n2, n3, nl, nh, idj, minkeep, lrej
+$if (datatype == sil)
+real	d1, med, low, high, r, s, s1, s2, ksi, one, zero
+data	one, zero /1.0, 0.0/
+$else
+PIXEL	d1, med, low, high, r, s, s1, s2, ksi, one, zero
+data	one, zero /1$f, 0$f/
+$endif
+pointer	sp, resid
+
+include	"../gcombine.com"
+
+begin
+	# If there are insufficient pixels go on to the combining.
+	if (NKEEP < 0)
+	    minkeep = max (0, nimages + NKEEP)
+	else
+	    minkeep = min (nimages, NKEEP)
+	
+	# lrej is the least number of available pixels for rejection to
+	# be allowed.
+	lrej =  max (MINCLIP, minkeep+1)
+
+	if (nimages < lrej) {
+	    DOCOMBINE = true
+	    return
+	}
+
+	call smark (sp)
+	call salloc (resid, nimages+1, TY_REAL)
+
+	# Compute the poisson scaled average sigma about the median.
+	# There must be at least three pixels at each point to define
+	# the mean sigma.  Corrections for differences in the image
+	# scale factors are done.
+
+	n2 = 0
+	s2 = zero
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (n1 < 3) {
+		if (n1 == 0)
+		    median[i] = BLANK
+		else if (n1 == 1)
+		    median[i] = Mem$t[data[1]+k]
+		else {
+		    low = Mem$t[data[1]+k]
+		    high = Mem$t[data[2]+k]
+		    median[i] = (low + high) / 2.0
+		}
+		next
+	    }
+
+	    n3 = 1 + n1/2
+	    if (mod (n1, 2) == 0) {
+		low = Mem$t[data[n3-1]+k]
+		high = Mem$t[data[n3]+k]
+		med = (low + high) / 2.0
+	    } else
+		med = Mem$t[data[n3]+k]
+
+	    # Poisson scaled sigma accumulation
+	    s1 = zero
+	    if (DOSCALE) {
+		do j = 1, n1 {
+		    d1 = Mem$t[data[j]+k]
+		    idj = Memi[id[j]+k]
+		    ksi = max (one, (med + Memr[ZEROS(szuw)+
+			idj-1]) /  Memr[SCALES(szuw)+idj-1])
+		    s1 = s1 + (d1 - med) ** 2 / ksi
+		}
+	    } else {
+		ksi = max (one, med)
+		do j = 1, n1 
+		    s1 = s1 + (Mem$t[data[j]+k] - med) ** 2 / ksi
+	    }
+	    if (n1 > 1)
+		s2 = s2 + s1 / real (n1 - 1)
+	    else
+		s2 = s2 + s1 
+	    n2 = n2 + 1
+	
+	    # Save the median for later.
+	    median[i] = med
+
+	}
+	# Here is the final proportionality coefficient
+	if (n2 > 0)
+	    s =  sqrt (s2 / real (n2))
+	else
+	    return
+
+	# Compute individual sigmas and iteratively clip.
+	do i = 1, npts {
+	    k = i - 1
+	    n1 = n[i]
+	    if (NKEEP < 0)
+		minkeep = max (0, n1 + NKEEP)
+	    else
+		minkeep = min (n1, NKEEP)
+	    # Number of pixels survived from masking and thresholding 
+	    # smaller than the least required number of pixels for rejection,
+	    # rejection becomes irrelevant.
+	    lrej =  max (MINCLIP, minkeep+1)
+	    if (n1 < lrej)
+		next
+	    nl = 1
+	    nh = n1
+	    med = median[i]
+
+	    repeat {
+		n2 = n1
+		n3 = nl + n1 / 2
+		if (n1 >= lrej && s > zero) {
+		    if (DOSCALE) {
+			for (; nl<=n2; nl=nl+1) {
+			    idj = Memi[id[nl]+k]
+			    ksi = max (one, (med + Memr[ZEROS(szuw)+
+				idj-1]) /  Memr[SCALES(szuw)+idj-1])
+			    s1 = s * sqrt (ksi)
+			# Deviation measured in number of sigmas
+			    r = (med - Mem$t[data[nl]+k]) / s1
+			    if (r <= LSIGMA) 
+				break
+			    Memr[resid+nl] = r
+			    n1 = n1 - 1
+			}
+			for (; nh<=nl; nh=nh-1) {
+			    idj = Memi[id[nh]+k]
+			    ksi = max (one, (med + Memr[ZEROS(szuw)+
+				idj-1]) /  Memr[SCALES(szuw)+idj-1])
+			    s1 = s * sqrt (ksi)
+			# Deviation measured in number of sigmas
+			    r = (Mem$t[data[nh]+k] - med) / s1
+			    if (r <= HSIGMA) 
+				break
+			    Memr[resid+nh] = r
+			    n1 = n1 - 1
+			}
+		    } else {
+			s1 = s * sqrt (max (one, med))
+			for (; nl<=n2; nl=nl+1) {
+			# Deviation measured in number of sigmas
+			    r = (med - Mem$t[data[nl]+k]) / s1
+			    if (r <= LSIGMA) 
+				break
+			    Memr[resid+nl] = r
+			    n1 = n1 - 1
+			}
+			for (; nh<=nl; nh=nh-1) {
+			# Deviation measured in number of sigmas
+			    r = (Mem$t[data[nh]+k] - med) / s1
+			    if (r <= HSIGMA) 
+				break
+			    Memr[resid+nh] = r
+			    n1 = n1 - 1
+			}
+		    }
+		    # Recompute median
+		    if (n1 < n2) {
+			if (n1 > 0) {
+			    n3 = nl + n1 / 2
+			    if (mod (n1, 2) == 0) {
+				low = Mem$t[data[n3-1]+k]
+				high = Mem$t[data[n3]+k]
+				med = (low + high) / 2.
+			    } else
+				med = Mem$t[data[n3]+k]
+			} else
+			    med = BLANK
+		    }
+		}
+	    } until (n1 == n2 || n1 < lrej)
+	    # When n1 = n2 no further rejection needed; when n1 > lrej, update
+	    # n2 to the new n1, and compute new mean, then repeat rejection.
+
+	    # If less than minkeep are retained, add some back in.
+	    while (n1 < minkeep) {
+		if (nl == 1)
+		    nh = nh + 1
+		else if (nh == n[i])
+		    nl = nl - 1
+		else {
+		    r = Memr[resid+nl-1]
+		    s = Memr[resid+nh+1]
+		    if (r < s) {
+			nl = nl - 1
+			r = r + TOL
+			if (s <= r)
+			    nh = nh + 1
+			if (nl > 1) {
+			    if (Memr[resid+nl-1] <= r)
+				nl = nl - 1
+			}
+		    } else {
+			nh = nh + 1
+			s = s + TOL
+			if (r <= s)
+			    nl = nl - 1
+			if (nh < n2) {
+			    if (Memr[resid+nh+1] <= s)
+				nh = nh + 1
+			}
+		    }
+		}
+		n1 = nh - nl + 1
+		# Recompute median
+		if (n1 < n2) {
+		    if (n1 > 0) {
+			n3 = nl + n1 / 2
+			if (mod (n1, 2) == 0) {
+			    low = Mem$t[data[n3-1]+k]
+			    high = Mem$t[data[n3]+k]
+			    med = (low + high) / 2.
+			} else
+			    med = Mem$t[data[n3]+k]
+		    } else
+			med = BLANK
+		}
+	    }
+
+	    # Get the final number of retained pixels
+	    n[i] = n1
+	    if (n1 > 0 && nl > 1 && G_COMBINE != C_MEDIAN) {
+		j = max (nl, n1 + 1)
+		do l = 1, min (nl-1, n1) {
+		    Mem$t[data[l]+k] = Mem$t[data[j]+k]
+		    Memi[id[l]+k] = Memi[id[j]+k]
+		    j = j + 1
+		}
+	    }
+	    # Output median if "median combine" is chosen
+	    if (G_COMBINE == C_MEDIAN)
+		median[i] = med
+	}
+
+	# Flag that the median is computed.
+	if (G_COMBINE == C_MEDIAN)
+	    DOCOMBINE = false
+	else
+	    DOCOMBINE = true
+
+	call sfree (sp)
+end
+$endfor

@@ -1,0 +1,11 @@
+# Update the compass application code in the sdisplay package library
+
+$checkout sdisplay.a ../
+$update   sdisplay.a
+$checkin  sdisplay.a ../
+$exit
+
+sdisplay.a:
+	compass.x     		<imhdr.h> <imio.h> <math.h> <mwset.h> 
+	wlutil.x     		<imhdr.h> <imio.h> <gset.h> <math.h> 
+	;

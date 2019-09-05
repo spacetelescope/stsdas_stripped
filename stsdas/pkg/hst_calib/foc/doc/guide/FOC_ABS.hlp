@@ -1,0 +1,87 @@
+.help FOC_ABS Apr88 "FOC 5.5.1"
+.ih
+CHAPTER
+FOC_ABS -- FOC DE ( W-factor) reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_ABS
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of DE ( W-factor) reference files for RSDP
+and may also be used by Guest Observers to generate calibration data
+for recalibration. The approach is discussed in FOC_PHOTOMETRY.
+
+The absolute sensitivity (W-factor) consists essentially of
+a table of numerical factors which 
+are used to convert from 
+images counts to light intensity, taking into account the
+wavelength dependent transmission of the optical elements as well
+as the photocathode response. The images used to generate the
+absolute DE should have been processed using the
+appropiate Relative DE files.
+
+The three contributions are:
+
+.ls Filter transmissions
+These are assumed known from ground based measurements on the filters
+.le
+
+.ls Detector (photocathode) Sensitivity
+To be measured in flight by imaging stars using various filters
+to obtain sufficiently narrow band data. Note
+that f/96 mode has narrow band filters but f/48 does not. The 
+detector in the latter chain may be calibrated using spectrograph mode.
+However if it is decided to use the broad passbands for f/48 
+detector sensitivity measurements then both chains way be processed
+in essentially the same way.
+.le
+
+.ls ST optics throughput
+If known then this may be separated out from the detector sensitivity.
+Otherwise one may leave this combined with the latter and use a 
+file containing unity values
+in place of this data.
+.le
+
+.ih
+FREQUENCY
+
+The ABS  calibration may be needed very infrequently.
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxcgcrr1
+Sets up parameters for generating W-factors.
+One may generate the W-factors for all, or a selection of, 
+filter combinations.
+.le
+.ls cxcgcrrop2
+generates the W-factors table for a specified optical chain and filter
+selection.
+.le
+
+.ih 
+SEE ALSO
+From FOC_ABS see also:
+
+.nf
+file creation			...... cxcgcrr1
+                                ...... cxcgcrrop2
+abs verification                ...... FOC_ABS_VER
+.fi
+
+
+.endhelp

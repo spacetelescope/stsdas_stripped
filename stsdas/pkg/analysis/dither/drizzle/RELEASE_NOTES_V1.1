@@ -1,0 +1,80 @@
+Release Notes for DRIZZLE V1.1 & BLOT 0.5
+
+Richard Hook & Andy Fruchter, 12th May 1997
+
+V1.1 is the first public release of Drizzle since the initial
+release (V1.02 September 1996). This file lists the changes which
+have been introduced. The additional task Blot (V0.5) is also
+included in this release for the first time.
+
+New Parameters:
+
+DRIZZLE V1.1 has three additional parameters. As a result users
+must "unlearn drizzle" before using the new version. The new
+parameters have the following meanings:
+
+"shft_fr" defines the coordinate system in which the shifts are
+applied. It may take the value "input" or "output". The default is "input"
+which means that the shifts are applied in the input frame before
+any rotation. Note that the default in V1.02, although not stated
+explicitly, was "output".
+
+"align" is a new option which defines the precise mapping of pixels
+from input to output. If this is set to "center", and the input
+shift is set to then the center of
+pixel (Nx/2+1,Ny/2+1) in the input image maps onto the center of
+pixel (Mx/2+1,My/2+1) in the output. (Nx,Ny) and (Mx,My) are the 
+sizes of the dimensions of the input and output images respectively.
+The division by two is done using integer arithmetic (i.e. rounding 
+down). This behaviour is now the default and was
+the behaviour in V1.02 under all circumstances. The alternative
+"align=corner" maps the corner (Nx/2+0.5,Ny/2+0.5) onto 
+(Mx/2+0.5,My/2+0.5). This is intended to allow Drizzle to be used
+to do "block replication" of data.
+"align=center" with a small "pixfrac" may be used for interlacing of
+data points. 
+
+"out_un" is a new option to allow the units of the output data images
+to be "counts-per-second" (cps) rather than counts. In V1.02 the 
+results were always in counts if the inputs were not specially scaled.
+Note that successive runs of Drizzle should always use same
+value of this parameter.
+
+Other Changes:
+
+o The scaling of the weight file has been changed so
+  that a weight of N in an input pixel contributes a total of N to the 
+  output weight image (assuming the input pixel maps entirely to within
+  the output weights image).  So that, again assuming that all of the
+  input images are entirely mapped into the output, the sum of all the
+  pixels in the output weight image is equal to the sum of all the pixels
+  in the input weight images.
+
+o A new option (coeffs=header) has been added which allows Drizzle to 
+  automatically select the correct geometrical distortion coefficients and
+  wavelengths for WFPC2 images using the header values.  When this option
+  is invoked, the value of the input parameter lambda is ignored.   
+  We suggest that this option be used when removing geometric distortion
+  from WFPC2 images. 
+  
+o A new option allows images to be weighted by the square of exposure
+  time rather than the exposure time. This is appropriate
+  for read-noise dominated exposures and is selected setting wt_scl=
+  expsq.
+
+o The header keywords put into the output images have been modified to allow
+  a maximum of 999 images to be drizzled onto the same output. The
+  previous limit was 99. This change means that V1.1 will not recognize
+  the header keywords in images created by previous versions (this, however,
+  does not have any serious consequences). 
+
+o Some modifications have been made to reduce the memory requirements,
+  particularly for large input images.
+
+o Some utilities have been separated from the main "drizzle.f" module
+  into the file "drutil.f".
+
+o A bug which caused crashes due to uninitialized WCS variables has been
+  fixed. 
+
+o The Blot reverse-drizzling task has been included.

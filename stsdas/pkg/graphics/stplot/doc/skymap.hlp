@@ -1,0 +1,738 @@
+.help skymap Oct95 stsdas.graphics.stplot
+.ih
+NAME
+skymap -- Draw a chart, labelled in celestial coordinates, with symbols 
+representing objects of differing brightness.
+.ih
+USAGE
+skymap catalog racen deccen scale size
+.ih
+DESCRIPTION
+This task draws a star chart using a gnomonic projection.  The
+coordinates and magnitudes of objects are specified in an STSDAS
+table.  'skymap' draws a coordinate grid, labels, and an explanatory key.
+Optionally, you can interact with the plot and the data to display
+a catalog at varying positions and scales.
+
+.ls Catalog Table
+A 'skymap' catalog is an STSDAS binary table consisting of at least
+three columns: right ascension, declination, and brightness.
+Optionally, another column may be used for object names and plotted as
+text labels.  The column names are not restricted and may be specified
+by setting task parameters in the 'colnames' pset.  The coordinate and
+brightness columns are read as real (floating point) values and the
+object name column is read as a string regardless of the data type of
+the table column.  Values in the right ascension and declination
+columns are assumed to be in degrees unless there is a units field for
+the column and that field contains the character "H" (in upper or lower
+case) to signify units of hours.  The values in the magnitude column are
+assumed to be in units of magnitude.  An optional label column may be
+specified to draw text at the position of each plotted object.  This
+may be any column in the table---even a previously-specified
+column.
+
+By default, all rows in the table are read and may be displayed.
+However, it is possible to limit the range of coordinates and
+magnitudes that will be read.  An explicit range of rows that are to be
+read can be specified in addition to the other limits;  potentially,
+this can significantly speed up subsequent catalog access.  The 'catlim'
+pset limits the allowable values of right ascension, declination, and
+magnitude that are being read from the catalog table.  Rejection based
+on any single criterion (for example, magnitude) of a table entry
+causes the entire row to be ignored.  Any range limit specified as
+'INDEF' causes 'skymap' to use the full range from the catalog.  For
+example, 'brightlim = 5', 'faintlim = INDEF' causes 'skymap' to select
+all stars equal to or fainter than 5th magnitude.
+
+It is possible to plot a region of the sky despite the absence
+of objects from the catalog.
+
+A column of the table may be identified as a "class" column via the
+'classcol' parameter in the 'colnames' pset.  This column will be
+interpreted as integers and mapped to colors of plotted symbols
+representing the objects.  For optimal results, the values in the class
+column should be integers in the range 4:16, inclusive.  This range of
+values will result in a range of colors varying in hue from red to
+blue.  See below for the exact color mapping.
+
+STSDAS table manipulation tools such as tcalc may be used to create a
+table scaled appropriately.
+.le
+.ls Chart Components
+Parts of the plotted chart may be drawn or excluded.
+.nf
+
+    Object symbols
+    Coordinate grid
+    Annotations and magnitude key
+    Object text labels
+    Central coordinate symbol
+    Connecting lines
+
+.fi
+A task parameter switch selects each component to draw initially.  The
+'append' parameter may be used to run 'skymap' repeatedly to build up a
+chart using different catalogs, or different colors or other attributes
+for various components.  Cursor commands may also plot components.
+.le
+.ls Cursor Interaction
+If the 'interactive' parameter is set to "yes" (true) and the graphics
+device supports interaction, a graphics cursor will appear after the
+chart is drawn, enabling you to interact with the plot and the
+catalog to some extent.  In addition to the standard IRAF cursor
+functions, 'skymap' has the following set of single-keystroke cursor
+commands (all of which are lower case):
+.nf
+	c	Replot with celestial coordinates labels
+	f	Flip the chart horizontally, reverse X axis
+	k	Draw the brightness key, scale, and titles
+	l	Label stars with name column
+	m	Move coordinate at cursor to plate center
+	n	Print table entries for stars near cursor
+	o	Draw symbol at central coordinate of chart
+	p	Zoom out: replot at twice the scale
+	q	Quit
+	r	Replot with labels in mm from the center
+	s	Replot with labels in "arc from the center
+	v	Connect objects with straight lines
+	z	Zoom in: replot at half the scale
+	?	Page this cursor keys help text
+	:	Command with arguments (see below)
+
+Colon commands (may be abbreviated to a single letter):
+
+	:bright b1 b2	Plot only stars between b1 and b2 mag. 
+	:move ra dec	Center at ra in hours, dec in degrees
+	:newbox size	Change search box to size*default
+	:scale s	Replot at scale s in "arc/mm
+	:width w	Replot with width w in degrees
+	:zoom factor	Magnify (or reduce) by factor
+
+.fi
+In some cases, the cursor will move to the center of the plot if the
+graphics device allows software control of the cursor position.  If the
+plot center changes, as with the 'z' or 'm' commands, the cursor should
+remain at the celestial coordinates at the time the command was
+issued.  These commands cause the plot to be redrawn with the center at
+the celestial coordinates of the cursor.  If the device does not
+support cursor positioning or if the plot center does not change, the
+cursor will remain where it was before the key was used.
+.ls c
+Replots the objects and the coordinates using the celestial coordinate
+grid at the current scale and position.  This does not replot the chart
+legend (key) or any object labels.  Use 'k' to redraw the key and 'l'
+to redraw the labels.  Use 's' to label the chart in seconds of arc and
+'r' to label in mm.
+.le
+.ls f
+Redraws the chart with the horizontal axis reversed using the celestial
+coordinate grid.  It acts as a toggle to reverse the chart regardless
+of the value of the mirror parameter or any previous use of 'f'.  It
+does not change the plot scale or the central coordinate.  This does
+not replot the chart legend (key) or any object labels.  Use 'k' to
+redraw the key and 'l' to redraw the labels.  Use 's' to label the
+chart in seconds of arc and 'r' to label in mm.
+.le
+.ls k
+Draws the key describing the chart.  The key includes the central
+coordinate of the chart, the scale in seconds of arc per millimeter, the
+full width of the chart, a bar giving a representation of the scale,
+a key to the size of the markers for representative brightness, and a
+title.  The title may be an arbitrary text string, the value of the
+title task parameter, or if this value is null, then the name of the
+catalog table.
+.le
+.ls l
+Draw a text string near each object.  This is the same as setting the
+task parameter label to "yes".  The 'namecol' parameter in the 'colnames'
+pset must specify an existing column in the catalog table.  This
+may be any column, text or numeric, even one of the other columns
+specified.
+.le
+.ls m
+Redraws the plot (grid and objects) with the current cursor position as
+the center of the chart at the same scale.  This does not replot the
+chart legend (key) or any object labels.  Use 'k' to redraw the key and
+'l' to redraw the labels.  Use 's' to label the chart in seconds of arc
+and 'r' to label in mm.  If the device supports it, the cursor will be
+repositioned to the center of the plot, remaining at the celestial
+coordinates selected.
+.le
+.ls n
+Prints the coordinates, brightness, and possibly name of all of the
+objects in the catalog table within a specified search box.  This box
+is a square region in the projected plane of the plot and is drawn on
+the display with a dashed line.  The default width of the box is the
+maximum size of plotted symbols as specified by the task parameter
+'bigspot'.  The size of the box may be changed with the ":newbox"
+command, whose single parameter specifies the size of the search box.
+This size is a multiplier of the default size.  For example, the
+command ":newbox 2.5" tells 'skymap' to make the width of the search box
+2.5 times the diameter of the maximum symbol size.
+.le
+.ls o
+Draws a symbol centered on the central coordinate of the chart.  The
+style of the symbol is specified by the task parameter centermark and
+may be one of:  "none", "plus", "cross", "square", "diamond" or
+"circle".  The size is specified by the task parameter cmsize, and is
+given in degrees, which may be written in sexagesimal format, for
+example, "0:0:45" to specify 45 arc seconds.
+.le
+.ls p
+Zoom out by a factor of two.  That is, redraw the chart at two times
+the scale.  The new plot center becomes the previous cursor position.
+The labels are drawn in celestial coordinates in the same sense.  Use
+'f' to change the direction of the horizontal coordinate, use 'p' to
+zoom out, use 'k' to draw the chart key.  If the device supports it,
+the cursor will be repositioned to the center of the plot, remaining at
+the celestial coordinates selected.
+.le
+.ls q
+Stop the task and return to the CL.
+.le
+.ls r
+Redraw the plot at the same scale and center, but label with a linear
+scale, in mm from the center.  The direction of the coordinate labels
+always increases left to right even though the objects may be plotted in
+either sense.  This does not redraw the chart legend, use 'k' to do so.
+.le
+.ls s
+Redraw the plot at the same scale and center, but label with a linear
+scale, in seconds of arc from the center.  The direction of the
+coordinate labels always increases left to right even though the
+objects may be plotted in either sense.  This does not redraw the chart
+legend, use 'k' to do so.
+.le
+.ls v
+Connect currently visible objects with straight line segments.  The
+style of the lines is specified in the task parameter "connect".
+Straight lines represent great circles in the gnomonic (celestial R.A.
+and Dec.) coordinates used.
+.le
+.ls z
+Zoom in by a factor of two.  That is, redraw the chart at one half the
+scale.  The new plot center becomes the previous cursor position.  The
+size of the plot border on the page (screen) does not change.  The
+labels are drawn in celestial coordinates in the same sense.  Use 'f'
+to change the direction of the horizontal coordinate, use 'p' to zoom
+out, use 'k' to draw the chart key.  If the device supports it, the
+cursor will be repositioned to the center of the plot, remaining at the
+celestial coordinates selected.
+.le
+.ls ?
+Display the list of available cursor commands by paging on the text
+screen.  First, the 'skymap' commands appear.  Typing 'q' permits
+reviewing the IRAF cursor commands, and typing 'q' again returns to
+cursor interaction.
+.le
+.ls :bright
+Redraw the plot only with objects in the specified range of
+brightness.  This does not change the brightness scale.  That is,
+objects at a given magnitude will be plotted the same size regardless
+of the specified range.  If there are no arguments, then ":bright" prints
+the currently specified range of brightness.
+.le
+.ls :move
+Redraw the plot so that the center is at the specified coordinates.  The
+arguments are the right ascension in hours and declination in degrees,
+in that order.  These may be written as sexagesimal numbers with ":"
+delimiters or as decimals.  If the device supports it, the cursor will be
+repositioned to the center of the plot, remaining at the celestial
+coordinates selected.
+.le
+.ls :newbox
+Changes the size of the region within which catalog entries are printed
+using the 'n' key.  The value of the argument specifies a size relative
+to the default, the maximum plotted marker size as specified by the
+'bigspot' task parameter.  If no argument is specified, then ":newbox 
+"prints the
+current size in relative units and seconds of arc.
+.le
+.ls :scale
+Redraw the chart at the specified scale, assumed to be in
+seconds of arc per millimeter.  The new plot center becomes the
+previous cursor position.  The size of the plot border on the page
+(screen) does not change.  The labels are drawn in celestial
+coordinates in the same sense.  Use 'f' to change the direction of the
+horizontal coordinate, use 'p' to zoom out, use 'k' to draw the chart
+key.  If the device supports it, the cursor will be repositioned to the
+center of the plot, remaining at the celestial coordinates selected.
+.le
+.ls :width
+Redraw the chart scaled with the specified width, assumed to
+be in degrees.  The new plot center becomes the previous cursor
+position.  The size of the plot border on the page (screen) does not
+change.  The labels are drawn in celestial coordinates in the same
+sense.  Use 'f' to change the direction of the horizontal coordinate,
+use 'p' to zoom out, use 'k' to draw the chart key.  If the device
+supports it, the cursor will be repositioned to the center of the plot,
+remaining at the celestial coordinates selected.
+.le
+.ls :zoom
+Zoom in by the specified factor.  That is, redraw the chart at a new
+scale that is some factor of the previous scale.  The new plot center
+becomes the previous cursor position.  The size of the plot border on
+the page (screen) does not change.  The labels are drawn in celestial
+coordinates in the same sense.  Use 'f' to change the direction of the
+horizontal coordinate, use 'p' to zoom out, use 'k' to draw the chart
+key.  If the device supports it, the cursor will be repositioned to the
+center of the plot, remaining at the celestial coordinates selected.
+.le
+
+Any unrecognized keystroke causes 'skymap' to display the position of
+the cursor in celestial coordinates.  In effect, the user may roam
+about on the sky and zoom in or out on the display, keeping the object
+symbols the same sizes.  These sizes may be rescaled by specifying a
+different brightness range to plot.  Type 'q' or '^D' (CTRL-D) to leave
+both the cursor mode and 'skymap', returning to the CL.
+.le
+.ls Plot Scale
+The initial scale of the plot may be specified either as an absolute
+angular size of the chart or as having some absolute (plate) scale on
+the plot device.  In both cases, the size of the chart as plotted will
+be the same, nearly filling the page (display window) with space on the
+right for explanatory information.
+
+In the former case, the 'size' parameter specifies the full width of
+the plot in degrees on the sky.  The 'scale' parameter should be set to
+"INDEF".  The plot scale will be set such that the portion of the
+plotting area taken up by the chart will nearly fill the page (or
+display).  Only those objects in the table whose coordinates fall in
+this region of the sky will appear on the chart.
+
+In the second case, the 'size' parameter specifies the absolute scale
+at which to draw the plot in seconds of arc per millimeter.  Note that
+this depends on the appropriate absolute device scale to be correctly
+specified for the specific graphics device in the IRAF graphics device
+(graphcap) file.  The 'size' parameter should be set to INDEF.
+
+A third case is possible, i.e., to specify both 'size' and 'scale' to
+limit the range of the plotted region of the sky, but plot it at a
+specific plate scale.  This must be done carefully as the size of the
+resulting plot will not be set by 'skymap', but depends on the
+combination of the size and scale.  If the resulting chart is too big,
+'skymap' will stop, issuing an error.
+
+When running interactively, the plot center and scale may be changed
+using various cursor keys.
+
+Note that it is usually not possible to guarantee that a plot drawn on
+a display device will look exactly like the same plot drawn on a
+printer device.  This is because devices have different aspect ratios
+(relative height to width) and different line styles.  There are two
+ways to get printed plots from 'skymap' (or any IRAF graphics task).
+You may set the 'device' parameter to the name of a printer device or
+"stdplot".  This will scale the plot specifically for that device and
+send the plot to the printer.  You may not interact with the plot in
+this case.  Alternately, you may display the plot on an interactive
+graphics device (a terminal or a workstation graphics window) and using
+cursor mode, "snap" the plot to a printer device (i.e., use the ":snap"
+command).  In this case, while you have great flexibility in the
+appearance of the plot, it will be scaled for the interactive device,
+and may not look exactly the same when printed.  Circles may appear as
+ellipses and squares may appear as rectangles, for example.
+
+Don't expect absolute accuracy in plots. Keep in mind that most
+hardcopy plotters are not terribly precise. The actual plotted scale
+depends on a lot of things including the repeatability and accuracy of
+the printer as well as the IRAF description of the specific device.
+.le
+
+.ls Color
+It is possible to produce maps in color but it is necessarily
+device-dependent.  There are two basic ways to produce color plots:
+displaying the graphics in a color image display server window, or
+using a color hardcopy device.  These methods are fundamentally different and
+require different methods of using 'skymap'.
+
+Any IRAF graphics may be plotted in color on an image display server
+supporting color by using the IRAF "imd" pseudo-devices.  In this case,
+in a given task execution, the graphics are all plotted in the same
+color and the specific color depends on the display server and the
+value of the 'device' parameter. For example, 'device=imdr'
+will plot in red on an SAOimage or imtool display.  The 'skymap' task
+ignores the color 'parameter' and class column in this case.  You can,
+however, draw the plot in parts, using the 'append' parameter to overplot
+the axes, symbols, key, and object labels in separate exectuions of
+'skymap' using different colors.
+
+Alternately, 'skymap' includes some built-in color capability, but
+only when used with color PostScript devices or previewers under the
+STSDAS PostScript graphics kernel, 'psikern'. In this
+case, you can either draw the entire plot in one specified color or
+draw individual parts in separate colors, as above.  The
+'color' task parameter specifies the color for all graphics drawn in a
+given execution of 'skymap', except as described below.  Using the
+'append' parameter, you can build up a plot, drawing only certain
+parts, such as the object symbols, key, or axis grid.
+
+The default
+mapping between the color index value and actual plotted colors with
+the RGB representation is:
+.nf
+
+                            R   G   B
+        1 black             0   0   0
+        2 white           255 255 255
+        3 magenta	  255   0 255
+        4 red             255   0   0
+        5 red-orange      255  85   0
+        6 orange-yellow   255 170   0
+        7 yellow          255 255   0
+        8 green-yellow    170 255   0
+        9 yellow-green     85 255   0
+       10 green             0 255   0
+       11 cyan-green        0 255  85
+       12 green-cyan        0 255 170
+       13 cyan              0 255 255
+       14 blue-cyan         0 170 255
+       15 cyan-blue         0  85 255
+       16 blue              0   0 255
+
+.fi
+Note that this differs from the default 'psikern' color definitions as
+well as those in 'tvmark' and other tasks.
+
+In addition, you may draw symbols for individual objects with a color
+specified by an index value in the catalog table.  This value is read
+as an integer and interpreted as the index of one of the 16 colors
+defined by the PostScript kernel.  If the column specified by the 'class'
+parameter in the 'colnames' pset exists, the values in each cell specify
+the color index, overriding the overall color specified by the color
+parameter.
+
+You can also override the color for the object labels (whose value
+comes from the name column in the catalog table) by specifying a color
+in the format parameter.  For example, "format=s=.5;c=4" tells 'skymap'
+to use red, half-size characters for the object labels.
+.le
+.ih
+PARAMETERS
+.ls catalog = "" [file name template]
+File name of star catalog table.  This file is assumed to be an STSDAS
+format binary table, with columns defined for at least right ascension,
+declination, and brightness in magnitudes.  The column names are
+specified in the pset 'colnames' (see below).
+.le
+.ls racen = INDEF [real, min=0., max=24.]
+Right ascension of the chart center in hours.  This may be entered as
+decimal hours or in sexagesimal with colons separating hours, minutes,
+and seconds.  If set to 'INDEF', the center will be set to the mean of
+the Right Ascension coordinates of the input stars.
+.le
+.ls deccen = INDEF [real, min=-90., max=90.]
+Declination of chart center in degrees.  This may be entered as
+decimal degrees or in sexagesimal with colons separating hours, minutes,
+and seconds.  If set to 'INDEF', the center will be set to the mean of
+the Declination coordinates of the input stars.
+.le
+.ls scale = INDEF [real, min=0.]
+Absolute scale of chart in seconds of arc per millimeter.  Normally,
+either 'scale' or 'size' is specified and the other set to "INDEF".
+.le
+.ls size = INDEF [real, min=0., max=80.]
+Full width of chart in degrees.  Normally, either 'scale' or 'size' is
+specified and the other set to "INDEF".  Note that with the gnomonic
+projection, there is a practical limit of about 80 degrees for the size,
+beyond which the distortion at the corners becomes severe.
+.le
+.ls mirror = no [boolean]
+Reverse the usual orientation of the chart?  
+
+If 'mirror = yes', plot the
+horizontal axis with right ascension increasing from left to right.
+Otherwise, plot the
+horizontal axis with right ascension increasing from right to left.  If
+'interactive = yes', the "f" key can be used to achieve the same result.
+.le
+.ls (colnames = "") [pset]
+Parameter set (pset) containing names of columns that appear in the 
+catalog table.
+
+This may be edited in 'epar' using ":e" on the 'colnames' line.  The pset
+'gsc' is predefined for the names of columns in HST Guide Star Catalog
+tables.  If you are using a table from the Guide Star Catalog, or an
+extracted table from the 'gasp' package, set 'colnames = gsc'.  See the
+STSDAS 'gasp' package for more information.
+
+Type "help colnames" for a description of the parameters that can
+be set in this pset.
+.le
+.ls (catlim = "") [pset]
+Parameter set (pset) containing coordinate limits for reading the catalog 
+table.  
+
+If all
+of the parameters are set to INDEF, then all of the catalog table
+entries will be read into memory, and any object may be plotted.
+However, for a large table, this may result in very slow interactive
+operation if you don't want to see all of the sky.  A
+subset of the catalog table may be read into memory by specifying limits
+on the row numbers, either celestial coordinate, or the brightness.
+Note that if you do limit the data read from the table, excluded objects
+will not be plotted, even though you may plot the grid for that part of
+the sky.
+
+Type "help catlim" for a list of parameter descriptions for this
+pset.
+.le
+.ls (title = "") [string]
+A string to use as the chart title drawn in the upper right of the
+page.  If 'title' is the null string, the catalog name in the 'catalog'
+parameter is used.
+.le
+.ls (stars = yes) [boolean]
+Draw the stars?  
+
+If 'stars=yes', then draw the stars with size relative to the
+value of the magnitude column in the catalog table.  If set to "no", 
+then do not draw the stars.
+.le
+.ls (grid = yes) [boolean]
+Draw a grid overlaying the chart?  
+
+If 'grid = yes', dotted lines are drawn
+connecting the major tick marks at lines of constant right ascension and
+declination.
+.le
+.ls (key = yes) [boolean]
+Draw an explanatory key to the chart?  
+
+The key will also relate the
+brightness of the catalog objects to the size of the plotted symbols.
+Note that the symbol size can be continuous (within the limits of device
+resolution) although only certain sizes are shown.
+.le
+.ls (objstyle = filled) [string]
+Style of symbols used to draw stars.  One of:
+.nf
+    filled
+    open
+    erase
+    mfill
+    plus
+    cross
+    square
+    diamond
+    circle
+.fi
+The same symbol style is used for all objects with the size varying
+according to the brightness column.  The default is filled circles
+("filled").  The filled and open styles should work the same on all
+graphics devices.  The erase and mfill styles depend on specific
+capabilities of the device.
+.ls filled
+A solid circle (drawn by using overlapping, horizontal lines).
+.le
+.ls open
+An open circle with radial bars drawn through the circumference at the
+cardinal directions.
+.le
+.ls erase
+The same as filled, but a slightly larger symbol is drawn first in
+"clear" line type to produce a narrow border around each object to
+distinguish overlapping symbols.  This works only on devices supporting
+the clear line type (not many).
+.le
+.ls mfill
+Circles drawn using a many-sided, filled polygon.  A larger symbol is
+drawn first with "clear" fill area style to produce a narrow border
+around each object to distinguish overlapping symbols.  This works only
+on devices supporting filled areas and the clear (erase) drawing, such
+as PostScript printers used with the psikern graphics kernel.  On other
+devices, this will appear as two nearly overlapping, concentric, open
+circles.
+
+This works best if the table is sorted in order of decreasing
+brightness, so that brighter (larger) stars do not obliterate
+previously drawn fainter (smaller) ones.  The objects are always drawn
+in order of the rows in the catalog table.
+.le
+.ls plus cross square diamond circle
+Centered, open (unfilled) symbols drawn using vectors and sized
+according to the object brightness.
+.le
+.le
+.ls (color = 1) [integer, min=1, max=16]
+Plot color.  This is device dependent.  Only the PostScript kernel
+'psikern' recognizes the color index and will be seen only with color
+PostScript printers or previewers.  See the description in this help for the
+default colors.  This sets the color of the entire plot---unless the
+'colnames.classcol' parameter specifies a valid table column.  In that
+case, the values in the table specify the color index for individual,
+plotted symbols.
+
+Note that this is entirely independent of drawing a
+plot on a color image display server by specifying a "device" having a
+specific color.
+.le
+.ls (bigspot = 0.03) [real, min=0.001, max=0.1]
+Size of the symbol for the brightest objects in NDC.
+.le
+.ls (smallspot = 0.0002) [real, min=0.00005 max=0.01]
+Size of the symbols for the faintest objects in NDC.
+.le
+.ls (brightstar = INDEF) [real]
+Magnitude of the brightest objects plotted.  An INDEF value
+will cause everything up to the bright limit of the catalog to 
+be plotted.
+.le
+.ls (faintstar = INDEF) [real]
+Magnitude of the faintest objects plotted.  An INDEF value
+will cause everything down to the faint limit of the catalog
+to be plotted.
+.le
+.ls (label = yes) [boolean]
+Label objects with names?  
+
+If the table contains a column of strings (as
+specified by 'namecol'), plot the string at each plotted object.  The
+positioning, size, and other characteristics of the string may be
+specified by the 'format' parameter.
+.le
+.ls (format = "s=.75") [string]
+A GIO 'gtext' format string specifying the characteristics of labels
+plotted next to objects.  This may specify the size, orientation, font,
+and quality of the characters.  See the GIO reference manual for a
+complete description of string formats.
+.le
+.ls (connect = no) [boolean]
+Connect the plotted objects with straight line segments?  
+
+In the
+gnomonic (celestial RA and Dec) coordinates, straight lines are
+great circles.  If 'connect=yes', then 
+straight line segments of the style specified by the parameter 
+'constyle' will be drawn between the centers of all 
+objects in the current display area.
+
+This is an admittedly awkward way to draw "arbitrary" figures, curves,
+regions, etc., on the plot by constructing a table containing the
+appropriate coordinates.  Note that objects are connected in the order
+of their appearance in the catalog table.  Only objects visible on the
+currently plotted region are connected.
+
+This might be useful to indicate the path of a comet, for example.
+Alternately, You might want to delineate some arbitrarily shaped region
+of the sky.
+.le
+.ls (constyle = "none") [string]
+Style of straight line segments connecting visible objects if
+'connect=yes'.  The choices are:
+.nf
+    solid
+    dotted
+    dashed
+    dotdash
+.fi
+.le
+.ls (center = no) [boolean]
+Draw a mark at the central coordinate of the chart?  
+
+If 'center=yes', then a symbol specified by the parameter 'centmark' 
+will be drawn, centered on the coordinates specified in the 
+'racen' and 'deccen' parameters.
+.le
+.ls (cenmark = "plus") [string]
+The type of marker to draw at the central coordinate of the chart if
+'center=yes'.  One of:
+.nf
+    plus
+    cross
+    square
+    diamond
+    circle
+.fi
+.le
+.ls (cmsize = 0.01) [real]
+The size of the optional central symbol if center=yes.  If cmsize > 0,
+then the size is a fraction of the page size (NDC).  For example, using
+the default size, cmsize=0.01 means the symbol will be 1% of the width
+of the page.  If cmsize < 0, then the size is in degrees and may be
+specified in "sexagesimal" in standard IRAF syntax, with degrees,
+minutes and seconds separated by colons.  For example, to specify a
+size of 40 seconds of arc, use "cmsize = -0:0:40".
+.le
+.ls (device = stdgraph) [string]
+Graphics device to be used.
+.le
+.ls (append = no) [boolean]
+Append to an existing plot?  This is useful to overplot objects from an
+additional table.
+.le
+.ls (interactive = yes) [boolean]
+Allow interaction with the plot?  
+
+If the graphics device supports
+interaction, then several keys are defined to interact with the catalog
+and the plot.
+.le
+.ls (coords) [graphics cursor]
+Graphics cursor input.
+.le
+.ih
+EXAMPLES
+1. Draw a chart of the Pleiades from the Bright Star Catalog, contained in
+the table 'bsc.tab':
+
+.nf
+  st> skymap bsc 3:41 23:48 INDEF 5
+.fi
+
+2. Draw a chart of the Pleiades from the SAO catalog at the scale of the
+POSS:
+
+.nf
+  st> skymap sao 3:41 23:48 67.14 INDEF
+.fi
+
+3. Append objects from another table using open circles:
+
+.nf
+	st> skymap mytab 3:41 23:48 67.14 INDEF \
+	>>> grid- key- objstyle="open" label+ append+
+.fi
+
+4. Draw a chart and use interactive cursor commands to modify it.
+
+.nf
+  st> skymap bsc 3:41 23:48 INDEF 5
+.fi
+
+Plots the chart.  What follows is a hypothetical interactive session.
+(Note:  the cursor keys are not echoed to the terminal as they are
+typed.)
+.nf
+
+	(Move the cursor to an interesting object)
+	z	Zooms the plot
+	k	Redraw the key to verify the scale and center
+	:b 6 8	Plot only the stars between 6th and 8th magnitudes
+	(Move the cursor to an interesting object)
+	n	List the catalog for stars at the cursor
+	l	Label the stars with their names from the catalog
+	q	Quit
+	
+.fi
+.ih
+BUGS
+If the center of the chart falls exactly at 0 hours right ascension, the
+0-hour meridian is not plotted.
+
+Under certain circumstances, the search box for printing catalog entries
+using the 'n' key appears in the wrong place.  Using 'n' again should
+work.
+
+Precession is not supported.
+.ih
+REFERENCES
+.ih
+SEE ALSO
+wcslab, imdkern, psikern, gasp, cursor
+
+
+Type "help stplot" for a description of the other tasks in the 'stplot' 
+package. Type "help cursor" for a description of the 
+IRAF cursor commands.
+
+.endhelp

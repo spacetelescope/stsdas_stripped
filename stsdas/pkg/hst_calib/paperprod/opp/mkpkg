@@ -1,0 +1,14 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	opp_pedigree.x	"opp.h"
+	opp_peakup.x	<imhdr.h>
+	opp_trlsum.x	"opp.h"
+	opp_calib.x	"opp.h"
+	opp_obsum.x	"opp.h"
+	t_opeakup.x
+	t_o1drange.x	<tbset.h>
+	;

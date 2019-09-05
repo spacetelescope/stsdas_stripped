@@ -1,0 +1,10 @@
+# Update the ssmap application code in the hrs package library
+
+$checkout hrs.a ../
+$update   hrs.a
+$checkin  hrs.a ../
+$exit
+
+hrs.a:
+	spiralmap.x       		
+	;

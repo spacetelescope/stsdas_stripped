@@ -1,0 +1,123 @@
+.help specpsf V1.00 Feb03 stecf.specres
+.ih
+NAME
+specpsf  -- Form a longslit spectrum for a point source from many point spread
+function images
+.ih
+USAGE
+specpsf refima nopsfs psfwavs psfims sliwid pixwid subsam cenoff psfpos outpsf
+
+.ih
+PARAMETERS
+.ls refima = "" [file name]
+The name of the input 2-dimensional reference image to supply the dimensions and
+header information for the output longslit Point Spread Function (PSF) spectrum
+image.
+.le
+.ls psfwavs  = "" [table file name]
+The name of the STSDAS table file listing the X (or wavelength if
+CRVAL1, CD1_1 were present in the header of the reference image) values
+corresponding to the Point Spread Functions. The values in the table
+must be contained within the range of X (or wavelength) values for the
+input image. 
+.le
+.ls psfims  = "" [file name template]
+The list of the names of the Point Spread Function images. All the 
+images must be of the same dimensions. 
+.le
+.ls sliwid = "" [float]
+The width of the slit in arcseconds.
+.le
+.ls pixwid = "" [float]
+The size of the pixels in the Y (i.e. cross-dispersion) direction for the 
+output longslit Point Spread Function (PSF) spectrum image.
+.le
+.ls subsam = "" [float]
+The number of sub-sampled pixels per pixel of the input Point Spread Function 
+images.
+.le
+.ls cenoff = "" [float]
+The offset of the centre of the slit from the peak of the Point Spread Function
+in the X (i.e. perpendicular to the longslit axis) direction in arcseconds.
+.le
+.ls psfpos = "" [float]
+The pixel position for the output Point Spread Function spectrum in the Y 
+(cross-dispersion) direction.
+.le
+.ls outpsf = "" [file name]
+The name of the ouput longslit Point Spread Function spectrum image.
+.le
+
+.ih
+DESCRIPTION
+This task forms a longslit spectrum of a point source by interpolating
+in the wavelength direction the cross-dispersion profiles formed by 
+integrating the signal across a slit placed over the Point Spread 
+Functions. A two-dimensional reference image supplies the header and
+format for the output longslit spectrum image. The centre of the
+Point Spread Function in each input image is determined by centroiding
+and the slit is placed over the image. An offset of the slit from the
+centre of the PSF image is accommodated by the cenoff parameter. 
+This offset is perpendicular to the long axis of the slit and is 
+specified in arcseconds and scaled to the pixel size in arcseconds. 
+The flux is integrated across the slit onto the output pixels, which
+may be subsampled with respect to the pixels of the Point Spread 
+Function images. Interpolation is performed using bicubic splines.
+The resulting 1-dimensional slit profiles are then cubic spline
+interpolated and extrapolated onto the output X (or wavelength) grid 
+using the X (or wavelength) values of the individual Point Spread 
+Function images and the X pixel (or wavelength) scale of the reference image.  
+
+.ih
+EXAMPLES
+
+1. To form the longslit Point Spread Function spectrum image from
+three input stellar point source images:
+
+.nf
+       refima = "testref.fits"  Name of input reference file
+       nopsfs = 3               Number of PSF's to be interpolated
+      psfwavs = "psfwav1.tab"   Name of table of wavelengths of the PSF's to be
+       psfims = "@psflis1.lis"  List of names of the PSF images for interpolati
+       sliwid = 0.5             Width of slit (arcsec)
+       pixwid = 0.05            Width of pixels (arcsec)
+       subsam = 1.              Number of (subsampled) pixels in PSF image per 
+       cenoff = 0.              Offset of centre of slit from X peak of PSF (ar
+       psfpos = 128.            Required Y value for PSF centre
+       outpsf = "test1.fits"    Name of output PSF image
+
+.fi
+
+The 256x256 reference image has a CRVAL1 of 7751.0A and a CD1_1 of 4.882A
+with a wavelength coverage of 7101.6 to 8346.5A. The three PSF images
+have wavelengths specified by the input table as:
+.nf
+ 7150.000
+ 7750.000
+ 8300.000
+.fi
+The slit width is 0.5arcseconds and the pixel size is 0.05arcseconds, giving
+a slit width of 10 pixels. The output Point Spread Function spectrum is
+sampled on the same pixel size as the input PSF images and the slit is centred
+on the PSF's. The spectrum of the Point Spread Function in the output 
+longslit spectrum image is centred at Y pixel 128.0.
+
+.le
+.ih
+TIMING
+For 3 PSF images with Gaussian PSF's of FWHM 4.0pixels, slit width 10 pixels, 
+the task takes 99 sec on a Sparc Ultra 10 with 256Mbyte of memory. 
+The processing time scales linearly with the number of PSF's, with the 
+number of pixels in the diameter of the input PSF image (viz. the
+FWHM) and with the subsampling factor. There is a weak inverse relation
+between processing time and slit width in pixels.
+
+.ih
+BUGS/FEATURES
+World coordinates are not supported.
+
+.ih
+SEE ALSO
+mk2dspec, specholucy, specinholucy 
+.le
+.endhelp

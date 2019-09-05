@@ -1,0 +1,65 @@
+.help grplot Jul93 stsdas.graphics.stplot
+.ih
+NAME
+grplot -- Plot arbitrary lines from a group format one-dimensional image.
+.ih
+USAGE
+grplot inimage members
+.ih
+DESCRIPTION
+Plot arbitrary lines from a group format one-dimensional image.  The
+data are specified by the image file name with an optional image section
+and a string specifying which group members to plot.  The input data are
+assumed to be one-dimensional group (STSDAS format) data.
+.ih
+PARAMETERS
+.ls image [file name]
+Input image file.  This is assumed to be a multi-image (group format)
+file containing one-dimensional data (spectra).  Any group selection
+specified in the file name will be ignored (see the 'members' parameter
+for info on selecting groups).  An image section may be specified.
+.le
+.ls members [string]
+A list of group members given in ranges format.  Single numbers may be
+separated by commas to indicate individual members,  a range of members
+may be specified by the first and last member separated by a dash, or all 
+members may be selected by a dash or null string.
+.le
+.ls (title) [string]
+An arbitrary string to use as the
+plot title.  If the null string, then the plot title will be the name of
+the input file and the string specifying the group members plotted.
+.le
+.ls (border = 3) [real, min = 0, max = 25]
+Fraction in percent of the plot viewport size to add as a border between
+the curves and the axes.
+.le
+.ls (device = "stdgraph") [string]
+Graphics device.
+.le
+.ih
+EXAMPLES
+1. Plot curves 1, 3, and 5 from the group format spectral image named 
+'spect':
+
+.nf
+  st> grplot spect 1,3,5
+.fi
+
+2. Plot the third and all subsequent curves from the group format image
+'s0515':
+
+.nf
+  st> grplot s0515 3,* title="5/15/89"
+.fi
+
+3. Plot pixels 1 through 100 of the first 4 curves in the spectrum 'msp' and
+increase the plot border to 5% of the plot viewport:
+
+.nf
+  st> grplot msp[1:100] 1-4 border=5
+.fi
+.ih
+SEE ALSO
+ranges, grlist, grspec, specplot, graph
+.endhelp

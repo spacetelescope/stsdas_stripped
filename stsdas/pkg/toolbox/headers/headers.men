@@ -1,0 +1,12 @@
+Menu for the package stsdas.toolbox.headers
+
+        eheader - Interactively edit an image header. 
+       groupmod - Add/delete group parameters from multigroup data.
+	 hcheck - Check image header keywords.
+	  hdiff - Display the differences between two image headers.
+	 iminfo - Print an instrument-specific header for a list of GEIS images
+		  or a general header for a list of IRAF images.
+     stfhistory - Add history records to an STSDAS image header.
+      upreffile - Update calibration reference files names in image headers
+
+Type "help headers" for more information about the 'headers' package.

@@ -1,0 +1,99 @@
+.help kolmov Aug93 stsdas.analysis.statistics
+.ih
+NAME
+kolmov -- Kolmogorov-Smirnov test for goodness of fit.
+.ih
+USAGE
+kolmov infile datcolnam reffile refcolnam comptype
+.ih
+DESCRIPTION
+The Kolmogorov-Smirnov test measures how closely 
+the statistical behavior of a sample (or a population) is 
+approximated---either by a distribution function or by another sample.  
+Appropriate questions one may have in mind when performing the test 
+are "Are the differences between the observed data and my theoretical 
+model normally distributed with zero mean?" or "Is the statistical 
+clumping of quasars (sample 1--thought by some to be nearby objects) 
+closer to the clumping of distant galaxies (sample 2--far away 
+objects) or to the clumping of globular clusters (sample 3--nearby 
+objects)?"
+
+This task accepts data in either STSDAS tables or in ASCII list files.
+The name of the column containing the data should follow the file name
+in brackets e.g., file.tab[col].  The test may be performed against a
+second data sample (this is typical) or against a theoretical
+distribution, which may be specified in two ways: there are three
+distribution functions that can be calculated by the task, or the user
+may provide a model distribution in the second data file.
+
+The results of the tests are the maximum discrepancies between the 
+sample distribution and the reference distribution. The discrepancies 
+which are computed are the 2 one-sided cases, and the two-sided case.  
+To each discrepancy is added the probability that the 2 distributions 
+match (note that discrepancy and probability evolve in opposite 
+directions).
+
+The two-sided test works best with at least 40 items in the sample.
+When comparing 2 samples, the probability of a match is always 
+underestimated.  When comparing with an internally generated 
+distribution, it is assumed (both inherently by the method and by the 
+software) that the sample data is also a distribution.
+.ih
+PARAMETERS
+.ls infile [string]
+The test sample data file. Following the file name is the column name
+in brackets. If a list file is used, the column number in the list
+file should be given in place of the name.
+.le
+.ls reffile [string]
+The sample data are compared against either another test sample or a
+theoretical distribution. Following the file name is the column name
+in brackets. If a list file is used, the column number should be given
+in place of the name.
+.le
+.ls (comptype = sample) [string, allowed values: sample | uniform | 
+exponential | powerlaw | pareto | distribution]
+.sp
+Form of comparison to be performed.  When "sample" is selected,
+the two input samples are analyzed simply as two lists of discrete 
+data.  A single sample may be compared to a theoretical distribution 
+either by choosing one of the available functional forms ("uniform", 
+"exponential", or "powerlaw"; "pareto" is the same as "powerlaw") or 
+by specifying "distribution".  When one of the internal functions is 
+used, the second input file ('reffile') is ignored.  If the user has 
+a special model, the data for the model are entered in a file that is 
+specified as 'reffile', with 'comptype="distribution"'.
+.le
+.ls (fmin = 0.) [real]
+Minimum value of the test sample.  (See the description of 'fmax', 
+below, for details of how this parameter works in conjunction with 
+'fmax').
+.le
+.ls (fmax = 0.) [real]
+When the user selects a 'comptype' that is one of the internally 
+generated theoretical distributions ("uniform", "exponential", 
+"powerlaw", "pareto"), the user may specify the limits of the function 
+using the 'fmin' and 'fmax' parameters.  If 'fmin' and 'fmax' are the 
+same, the distribution function boundaries default to the minimum 
+and maximum values of the test sample.  If comptype="sample" or 
+comptype="distribution", then 'fmin' and 'fmax' are ignored.
+.le
+.ls (power = 1.) [real, min=0.]
+When the user selects comptype="powerlaw" or comptype="pareto" (which 
+is the same thing), the power law index (exponent) must be specified 
+with this parameter.
+.le
+.ih
+EXAMPLES
+1.  Compare the third and fifth columns in the ASCII file 'qso.txt'.
+
+.nf
+ st> kolmov qso.txt[3] qso.txt[5] sample
+.fi
+.ih
+SEE ALSO
+
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

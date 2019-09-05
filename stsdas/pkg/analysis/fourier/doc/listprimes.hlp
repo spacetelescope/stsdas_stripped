@@ -1,0 +1,33 @@
+.help listprimes Jan90 stsdas.analysis.fourier
+.ih
+NAME
+listprimes -- Display the first N prime numbers.
+.ih
+USAGE
+listprimes nprimes
+.ih
+DESCRIPTION
+This task simply takes an integer value from the user 
+and calculates that number of prime numbers.  Output is 
+sent to the users terminal screen (i.e., STDOUT), but 
+can be redirected to a file.
+.ih
+PARAMETERS
+.ls nprimes = 100 [integer, min=1]
+Number of primes to calculate.
+.le
+.ih
+EXAMPLES
+1. Calculate the first 105 prime numbers and store them 
+in a file called 'primes'.
+.nf
+
+     fo> listprimes 105 > primes
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help fourier option=sys" for a higher-level 
+description of the fourier package.
+.endhelp

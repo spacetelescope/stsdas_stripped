@@ -1,0 +1,99 @@
+.help rdsaa Aug92 stsdas.hst_calib.ctools
+.ih
+NAME
+rdsaa -- Convert the SVDF Project Database file in STSDAS table format.
+.ih
+USAGE
+rdsaa input output
+.ih
+DESCRIPTION
+The 'rdsaa' task takes the Project Database (PDB) file SVDF (usually named,
+'svdf.dat') and converts the information to an STSDAS table.
+
+The PDB SVDF contains information about the geomagnetic feature known
+as the South Atlantic Anomaly (SAA).  The SAA is an area, over the
+south Atlantic, where the Van Allen Radiation Belts dip below their
+average height.  This dip exposes the HST to more radiation than in
+other parts of its orbit.  The SVDF contains several different
+"models", or locations of the SAA, some dependent on the type of
+particles present, some dependent on how each instrument on board HST
+has been affected.  The models are stored in the form of a list of
+vertices, in longitude/latitude coordinates, that map out a polygon
+which is the model's definition of where the SAA is located.  At
+present, there are about 18 models (of a potential 100 models).  For
+more specific information about the SAA models, see the document "SOGS
+to Space Telescope Project Database Interface Control Document,
+ST-ICD-26 Part 3".
+
+The table is constructed from the SVDF in the following manner.  There
+are two columns for each model containing the longitude/latitude
+coordinate of each vertex.  The coordinates are in degrees, positive
+northward of the equator and eastward of the Greenwich meridian.  The
+columns names are "LONGITUDE_XX" and "LATITUDE_XX", where XX is the
+model number.  For example, for model 7, the SAA contours for the
+GHRS, the columns would be named "LONGITUDE_07" and "LATITUDE_07".
+The number of rows in the table contains the vertices for the largest
+model in the SVDF.  Since each model actually has a different number
+of vertices, any columns that are short are padded with the value
+INDEF.  The vertices are order such that the inner region of the SAA
+is always to the left as the polygon is drawn in a counterclockwise
+direction.
+
+Other information from the SVDF is stored in table parameter headers.
+The current parameters are as follows:
+
+.nf
+        FILENUM  - The number of the PDB file the table was created
+                   from.
+        FILETYPE - Type of PDB file, should always be SVDF.
+        CREDAT   - Creation date of original PDB file.
+        DESCRIP  - Description line from PDB file.
+        CONTACT  - Person in charge of the PDB SVDF file.
+        PHONE    - Phone number of contact person.
+        AFLAG_XX - Active flag for each model in the table.  1 if
+                   active, 0 if not.
+.fi
+
+A table is distributed with STSDAS located in the directory 'scidata$'.  See the
+installation instructions about extracting.  If you need 
+the most recent version, contact the Space Telescope Science Institute
+to get the latest copy of the PDB 'SVDF.DAT' file and then run this task
+to create the table.
+.ih
+PARAMETERS
+.ls input [file name]
+Name of the file containing the PDB SVDF file.
+.le
+.ls output = "saa.tab" [file name]
+Name of the table to from the PDB SVDF file.  If the file doesn't
+exist, it is created.  If the file does exist, the new information
+will over-write or be added to the table.
+.le
+.ls (model = INDEF) [integer]
+Model to write to the table.
+If set to INDEF, all models from the SVDF are written to the table.
+If a model number is specified, only that one model is written to the
+table.  In this way, you can either update a single model in an
+existing table, or create a new table with just one model in it.
+.le
+.ih
+EXAMPLES
+1. Assuming table 'saa.tab' exits, this command will update the table
+for all models from the SVDF file 'svdf.dat'.
+
+.nf
+        cl> rdsaa svdf.dat saa.tab
+.fi
+
+2. Create a table with just one model, in this instance the model used
+by the GHRS.
+
+.nf
+        cl> rdsaa svdf.dat hrs-saa.tab model=7
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+ttools, hstpos
+.endhelp

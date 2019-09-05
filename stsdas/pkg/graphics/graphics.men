@@ -1,0 +1,7 @@
+Menu for the package stsdas.graphics
+
+       sdisplay - Image display package for SAOImage display device.
+         stplot - General plotting utilities.
+
+(Type "help graphics option=sysdoc" for general information about the 
+`graphics' package.) 

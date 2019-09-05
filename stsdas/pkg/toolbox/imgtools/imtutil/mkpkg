@@ -1,0 +1,12 @@
+# Update the epoch application code in the imgtools package library
+# Author: HSU, 17-AUG-1995
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	countfiles.x
+	pickfile.x
+	;

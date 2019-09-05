@@ -1,0 +1,82 @@
+# Modified: BSIMON, 15-sep-1988 to remove OLD locations of cdbsutil/rsdputil
+# Modified: Ball, 8-dec-1988 to remove telemetry package
+# Modified: Ball, 25-jan-1989 Changed environment var. stsdas to stsdaspkg
+# Modified: Willard, 9-Mar-1989  Redefined package formats as per v2.8 noao
+# Modified: Willard, 2-Jun-19089 Comment out vdisplay on Suns
+# Modified: Busko, 12-Feb-1990 to add isophote package
+# Modified: Busko, 14-Feb-1990 to add fitting package
+# Modified: Richmond, 12-Feb-1990 to add playpen package (for Levay)
+# Modified: Richmond, 3-Mar-1990 to add timeseries package
+# Modified: Williamson, 15-Aug-1991 to add restore package
+# Modified: Williamson, 6-Sep-1991 to add examples and describe tasks
+# Modified: Williamson, 17-Dec-1991 to add contrib package and delete
+# astrometry package
+# Modified: Williamson, 13-Jul-1993, package restructure for 1.3 release
+# Modified: Hack, 15-Mar-2002, added pyexecute definition
+
+$analysis	= "./pkg/analysis/"
+$contrib	= "./pkg/contrib/"
+$fitsio		= "./pkg/fitsio/"
+$graphics	= "./pkg/graphics/"
+$hst_calib	= "./pkg/hst_calib/"
+$sobsolete	= "./pkg/sobsolete/"
+$playpen	= "./pkg/playpen/"
+$toolbox	= "./pkg/toolbox/"
+
+pyexecute   hlp = stsdas$doc/pyexecute.hlp,
+        src = stsdas$pyexecute.cl
+            
+apropos		hlp = stsdas$doc/apropos.hlp,
+		src = stsdas$apropos.cl
+
+describe	hlp = stsdas$doc/describe.hlp,
+		src = stsdas$describe.cl
+
+examples	hlp = stsdas$doc/examples.hlp,
+		src = stsdas$examples.cl
+
+problems	hlp = stsdas$doc/problems.hlp,
+		src = stsdas$problems.cl
+
+
+analysis	men = analysis$analysis.men,
+		hlp = ..,
+		sys = analysis$analysis.hlp,
+		pkg = analysis$analysis.hd,
+		src = analysis$analysis.cl
+
+contrib		men = contrib$contrib.men,
+		hlp = ..,
+		sys = contrib$contrib.hlp,
+		pkg = contrib$contrib.hd,
+		src = contrib$contrib.cl
+
+graphics	men = graphics$graphics.men,
+		hlp = ..,
+		sys = graphics$graphics.hlp,
+		pkg = graphics$graphics.hd,
+		src = graphics$graphics.cl
+
+hst_calib	men = hst_calib$hst_calib.men,
+		hlp = ..,
+		sys = hst_calib$hst_calib.hlp,
+		pkg = hst_calib$hst_calib.hd,
+		src = hst_calib$hst_calib.cl
+
+sobsolete	men = sobsolete$sobsolete.men,
+ 		hlp = ..,
+		sys = sobsolete$sobsolete.hlp,
+		pkg = sobsolete$sobsolete.hd,
+		src = sobsolete$sobsolete.cl
+
+playpen		men = playpen$playpen.men,
+		hlp = ..,
+		sys = playpen$playpen.hlp,
+		pkg = playpen$playpen.hd,
+		src = playpen$playpen.cl
+
+toolbox		men = toolbox$toolbox.men,
+		hlp = ..,
+		sys = toolbox$toolbox.hlp,
+		pkg = toolbox$toolbox.hd,
+		src = toolbox$toolbox.cl

@@ -1,0 +1,59 @@
+#   Make the nic package
+#   Author: WILLIAMSON, 25-Jun-1996
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	update
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	nicmos.a
+	$call	relink@lib
+	$call	relink@asnexpand
+	$call	relink@biaseq
+	$call	relink@calnica
+	$call	relink@calnicb
+	$call	relink@pedsky
+	$call	relink@pedsub
+	$call	nicmos
+	;
+
+install:
+	$call	install@asnexpand
+	$call	install@biaseq
+	$call	install@calnica
+	$call	install@calnicb
+	$call	install@pedsky
+	$call	install@pedsub
+	$move	xx_nicmos.e	stsdasbin$x_nicmos.e
+	;
+                           
+linkonly:
+	$call	linkonly@asnexpand
+	$call	linkonly@biaseq
+	$call	linkonly@calnica
+	$call	linkonly@calnicb
+	$call	linkonly@pedsky
+	$call	linkonly@pedsub
+	;
+
+nicmos:
+	$set LIBS = "-lds"
+	$omake	nicmos.x
+	$link	nicmos.o nicmos.a $(LIBS) -o xx_nicmos.e
+	;
+
+nicmos.a:
+	t_markdq.x	<fset.h> <gset.h> <imhdr.h>
+	;
+

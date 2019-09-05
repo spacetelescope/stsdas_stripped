@@ -1,0 +1,16 @@
+# Update the mkdark application code in the wfpc package library
+# Author: HSU, 25-SEP-1993
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_mkdark.x	mkdark.h
+	mkdark_in.x    	mkdark.h
+	mkdark_do.x	mkdark.h	<imhdr.h> <mach.h>	
+	mkdark_check.x	mkdark.h	<imhdr.h>	
+	mkdark_init.x	mkdark.h	<imhdr.h>
+	mkdark_loop.x	mkdark.h	<imhdr.h>
+	;

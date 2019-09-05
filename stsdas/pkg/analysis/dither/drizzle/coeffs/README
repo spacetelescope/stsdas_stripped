@@ -1,0 +1,9 @@
+This directory contains text files specifying the geometrical
+distortion coefficients derived by John Trauger and colleagues 
+for the WFPC2 camera chips. They are suitable for use with the
+DRIZZLE program.
+
+In release V1.2 of Drizzle an additional cubic distortion file
+called "stis-ccd" is also included for the HST/STIC CCD imaging mode.
+
+Richard Hook, March 1998

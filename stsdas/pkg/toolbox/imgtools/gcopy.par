@@ -1,0 +1,7 @@
+# gcopy parameters
+input,f,a,,,,input images
+output,f,a,,,,output images or directory
+groups,s,h,ALL,,,Group list
+i2toi4,b,h,no,,,Force gpb (I2) values to I4?
+verbose,b,h,yes,,,Print operations performed?
+mode,s,h,ql,,,

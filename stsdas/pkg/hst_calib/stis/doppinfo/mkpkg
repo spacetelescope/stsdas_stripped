@@ -1,0 +1,21 @@
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+relink:
+	$call linkonly
+	;
+
+linkonly:
+	$omake doppinfo.x	orbdat.h
+	$omake getorb.x		orbdat.h
+
+	$link -o xx_doppinfo.e doppinfo.o getorb.o
+	;
+
+install:
+	$move xx_doppinfo.e stsdasbin$x_doppinfo.e
+	;

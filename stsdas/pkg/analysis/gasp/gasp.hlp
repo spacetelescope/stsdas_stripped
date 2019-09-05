@@ -1,0 +1,70 @@
+.help gasp Aug93 stsdas.analysis
+
+This package provides access to the HST Guide Star Catalog on 
+compact disk (CD-ROM).  To do so, it requires special hardware, 
+software, and account privileges.  However, many of the tasks do not 
+depend explicitly on the catalog and may be used regardless of the 
+resources and system configuration.  Currently, the only 
+configuration supported is via the Sun CD-ROM hardware and drivers 
+under Sun-OS 4.  This permits the disks to be mounted as part of the 
+normal Unix file system (NFS).  If you don't know how to make the 
+CD part of the file system, see the file 'gasp$README_CD'.
+
+You need not know the file names of the actual catalog files, but you 
+do need to know the mount point of the disks.  That is, the path 
+name to the top level on the disks.  By default these are assumed to 
+be /data/gsc1 and /data/gsc2.  These need not be mounted on the same 
+host on which you are running IRAF, but may be accessed through 
+IRAF networking.
+
+To use tasks that access the CD, you must first make known to 'gasp' 
+the mount point (root path name) of the catalog.  The two parameters 
+'cdrom_north' and 'cdrom_south' for the task 'sgscind' specify the 
+paths to the two volumes of the GSC.  If the disks are not mounted on 
+the local host, they may still be available through IRAF networking if 
+they are mounted on a host accessible via IRAF networking.  To 
+specify a remote host, prepend the host name on which the disks are 
+mounted to the mount point.  Note that you still must have account 
+access to the host on which the disks are mounted.
+
+The tasks in the package may be characterized as either low or high
+level.  That is, their function is either specialized (low level), or
+they act indirectly, calling other tasks (high level).  Low-level tasks
+include 'sgscind', which searches an index table of the coordinates of
+the guide star regions, listing those regions that overlap the user's
+field; 'extgst', which extracts only the stars actually within the
+user's field from a list of regions; and 'copyftt', which copy one
+or more FITS format tables to local FITS files with correct extensions.
+
+High-level tasks are 'regions', which produces a set of STSDAS tables
+containing the guide star regions overlapping the user's field, and
+'targets', which includes the functions of 'regions', and adds the
+functionality of 'intrep', which allows the user to determine a plate
+solution and obtain guide star coordinates for any arbitrary position
+on an image.
+
+This package relies on the interaction between images and catalog
+coordinates.  In some tasks it is, therefore, necessary to know the
+transformation between the world (celestial) and pixel coordinates.
+
+The Guide Star Catalog is distributed as a set of two compact disks
+(CD-ROMs).  The catalog is divided into 9,537 regions, bounded by
+circles of right ascension and declination.  All regions subtend 7.5
+degrees of declination and varying widths in right ascension.  Data for
+each region are stored as separate files organized into
+subdirectories.  Each subdirectory contains every region for one 7.5
+degree wide zone of declination.  The region files are distributed
+between the two disks, divided at a declination of -7.5 degrees, the
+Northern regions on Volume 1 and the Southern regions on Volume 2.  The
+description files and supporting tables are duplicated on both disks.
+All region files are in Flexible Image Transport System (FITS) table
+format.  One of the supporting files is a FITS table giving the
+bounding coordinates of each region.  Searching this table allows a
+particular region number to be determined.
+
+The 'gasp' package includes two general purpose tasks:  'pltsol' and
+'intrep'.  These tasks provide a complete, general-purpose facility to
+determine plate solutions and transform between plate and sky
+coordinates.
+
+.endhelp

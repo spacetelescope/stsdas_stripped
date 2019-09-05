@@ -1,0 +1,4 @@
+input, f, a, "", , ,	input jitter file name
+output, f, h, "", , ,	output jitter file name
+
+mode, s, h, "al"

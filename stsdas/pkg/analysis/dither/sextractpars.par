@@ -1,0 +1,44 @@
+config_file,s,h,"",,,"Name of the user supplied configuration file
+
+User supplied parameters"
+verbose_type,s,h,"QUIET","|QUIET|NORMAL|FULL",,"Verbose mode for operation"
+detect_type,s,h,"ccd","|ccd|photo",,"Detection type"
+
+detect_minarea,i,h,5,,,"minimum number of pixels above threshold"
+detect_thresh,r,h,1.5,,,"detection threshold in mag.arcsec-2"
+analysis_thresh,r,h,1.5,,,"analysis threshold in mag.arcsec-2"
+
+filter,b,h,"yes",,,"apply filter for detection?"
+
+deblend_nthresh,i,h,16,,,"Number of deblending sub-thresholds"
+deblend_mincont,r,h,0.025,,,"Minimum contrast parameter for deblending"
+
+clean,b,h,"yes",,,"Clean spurious detections?"
+clean_param,r,h,1.0,,,"Cleaning efficiency"
+
+mask_type,s,h,"CORRECT","|NONE|BLANK|CORRECT",,"type of detection MASKing"
+
+phot_apertures,r,h,5,,,"MAG_APER aperture diameter(s) in pixels"
+
+phot_autoparams,s,h,"2.5,3.5",,,"MAG_AUTO parameters: <Kron_fact>,<min_radius>"
+
+satur_level,r,h,50000.0,,,"saturation level (in ADUs)"
+
+mag_zeropoint,r,h,0.0,,,"magnitude zero-point"
+mag_gamma,r,h,4.0,,,"gamma of emulsion (for photographic scans)"
+seeing_fwhm,r,h,0.1,,,"stellar FWHM in arcsec"
+
+back_size,i,h,64,,,"Background mesh in pixels"
+back_type,s,h,"MANUAL","|MANUAL|AUTO",,"Subtract MANUAL or AUTO generated background"
+back_value,s,h,"0.0,0.0",,,"Constant value to MANUALLY subtract" 
+back_filtersize,i,h,3,,,"Background filter in pixels"
+backphoto_type,s,h,"GLOBAL","|GLOBAL|LOCAL",,"Background type"
+backphoto_thick,i,h,24,,,"Thickness in pixels of the background local annulus"
+
+checkimage_type,s,h,"NONE","|NONE|BACKGROUND|MINIBACKGROUND|-BACKGROUND|OBJECTS|-OBJECTS|SEGMENTATION|APERTURES|FILTERED","Check image type"
+
+memory_objstack,i,h,3000,,,"number of objects in stack"
+memory_pixstack,i,h,300000,,,"number of pixels in stack"
+memory_bufsize,i,h,1024,,,"number of lines in buffer"
+
+mode,s,h,"hl",,,

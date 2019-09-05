@@ -1,0 +1,15 @@
+#  STIS data quality parameters
+#
+rs,b,h,yes,,,"Reject Reed-Solomon errors ?"
+fill,b,h,yes,,,"Reject filled pixels ?"
+baddet,b,h,yes,,,"Reject bad detector pixels ?"
+masked,b,h,yes,,,"Reject masked pixels ?"
+dark,b,h,yes,,,"Reject large dark current pixels ?"
+lfblem,b,h,yes,,,"Reject large flatfield blemishes ?"
+sat,b,h,yes,,,"Reject saturated pixels ?"
+badref,b,h,yes,,,"Reject bad reference pixels ?"
+sfblem,b,h,yes,,,"Reject small flatfield blemishes ?"
+extback,b,h,yes,,,"Reject bad background ?"
+extbad,b,h,yes,,,"Reject bad extracted pixels ?"
+rej,b,h,yes,,,"Reject pixels rejected on combination ?"
+mode,s,h,al

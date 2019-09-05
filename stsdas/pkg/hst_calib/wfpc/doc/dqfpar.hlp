@@ -1,0 +1,94 @@
+.help dqfpar Oct95 stsdas.hst_calib.wfpc
+.ih
+NAME
+dqfpar -- Edit the parameter set to select Data Quality File (DQF) flags.
+.ih
+USAGE
+dqfpar
+.ih
+DESCRIPTION
+The `dqfpar' parameters specify whether the DQF files are referenced 
+for pixel rejection in WF/PC or WFPC-2 images for the `combine', 
+`noisemodel', and `wstatistics' tasks.  When combining images, this 
+rejection, or "masking", may be selected for any of the available 
+options except summation.  Note that the DQF files MUST have the same 
+rootname as the input images, they must have the same file extension 
+as specified by the `dqfextn' parameter, and the data must be of type 
+"integer" or "short".  The values are masked by virtue of their DQF 
+flags BEFORE the selected operation takes place---e.g., values that 
+are rejected during a `combine' operation are IN ADDITION to those 
+masked based upon DQF values.  
+
+You can specify which types of errors are to be rejected by setting 
+various flags in this pset.  For example, setting `rsbit = yes' will 
+exclude all input values that suffered Reed-Solomon errors from the 
+operation, but setting `rsbit = no' includes them.  The bit-codes are 
+then stored in a 32-bit integer constant which is Boolean ANDed with 
+the actual DQF values corresponding to the input values for each 
+pixel.  
+
+Note that this is a pset, not an executable task; it defines a set of 
+parameters used by other tasks.  Invoking the pset by name runs 
+`eparam' on the parameter set, allowing the user to modify the 
+parameters.  Alternatively, the parameters may be modified on the 
+command line by specifying the pset name and parameter name.  For 
+example, the user can type "dqfpar.rsbit=no" to ignore the
+Reed-Solomon error data flags.  Parameters can also be edited by 
+using `eparam' on the calling task (e.g., by typing "eparam 
+combine"), in which case `dqfpar' will appear as one of the task 
+parameters; the `dqfpar' parameters may then be edited by positioning 
+the cursor on the line containing the pset name and typing ":e".  
+After editing the pset parameters, type <Cntrl>-Z to return to the 
+main task parameter menu.  
+.ih
+PARAMETERS
+.ls (datextn = "c0h") [string]
+Filename extension denoting data file.  The default value is the 
+standard PODPS file extension given to calibrated WFPC and WFPC-2 
+frames.  
+.le
+.ls (dqfextn = "c1h") [string]
+Filename extension denoting DQF file.  The default value is the 
+standard PODPS file extension given to calibrated WFPC and WFPC-2 
+frames.  Note that the DQF file must have the same rootname as its 
+associated data header file.  
+.le
+.ls (rsbit = yes) [boolean]
+Reject pixels with Reed-Solomon errors (DQ = 1)?
+.le
+.ls (calbit = yes) [boolean]
+Reject pixels with calibration file defects (DQ = 2)?
+.le
+.ls (defbit = yes) [boolean]
+Reject permanent camera defects (DQ = 4)?
+.le
+.ls (satbit = yes) [boolean]
+Reject saturated pixels (DQ = 8)?
+.le
+.ls (misbit = yes) [boolean]
+Reject missing data (DQ = 16)?
+.le
+.ls (genbit = yes) [boolean]
+Reject generic bad pixels (DQ = 32)?
+.le
+.ls (ovrlapbit = yes) [boolean]
+Reject image overlap pixels (DQ = 64)? (WFPC2 only)
+.le
+.ls (crbit = yes) [boolean]
+Reject pixels flagged as cosmic rays (DQ = 128)?  
+.le
+.ls (trapbit = yes) [boolean]
+Reject trap column column pixels (DQ = 256)? (WFPC2 only)
+.le
+.ls (hpbit = yes) [boolean]
+Reject "unfixable" hot pixels (DQ = 512)?  
+.le
+.ls (fixhpbit = yes) [boolean]
+Reject "fixed" hot pixels (DQ = 1024)?  
+.le
+.ih
+BUGS
+.ih
+SEE ALSO
+combine, noisemodel, wstatistics
+.endhelp

@@ -1,0 +1,92 @@
+.help drz2pet Jul2005 axe
+.ih
+NAME
+drz2pet -- generate a PET froma list of 2D drizzled grism images
+.ih
+USAGE
+.nf
+drz2pet inlist config
+.fi
+.ih
+PARAMETERS
+.ls inlist
+List to give input images.
+.le
+.ls config
+Name of aXe configuration file(s) to be used.
+.le
+.ls (opt_extr = no) [yes|no]
+Compute and store optimal weights.
+.le
+.ls (back = no) [yes|no]
+Create a background PET from 2D drizzled background images?
+.le
+.ls (in_af = "") [string]
+Name to use for the input Aperture file instead of the default.
+.le
+.ls (out_pet = "") [string]
+Name to use for the output PET file (instead of the default).
+.le
+.ih
+DESCRIPTION
+The task "drz2pet" combines the 2D drizzled grism images given in
+"inlist" into a single PET. The task needs an OAF/BAF whose name is derived
+from the name of inlist. The sequence of beams in the OAF/BAF must coincide
+with sequence of images in "inlist". Also the configuration file must reflect
+the properties of the ideal 2D drizzled, ideal grism spectra (trace
+description).
+
+The task "axedrizzle" produces all the necessary input files for
+"drz2pet", and usually "drz2pet" is implicitly run within "axedrizzle"
+("makespc='YES'").
+
+With 'opt_extr="no"' the task updates the weight image and sets the weight
+proportional to the relative exposure time within the set of pixels that
+will be contracted to an individual resolution element. This is necessary
+to properly take into account the uneven distributed exposure time
+introduced by the masking of bad pixels/cosmic ray hist and objects which
+sometimes are at the border of a chip.
+
+With 'opt_extr="yes"' the task computes optimal weights from the extensions
+'[WEIGH]' and '[VAR]' in the 2D drizzled grism images. The optimal weights
+are stored in the PET and used in subsequent calls to 'pet2spc' on that
+data set.
+
+.ih
+FILE NAMING CONVENTION
+The name of the PET created by this task is based on the name of the
+input list "inlist". The task creates a file <inlist>.PET.FITS
+for "back='NO'" and <inlist>.PET.fits for "back='YES'", respectively.
+.ih
+EXAMPLES
+1. Create an object PET from the images given in "test_aXe_2.lis". The names
+for the image list and the configuration file are typical filenames
+given in "axedrizzle". The PET name is then "test_aXe_2.PET.fits".
+
+.nf
+    ax> drz2pet inlist="test_aXe_2.lis" config="test_aXe.conf" back="no"
+.fi
+
+2. As in 1., but compute optimal weights instead of exposure time weights.
+
+.nf
+    ax> drz2pet inlist="test_aXe_2.lis" config="test_aXe.conf"
+                back="NO" opt_extr="yes"
+.fi
+
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+axedrizzle, pet2spc
+.endhelp

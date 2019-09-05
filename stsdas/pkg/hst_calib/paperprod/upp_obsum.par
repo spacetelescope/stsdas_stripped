@@ -1,0 +1,7 @@
+rootname, f, a, "", , , 	Input root name
+output, f, a, "", , ,		Output igi file name
+fits, f, a, "", , ,		Image format: FITS or GEIS file
+
+page, i, h, , , ,		Page number
+
+mode, s, h, "al"

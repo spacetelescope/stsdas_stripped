@@ -1,0 +1,45 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	affix_mod.x
+	clip_mean.x
+	pp_roots.x
+	pp_fits.x
+	flag_caption.x
+	obs_banner.x
+	pp_banner.x
+	pp_compass.x 	<math.h>
+	pp_cdcompass.x
+	pp_pscale.x 
+	pp_gsbar.x 
+	pp_erase.x
+	pp_move.x
+	pp_draw.x
+	pp_label.x
+	pp_rlabel.x
+	pp_keywd.x
+	pp_fmtkw.x
+	pp_qual.x	<tbset.h>
+	pp_pedigree.x
+	pp_swapchar.x
+	pr_parts.x
+	next_num.x 	<ctype.h>
+	date_str.x
+	select.x
+	split_str.x
+	split_strn.x
+	t_pp_banner.x
+	t_compass.x
+	t_cdcompass.x
+	t_gsbar.x
+	t_oms.x
+	get_jitname.x
+	get_hist.x
+	t_gethist.x
+	qual_parse.x
+    pp_pdf.x
+    t_pp_pdf.x
+	;

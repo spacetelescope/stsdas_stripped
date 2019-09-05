@@ -1,0 +1,123 @@
+.help sdqflags Apr2007 stis
+.nj
+.ih
+NAME
+sdqflags -- serious data quality flags
+.ih
+USAGE
+sdqflags
+.ih
+DESCRIPTION
+This task computes the sum of the data quality flag values (bit mask)
+for the specified conditions,
+and the sum is assigned to the parameter 'value'.
+If verbose=yes, the sum is also printed.
+
+There is an SDQFLAGS keyword in the SCI extension headers of STIS data.
+This keyword serves to indicate to calstis which data quality conditions
+are considered by the user to be "serious."  This is a bit mask
+with a default value of 32767, all bits set (the sign bit is not used).
+The purpose of the 'sdqflags' task is to help the user
+find the appropriate value for the SDQFLAGS keyword.
+
+Some of the descriptions were copied from the HST Data Handbook,
+Table 20.8.
+.ih
+PARAMETERS
+.ls (softerr = no) [boolean]
+Reed-Solomon decoding error.
+Value = 1.
+.le
+.ls (datalost = no) [boolean]
+Data were lost (e.g. due to a problem in telemetry)
+and were replaced by a fill value.
+Value = 2.
+.le
+.ls (detectorprob = no) [boolean]
+Bad detector pixel (e.g. bad column) or beyond aperture.
+Value = 4.
+.le
+.ls (datamasked = no) [boolean]
+Masked by occulting bar.
+Value = 8.
+.le
+.ls (hotpix = no) [boolean]
+Hot pixel, a pixel with a dark count rate greater than
+five standard deviations above the median dark level.
+Value = 16.
+.le
+.ls (largeblem = no) [boolean]
+Large blemish, sensitivity (relative to nearby pixels) less than 0.4.
+Value = 32.
+.le
+.ls (overscan = no) [boolean]
+Can be used for finding bias level.
+(This flag is not currently used.)  Value = 128.
+.le
+.ls (satpixel = no) [boolean]
+Saturated pixel.
+For the CCD, this means that the pixel value is greater than
+the value in the SATURATE column in the CCD parameters table (CCDTAB).
+For the MAMAs, this means that the pixel value is greater than
+the value in the LOCAL_LIMIT column in the MAMA linearity table (MLINTAB),
+or that it is within EXPAND low-res pixels of such a pixel
+(where EXPAND is a column in the MLINTAB).
+Value = 256.
+.le
+.ls (calibdefect = no) [boolean]
+Bad pixel in reference file.
+Value = 512.
+.le
+.ls (smallblem = no) [boolean]
+Small blemish, sensitivity (relative to nearby pixels) between 0.4 and 0.7.
+Value = 1024.
+.le
+.ls (x1d_bad_background = no) [boolean]
+During 1-D spectral extraction,
+more than 30% of background pixels were either rejected by sigma-clipping
+or were already flagged as bad.
+Value = 2048.
+.le
+.ls (x1d_discarded = no) [boolean]
+During 1-D spectral extraction,
+one or more pixels in the extraction region were discarded.
+Value = 4096.
+.le
+.ls (datareject = no) [boolean]
+Rejected during image combination for cosmic ray rejection.
+Value = 8192.
+.le
+.ls (not_cti_corr = no) [boolean]
+Pixel not CTI corrected.
+This means that (if cticorr is perform)
+the gross counts in a pixel were less than or equal to zero,
+so the CTI correction was not applied to that pixel.
+.le
+.ls (b64 = no) [boolean]
+Not assigned.
+.le
+.ls (verbose = yes) [boolean]
+The default is to print 'value',
+the sum of the data quality flags.
+.le
+.ls (value = 0) [integer]
+This value is assigned by the task;
+the user should not set it.
+This is the sum of the data quality values,
+the bitwise logical OR of all the flags specified.
+.le
+.ih
+EXAMPLES
+1. 
+
+.nf
+	cl> sdqflags 
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+.ih
+SEE ALSO
+.endhelp

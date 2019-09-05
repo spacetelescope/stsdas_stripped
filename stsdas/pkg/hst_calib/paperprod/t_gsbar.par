@@ -1,0 +1,11 @@
+igi_output, f, a, "", , ,	Output igi script file name
+vleft, r, a, , , ,		left location of the gray scale bar
+vright, r, a, , , ,		right location of the gray scale bar
+vbottom, r, a, , , ,		bottom location of the gray scale bar
+vtop, r, a, , , ,		top location of the gray scale bar
+min, r, a, , , ,		minimum brightness of the gray scale bar
+max, r, a, , , ,		maximum brightness of the gray scale bar
+label_size, r, a, , , ,		label size of the gray scale bar
+negative, b, a, , , ,		Is this a negative image?
+
+mode, s, h, "al"

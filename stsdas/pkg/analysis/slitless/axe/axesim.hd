@@ -1,0 +1,9 @@
+# Help directory for the axesim package
+
+$doc = "axesim$doc/"
+
+prepimages  hlp=doc$prepimages.hlp,  src=axesim$/prepimages_iraf.py
+prepspectra hlp=doc$prepspectra.hlp, src=axesim$/prepspectra_iraf.py
+simdirim    hlp=doc$simdirim.hlp,    src=axesim$/simdirim_iraf.py
+simdispim   hlp=doc$simdispim.hlp,   src=axesim$/simdispim_iraf.py
+simdata     hlp=doc$simdata.hlp,     src=axesim$/simdata_iraf.py

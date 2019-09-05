@@ -1,0 +1,135 @@
+.help hltorgb Dec91 stsdas.graphics.sdisplay
+.ih
+NAME
+hltorgb -- Convert brightness and hue images to red, green, and blue.
+.ih
+USAGE
+hltorgb lightness hue saturation rgbroot
+.ih
+DESCRIPTION
+Convert a pair of images representing brightness and hue into three
+images representing red, green, and blue.  This task assumes that the images
+are the same size and registered.
+
+Any range of input brightness and color values can specified and will
+map to any range of hue and lightness. Ranges are mapped linearly
+between specified values. 
+If any of the input scaling limits is
+specified as INDEF, the limit is taken from the data.  If an output
+scaling limit is specified as INDEF, the limit is set to the limit of
+the natural range of that parameter.  
+
+Hue is a circular function whose
+range is [0:360] in degrees, with zero representing red, traversing
+through yellow, green, cyan, blue, magenta, and back to red (including
+all intermediate colors).  The range of lightness is [0:1].  Note
+that the range in output lightness specified by 'olmin' and 'olmax' do not
+represent the data values in the output red, green, and blue images.
+Rather they represent the range of the lightness values which map to
+RGB together with the hue and saturation values.  The output RGB image
+values are always in the range [0:1].  Any input color values outside
+the specified range should map to INDEF, which means the output color
+triples will have the same value and represent the scaled gray value of
+the input intensity image.
+
+This task uses the standard transformation between the Hue, Saturation,
+and Lightness (HLS) and Red, Green, and Blue (RGB) color systems.
+
+Note that the output image can only be displayed if you are using
+a "true color" display with appropriate software, i.e., "red" images
+are mapped only to red phosphors, green to green, and blue to blue.
+This is different from displaying an image with a frame buffer that
+supports color maps (look-up tables), although you could convert the
+three images to a single image using "color quanitization" or
+"color dithering".
+.ih
+PARAMETERS
+.ls lightness = "" [file name]
+The input brightness image.  This is an image that represents brightness
+or intensity values in the color representation.
+.le
+.ls hue = "" [file name]
+The input hue image.  This is an image that represents the hues or
+color values in the color representation.
+.le
+.ls saturation = 1 [real, min=0, max=1]
+The constant saturation value in the range [0:1].  The higher the
+saturation value, the more intense, or bright, the colors.  Lower saturation values
+result in more pastel colors.
+.le
+.ls rgbroot = "" [file]
+The root name of of the red, green and blue output image files.  The suffix
+"_r", "_g", and "_b" will be appended to this root for the three output
+images.  Note that the suffix is applied to the root file name, not the
+extension, so you may specify any standard IRAF image format extension.
+For example, if 'rgbroot = "test.imh"', the output files will be named
+'test_r.imh', 'test_g.imh', and 'test_b.imh'.
+.le
+.ls (ihmin = INDEF) [real]
+The minimum value to scale in the input color image.  This will map to
+the minimum hue value specified by 'ohmin'.  If 'ihmin = INDEF', the minimum
+input data value is used.
+.le
+.ls (ihmax = INDEF) [real]
+The maximum value to scale in the input color image.  This will map to
+the maximum hue value specified by 'ohmax'.  If 'ihmax = INDEF', the
+minimum input data value is used.
+.le
+.ls (ilmin = INDEF) [real]
+The minimum value to scale in the input intensity image.  This will map
+to the minimum lightness value specified by 'olmin'.  If 'ilmin = INDEF',
+the minimum input data value is used.
+.le
+.ls (ilmax = INDEF) [real]
+The maximum value to scale in the input intensity image.  This will map
+to the maximum lightness value specified by 'olmax'.  If 'ilmax = INDEF',
+the minimum input data value is used.
+.le
+.ls (ohmin = INDEF) [real]
+The hue value that represents the input image pixel value specified in
+'ihmin', the highest input color value.  Hue is a circular function whose
+range is [0:360] in degrees, with zero representing red, traversing
+through yellow, green, cyan, blue, magenta, and back to red.  If 'ohmin
+= INDEF', the lowest data value in the input file is used.
+.le
+.ls (ohmax = INDEF) [real]
+The hue value that represents the input image pixel value specified in
+'ihmax', the highest input color value.  Hue is a circular function whose
+range is [0:360] in degrees, with zero representing red, traversing
+through yellow, green, cyan, blue, magenta, and back to red.   If 'ohmax
+= INDEF', the lowest data value in the input file is used.
+.le
+.ls (olmin = INDEF) [real]
+The lightness value that represents the input image pixel value
+specified in 'ilmin'.  Lightness ranges from [0:1].  If 'olmin = INDEF',
+the minimum input data value is used.  Note that this is not the 
+range in values in the output red, green, and blue images.  Those are
+always in the range [0:1].  Rather this is the minimum lightness value
+that subsequently maps to RGB together with the hue and saturation.
+.le
+.ls (olmax = INDEF) [real]
+The lightness value that represents the input image pixel value
+specified in 'ilmax'.  If 'olmax = INDEF', the minimum input data value is
+used.  Note that this is not the range in values in the output red,
+green, and blue images.  Those are always in the range [0:1].  Rather
+this is the maximum lightness value that subsequently maps to RGB
+together with the hue and saturation.
+.le
+.ih
+EXAMPLES
+1. Convert two images representing hue and brightness named hue and light
+to three images representing red, green, and blue using the maximum
+saturation:
+
+.nf
+pl> hltorgb hue light 1 myim
+.fi
+
+This will result in three images named 'myim_r', 'myim_g', 'myim_b'.
+.ih
+BUGS
+.ih
+SEE ALSO 
+Type "help playpen option=sys" for a higher-level description
+of the 'playpen' package.
+.endhelp

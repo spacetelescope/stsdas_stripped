@@ -1,0 +1,324 @@
+.help calwp2 Dec94 "stsdas.hst_calib.wfpc"
+.ih 
+NAME
+calwp2 -- Routine calibration of HST Wide Field Planetary Camera-II images.
+.ih
+USAGE
+calwp2 inname outname
+.ih
+DESCRIPTION
+The 'calwp2' task provides routine calibration in both the SOGS/PODPS 
+Routine Science Data Processing (RSDP) pipeline and in the STSDAS package. 
+CALWP2 performs a standard sequence of processing steps on individual WFPC2 
+camera observations designed to remove most of the known instrumental 
+signature. The task performs the AtoD correction, determines and removes 
+the global bias level, subtracts the bias image, and scales and subtracts 
+the dark frame, applies the flat field frame and shutter shading correction. 
+The input data quality file (DQF) will be updated with pixels observed to 
+be saturated, and with the DQF of known bad pixels (static mask), and with 
+the DQFs of any images used in the processing sequence.  Histograms of the 
+input science image, the image after AtoD correction, and the output calibrated
+image are generated. This program is controlled 
+by setting keywords in the header of the input image. 
+CALWP2 writes the values of the group parameters to an ASCII 
+file with extension ".cgr"
+
+The 'calwp2' task determines whether it is running in the pipeline by looking for an 
+environment variable with the name PODPS_CLD (yes, upper case). In the PODPS 
+environment the VMS logical name PODPS_CLD is always defined, and this shows 
+up in IRAF as an environment variable. (The value is a VMS file name)
+PODPS_CLD is presumed to be not set for ordinary IRAF use outside the pipeline.
+When running within the pipeline, the task requires an
+input ASCII file, which contains all the group parameters of
+the input raw image. This ASCII file must have the same root name as the 
+input image but an extension of ".dgr".  Within 
+the pipeline, 'calwp2' will update the group parameters in the input 
+ASCII file with extension ".dgr". This makes it easier for DADS to get those 
+group parameters for the input raw image. 
+
+The 'calwp2' task constructs a PHOTMODE based on the header keywords, including
+INSTRUMENT, DETECTOR, ATODGAIN, FILTNAM1, FILTNAM2 and LRFWAVE, and computes 
+the grand throughput table from the GRAPH and COMP tables stored in the 
+HST Calibration Data Base System (CDBS). It then computes the photometric 
+parameters and populates the photometric header keywords of PHOTFLAM, 
+PHOTZPT, PHOTPLAM, and PHOTBW. The PHOTMODE string and the four photometric 
+header keywords are all stored in the header of the calibrated image.
+The grand throughput table is saved in a STSDAS table with extension of ".c3t".
+
+INPUT IMAGES
+
+The input WFPC2 image should be in the form provided by PODPS.
+This task is specific to WFPC2 data and requires a large number of
+keywords (see below) obtained from the WFPC2 image header. The first 
+two input images listed below are always required, the others may be 
+required depending upon the options selected.
+
+.ls .D0H (input_image)
+The input WFPC2 image in GEIS format. This image can contain
+from 1 to 4 groups. The image header should conform to the standard
+WFPC2 header format. Keywords in the header are used to select the
+various processing steps and to specify the names of the necessary
+reference files. The image must be an unmodified short integer WFPC2
+image for the saturation detection to be meaningful. 
+.le
+.ls .Q0H
+The input WFPC2 data quality file (DQF) in GEIS format. This file must
+consist of short integers and have the same dimensions and number of
+groups as the input_image.  Each pixel indicates the quality of the
+corresponding pixel in the input_image.  Zero valued pixels indicate
+"good" pixels in the input_image and nonzero valued pixels flag
+various pathologies associated with the corresponding image pixels. 
+.le
+.ls .X0H
+The input WFPC2 Extracted Engineering Data file in STF format. This
+file contains the two "engineering" columns and, for FULL mode, the 
+section of [9:14,11:790] is used to compute the global bias level.
+It is required when the BIASCORR option is selected (see below). 
+.le
+.ls .Q1H
+The input WFPC2 Extracted Engineering Data DQF. It is required when
+the BIASCORR option is selected (see below). 
+.le
+.ls .SHH
+The Standard Header Packet. This file is not currently used by 'calwp2' 
+but is part of the standard WFPC2 dataset.
+.le
+.ls .DGR
+The input group parameter ASCII file. This file is used when running the task
+in the pipeline and will be updated upon task completion. This file must be 
+arranged in such a way that the parameters are bound together by group.
+.le
+
+OUTPUT IMAGES AND FILES
+
+Each image is a two-dimensional GEIS format image containing the
+same number of groups as the input_image. The names of the output
+images are derived from the root name of the input_image and the
+following extensions. 
+.ls .C0H 
+The processed output image. This image is in REAL format (with an
+option to provide FITS-like scaling to SHORT or LONG integers---see
+DATATYPE below).  Extreme values resulting from input data values
+outside of the range of the WFPC2 AtoD converter (0 to 4095) are
+edited to limit the range of values in the output image.  These pixels
+are flagged in the DQF. 
+.le
+.ls .C1H 
+The DQF for the processed output image. This contains the result of
+bitwise ANDing the input DQF and all DQFs associated with reference
+files used in the processing of the input_image. 
+.le
+.ls .C2H
+The histograms of the "good" (i.e., not DQF-flagged) pixel values.  
+This image consists of three rows and the same number of groups as 
+the input image.  The first row contains the histogram of the pixel 
+values in the input image.  The second row contains the histogram 
+following the A-to-D correction step.  The third row contains the 
+histogram of the output (.C0H) image.  The creation of this file is 
+controlled by the keyword `DOHISTOS' in the input image header.  
+.le
+.ls .C3T
+The output throughput table generated according to the photomode string.
+The photomode string is constructed from the information in the header
+of the input science image. This grand throughput table is used for calculating
+the four photometric quantities listed in the header of the calibrated image.
+.le
+.ls .CGR
+The output ASCII text file containing values of the header keywords of the
+output image.
+.le
+
+PROCESSING STEPS and REFERENCE FILES
+
+The 'calwp2' task performs the sequence of processing steps listed below. Most of
+these steps may be selected (or de-selected) by the values of certain
+keywords in the header of the input_image.  If a processing step is
+selected, it may require that other keywords in the input_image header
+contain necessary data (e.g., the name of a reference file). 
+
+The following keywords select steps to be performed by 'calwp2'. The
+steps are performed in the order indicated. A more complete
+description of the algorithms employed can be found in the "Calibration
+Reference Guide". 
+
+The acceptable input values for each switch
+are (PERFORM | OMIT | COMPLETE). COMPLETE has 
+the same effect as OMIT.  In the output image (.C0H), those keywords which 
+were set to PERFORM in the input_image and for which processing was
+successfully performed, are set to COMPLETE. 
+
+The following switches are available:
+
+.ls MASKCORR
+Include the Static Bad Pixel Mask in the output DQF. The name of the
+Static Bad Pixel Mask must be provided in the keyword MASKFILE and
+must be in the same format as the DQF. 
+.le
+.ls ATODCORR
+Replace each pixel with the appropriate value from the A-to-D 
+correction lookup table.  The name of the lookup table must be 
+provided as the value of the `ATODFILE' keyword.  The A-to-D file may 
+consist of multiple lookup tables, whereupon the table whose 
+temperature is closest to the value of the input image header keyword 
+`UBAY3TMP' is selected. 
+.le
+.ls BLEVCORR
+The global bias level is determined from the extended register pixels
+in the extracted engineering data file (.X0H) and subtracted from each
+pixel in the input_image. 
+(The names of these files must be provided in the keywords BLEVFILE
+and BLEVDFIL.)
+.le
+.ls BIASCORR
+The bias image reference file is subtracted from the input_image. The
+names of the bias image and its DQF must be provided in the keywords
+BIASFILE and BIASDFIL. 
+.le
+.ls DARKCORR
+The dark image reference file is scaled and subtracted from the
+input_image. The dark image is multiplied by the total "dark"
+accumulation time (obtained from the keyword DARKTIME in the
+input_image header and expressed in seconds) and then subtracted from
+the input_image. The names of the Dark image and its DQF must be
+provided in the keywords DARKFILE and DARKDFIL. 
+.le
+.ls FLATCORR
+The input_image is corrected for variations in gain between pixels by
+the application of a flat field image. The input_image is multiplied
+by the flat field image. The flat field image should be normalized and
+inverted in preparation for this step. The names of the flat field
+image and its DQF must be provided in the keywords FLATFILE and
+FLATDFIL. 
+.le
+.ls SHADCORR
+Relatively short exposures for the WFPC2 show evidence of shutter shading, 
+resulting from the finite time of flight of the shutter blade. This gives 
+rise to uneven illumination across the field of view. The input science image
+is corrected for the shutter shading by means of an additive correction that
+varies spatially according to the shutter shading reference file which is
+scaled for the appropriate exposure time. The name of the shutter shading 
+reference file must be provided in the keyword SHADFILE.
+.le
+.ls DOPHOTOM
+Fill in the photometry keywords `PHOTFLAM', `PHOTZPT', `PHOTPLAM', 
+and `PHOTBW' with values selected from the grand throughput table line that 
+matches the `PHOTMODE' keyword.  The 'PHOTMODE' keyword itself is 
+constructed during `calwp2' processing from values of several other 
+keywords which specify the camera, chip, and filter(s) used during 
+the observation.  The throughput table is constructed during the processing
+from the GRAPHTAB and COMPTAB. The reference graph and comp tables must be 
+provided in the keywords `GRAPHTAB' and `COMPTAB' if this option is selected.  
+The name of the throughput table file (.C3T) is stored in the keyword
+`PHOTTAB'.
+.le
+.ls DOHISTOS
+Create an image of three rows containing histograms of the pixel 
+values in the input image, following A-to-D correction, and in the 
+output (`.C0H') image.  This file has the extension `.C2H'. 
+.le
+.ls DATATYPE
+Select the data type of the output (.C0H) image. The allowed options 
+are REAL, SHORT, LONG corresponding to real*4, short integer, and long 
+integer pixels.
+.le
+
+The following table associates the filename extensions for the various 
+reference files.  Note that the filenames specified for the reference 
+files are prepended with something like: "wref$", or "wcal$".  These 
+are for use as IRAF logical pathnames, since it is often impractical 
+to have all needed WF/PC reference files in the same directory (or 
+even the same disk) as the images to be calibrated.  For example, 
+type "show wcal" to display the current setting for the "wcal" 
+environment variable, and "set wcal = home$" if the ".x0h" file is 
+in your IRAF login directory.  See the on-line help for "set" for 
+further information.  
+ 
+.nf
+           Table 1.  Reference Header File Extensions
+ 
+        Extension(s)    | Reference type(s)
+        -------------------------------------------------
+        .r0h            | Bad pixel mask 
+        .r1h            | A-to-D Correction Lookup Table
+	.x0h, .q1h      | Engineering file & DQF
+        .r2h, .b2h      | Bias image & DQF
+        .r3h, .b3h      | Dark image & DQF
+        .r4h, .b4h      | Flat-field image & DQF
+	.r5h  .b5h      | Shutter shading correction image
+
+.fi
+.le
+
+DATA QUALITY FLAG VALUES
+
+The DQF pixel values provide an estimate of the "quality" of each
+pixel in the image with which the DQF is associated. The following DQF
+pixel values are currently recognized by 'calwp2':
+
+.ls GOODPIXEL (0)
+Unflagged pixel. Only pixels with this data quality value are included 
+in the determination of the bias level and the statistics reported in 
+the header of the output (.C0H) image.
+.le
+.ls SOFTERROR (1)
+Reed-Solomon error in data transmission. This pixel is part of a packet of data
+in which one or more pixels may have been corrupted during data
+transmission. 
+.le
+.ls CALIBDEFECT (2)
+Defect in a calibration file used in processing the image. If a pixel
+is flagged bad in any of the calibration files applied to the image
+(e.g., dark, flat), this flag is set for that pixel. 
+.le
+.ls STATICDEFECT (4)  
+Recognized long term defect in the WFPC2 camera. A DQF of static
+defects is maintained in the STScI CDBS database and includes such
+defects as blocked columns and dead pixels. 
+.le
+.ls ATODSAT (8)
+The AtoD converter was saturated. The actual signal in the pixel is
+unrecoverable but known to be greater than or equal to the AtoD full
+scale value. 
+.le
+.ls DATALOST (16)
+Missing data. The pixel was lost during readout or data transmission. 
+.le
+.ls BADPIXEL (32)
+Generic "bad" pixel. This value flags a bad pixel which does not fall
+into one of the above classifications. 
+.le
+.ls OVERLAP (64)
+This value flags pixels that lie outside the region that is corrected 
+for the spherical aberration of the OTA.
+.le
+.ih
+PARAMETERS
+.ls inname [file name]
+The input rootname of the WFPC2 dataset.  The input filename
+consist of this rootname and the extension described below.
+.le
+.ls (outname) [file name]
+The output rootname of the WFPC2 dataset.  The output filename
+consist of this rootname and the extension described below.  If no
+output name is given, it defaults to the input rootname.
+.le
+
+.ih
+EXAMPLES
+1. Calibrate the WFPC2 observation in the data set with the rootname 
+of "u00ug201t", and use the same rootname for the output files.  In 
+this case, the engineering data (.X0H) file is in the same directory 
+as the raw data (.D0H) file: 'home$wfdata'. 
+ 
+.nf
+    cl> set wcal=home$wfdata/
+    cl> calwp2 u00ug201t u00ug201t
+.fi
+
+.ih
+SEE ALSO
+calwfp
+.ih
+AUTHOR
+Current version (1.3.0.7): 6 Dec 1994, by J.-C. Hsu
+.endhelp

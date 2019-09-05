@@ -1,0 +1,59 @@
+.help catlim Jul93 stsdas.graphics.stplot
+.ih
+NAME
+catlim -- Edit the parameter set containing limits for a skymap catalog.
+.ih
+USAGE
+catlim
+.ih
+DESCRIPTION
+The 'catlim' parameters specify limits for reading data from a catalog
+table, for example as input to the 'skymap' task.  These limits can be
+a range of rows in the catalog table, limits on the coordinates (right
+ascension and declination), and upper and lower limits on brightness.
+
+Note that this is a pset, not an executable task; it defines a set of
+parameters used by other tasks.  Invoking the pset by name runs
+'eparam' for the parameter set, allowing the user to modify the
+parameters.  Alternatively, the parameters may be modified on the
+command line by specifying the pset name and parameter name, for
+example, the user may type "catlim.minrow = 1" to set only the 'minrow'
+parameter.  Parameters can also be edited by using 'eparam' on the
+calling task (e.g., "eparam skymap"), in which case, 'catlim' will
+appear as one of the task parameters; the 'catlim' parameters may then
+be edited by positioning the cursor on the line containing the pset
+name and typing ":e".  After editing the pset parameters, type ^Z (Control-Z)
+to
+return to the main task parameter menu.
+.ih
+PARAMETERS
+.ls (minrow = INDEF) [integer, min=1]
+First table row to read.
+.le
+.ls (maxrow = INDEF) [integer, min=1]
+Last table row to read.
+.le
+.ls (ramin = INDEF) [real]
+Minimum right ascension to read from table.
+.le
+.ls (ramax = INDEF) [real]
+Maximum right ascension to read from table.
+.le
+.ls (decmin = INDEF) [real]
+Minimum declination to read from table.
+.le
+.ls (decmax = INDEF) [real]
+Maximum declination to read from table.
+.le
+.ls (brightlim = INDEF) [real]
+Magnitude of brightest stars to be plotted.
+.le
+.ls (faintlim = INDEF) [real]
+Magnitude of faintest stars to be plotted.
+.le
+.ih
+EXAMPLES
+.ih
+SEE ALSO
+skymap, colnames
+.endhelp

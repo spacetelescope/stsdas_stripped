@@ -1,0 +1,39 @@
+.help modelpars Aug93 stsdas.analysis.restore
+.ih
+NAME
+modelpars -- Set the model parameters for the wiener task.
+.ih
+USAGE
+modelpars
+.ih
+DESCRIPTION
+This pset is used to set the signal model parameters for the wiener task.
+.ih
+PARAMETERS
+.ls (signalm = input) [string, allowed values: white | input | 
+Markov | Gaussian | psf | image file name]
+
+Theoretical (undegraded) signal model to be used in Wiener and geometric
+mean filter forms. When none of the first five options is entered, the
+task attempts to open and read an IRAF image with the name given by the 
+'signalm' parameter.
+.le
+.ls (correl = 2.) [real, min=0.]
+Correlation factor to be used when the undegraded signal model is
+to be estimated from the input degraded image itself (i.e., when 
+'signalm=input'). If set as INDEF, signal model will be computed
+from input and psf images.
+.le
+.ls (mfwhm = 2.) [real]
+Model Gaussian FWHM. Used when the undegraded signal model is a
+Gaussian.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help wiener" and "help wiener opt=sys" for more information about 
+the wiener task.
+.endhelp

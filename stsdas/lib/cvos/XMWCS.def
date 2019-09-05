@@ -1,0 +1,87 @@
+xmwcs
+# This is the input file for the IRAF/VOS mwcs library.
+# Relative to directory $iraf/sys/mwcs
+
+/h/# include <c_iraf.h>
+
+# MWCS defines
+/h/
+/h/# define SZ_ATNAME 20
+/h/
+
+# MWCS includes and private routines
+/c/# include <xmwcs.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+
+mwopen.x:pointer procedure mw_open (bufptr:i, ndim:i)
+mwopenim.x:pointer procedure mw_openim (im:i)
+mwnewcopy.x:pointer procedure mw_newcopy (o_mw:i)
+mwclose.x:procedure mw_close (mw)
+
+mwload.x:procedure mw_load (mw:i, bp:i)
+mwsave.x:int procedure mw_save (o_mw:i, bp, buflen)
+mwloadim.x:procedure mw_loadim (mw:i, im:i)
+mwsaveim.x:procedure mw_saveim (mw:i, im:i)
+
+mwsctran.x:pointer procedure mw_sctran (mw:i, system1:i, system2:i, axbits:i)
+gen/mwgctrand.x:int procedure mw_gctrand (a_ct:i, o_ltm:o, o_ltv:o, axtype1:o, axtype2:o, maxdim:i)
+gen/mwgctranr.x:int procedure mw_gctranr (a_ct:i, o_ltm:o, o_ltv:o, axtype1:o, axtype2:o, maxdim:i)
+mwctfree.x:procedure mw_ctfree (ct)
+
+gen/mwc1trand.x:double procedure mw_c1trand (a_ct:i, x:i)
+gen/mwc1tranr.x:real procedure mw_c1tranr (a_ct:i, x:i)
+gen/mwv1trand.x:procedure mw_v1trand (a_ct:i, x1:i, x2:o, npts:i)
+gen/mwv1tranr.x:procedure mw_v1tranr (a_ct:i, x1:i, x2:o, npts:i)
+gen/mwc2trand.x:procedure mw_c2trand (a_ct:i, x1:i, y1:i, x2:o, y2:o)
+gen/mwc2tranr.x:procedure mw_c2tranr (a_ct:i, x1:i, y1:i, x2:o, y2:o)
+gen/mwv2trand.x:procedure mw_v2trand (a_ct:i, x1:i, y1:i, x2:o, y2:o, npts:i)
+gen/mwv2tranr.x:procedure mw_v2tranr (a_ct:i, x1:i, y1:i, x2:o, y2:o, npts:i)
+gen/mwctrand.x:procedure mw_ctrand (a_ct:i, p1:i, p2:o, ndim:i)
+gen/mwctranr.x:procedure mw_ctranr (a_ct:i, p1:i, p2:o, ndim:i)
+gen/mwvtrand.x:procedure mw_vtrand (ct:i, v1:i, v2:o, ndim:i, npts:i)
+gen/mwvtranr.x:procedure mw_vtranr (ct:i, v1:i, v2:o, ndim:i, npts:i)
+
+mwsltermd.x:procedure mw_sltermd (mw:i, ltm:i, ltv:i, ndim:i)
+mwsltermr.x:procedure mw_sltermr (mw:i, ltm:i, ltv:i, ndim:i)
+mwgltermd.x:procedure mw_gltermd (mw:i, ltm:o, ltv:o, ndim:i)
+mwgltermr.x:procedure mw_gltermr (mw:i, ltm:o, ltv:o, ndim:i)
+mwtransd.x:procedure mw_translated (mw:i, ltv_1:i, ltm:i, ltv_2:i, ndim:i)
+mwtransr.x:procedure mw_translater (mw:i, ltv_1:i, ltm:i, ltv_2:i, ndim:i)
+mwrotate.x:procedure mw_rotate (mw:i, theta:i, center:i, axbits:i)
+mwscale.x:procedure mw_scale (mw:i, scale:i, axbits:i)
+mwshift.x:procedure mw_shift (mw:i, shift:i, axbits:i)
+
+mwnewsys.x:procedure mw_newsystem (mw:i, system:i, ndim:i)
+mwgsys.x:procedure mw_gsystem (mw:i, outstr:o, maxch:i)
+mwssys.x:procedure mw_ssystem (mw:i, system:i)
+mwgaxmap.x:procedure mw_gaxmap (mw:i, axno:o, axval:o, ndim:i)
+mwsaxmap.x:procedure mw_saxmap (mw:i, axno:i, axval:i, ndim:i)
+# The Readme file suggests that there is supposed to be a procedure called
+# mw_bindphys (mw), but there is no such procedure.
+
+mwgwtermd.x:procedure mw_gwtermd (mw:i, r:o, w:o, cd:o, ndim:i)
+mwgwtermr.x:procedure mw_gwtermr (mw:i, r:o, w:o, cd:o, ndim:i)
+mwswtermd.x:procedure mw_swtermd (mw:i, r:i, w:i, cd:i, ndim:i)
+mwswtermr.x:procedure mw_swtermr (mw:i, r:i, w:i, cd:i, ndim:i)
+mwswtype.x:procedure mw_swtype (mw:i, axis:i, naxes:i, wtype:i, wattr:i)
+mwgwsampd.x:procedure mw_gwsampd (mw:i, axis:i, pv:i, wv:i, npts:i)
+mwgwsampr.x:procedure mw_gwsampr (mw:i, axis:i, pv:o, wv:o, npts:i)
+mwswsampd.x:procedure mw_swsampd (mw:i, axis:i, pv:o, wv:o, npts:i)
+mwswsampr.x:procedure mw_swsampr (mw:i, axis:i, pv:i, wv:i, npts:i)
+mwgwattrs.x:procedure mw_gwattrs (mw:i, axis:i, attribute[SZ_ATNAME], valstr:o, maxch:i)
+mwswattrs.x:procedure mw_swattrs (mw:i, axis:i, attribute:i, valstr:i)
+
+mwinvertd.x:procedure mw_invertd (o_ltm:i, n_ltm:o, ndim:i)
+mwinvertr.x:procedure mw_invertr (o_ltm:i, n_ltm:o, ndim:i)
+gen/mwmmuld.x:procedure mw_mmuld (a:i, b:i, c:o, ndim:i)
+gen/mwmmulr.x:procedure mw_mmulr (a:i, b:i, c:o, ndim:i)
+gen/mwvmuld.x:procedure mw_vmuld (a:i, b:i, c:o, ndim:i)
+gen/mwvmulr.x:procedure mw_vmulr (a:i, b:i, c:o, ndim:i)
+# The Readme file suggests that there is supposed to be a procedure called
+# mw_glt[r|d] (v1, v2, ltm, ltv, ndim), but there is no such procedure.
+
+mwseti.x:procedure mw_seti (mw:i, param:i,  value:i)
+mwstati.x:int procedure mw_stati (mw:i, param:i)
+mwshow.x:procedure mw_show (mw:i, fd:i, what:i)
+

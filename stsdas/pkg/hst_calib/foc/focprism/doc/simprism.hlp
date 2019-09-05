@@ -1,0 +1,159 @@
+.help simprism July94 stsdas.hst_calib.foc.focprism
+.ih
+NAME
+simprism -- Simulate FOC objective prism spectra and images.
+.ih
+USAGE
+simprism spectrum output obsmode
+.ih
+DESCRIPTION
+The 'simprism' task will simulate an FOC objective prism spectrum by
+applying a dispersion function to an input spectrum
+and converting the result to counts as a function of pixel.
+You can specify the desired observation mode,
+i.e., the filter set and prism to use,
+as well as simulation parameters such as wavelength range,
+exposure time and offset from the undispersed position.
+The dispersed spectrum can be convolved with a user specified PSF.
+The result is a two-dimensional image, simulating an FOC prism image.
+
+The main routine runs as a script.
+Tasks in the 'images' and 'fourier' packages are used,
+so those packages must be loaded before using this task.
+.ih
+PARAMETERS
+.ls spectrum = "crcalspec$hz4_001.tab" [string]
+File name of the spectrum to be simulated.
+The program expects an STSDAS table with column names "WAVELENGTH" and
+"FLUX".  Currently the wavelength must be in Angstroms; the flux can
+be in any of the following units:
+
+.nf
+        FNU             erg s^-1 cm^-2 Hz^-1
+        FLAM            erg s^-1 cm^-2 A^-1
+        PHOTONU         photons s^-1 cm^-2 Hz^-1
+        PHOTLAM         photons s^-1 cm^-2 A^-1
+        COUNTS          photons s^-1 cm^-2 dlambda^-1
+        ABMAG           -2.5 log_10 (FNU) - 48.60
+        STMAG           -2.5 log_10 (FLAM) - 21.10
+        VEGAMAG         -2.5 log_10 (F/F_vega)
+	OBMAG           -2.5 log_10 (COUNTS)
+        JY              10^26 erg s^-1 cm^-2 Hz^-1 (ABMAG=8.9)
+        MJY             10^23 erg s^-1 cm^-2 Hz^-1 (ABMAG=16.4)
+
+.fi
+.le
+.ls output = "" [string]
+The name of the output image.
+.le
+.ls obsmode = "foc,f/96,f140m,prism1" [string]
+Full specification of the observing mode of the instrument.
+This parameter should contain "foc"
+if an FOC observation is being simulated,
+and the relay should be "f/96" or "f/48".
+Filters can be listed as well as the prism.
+For both relays, prism1 is far UV, and prism2 is near UV.
+Keywords in the list can be separated by either commas or spaces.
+
+If you specify an invalid 'obsmode', an error message will be displayed
+that indicates at what point in the instrument graph table the problem
+occurred.
+If problems occur, you can use the task 'grafpath'
+in the STSDAS 'synphot' package to find a valid 'obsmode'.
+.le
+.ls (psffile = "") [string]
+The name of a 2-D image containing a PSF.
+If the name is not null,
+the dispersed spectrum is convolved with the PSF
+to produce the output image.
+.le
+.ls (npix1 = 256) [int, min=1, max=INDEF]
+Width of image to create.
+Normally 'simprism' creates a 2-D image of size 'npix1' by 'npix2'.
+
+If npix1 = 1, psffile = "", and angle = 0.,
+the output image will be 1-D with length 'npix2'.
+It would be more user-friendly
+if you could use 'npix1' to specify the length, with npix2 = 1,
+but this is NOT possible because 'simprism' is a cl script
+that uses a 2-D temporary image with the dispersion in the Y direction.
+.le
+.ls (npix2 = 1024) [int, min=1, max=INDEF]
+Height of image to create.
+.le
+.ls (wstart = 1100.) [real]
+Starting wavelength in Angstroms of simulated spectrum.
+The parameter can have values between 1100 Angstroms and 7000 Angstroms.
+.le
+.ls (wstop = 7000.) [real]
+Ending wavelength in Angstroms of simulated spectrum.
+Valid range is 1100 to 7000 Angstroms.
+.le
+.ls (dw = 10.) [real]
+Wavelength spacing used to create a temporary 1-D dispersed spectrum
+which is resampled onto pixels for the output.
+.le
+.ls (texp = 900.) [real]
+Exposure time in seconds.  The spectrum is calculated in counts/second
+and multiplied by the exposure time.
+.le
+.ls (yzero = 100.) [real]
+Y pixel coordinate of undispersed image.
+This is where the object would have been if the prism were not in place.
+This value can be negative, i.e. off the image.
+.le
+.ls (angle = 8.5) [real]
+The angle in degrees from vertical, measured clockwise,
+at which to place the spectrum in the image prior to convolution.
+.le
+.ls (graphtab = "crcomp$hstgraph_*") [string]
+Name of the graph table to use.
+.le
+.ls (comptab = "crcomp$hstcomp_*") [string]
+Name of the components table to use.
+.le
+.ls (verbose = yes) [boolean]
+List the steps being performed?
+.le
+.ls (dispfiles = "") [pset]
+Pset for the name of the dispersion file to use
+when dispersing the reference spectrum.
+The dispersion file is an ASCII file containing
+wavelength (in Angstroms) as its first column
+and pixel offset as its second column.
+The pixel offset is from the undispersed position 'yzero',
+and it is measured positive toward decreasing image line numbers.
+By default the relay and prism names are obtained from the 'obsmode',
+and the correct dispersion file is automatically selected.
+If you have created your own dispersion file, however,
+you would specify its value in the 'dispfiles' pset.
+.le
+.ls (area = 45238.93416) [real]
+The area in square centimeters of the telescope aperture.
+The default value is for the HST.
+.le
+.ih
+EXAMPLES
+1. Simulate a prism spectrum of the star "hz4" using a
+reference spectrum located in "crcalspec",
+creating the output spectrum "hz4.hhh".
+It will use the f/96 relay of the FOC with the f140m filter
+and the far-UV prism.
+The spectrum will be convolved with "f96_f140m_psf.hhh" as a PSF.
+.nf
+
+fo> simprism crcalspec$hz4_001.tab hz4.hhh "foc,f/96,f140m,prism1"
+                 psf=f96_f140m_psf.hhh
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by David Bazell.
+.ih
+SEE ALSO
+objcalib
+
+Type "help focprism opt=sys" for a higher-level description of the 'focprism'
+package.
+.endhelp

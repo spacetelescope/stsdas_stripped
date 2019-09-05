@@ -1,0 +1,4 @@
+Menu for the STSDAS.CONTRIB.REDSHIFT package
+
+fquot -- Redshift and velocity dispersion using the Fourier Quotient technique
+xcor -- Redshift and velocity dispersion using the cross-correlation technique

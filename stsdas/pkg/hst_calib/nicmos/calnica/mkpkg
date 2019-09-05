@@ -1,0 +1,84 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+debug:
+	$set XFLAGS = "-g -gdwarf2 -g3 -q $(XFLAGS)"
+        $set LFLAGS = "$(LFLAGS) -/Bdynamic"
+ 	$call relink
+        ;
+
+relink:
+
+        $ifeq (MACH, sparc)
+        $set XFLAGS = '-Inolibc -O  $(XFLAGS)'
+        $set LFLAGS = '-H -z -lansi $(LFLAGS)'
+        $else
+        $set XFLAGS = '-c -I. -Inolibc -O  $(XFLAGS)'
+        $set LFLAGS = '-H -z $(LFLAGS)'
+        $endif
+
+
+	$update libnica.a
+	$omake calnica.c
+	$omake n_calnica.c	calnic.h calnica.h <hstio.h>
+	$link calnica.o n_calnica.o libnica.a \
+	-lhstio -lcvos -ltbtables \
+	-o xx_calnica.e
+	;
+
+install:
+	$move xx_calnica.e stsdasbin$x_calnica.e
+	;
+
+libnica.a:
+	n_backcalc.c 	calnic.h calnica.h <hstio.h>
+	n_barscorr.c	calnic.h calnica.h <hstio.h>
+	n_biascorr.c	calnic.h calnica.h <hstio.h>
+	n_calreport.c	calnic.h calnica.h <hstio.h>
+	n_cridcalc.c 	calnic.h calnica.h <hstio.h>
+	n_darkcorr.c	calnic.h calnica.h <hstio.h>
+	n_docalib.c	calnic.h calnica.h <hstio.h>
+	n_err.c 	calnic.h calnica.h <hstio.h>
+	n_flatcorr.c	calnic.h calnica.h <hstio.h>
+	n_groupinfo.c	calnic.h calnica.h <hstio.h>
+	n_history.c 	calnic.h calnica.h <hstio.h>
+	n_imageio.c 	calnic.h calnica.h <hstio.h> <ximio.h>
+	n_iterstat.c	calnic.h           <hstio.h>
+	n_macheck.c 	calnic.h calnica.h <hstio.h>
+	n_maskcorr.c	calnic.h calnica.h <hstio.h>
+	n_math.c 	calnic.h           <hstio.h>
+	n_nlincorr.c	calnic.h calnica.h <hstio.h>
+	n_noiscalc.c	calnic.h calnica.h <hstio.h>
+	n_numrec.c	calnic.h                     <c_iraf.h>
+	n_photcalc.c 	calnic.h calnica.h <hstio.h>
+	n_pixcheck.c	calnic.h calnica.h <hstio.h>
+	n_refdata.c 	calnic.h calnica.h <hstio.h> <xtables.h>
+	n_satcheck.c	calnic.h calnica.h <hstio.h>
+	n_setup.c 	calnic.h calnica.h <hstio.h>
+	n_statcalc.c 	calnic.h calnica.h <hstio.h>
+	n_stats.c	calnic.h           <hstio.h>
+	n_unitcorr.c	calnic.h calnica.h <hstio.h>
+	n_updatehdr.c 	calnic.h calnica.h <hstio.h>
+	n_userwarn.c 	calnic.h calnica.h <hstio.h>
+	n_zoffcorr.c	calnic.h calnica.h <hstio.h>
+	n_zsigcorr.c	calnic.h calnica.h <hstio.h>
+	;
+
+                                              
+                                     
+devdebug:
+	$set XFLAGS = "-g -g3 -q $(XFLAGS)"
+   	$set LFLAGS = "$(LFLAGS) -/Bdynamic"
+ 	$call relink
+ 	$call installdebug
+        ;
+
+installdebug:
+	$move xx_calnica.e /Users/sosey/dev/ssb/NICMOS/calnica/bin/x_calnica.e
+    ;
+    

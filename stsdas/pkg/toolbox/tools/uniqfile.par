@@ -1,0 +1,4 @@
+fname,s,a,"",,,"File name"
+instr,s,a,"","fgs|hsp|wfpc|wfp2|foc|fos|hrs|multi",,"HST instrument name"
+verbose,b,h,yes,,,"Print new file name?"
+mode,s,h,"al",,,

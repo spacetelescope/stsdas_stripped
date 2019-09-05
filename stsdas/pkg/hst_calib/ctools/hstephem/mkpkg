@@ -1,0 +1,13 @@
+# Update the hstephem application code in the ctools package library
+# Author: HSU, 29-JUN-1992
+
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	t_hstephem.x 	<mach.h>	<fset.h>	"hstephem.h"	
+	vax2ieeed.x	<mach.h>
+	ephem_out.x	<tbset.h>	"hstephem.h"
+	;

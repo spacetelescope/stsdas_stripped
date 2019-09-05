@@ -1,0 +1,33 @@
+.help infostis Jun97 stis
+.ih
+NAME
+infostis -- Print a header information for a list of STIS FITS images.
+.ih
+USAGE
+infostis input
+.fi
+.ih
+PARAMETERS
+.ls input
+Input STIS image name or list of STIS images.
+.le
+.ih
+DESCRIPTION
+The task 'infostis' will print general header information for STIS FITS images
+on a standard window size of 80x24.
+.ih
+EXAMPLES
+1. Print the header contents of a list of STIS raw images.
+
+.nf
+	cl> infostis o3s*_raw.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Iraf task written by R. Katsanis.
+.ih
+SEE ALSO
+catfits, imheader
+.endhelp

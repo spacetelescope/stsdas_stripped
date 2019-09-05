@@ -1,0 +1,32 @@
+# Help directory for the STIS package
+
+$doc = "stsdas$pkg/hst_calib/stis/doc/"
+
+basic2d		hlp=doc$basic2d.hlp,	src=stis$basic2d.cl
+calstis		hlp=doc$calstis.hlp,	src=stis$calstis.cl
+ctestis		hlp=doc$ctestis.hlp,	src=stis$ctestis.cl
+doppinfo        hlp=doc$doppinfo.hlp,   src=stis$doppinfo/doppinfo.x
+echplot         hlp=doc$echplot.hlp,    src=stis$echplot.cl
+echscript       hlp=doc$echscript.hlp,  src=stis$echscript/e_echscript.c
+infostis	hlp=doc$infostis.hlp,	src=stis$infostis/infostis.c
+inttag		hlp=doc$inttag.hlp,	src=stis$inttag.cl
+ocrreject	hlp=doc$ocrreject.hlp,	src=stis$ocrreject.cl
+odelaytime	hlp=doc$odelaytime.hlp,	src=stis$odelaytime/odelaytime.x
+ovac2air	hlp=doc$ovac2air.hlp,	src=stis$ovac2air/ovac2air.c
+sdqflags	hlp=doc$sdqflags.hlp,	src=stis$sdqflags.cl
+tastis		hlp=doc$tastis.hlp,	src=stis$tastis/tastis.c
+wavecal		hlp=doc$wavecal.hlp,	src=stis$wavecal.cl
+x1d		hlp=doc$x1d.hlp,	src=stis$x1d.cl
+x2d		hlp=doc$x2d.hlp,	src=stis$x2d.cl
+normspflat	hlp=doc$normspflat.hlp,	src=stis$normspflat.cl
+prepspec	hlp=doc$prepspec.hlp,	src=stis$prepspec.cl
+mkfringeflat	hlp=doc$mkfringeflat.hlp,	src=stis$mkfringeflat.cl
+mktrace		hlp=doc$mktrace.hlp
+defringe	hlp=doc$defringe.hlp,	src=stis$defringe.cl
+daydark		hlp=doc$daydark.hlp,	src=stis$daydark.cl
+stisnoise       hlp=doc$stisnoise.hlp
+sshift          hlp=doc$sshift.hlp
+trxyeq		hlp=doc$trxyeq.hlp,	src=stis$trxyeq/trxyeq.c
+treqxy		hlp=doc$treqxy.hlp,	src=stis$trxyeq/treqxy.c
+ucrpix		hlp=doc$ucrpix.hlp,	src=stis$trxyeq/ucrpix.c
+wx2d		hlp=doc$wx2d.hlp

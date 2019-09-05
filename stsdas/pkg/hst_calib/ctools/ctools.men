@@ -1,0 +1,46 @@
+Menu for the package stsdas.hst_calib.ctools
+
+    chcalpar - Modify calibration keyword values.
+      ckwfoc @ FOC calibration parameters (pset).
+      ckwfos @ FOS calibration parameters (pset).
+      ckwhrs @ HRS calibration parameters (pset).
+      ckwhsp @ HSP calibration parameters (pset).
+     ckwwfpc @ WFPC calibration parameters (pset).
+     ckwwfp2 @ WFPC-2 calibration parameters (pset).
+   ckwnicmos @ NICMOS calibration parameters (pset).
+    ckwstis1 @ STIS CCD Imaging calibration parameters (pset).
+    ckwstis2 @ STIS CCD Spectroscopic calibration parameters (pset).
+    ckwstis3 @ STIS MAMA Imaging calibration parameters (pset).
+    ckwstis4 @ STIS MAMA Spectroscopic calibration parameters (pset).
+     eng2tab - Extract various information from SHP, UDL, etc.
+      fwplot - Plot calibrated flux versus wavelength.
+      getcal - Populate a pset with calibration parameter values.
+    groupmod - Add/delete group parameters from multigroup data.
+    hstephem - Convert ST orbit ephemeris file to an STSDAS table.
+ mkmultispec - Combine wavelength and data with the MULTISPEC MWCS.
+    mkweight - Make a simple weighting file for use in task specalign.
+msstreakflat - Processing of Earth streaked images for WFPC and NICMOS.
+       north - Print the position angles of images.
+    poffsets - Find pixel offsets using cross-correlation.
+    pprofile - Plot or print radial profile or encircled energy.
+      putcal - Place parameter values from a calibration pset into data files
+   rapidlook - Display a 1-D multigroup image as a 2-D image.
+    rcombine - Average or sum rapid-readout data with propagation of errors.
+       rdssa - Convert the PDB SVDF.DAT file into an STSDAS table.
+    resample - Resample calibrated fluxes to a linear wavelength scale.
+   specalign - Combine spectra such as FP-SPLIT Observations. 
+ tomultispec - Create an OIF MULTISPEC file for data from FITS BINTABLEs.
+     vac2air - Convert wavelength scales from vacuum to air.
+
+      splice - Splice spectra together.
+     fweight - Compute weights using smoothed flux data, for use with splice.
+       sflux - Combine flux data and fit a continuum, to use with fweight.
+     pweight - Compute weights using phottab, for use with splice.
+
+    nicdqpar @ NICMOS Data Quality bits (pset).
+  nstreakpar @ msstreakflat parameters specific for NICMOS (pset).
+     wfdqpar @ WFPC Data Quality bits (pset).
+  wstreakpar @ msstreakflat parameters specific for WFPC/WFPC2 (pset).
+
+(Type "help ctools option=sysdoc" for detailed information about the 
+`ctools' package.)

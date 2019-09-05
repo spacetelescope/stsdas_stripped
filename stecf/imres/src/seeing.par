@@ -1,0 +1,6 @@
+output,f,a,,,,Output image file name
+xdim,i,a,512,,,X dimension of output
+ydim,i,a,512,,,Y dimension of output
+gamma,f,a,1.66666,,,Gamma value for PSF
+fwhmx,f,a,5.0,,,Full Width half max (in X) of resultant PSF
+fwhmy,f,a,5.0,,,Full Width half max (in Y) of resultant PSF

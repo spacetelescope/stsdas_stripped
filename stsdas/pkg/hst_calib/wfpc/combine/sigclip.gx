@@ -1,0 +1,364 @@
+include	<mach.h>
+include "wpdef.h"
+
+.help sigclip
+.nf ----------------------------------------------------------------------------
+           COMBINING IMAGES: SIGMA CLIPPING ALGORITHM
+
+If there is only one input image then it is copied to the output image.
+If there are two input images then it is an error.  For more than two
+input images they are combined by scaling and taking a weighted average while
+rejecting points which deviate from the average by more than specified
+factors times the expected sigma at each point.  The exposure time of the
+output image is the scaled and weighted average of the input exposure times.
+The average is computed in real arithmetic with trunction on output if the 
+output image is an integer datatype.
+
+The sigma clipping algorithm is applied to each image line as follows.
+
+(1) The input image lines are scaled to account for different mean intensities.
+(2) The weighted average of each point in the line is computed after rejecting
+    the high and low values (the minmax combining algorithm).  This
+    minimizes the influence of bad values in the initial estimate of the
+    average.
+(3) The sigma about the mean at each point (including the high and low values)
+    is computed.  Each residual is multiplied by the square root of the
+    scaling factor to compensate for the reduction in noise due to the
+    intensity scaling.
+(4) The most deviant point exceeding a specified factor times the estimated
+    sigma is rejected.  Note that at most one value is rejected at each point.
+(5) The final weighted average excluding the rejected values is computed.
+
+PROCEDURES:
+
+    SIGCLIP     -- Sigma clipping without scaling or weighting.
+    DQSIGCLIP   -- Sigma clipping, excluding bad pixels, with scaling and/or 
+			weighting.
+    WTSIGCLIP   -- Sigma clipping with scaling and/or weighting.
+.endhelp -----------------------------------------------------------------------
+
+$for (silrd)
+
+#################################################################################
+# SIGCLIP --	Combine input data lines using the sigma clip algorithm when 	#
+#		weights and scale factors are equal.  Based upon the 		#
+#		`images.imcombine' task.  					#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure sigclip$t (data, output, sigma, nimages, npts, lowsig, highsig)
+
+# Calling arguments:
+pointer		data[nimages]		# Data lines
+$if (datatype == sil)
+real		output[npts]		# Mean line (returned)
+real		sigma[npts]		# Sigma line (returned)
+$else
+PIXEL		output[npts]		# Mean line (returned)
+PIXEL		sigma[npts]		# Sigma line (returned)
+$endif
+int		nimages			# Number of input images
+int		npts			# Number of pixels per image line
+real		highsig			# High sigma rejection threshold
+real		lowsig			# Low sigma rejection threshold
+
+# Local variables:
+int		i, j, k			# Dummy indexes
+$if (datatype == sil)
+real		minval, maxval		# Maximum and minimum value @pixel
+real		maxresid, maxresid2	# Maximum deviation from mean; its square
+real		mean			# Mean value @pixel
+real		resid, resid2		# Deviation of val from mean; its square
+real		sumval, val		# Accumulation; input image value @pixel
+$else
+PIXEL		minval, maxval		# Maximum and minimum value @pixel
+PIXEL		maxresid, maxresid2	# Maximum deviation from mean; its square
+PIXEL		mean			# Mean value @pixel
+PIXEL		resid, resid2		# Deviation of val from mean; its square
+PIXEL		sumval, val		# Accumulation; input image value @pixel
+$endif
+
+begin
+
+# Initialize variables:
+	do i = 1, npts {
+	    minval = Mem$t[data[1]+i-1]
+	    maxval = Mem$t[data[2]+i-1]
+	    if (minval > maxval) {
+		val    = minval
+		minval = maxval
+		maxval = val
+	    }
+	    sumval = minval + maxval
+
+# Compute the mean with and without rejecting the extrema.
+	    do j = 3, nimages {
+		val = Mem$t[data[j]+i-1]
+		if (val < minval) 
+		    minval = val
+		else if (val > maxval) 
+		    maxval = val
+		sumval = sumval + val
+	    }
+	    mean      = (sumval - minval - maxval) / (nimages - 2.)
+	    output[i] = sumval / nimages
+
+# Compute sigma at each point and determine the index of the most deviant pixel.
+	    maxresid  = Mem$t[data[1]+i-1] - mean
+	    maxresid2 = maxresid * maxresid
+	    k         = 1
+	    sumval    = maxresid2
+	    do j = 2, nimages {
+		resid  = Mem$t[data[j]+i-1] - mean
+		resid2 = resid * resid
+		if (resid2 > maxresid2) {
+		    maxresid  = resid
+		    maxresid2 = resid2
+		    k = j
+		}
+		sumval = sumval + resid2
+	    }
+	    sigma[i] = sqrt (sumval / (nimages - 1.))
+
+# Reject the most deviant pixel.
+	    minval = -lowsig * sigma[i]
+	    maxval = highsig * sigma[i]
+	    if ((maxresid > maxval) || (maxresid < minval)) {
+		output[i] = (nimages * output[i] - Mem$t[data[k]+i-1]) / 
+				(nimages - 1.)
+		Mem$t[data[k]+i-1] = INDEF
+	    }
+	}
+end
+
+
+#################################################################################
+# DQSIGCLIP --	Combine input data lines, excluding bad pixels, using the 	#
+# 		sigma clip algorithm when weights and scale factors are not 	#
+#		equal.  This routine is based upon the `images.imcombine 	#
+#		package.  							#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure dqsigclip$t (data, dqfdata, output, sigma, nimages, npts, lowsig, 
+			highsig)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# Data lines
+int		dqfdata[nimages]	# Data lines
+$if (datatype == sil)
+real		output[npts]		# Output line (returned)
+real		sigma[npts]		# Sigma line (returned)
+$else
+PIXEL		output[npts]		# Output line (returned)
+PIXEL		sigma[npts]		# Sigma line (returned)
+$endif
+int		nimages			# Number of input images
+int		npts			# Number of pixels per image line
+real		lowsig			# Low sigma rejection threshold
+real		highsig			# High sigma rejection threshold
+
+# Local variables:
+int		bflag[IMS_MAX]		# User-selected DQF flag(s) @value
+int		i, j, k, m		# Dummy indexes
+int		ncount			# Number of non-rejected values @pixel
+$if (datatype == sil)
+real		maxresid, maxresid2	# Maximum deviation from mean; its square
+real		maxval, minval		# Maximum and minimum value @pixel
+real		mean			# Mean value @pixel
+real		resid, resid2		# Deviation of val from mean; its square
+real		sumval, val		# Accumulation; input image value @pixel
+$else
+PIXEL		maxresid, maxresid2	# Maximum deviation from mean; its square
+PIXEL		maxval, minval		# Maximum and minimum value @pixel
+PIXEL		mean			# Mean value @pixel
+PIXEL		resid, resid2		# Deviation of val from mean; its square
+PIXEL		val, sumval		# Accumulation; input image value @pixel
+$endif
+real		netwt			# Sum of weights @pixel excluding extrema
+real		sumwt			# Sum of weights @pixel
+
+begin
+	do i = 1, npts {
+
+# Select user-chosen Data Quality bits:
+	    do j = 1, nimages
+		bflag[j] = Memi[dqfdata[j]+i-1]
+	    call aandki (bflag, BADBITS, bflag, nimages)
+
+# Initialize other variables:
+	    minval = +MAX_REAL
+	    maxval = -MAX_REAL
+	    k      = 1
+	    m      = 1
+	    sumval = 0.
+	    sumwt  = 0.
+	    ncount = 0
+
+# Compute the scaled and weighted mean with and without rejecting the 
+# minimum and maximum points.  
+	    do j = 1, nimages {
+		if (bflag[j] == 0) {
+		    val = Mem$t[data[j]+i-1] / SCALES[j] - ZEROS[j]
+		    if (val < minval) {
+			minval = val
+			k      = j
+		    }
+		    if (val > maxval) {
+			maxval = val
+			m      = j
+		    }
+		    sumval = sumval + val * WTS[j] 
+		    sumwt  = sumwt + WTS[j]
+		    ncount = ncount + 1
+		} else
+		    Mem$t[data[j]+i-1] = INDEF
+	    }
+	    netwt = sumwt - WTS[m] - WTS[k]
+	    if (netwt <= 0.) {
+		output[i] = BLANK
+		sigma[i]  = BLANK
+		next
+	    } 
+	    mean      = (sumval - minval * WTS[k] - maxval * WTS[m]) / netwt
+	    output[i] = sumval / sumwt
+
+# Compute sigma at each point & determine the index of the most deviant pixel.  
+# Correct individual residuals for the image scaling.
+	    maxresid  = 0.
+	    maxresid2 = 0.
+	    k         = 1
+	    sumval    = 0.
+	    do j = 1, nimages {
+		if (bflag[j] == 0) {
+		    resid  = (Mem$t[data[j]+i-1] / SCALES[j] - ZEROS[j] - mean) * 
+				WTS[j]
+		    resid2 = resid * resid
+		    if (resid2 > maxresid2) {
+			maxresid  = resid
+			maxresid2 = resid2
+			k = j
+		    }
+		    sumval = sumval + resid2
+		}
+	    }
+	    sigma[i] = sqrt (sumval / (ncount - 1.))
+
+# Reject the most deviant pixel.
+	    minval = -lowsig * sigma[i]
+	    maxval = highsig * sigma[i]
+	    if ((maxresid > maxval) || (maxresid < minval)) {
+		output[i] = (output[i] - (Mem$t[data[k]+i-1] / SCALES[k] -
+		    ZEROS[k]) * WTS[k]) / (1. - WTS[k])
+		Mem$t[data[k]+i-1] = INDEF
+	    }
+	}
+end
+
+
+#################################################################################
+# WTSIGCLIP --	Combine input data lines using the sigma clip algorithm when 	#
+# 		the weights and scale factors are not equal.  This routine 	#
+#		is based upon the `images.imcombine package.  			#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure wtsigclip$t (data, output, sigma, nimages, npts, lowsig, highsig)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# Data lines
+$if (datatype == sil)
+real		output[npts]		# Output line (returned)
+real		sigma[npts]		# Sigma line (returned)
+$else
+PIXEL		output[npts]		# Output line (returned)
+PIXEL		sigma[npts]		# Sigma line (returned)
+$endif
+int		nimages			# Number of input images
+int		npts			# Number of pixels per image line
+real		lowsig			# Low sigma rejection threshold
+real		highsig			# High sigma rejection threshold
+
+# Local variables:
+int		i, j, k, m		# Dummy indexes
+$if (datatype == sil)
+real		maxresid, maxresid2	# Maximum deviation from mean; its square
+real		maxval, minval		# Maximum and minimum value @pixel
+real		mean			# Mean value @pixel
+real		resid, resid2		# Deviation of val from mean; its square
+real		val, sumval		# Accumulation; input image value @pixel
+$else
+PIXEL		maxresid, maxresid2	# Maximum deviation from mean; its square
+PIXEL		maxval, minval		# Maximum and minimum value @pixel
+PIXEL		mean			# Mean value @pixel
+PIXEL		resid, resid2		# Deviation of val from mean; its square
+PIXEL		val, sumval		# Accumulation; input image value @pixel
+$endif
+
+begin
+
+# Initialize variables:
+	do i = 1, npts {
+	    k      = 1
+	    m      = 2
+	    minval = Mem$t[data[k]+i-1] / SCALES[k] - ZEROS[k]
+	    maxval = Mem$t[data[m]+i-1] / SCALES[m] - ZEROS[m]
+	    if (minval > maxval) {
+		val    = minval
+		minval = maxval
+		maxval = val
+		k      = 2
+		m      = 1
+	    }
+	    sumval = minval * WTS[k] + maxval * WTS[m]
+
+# Compute the scaled and weighted mean with and without rejecting the 
+# minimum and maximum points.  
+	    do j = 3, nimages {
+		val = Mem$t[data[j]+i-1] / SCALES[j] - ZEROS[j]
+		if (val < minval) {
+		    minval = val
+		    k      = j
+		} else if (val > maxval) {
+		    maxval = val
+		    m      = j
+		}
+		sumval = sumval + val * WTS[j]
+	    }
+	    mean      = (sumval - WTS[k] * minval - WTS[m] * maxval) / 
+			(1. - WTS[m] - WTS[k])
+	    output[i] = sumval
+
+# Compute sigma at each point & find the index of the most deviant pixel.  
+# Correct individual residuals for the image scaling.
+	    k         = 1
+	    maxresid = (Mem$t[data[k]+i-1] / SCALES[k] - ZEROS[k] - mean) * WTS[k]
+	    maxresid2 = maxresid * maxresid
+	    sumval    = maxresid2
+	    do j = 2, nimages {
+		resid = (Mem$t[data[j]+i-1] /SCALES[j] - ZEROS[j] - mean) * WTS[j]
+		resid2 = resid * resid
+		if (resid2 > maxresid2) {
+		    maxresid  = resid
+		    maxresid2 = resid2
+		    k = j
+		}
+		sumval = sumval + resid2
+	    }
+	    sigma[i] = sqrt (sumval / (nimages - 1.))
+
+# Reject the most deviant pixel.
+	    minval = -lowsig * sigma[i]
+	    maxval = highsig * sigma[i]
+	    if ((maxresid > maxval) || (maxresid < minval)) {
+		output[i] = (output[i] - (Mem$t[data[k]+i-1] / SCALES[k] -
+		    ZEROS[k]) * WTS[k]) / (1. - WTS[k])
+		Mem$t[data[k]+i-1] = INDEF
+	    }
+	}
+end
+$endfor

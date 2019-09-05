@@ -1,0 +1,237 @@
+.help calfos Feb02 stsdas.hst_calib.fos
+.ih
+NAME
+calfos -- Calibrate Faint Object Spectrograph (FOS) data.
+.ih
+USAGE
+calfos input output
+.ih
+DESCRIPTION 
+The 'calfos' task performs the routine calibration of FOS 
+data. The calibration steps carried out by 'calfos' are 
+determined by the values of certain keywords in the science 
+data header. (The science data header file has the extension 
+'.d0h'). The science data header file may be edited with the  
+'chcalpar' task to change the values of the keywords ('hedit' 
+in the 'images' package or 'chcalpar' in the 'hst_calib.ctools' package
+can also be used), to select the 
+desired calibration steps. These keywords may contain either 
+of two values: 'OMIT' or 'PERFORM'. Some processing steps 
+require the use of reference tables and files. The header 
+keywords for these reference files must be edited to contain 
+the appropriate reference file names (including their 
+directory paths).
+
+The user should be aware of the existence of an external
+IRAF package, 'STPOA', available from the ST-ECF Post-Operational 
+Archives group 
+(http://www.stecf.org/poa/pcrel/POA_CALFOS.html)
+which contains improved calibration for specified FOS data.
+The 'poa_calfos' pipeline in the STPOA package will provide
+an improved calibration for the following FOS data:
+.nf
+
+  Detector:  BLUE
+  Grndmode:  SPECTROSCOPY, RAPID-READOUT, IMAGE
+  Fgwa_id:   H13, H19, H27, H40, H57, L15, L65    
+  Aper_id:   A-1, A-2, A-3, A-4, B-1, B-2, B-3, B-4
+
+.fi
+Data which corresponds to the preceding list can be 
+processed using the 'calfos' pipeline 
+('stsdas.hst_calib.fos.calfos').  The 'calfos' will 
+issue a warning message regarding the availability of
+an improved calibration using the 'poa_calfos' pipeline, 
+but 'calfos' will continue to process the data.
+.ih
+CALIBRATION STEPS
+The calibration steps, listed by keyword, are:
+.ls CNT_CORR 
+Convert from raw counts to count rates by dividing each data 
+point by the exposure time and correcting for disabled 
+diodes. If 'DEFDDTBL' is true, the disabled diodes are 
+taken from the Unique Data Log (UDL), otherwise, disabled 
+diodes are found in the file 'DDTHFILE'.
+.le
+.ls OFF_CORR
+Spectra are corrected for the geomagnetically-induced image motion 
+problem (GIMP). The spectrum is shifted in the FOS X-direction (the
+dispersion direction) to compensate for shifts induced by the Earth's
+magnetic field. The offsets are based on model calculations of the
+magnetic field strength at the spacecraft's position. Requires table 'ccs7'
+containing detector-specific scale factors for the GIMP-correction.
+If the on-board GIMP correction was applied during data acquisition,
+then this post-acquisition correction should be omitted.
+.le
+.ls PPC_CORR 
+Correct the raw count rates for saturation in the detector 
+electronics. Requires table 'ccg2' containing the 
+paired-pulse correction table.
+.le
+.ls BAC_CORR 
+Subtract the background from sky and object spectra. If no 
+background was taken, a default reference background, 
+'BACHFILE', is used. The  observed background is smoothed 
+with a median, followed by a mean  filter before subtraction. 
+The filter widths are contained in table 'ccs3'. No smoothing 
+is done to the reference file background if used.
+.le
+.ls GMF_CORR
+If a reference background is used in the 'BAC_CORR' calibration
+step, it will be scaled according to the geomagnetic position of the
+spacecraft at the time of observation. The background will be scaled
+to a mean count rate appropriate for the geomagnetic position. Requires
+table 'ccs8' containing predicted background count rates.
+.le
+.ls SCT_CORR
+Subtract scattered light from object and sky spectra.
+Can only be performed for detector/grating combinations that contain
+a region within the recorded spectrum that is not sensitive to
+dispersed light from which the level of scattered light is measured.
+Requires table 'ccs9' containing the beginning and ending diode positions 
+for the region of no sensitivity for each detector/grating combination.
+.le
+.ls FLT_CORR 
+Remove diode-to-diode sensitivity variations and fine 
+structure by multiplying by the flat field response. Requires 
+the flat  field response file 'FL1HFILE'. A second flat field 
+file, 'FL2HFILE', is  required for paired-aperture or 
+spectropolarimetry observations.
+.le
+.ls SKY_CORR 
+Subtract the sky from the object spectra. The routine smooths 
+the sky using a median and mean filter, scales the sky by the 
+aperture size, and shifts the sky before the subtraction. The 
+routine requires  table 'ccs3' containing the filter widths, 
+the aperture size table 'ccs0', the emission line position 
+table 'ccs2', and the sky shift  table 'ccs5'.
+.le
+.ls WAV_CORR 
+Compute a vacuum wavelength scale for each object or sky 
+spectrum. Wavelengths are computed using coefficients stored 
+in table 'ccs6'.
+.le
+.ls FLX_CORR 
+Convert the object spectra to absolute flux units by 
+multiplying by the inverse sensitivity curve.  Requires the 
+inverse sensitivity file 'IV1HFILE'. A second inverse 
+sensitivity file, 'IV2HFILE', is  required for paired 
+aperture or spectropolarimetry observations.
+This method of flux calibration for pre-COSTAR observations is superseded in 
+CALFOS v2.0 by the APR_CORR, AIS_CORR, and TIM_CORR steps (see below).
+.le
+.ls APR_CORR
+Correct for changes in aperture throughput due to changes in OTA
+focus position. Also correct the observed countrates to match
+that of the AIS reference aperture. Requires OTA focus history table
+'ccsa', relative aperture throughput table 'ccsb', and aperture
+throughput vs focus table 'ccsc'.
+.le
+.ls AIS_CORR
+Convert the object spectra to absolute flux units by multiplying by
+the average inverse sensitivity (AIS) curve for the reference aperture.
+Requires the AIS file 'AISHFILE'. This method of flux calibration
+for pre-COSTAR data supersedes the FLX_CORR step in CALFOS versions 2.0 
+and later and requires that the APR_CORR step be performed first.
+.le
+.ls TIM_CORR
+Correct the flux calibrated object spectra for changes in instrument
+sensitivity over time. Requires the table 'ccsd' containing correction
+factors as a function of wavelength and time for each detector/grating
+combination.
+.le
+.ls ERR_CORR 
+Compute the propagated error at each point in the spectrum.
+.le
+.ls MOD_CORR 
+Perform ground software mode dependent reductions for 
+time-resolved, spectropolarimetry, and rapid-readout 
+observations. The  spectropolarimetry reductions require the 
+the Wollaston and Waveplate  parameter table 'ccs4', and the 
+retardation reference file, 'RETHFILE'.
+If the spectropolarimetry data were acquired during the post-COSTAR epoch 
+as indicated by the Science header keyword/value pair, KYDEPLOY=T, and a 
+post-COSTAR calibration is available, the post-COSTAR polarimetry correction
+reference file, 'PCPHFILE', is also required for a proper calibration.
+However, it should be noted that if no post-COSTAR
+polarimetry calibration file for the 'PCPHFILE' calibration file keyword 
+is provided,  'calfos' will not abort.  Instead, warning 
+messages will be issued and the data in the output 'c3h' file will still be
+calibrated, but the additional post-COSTAR correction will not have been
+applied.
+.le
+.ih
+PARAMETERS
+.ls input [string]
+The rootname of the input FOS observation data set.
+.le
+.ls output [string]
+The rootname of the output FOS data set. If no value is 
+specified for this parameter, 'output' will default to the 
+value passed to 'input'.
+.le
+.ih
+EXAMPLES 
+1. Perform calibration for observation 'y00vk108r'. All data files for
+this observation are in the directory 'spec$'.  Output files are to 
+have the same root name as the input files.
+.nf
+
+  hr> calfos spec$y00vk108r ""
+.fi
+
+2. Calibrate the observation 'y00vk901r' and produce output files 
+with a root name of 'test186' in the subdirectory 'temp'.
+.nf
+
+  hr> calfos y00vk901r temp/test186
+.fi
+.ih
+NOTES
+Version 3.2 (May 1999) of 'calfos' incorporates changes to the way that
+post-COSTAR POLSCAN = 4 data is processed.  No post-COSTAR instrumental
+polarization correction can be made for this data.  Consequently, the 
+results contain significant instrumental polarization.  Please refer to FOS
+Instrument Science Report 150 for a discussion of the magnitude and 
+uncertainties of instrumental polarization introduced by COSTAR.
+.ih
+REFERENCES
+The  following references are available from STScI and  describe  various  
+aspects  of  the  calibration process, simple cookbook, and general usage 
+of STSDAS:
+
+.nf
+        "HST Data Handbook"
+        "FOS Instrument Handbook"
+	"FOS Data Products Guide"
+        "STSDAS Users Guide"
+        "Phase II Proposal Instructions"
+.fi
+    
+The  following are technical references meant for internal usage and
+are not written as "end-user" products.   However,  these  documents
+can  be  retrieved  if a detailed understanding of the instrument is
+required.
+    
+The  algorithms  used  by  CALFOS are described in "SOGS Requirements
+Document", (SE-06-01).
+
+The document describing the contents and form of  the  reference  data  
+is  "Post
+Observation  Data  Processing  System to Calibration Database System
+Interface Control Document", (ICD-47).
+    
+The  document  describing  the  keywords  is  "Post Observation Data
+Processing System to Space Telescope Science Data Analysis  Software
+Interface Control Document", (ICD-19).
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+hedit, chcalpar
+
+Type "help fos opt=sys" for a higher-level explanation of the 
+'fos' package and the process of calibrating a FOS data set.
+.endhelp

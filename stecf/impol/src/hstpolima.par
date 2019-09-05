@@ -1,0 +1,7 @@
+imalis,f,a,,,,"List of input object-sky image files" 
+errlis,f,a,,,,"List of input error image files" 
+instpoltab,f,a,,,,"Name of table file for instrument polarization parameters"  
+xybin,i,a,,,,"Binning factor in X and Y for output files"
+binrej,r,a,,,,"Factor on rms of mean per bin" 
+errlim,r,a,,,,"Upper limit on polarization error (%) for output files"
+outroot,f,a,,,,"Root name for output image files"

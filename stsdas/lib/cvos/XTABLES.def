@@ -1,0 +1,238 @@
+xtables
+# Interface definition file for STSDAS TABLES library
+# 07 Dec. 1998 - MDD: Changed exponent character from "d" to "e" for VMS.
+# 07 Jan. 1999 - MDD: Updated values for SZ_COLNAME, SZ_COLUNITS, SZ_COLFMT.
+#                     Removed tbcfnd and tbcdef routines.  Added tbsirow and
+#                     tbcdes.
+# 07 July 1999 - MDD: Added the tbfpri interface.
+# 19 August 1999 - MDD: Added the tbparse interface.
+
+# Relative to directory /usr/ra/tables/lib/tbtables
+# See ~/doc/calls.doc for discussion of calls
+
+/h/# include <c_iraf.h>
+/h/
+
+# TABLES defines
+/h//* These constants do NOT include space for the NULL character */
+/h/# define SZ_KEYWORD 8
+/h/# define SZ_COLNAME 79
+/h/# define SZ_COLUNITS 79
+/h/# define SZ_COLFMT 79
+/h/# define SZ_PARREC 80
+/h/
+/h//* Indefinite valued numbers. Taken from IRAF's spp.h */
+/h/# define IRAF_INDEFS (-32767)
+/h/# define IRAF_INDEFL (0x80000001)
+/h/# define IRAF_INDEFI IRAF_INDEFL
+/h/# define IRAF_INDEFR 1.6e38
+/h/# if defined(__VMS)
+/h/# define IRAF_INDEFD 1.6e38
+/h/# else
+/h/# define IRAF_INDEFD 1.6e308
+/h/# endif
+/h/
+/h//* These may be set by tbpset and/or read by tbpsta: */
+/h//* (R) row length to allocate (SZ_REAL) */
+/h/# define TBL_ROWLEN  1 
+/h//* (R) increase row length (SZ_REAL) */
+/h/# define TBL_INCR_ROWLEN  2 
+/h//* (C) number of rows to allocate */
+/h/# define TBL_ALLROWS  3 
+/h//* (C) increase alloc num of rows */
+/h/# define TBL_INCR_ALLROWS 4 
+/h//* which type of table? */
+/h/# define TBL_WHTYPE  5 
+/h//* maximum number of user param */
+/h/# define TBL_MAXPAR  6 
+/h//* maximum number of columns */
+/h/# define TBL_MAXCOLS  7 
+/h//* (R) row length to allocate (SZ_CHAR) */
+/h/# define TBL_ROWLEN_CHAR  8 
+/h//* machine independent table format */
+/h/# define TBL_TYPE_MI  10 
+/h//* row-ordered table format */
+/h/# define TBL_TYPE_S_ROW  11 
+/h//* column-ordered table format */
+/h/# define TBL_TYPE_S_COL  12 
+/h//* text file */
+/h/# define TBL_TYPE_TEXT  13 
+/h//* FITS table */
+/h/# define TBL_TYPE_FITS  14 
+/h//* don't use this yet! */
+/h/# define TBL_TYPE_CDF  15 
+/h//* These may be read by tbpsta but may not be set: */
+/h//* number of rows written to */
+/h/# define TBL_NROWS  21 
+/h//* number of columns # defined */
+/h/# define TBL_NCOLS  22 
+/h//* (R) amount of row len used (SZ_REAL) */
+/h/# define TBL_ROWLEN_USED  23 
+/h//* number of user parameters */
+/h/# define TBL_NPAR  24 
+/h//* (R) amount of row len used (SZ_CHAR) */
+/h/# define TBL_ROWLEN_CHAR_USED 25 
+/h//* version that created the table */
+/h/# define TBL_VERSION  26 
+/h//* These have to do with the file size and file I/O buffer size. */
+/h//* set RANDOM or SEQUENTIAL */
+/h/# define TBL_ADVICE  31 
+/h//* get buffer size in char */
+/h/# define TBL_BUFSIZE  32 
+/h//* get size of table data in char */
+/h/# define TBL_DATA_SIZE  34 
+/h//* These are for information about a column. */
+/h//* column name */
+/h/# define TBL_COL_NAME  41 
+/h//* units for column */
+/h/# define TBL_COL_UNITS  42 
+/h//* print format for displaying values */
+/h/# define TBL_COL_FMT  43 
+/h//* data type (-n for char string) */
+/h/# define TBL_COL_DATATYPE 44 
+/h//* column number */
+/h/# define TBL_COL_NUMBER  45 
+/h//* length for printing using print fmt */
+/h/# define TBL_COL_FMTLEN  46 
+/h//* number of elements if it's an array */
+/h/# define TBL_COL_LENDATA  47 
+/h//* dimension of array */
+/h/# define TBL_COL_DIMENSION 48
+/h/
+
+# TABLES includes and private routines
+/c/# include <xtables.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+
+# opening and closing tables
+tbtopn.x:pointer procedure tbtopn (tablename:i, iomode:i, template|oldname:i)
+tbtcre.x:procedure tbtcre (tp:i)
+tbtclo.x:procedure tbtclo (tp:i)
+
+# columns
+tbcdef.x:procedure tbcdef (tp:i, colptr:o, colname:i[SZ_COLNAME:numcols], colunits:i[SZ_COLUNITS:numcols], colfmt:i[SZ_COLFMT:numcols], datatype:i, lenarray:i, numcols:i)
+tbcdef1.x:procedure tbcdef1 (tp:i, colptr:o, colname:i[SZ_COLNAME], colunits:i[SZ_COLUNITS], colfmt:i[SZ_COLFMT], datatype:i, nelem:i)
+tbcfnd.x:procedure tbcfnd (tp:i, colname:i[SZ_COLNAME:numcols], colptr:o, numcols:i)
+tbcfnd1.x:procedure tbcfnd1 (tp:i, colname:i[SZ_COLNAME], colptr:o)
+tbcinf.x:procedure tbcinf (colptr:i, colnum:o, colname:o[SZ_COLNAME], colunits:o[SZ_COLUNITS], colfmt:o[SZ_COLFMT], datatype:o, lendata:o, lenfmt:o)
+tbcigi.x:int procedure tbcigi (cptr:i, get_what:i)
+tbciga.x:procedure tbciga (tp:i, cp:i, ndim:o, axlen:o, maxdim:i)
+tbcigt.x:procedure tbcigt (cptr:i, get_what:i, outstr:o, maxch:i)
+
+# table parameters
+tbpset.x:procedure tbpset (tp:i, setwhat:i, value:i)
+tbpsta.x:int procedure tbpsta (tp:i, param:i)
+
+# row and column selectors
+tbcdes.x:pointer procedure tbcdes (tp:i, cp:i)
+tbsirow.x:procedure tbsirow (tp:i, selrow:i, rownum:o)
+
+# get and put
+tbegt.x:procedure tbegtb (tp:i, cptr:i, rownum:i, buffer:o)
+tbegt.x:procedure tbegtd (tp:i, cptr:i, rownum:i, buffer:o)
+tbegt.x:procedure tbegtr (tp:i, cptr:i, rownum:i, buffer:o)
+tbegt.x:procedure tbegti (tp:i, cptr:i, rownum:i, buffer:o)
+tbegt.x:procedure tbegts (tp:i, cptr:i, rownum:i, buffer:o)
+tbegt.x:procedure tbegtt (tp:i, cptr:i, rownum:i, buffer:o, maxch:i)
+
+tbept.x:procedure tbeptb (tp:i, cptr:i, rownum:i, buffer:i)
+tbept.x:procedure tbeptd (tp:i, cptr:i, rownum:i, buffer:i)
+tbept.x:procedure tbeptr (tp:i, cptr:i, rownum:i, buffer:i)
+tbept.x:procedure tbepti (tp:i, cptr:i, rownum:i, buffer:i)
+tbept.x:procedure tbepts (tp:i, cptr:i, rownum:i, buffer:i)
+tbept.x:procedure tbeptt (tp:i, cptr:i, rownum:i, buffer:i)
+
+tbagt.x:int procedure tbagtd (tp:i, cp:i, row:i, buffer:o, first:i, nelem:i)
+tbagt.x:int procedure tbagtr (tp:i, cp:i, row:i, buffer:o, first:i, nelem:i)
+tbagt.x:int procedure tbagti (tp:i, cp:i, row:i, buffer:o, first:i, nelem:i)
+tbagt.x:int procedure tbagts (tp:i, cp:i, row:i, buffer:o, first:i, nelem:i)
+tbagt.x:int procedure tbagtb (tp:i, cp:i, row:i, buffer:o, first:i, nelem:i)
+tbagt.x:int procedure tbagtt (tp:i, cp:i, row:i, cbuf:o[maxch:nelem], maxch:i, first:i, nelem:i)
+
+tbapt.x:procedure tbaptd (tp:i, cp:i, row:i, buffer:i, first:i, nelem:i)
+tbapt.x:procedure tbaptr (tp:i, cp:i, row:i, buffer:i, first:i, nelem:i)
+tbapt.x:procedure tbapti (tp:i, cp:i, row:i, buffer:i, first:i, nelem:i)
+tbapt.x:procedure tbapts (tp:i, cp:i, row:i, buffer:i, first:i, nelem:i)
+tbapt.x:procedure tbaptb (tp:i, cp:i, row:i, buffer:i, first:i, nelem:i)
+tbapt.x:procedure tbaptt (tp:i, cp:i, row:i, cbuf:i[maxch:nelem], maxch:i, first:i, nelem:i)
+
+tbrgt.x:procedure tbrgtb (tp:i, cp:i, buffer:o, nullflag:o, numcols:i, rownum:i)
+tbrgt.x:procedure tbrgtd (tp:i, cp:i, buffer:o, nullflag:o, numcols:i, rownum:i)
+tbrgt.x:procedure tbrgtr (tp:i, cp:i, buffer:o, nullflag:o, numcols:i, rownum:i)
+tbrgt.x:procedure tbrgti (tp:i, cp:i, buffer:o, nullflag:o, numcols:i, rownum:i)
+tbrgt.x:procedure tbrgts (tp:i, cp:i, buffer:o, nullflag:o, numcols:i, rownum:i)
+tbrgt.x:procedure tbrgtt (tp:i, cp:i, buffer:o[lenstr:numcols], nullflag:o, lenstr:i, numcols:i, rownum:i)
+
+tbrpt.x:procedure tbrptb (tp:i, cp:i, buffer:i, numcols:i, rownum:i)
+tbrpt.x:procedure tbrptd (tp:i, cp:i, buffer:i, numcols:i, rownum:i)
+tbrpt.x:procedure tbrptr (tp:i, cp:i, buffer:i, numcols:i, rownum:i)
+tbrpt.x:procedure tbrpti (tp:i, cp:i, buffer:i, numcols:i, rownum:i)
+tbrpt.x:procedure tbrpts (tp:i, cp:i, buffer:i, numcols:i, rownum:i)
+tbrpt.x:procedure tbrptt (tp:i, cp:i, buffer:i[lenstr:numcols], lenstr:i, numcols:i, rownum:i)
+
+tbcgt.x:procedure tbcgtb (tp:i, cp:i, buffer:o, nullflag:o, firstrow:i, lastrow:i)
+tbcgt.x:procedure tbcgtd (tp:i, cp:i, buffer:o, nullflag:o, firstrow:i, lastrow:i)
+tbcgt.x:procedure tbcgtr (tp:i, cp:i, buffer:o, nullflag:o, firstrow:i, lastrow:i)
+tbcgt.x:procedure tbcgti (tp:i, cp:i, buffer:o, nullflag:o, firstrow:i, lastrow:i)
+tbcgt.x:procedure tbcgts (tp:i, cp:i, buffer:o, nullflag:o, firstrow:i, lastrow:i)
+tbcgt.x:procedure tbcgtt (tp:i, cp:i, buffer:o[lenstr:{lastrow-firstrow+1}], nullflag:o, lenstr:i, firstrow:i, lastrow:i)
+
+tbcpt.x:procedure tbcptb (tp:i, cp:i, buffer:i, firstrow:i, lastrow:i)
+tbcpt.x:procedure tbcptd (tp:i, cp:i, buffer:i, firstrow:i, lastrow:i)
+tbcpt.x:procedure tbcptr (tp:i, cp:i, buffer:i, firstrow:i, lastrow:i)
+tbcpt.x:procedure tbcpti (tp:i, cp:i, buffer:i, firstrow:i, lastrow:i)
+tbcpt.x:procedure tbcpts (tp:i, cp:i, buffer:i, firstrow:i, lastrow:i)
+tbcpt.x:procedure tbcptt (tp:i, cp:i, buffer:i[lenstr:{lastrow-firstrow+1}], lenstr:i, firstrow:i, lastrow:i)
+
+tbrudf.x:procedure tbrudf (tp:i, colptr:i, numcols:i, rownum:i)
+
+# header parameters
+tbhgt.x:bool procedure tbhgtb (tp:i, keyword:i)
+tbhgt.x:double procedure tbhgtd (tp:i, keyword:i)
+tbhgt.x:int procedure tbhgti (tp:i, keyword:i)
+tbhgt.x:real procedure tbhgtr (tp:i, keyword:i)
+tbhgt.x:procedure tbhgtt (tp:i, keyword:i, text:o, maxch:i)
+
+tbhad.x:procedure tbhadb (tp:i, keyword:i, value:i)
+tbhad.x:procedure tbhadd (tp:i, keyword:i, value:i)
+tbhad.x:procedure tbhadi (tp:i, keyword:i, value:i)
+tbhad.x:procedure tbhadr (tp:i, keyword:i, value:i)
+tbhad.x:procedure tbhadt (tp:i, keyword:i, text:i)
+
+tbhpt.x:procedure tbhptb (tp:i, keyword:i, value:i)
+tbhpt.x:procedure tbhptd (tp:i, keyword:i, value:i)
+tbhpt.x:procedure tbhpti (tp:i, keyword:i, value:i)
+tbhpt.x:procedure tbhptr (tp:i, keyword:i, value:i)
+tbhpt.x:procedure tbhptt (tp:i, keyword:i, text:i)
+
+tbhcal.x:procedure tbhcal (itp:i, otp:i)
+tbhgnp.x:procedure tbhgnp (tp:i, parnum:i, keyword:o[SZ_KEYWORD], dtype:o, str:o[SZ_PARREC])
+tbhgcm.x:procedure tbhgcm (tp:i, keyword:i, comment:o, maxch:i)
+tbhpcm.x:procedure tbhpcm (tp:i, keyword:i, comment:i)
+
+# copy primary header of FITS file
+tbfpri.x:procedure tbfpri (intable:i, outtable:i, copied:o)
+
+# table files
+tbtcpy.x:procedure tbtcpy (intable:i, outtable:i)
+tbtdel.x:procedure tbtdel (table:i)
+tbtren.x:procedure tbtren (intable:i, outtable:i)
+tbtacc.x:int procedure tbtacc (tablename:i)
+tbtext.x:procedure tbtext (inname:i, outname:o, maxch:i)
+tbtnam.x:procedure tbtnam (tp:i, tblname:o, maxch:i)
+tbtflu.x:procedure tbtflu (tp:i)
+
+# miscellaneous
+tbtchs.x:procedure tbtchs (tp:i, maxpar:i, maxcols:i, rowlen:i, allrows:i)
+tbrcpy.x:procedure tbrcpy (itp:i, otp:i, iselrow:i, oselrow:i)
+tbrcsc.x:procedure tbrcsc (itp:i, otp:i, icp:i, ocp:i, irow:i, orow:i, ncols:i)
+tbrswp.x:procedure tbrswp (tp:i, row1:i, row2:i)
+tbtsrt.x:procedure tbtsrt (tp:i, numcols:i, colptr:i, fold:i, nindex:i, index)
+tbrdel.x:procedure tbrdel (tp:i, firstrow:i, lastrow:i)
+tbrnll.x:procedure tbrnll (tp:i, firstrow:i, lastrow:i)
+tbcnam.x:procedure tbcnam (tp:i, cp:i, colname:i)
+tbcfmt.x:procedure tbcfmt (tp:i, cp:i, colfmt:i)
+tbcnit.x:procedure tbcnit (tp:i, cp:i, colunits:i)
+tbcnum.x:pointer procedure tbcnum (tp:i, colnum:i)
+tbparse.x:int procedure tbparse (tablename:i, fname:o[maxch], extname:o, maxch:i, hdu:o)

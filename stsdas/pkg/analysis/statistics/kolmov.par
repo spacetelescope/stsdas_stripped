@@ -1,0 +1,7 @@
+infile,s,a,,,,"> Sample data file"
+reffile,s,a,,,,"> Reference data file"
+comptype,s,h,"sample","distribution|sample|uniform|exponential|powerlaw|pareto",,"> Comparison type"
+fmin,r,h,0,,,"> Distribution function minimum"
+fmax,r,h,0,,,"> Distribution function maximum"
+power,r,h,1,0,,"> Distribution function exponent"
+mode,s,h,h

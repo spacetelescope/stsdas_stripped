@@ -1,0 +1,65 @@
+.help asnexpand June2000 stsdas.hst_calib.nicmos
+.nj
+.ih
+NAME
+asnexpand -- expand a NICMOS association table
+.ih
+USAGE
+asnexpand input output
+.ih
+DESCRIPTION
+This task expands a NICMOS ASN association table to include columns
+for background and image offset data.
+These columns are normally added to an ASN table by the "calnicb" task
+when it creates an output ASC table.
+Adding these columns to an existing ASN table is useful when you
+want "calnicb" to read the background or image offset information (or both)
+from an input association table, rather than computing that information itself.
+
+Four columns are added to the input table:
+.nf
+
+Name     Data type  Units   Value   Description
+-------  ---------  ------- ------- --------------------------
+BCKIMAGE Boolean     ...    INDEF   Background image indicator
+MEANBCK  Real       DN/sec  0.0     Scalar background signal
+XOFFSET  Real       pixels  0.0     X-axis image offset
+YOFFSET  Real       pixels  0.0     Y-axis image offset
+.fi
+
+The new columns of data are filled with the default values listed above.
+It is up to the user to subsequently modify those values, if desired, for
+use as input to "calnicb".
+The table data can be modified using the "tedit" task.
+.ih
+PARAMETERS
+.ls input [file name]
+The file name of the ASN table to be expanded.
+.le
+.ls output [file name]
+The file name of the output table. Must include a ".fits" file name extension.
+.le
+.ls (verbose = yes) [boolean]
+Display names of input and output files as they are copied?
+.le
+.ih
+EXAMPLES
+1.  Expand the ASN table n3t102040_asn.fits, writing the output
+to n3t102041_asn.fits. Then edit the x- and y-offset values in the table and
+use the table as input to "calnicb".
+
+.nf
+    ni> asnexpand n3t102040_asn.fits n3t102041_asn.fits
+    ni> tedit n3t102041_asn.fits
+    ni> calnicb n3t102041 readoffsets=yes
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+Author: H. Bushouse, STScI.
+.ih
+SEE ALSO
+tcopy, tedit, calnicb
+.endhelp

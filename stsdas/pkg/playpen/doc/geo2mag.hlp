@@ -1,0 +1,75 @@
+.help geo2mag Nov93 stsdas.playpen
+.ih
+NAME
+geo2mag - Convert from geocentric to geomagnetic coordinates
+.ih
+USAGE
+geo2mag input longitude latitude replace output
+.ih
+DESCRIPTION
+This tasks converts geocentric coordinates to geomagnetic coordinates
+and back.  
+
+The algorithm itself is a simple spherical rotation from the
+geocentric coordinate system where the north pole is located at 90
+degrees latitude, 0 degrees longitude, to the geomagnetic coordinates
+system where the geomagnetic "north" pole is located at 78.6 degrees
+latitude, 289.3 degrees longitude.  Other than the change in the pole
+location, no other physics concerning the earth's magnetic moments are
+involved.
+.ih
+PARAMETERS
+.ls input [file name]
+The input table containing two columns, one of longitude and one of
+latitude, to convert to the other system.
+.le
+.ls longitude = "LONGITUDE" [string]
+The name of the column in the input table  containing the longitude
+coordinates to convert.
+.le
+.ls latitude = "LATITUDE" [string]
+The name of the column in the input table containing the latitude
+coordinates to convert.
+.le
+.ls replace = no [boolean]
+Put the transformed coordinates into the same columns as the input
+coordinates.
+.le
+.ls output = "" [file name]
+Name of the output table to create.  If blank, the input table will be
+modified directly depending on the value of the "replace" parameter.
+.le
+.ls (copy = yes) [boolean]
+Copy the contents of the input table into the output table.
+.le
+.ls (outlong = "") [string]
+Name of the column to contain the converted longitude coordinates.  If
+blank, the converted longitude coordinates will be written into the
+same column as the input coordinates.
+.le
+.ls (outlat = "") [string]
+Name of the column to contain the converted latitude coordinates.  If
+blank, the converted coordinates will be written into the same column
+as the input coordinates.
+.le
+.ls (geo2mag = yes) [boolean]
+If yes, the input coordinates are assumed to be geocentric and will be
+converted to geomagnetic.  If no, the input is assumed to be
+geomagnetic and will be converted to geocentric.
+.le
+.ih
+EXAMPLES
+1. Convert the table "intab" to geomagnetic coordinates, creating a
+new table "outtab".  The new coordinates will be located in the same
+columns as the input coordinates in the output table.
+
+.nf
+cl> geo2mag intab longitude latitude replace=no outtab
+.fi
+.ih
+BUGS
+Just not a very general task.
+.ih
+SEE ALSO
+hstpos
+.endhelp

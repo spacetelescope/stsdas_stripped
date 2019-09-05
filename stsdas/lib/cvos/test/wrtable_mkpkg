@@ -1,0 +1,10 @@
+#
+# Example mkpkg file for host-level task, wrtable.
+#
+$set XFLAGS = "-Inolibc -p stsdas $(XFLAGS)"
+$omake wrtable.c
+
+$set LFLAGS = "-H -z -p stsdas -p tables $(LFLAGS)"
+
+$link wrtable.o -lcvos -ltbtables -o wrtable
+$exit

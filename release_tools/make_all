@@ -1,0 +1,98 @@
+:
+#
+
+# make sure we are invoked correctly
+
+if [ "$0" != release_tools/make_all ]
+then
+	echo 'not invoked correctly - see release_tools/README'
+	exit 1
+fi
+
+# make sure we have iraf available
+if [ "$iraf" = "" ]
+then
+	echo 'iraf environment variable not set - must initialize iraf first'
+	exit 1
+fi
+
+## assume install_helper has run
+
+(
+(
+env | sort
+
+cl << ARF
+tables
+cd tables$
+! pwd
+logout
+ARF
+) 2>&1
+) | sed 's/^/report: /' 
+
+
+# try to make it compile with debugging
+XC_LFLAGS=-g
+export XC_LFLAGS
+
+# compile things
+
+(
+	echo report: TABLES
+	cd tables
+	mkpkg $IRAFARCH
+	mkpkg -p tables update
+	chmod g+r */*.e
+)
+
+(
+	echo report: STSDAS
+	cd stsdas
+	mkpkg $IRAFARCH
+	mkpkg -p tables -p stsdas update
+	chmod g+r */*.e
+)
+
+(
+	echo report: STSDAS READ DATA FILES
+	rm -rf iraf
+	mkdir iraf
+	cd iraf
+	echo xterm | mkiraf > mkiraf_tmp 2>&1
+	sed 's/^/report: /' < mkiraf_tmp
+	touch .hushiraf
+	cl > tmp << ARF
+stsdas
+fitsio
+cd stsdas
+cd data/fits
+cl < read_fits.cl
+logout
+ARF
+	grep -v -f ../release_tools/read_data_files.grep < tmp > result
+	diff -b ../release_tools/read_data_files.expect result
+)
+
+
+(
+	echo report: STECF
+	cd stecf
+	mkpkg $IRAFARCH
+	mkpkg -p tables -p stsdas update
+        chmod g+r */*.e
+)
+
+
+# We don't do stlocal any more.
+#
+# if [ -d stlocal ]
+# then
+# (
+	# echo report: STLOCAL
+	# cd stlocal
+	# mkpkg $IRAFARCH
+	# mkpkg -p tables -p stsdas -p stlocal  update
+	# chmod g+r */*.e
+# )
+# fi

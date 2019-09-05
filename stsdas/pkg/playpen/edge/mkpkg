@@ -1,0 +1,8 @@
+$checkout playpen.a ../
+$update   playpen.a
+$checkin  playpen.a ../
+$exit
+
+playpen.a:
+	edge.x	<imhdr.h> <imset.h> <math/curfit.h> <math/surfit.h>
+	;

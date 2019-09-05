@@ -1,0 +1,7 @@
+# Root task entry for the SPECRES package help tree.
+
+specres		men  = stecf$specres/specres.men,
+                hlp  = stecf$specres/specres.men,
+                sys  = stecf$specres/specres.hlp,
+                pkg  = stecf$specres/specres.hd,
+                src  = stecf$specres/specres.cl

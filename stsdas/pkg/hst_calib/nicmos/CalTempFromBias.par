@@ -1,0 +1,10 @@
+input,s,a,"",,,,"Input file"
+edit_type,s,h,"RAW",,,,"file type in which keywords will be updated"
+hdr_key,s,h,"TFBTEMP"",,,,"keyword name for temperature"
+err_key,s,h,"TFBERR"",,,,"keyword name for associated error"
+nref_par,s,h,"/grp/hst/cdbs/nref/",,,"name of the directory containing the nonlinearity file"
+force,s,h,"",,,"character for name of algorithm whose value is to be returned"
+noclean,b,h,no,,,"flag to force use of UNCLEANed 0th read"
+dry_run,b,h,no,,,"flag to force not writing of keywords"
+verbosity,b,h,no,,,"level for diagnostic print statements"
+

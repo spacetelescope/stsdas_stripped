@@ -1,0 +1,35 @@
+.help powerpars Feb90 stsdas.analysis.fitting
+.ih
+NAME
+powerpars -- Edit the parameters for powerlaw function fitting.
+.ih
+USAGE
+powerpars
+.ih
+PARAMETERS
+.ls (index = INDEF) [real]
+Initial guess for the index of powerlaw function. If INDEF, the task
+will set it to a pre-defined value.
+.le
+.ls (ampl = INDEF) [real]
+Initial guess for the amplitude of powerlaw function at reference point.
+If INDEF, the task will set it to the maximum value in the dependent
+variable.
+.le
+.ls (ref = INDEF) [real]
+Reference point in the independent variable scale. If INDEF, the task will
+set it to the midpoint in the independent variable range.
+.le
+.ls (vindex = yes) [boolean]
+Vary the powerlaw index?
+.le
+.ls (vamp = yes) [boolean]
+Vary the amplitude at the reference point?
+.le
+.ls (vref = no) [boolean]
+Vary the X axis reference point?
+.le
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

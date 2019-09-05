@@ -1,0 +1,3 @@
+# Root help directory for the STECF/IMPOL package.
+
+_impol		pkg = stecf$impol/lib/rootimpol.hd

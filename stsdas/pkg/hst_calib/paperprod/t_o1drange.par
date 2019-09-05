@@ -1,0 +1,6 @@
+input, f, a, "", , , 		Input (table) name
+
+fluxmin, r, h, , , ,		Overall minimum flux
+fluxmax, r, h, , , ,		Overall maximum flux
+
+mode, s, h, "al"

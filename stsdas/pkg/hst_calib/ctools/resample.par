@@ -1,0 +1,11 @@
+input,s,a,,,,Input image file name(s)
+output,s,a,,,,Output image file name(s)
+wave,s,h,"",,,Input wavelength file name(s)
+logarithm,b,h,no,,,Rebin to linear in the logarithm
+pixout,i,h,0,,,Length of output spectrum
+wave0,r,h,INDEF,,,Starting wavelength
+delwav,r,h,INDEF,,,Wavelength increment per pixel
+ewave,r,h,INDEF,,,"Ending wavelength"
+interp_mode,s,h,linear,linear|spline3|poly3|poly5|sums|sinc,,Interpolation method
+window,i,h,35,1,100,window size (for sinc interpolation only)
+Version,s,h,"21Sep92",,,Date of Installation

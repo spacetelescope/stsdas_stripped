@@ -1,0 +1,258 @@
+.help fquot Aug92 stsdas.contrib.redshift
+.ih
+NAME
+fquot -- Redshift and velocity dispersion using the Fourier Quotient technique.
+.ih
+USAGE
+fquot templates spectra zlist
+.ih
+DESCRIPTION
+The 'fquot' task provides an interactive facility to determine redshifts and
+velocity dispersions using the Fourier Quotient Technique (e.g.,
+Sargent et al. 1977, Ap. J., 212, 326 -- SSBS).
+ 
+WARNING: The Fourier Quotient Technique may be hazardous to your scientific
+results.  High signal-to-noise spectra will produce what appear to be
+superb results with small errors.  Keep in mind, however, that these errors
+only reflect the statistical errors involved in fitting a single template.
+There are many sources of systematic error that are not taken into account.
+For example, drifts in the wavelength solution over the interval of an
+integration can artificially broaden spectra (see Whitmore et al., 1979, Ap. J.,
+234, 68).  There is usually an instrumental width that must be subtracted in
+quadrature from the dispersions found here to give accurate results.  (See
+Whitmore et al., 1979.)  A light profile that is not 
+centered in the slit can give
+systematic errors in redshift.  Your data, your observation log, and the
+solutions provided by this program must all be examined carefully as an
+integral whole to produce accurate results.
+ 
+In brief, the Fourier Quotient technique assumes that a galaxy spectrum is
+simply the convolution of a stellar spectrum with a Gaussian which describes
+the line of sight velocity dispersion of the galaxy's constituent stars.
+The ratio of the Fourier Transform of the galaxy spectrum to that of a stellar
+template is then simply a complex Gaussian in Fourier space with an
+imaginary part described by the redshift and the real part described by
+the Gaussian velocity distribution.  This complex Gaussian is fit
+by a non-linear Chi-square minimization process to obtain the redshift,
+the dispersion of the Gaussian, and a line strength parameter (i.e., the
+normalization of the Gaussian.  In some average sense it gives the relative
+strength of spectral features in the galaxy to those of the stellar template.)
+ 
+The templates are all read first.  They are checked to make sure that
+1) they are all on the same wavelength scale, and 2) they each have the same
+number of data points.  The wavelength scale must be logarithmic.  It is
+specified in the header by the starting wavelength (W0 or CRVAL1) and the
+delta log lambda per pixel (WPC or CDELT1).  The dispersion must run along
+axis 1 of the image.  The templates should have the keyword VELOCITY in their
+headers.  This specifies the OBSERVED velocity (km/sec, + => receding) for the
+date of the observation.  (N.B.: you must do your own correction from
+heliocentric to observed velocities.)  If VELOCITY is not found, it is assumed
+to be zero.
+
+The objects are then read one at a time.  They must match the templates in
+number of points and in wavelength scale.  The object and the templates are
+fit by a low order polynomial which is subtracted to remove the continuum,
+and they are divided by the average value of the spectrum.  The ends of the
+spectra are windowed by a cosine bell to suppress high frequency noise.
+If the number of points is not a power of two, the windowed spectra are padded
+with zeroes to the next highest power of two.
+ 
+The FFTs are computed, and the Fourier quotient is fitted to find the redshift,
+dispersion, and the line strength.  The fitted parameters are saved, and a
+summary output is produced for each object.  In this summary, the redshift is
+corrected for the velocity of the template star.  The redshift is given as
+cz in km/sec.  Note that you must supply your own correction from observed
+velocities to heliocentric velocities.  The quoted errors are one sigma on
+each parameter.  The results of each template are evaluated to determine
+if they are acceptable solutions:
+.nf
+1) 0.2 < Chi-square < 10.0,
+2) -500. < cz < 50000.,
+3) 25. < sigma < 750.,
+4) 0.25 < gamma < 1.5, and
+5) 0.001 < fractional uncertainty in a parameter < 10.0.
+.fi
+
+Results for acceptable templates are then averaged using uniform weighting
+and weighting by errors.  These averages and their dispersions are tabulated
+along with the mean error observed for each parameter and the largest error
+observed.  THESE VALUES MUST BE EXAMINED CAREFULLY SINCE THE CRITERIA FOR
+ACCEPTABLE SOLUTIONS IS SUBJECTIVE.
+ 
+The following keystrokes are active in addition to the normal IRAF
+cursor facilities (available with ":.help"):
+ 
+.ls c
+Prints cursor position in X and Y.  This is the default.  All other
+undefined keys perform this same function.
+.le
+.ls d
+Replaces a region between the marked vertical cursors with interpolated
+values from the edges of the marked region.  This is typically used to
+eliminate poorly subtracted night sky lines or emission lines.
+.le
+.ls q
+Quit and exit.
+.le
+.ls r
+Forces a replot of the current spectrum at the original scale.
+.le
+.ls z
+Prompts for an initial redshift estimate.
+.le
+.ih
+PARAMETERS
+.ls templates [file name template]
+List of file names of images that are to be used as templates.
+.le
+.ls spectra [file name template]
+List of file names of spectra to analyze.
+.le
+.ls zlist = 1000. [string]
+List of corresponding initial redshift estimates.
+.le
+.ls obj_plot = yes [boolean]
+Display a plot of the object spectrum?
+
+When the display is active, the normal IRAF cursor commands can be used
+as well as those described in the DESCRIPTION section of this help
+file.
+.le
+.ls window_plot = yes [boolean]
+Display a plot of the windowed object spectrum? 
+
+This is most
+useful for determining the appropriateness of the order of the polynomial
+chosen to fit the continuum and the size of the cosine bell window applied
+to either end of the spectrum.
+.le
+.ls fft_plot = yes [boolean]
+Display the power spectrum of the transformed object data?
+
+This is useful for setting the low order cutoff for the fits and for seeing
+if any periodic noise is present in the data.
+.le
+.ls fit_plot = yes [boolean]
+Plot the REAL portion of the Fourier quotient along with the best
+fitting Gaussian?
+.le
+.ls intermediate = yes [boolean]
+Record parameter values to the log files at each step in the 
+minimization process?
+
+It is highly recommended that this feature
+be activated so that the quality of the fit can be judged better.
+.le
+.ls sigma = 180. [real]
+This is the initial value assumed for the velocity dispersion.  Unlike the
+redshift, the resulting fit does not depend strongly on the initial value of
+sigma.
+.le
+.ls gamma = 0.80 [real]
+This is the initial value for the line strength parameter.  Again, the final
+fit does not depend strongly on gamma.
+.le
+.ls order = 4 [integer, min=1, max=10]
+This is the number of terms in the polynomial fit to the object and template
+spectra.  This polynomial is then subtracted from the raw object spectrum to
+remove the lowest frequency Fourier components.  The resulting spectrum can be 
+viewed if 'window_plot = yes'.  If 'order' is set properly, the spectrum should
+have a mean of zero with excursions from -1 to +1.
+.le
+.ls bell_window = 0.2 [real]
+A fraction 'bell_window' of the ends of the object and template spectrum are
+multiplied by a cosine bell.  This is to reduce high wave number Fourier
+components that would be produced by abrupt cutoffs at the ends of the spectra.
+.le
+.ls counts_per_photon = 1. [real]
+This is counts per photon, just like it says. This parameter is used so
+that correct statistical weighting is used in the fits.
+If your spectrum is from a CCD with a quantization of 4.3
+electrons per ADU, 'counts_per_photon = 4.3'.
+.le
+.ls low_bin = 5 [integer]
+Minimum wave number bin.
+Wave number bins lower than this value are excluded from the fit, giving
+greater weight to individual spectral features rather than the continuum shape
+(or the shape remaining after the windowing process.)  This parameter is
+loosely coupled to 'bell_window' -- low_bin ~ 1 / bell_window as recommended
+by Brault and White, 1971, Astr. Ap., 13, p. 64.
+.le
+.ls nrun = 20 [integer], initial_chi = 20. [real]
+These parameters determine the high frequency cutoff of the fit.
+A running sum over 'nrun' bins of the transformed spectrum is performed,
+and the high frequency cutoff is chosen to be the first wave number for
+which the running sum over the inverse of the fractional uncertainty in the
+transform is less than 'initial_chi'.  Additional higher frequency components
+after this point contribute little more than noise.  The results of the fit
+usually do not depend strongly on the values chosen for 'bell_window', 
+'low_bin',
+'nrun', or 'initial_chi', although 'low_bin' can strongly 
+affect the value of the
+velocity dispersion found in noisy data (e.g., if a velocity dispersion is
+found with a fractional uncertainty of ~25% or more, changing 'low_bin' can
+change the best fit answer by ~25%).
+.le
+.ls converge = 0.1 [real]
+This parameter defines the criteria for convergence in the chi-square
+minimization process.  If all parameters fractionally change by less than this
+value from one iteration to the next, the iterative minimization process
+is halted.
+.le
+.ls max_iterations = 10 [integer]
+This sets the maximum number of iterations permitted in the chi-square
+minimization process.
+.le
+.ls logfiles = "STDOUT,fquot.log" [string]
+All task results from are recorded in these log files.
+.le
+.ls cursor = "" [graphics cursor]
+Graphics cursor input.  When null the standard cursor is used otherwise
+the specified file is used.
+.le
+
+The following parameters are used in response to particular keystrokes:
+
+.ls z0 [real]
+In response to 'z', this parameter specifies an initial redshift estimate.
+.le
+.ih
+EXAMPLES
+1. Obtain the redshift and dispersion of a single galaxy with an initial guess
+at the redshift of 3500. km/sec:
+
+.nf
+cl> fquot template galaxy 3500.
+.fi
+
+2. Obtain redshifts for a whole night's worth of galaxy spectra using 5
+different templates:
+
+.nf
+cl> fquot @temp.ls @nite1.ls @z.ls
+.fi
+
+In this example, the file 'temp.ls' contains the 
+names of the 5 template images, the
+file 'nite1.ls' contains the name of the galaxy images, and 'z.ls' contains
+the initial redshift estimates corresponding to the individual galaxies.
+.ih
+TIME REQUIREMENTS
+Little time is spent in actually reading, windowing, and performing
+FFTs on the data.
+Most of the computational effort is expended in the non-linear least-squares
+fit of a complex Gaussian to the Fourier quotient.
+.ih
+BUGS
+The solution is found by minimizing chi-square with a modified Marquardt
+algorithm.  Due to the noisy nature of the Fourier quotient, the minimization
+routine can get easily lost if 1) the template is not a good match to the 
+galaxy spectrum, or 2) the initial redshift estimate is grossly in error.
+A simplex minimization algorithm might give better results.
+
+Arithmetic errors are not trapped, and they cause the process to halt.
+This can be annoying if you wish to run many solutions overnight and a
+rotten apple ruins the job near the beginning.
+.ih
+SEE ALSO
+.endhelp

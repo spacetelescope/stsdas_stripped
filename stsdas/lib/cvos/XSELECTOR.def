@@ -1,0 +1,69 @@
+xselector
+# 08 January 1999 - MDD: Initial version of SELECTOR interface.
+
+# Relative to directory /usr/ra/tables/lib/tbtables/selector
+
+/h/# include <c_iraf.h>
+/h/
+/h/# define IS_UNKNOWN 0
+/h/# define IS_IMAGE 1
+/h/# define IS_TABLE 2
+/h/
+
+# SELECTOR includes and private routines
+/c/# include <xselector.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+# Decompose a file name into root and selectors
+rdselect.x:procedure rdselect (file:i, root:o[maxch], rowselect:o[maxch], colselect:o[maxch], maxch:i)
+
+# Functions associated with columns
+tcsopen.x:procedure tcs_open (tp:i, columns:i, descrip:o, ndescrip:o, maxdescrip:i)
+tcsclose.x:procedure tcs_close (descrip:i, ndescrip:i)
+tcsshape.x:procedure tcs_shape (descrip:i, length:o, ndim:o, maxdimen:i)
+tcstotsize.x:int procedure tcs_totsize (descrip:i)
+
+# Functions associated with rows
+trsopen.x:pointer procedure trsopen (tp:i, expr:i)
+trsclose.x:procedure trsclose (trs:i)
+trseval.x:bool procedure trseval (tp:i, irow:i, pcode:i)
+
+# Create and destroy a row set
+rst.x:pointer procedure rst_copy (set1:i)
+rst.x:pointer procedure rst_create (loval:i, hival:i)
+rst.x:procedure rst_free (set:i)
+
+# Add or delete a row from the set
+rst.x:procedure rst_addval (set:i, value:i)
+rst.x:procedure rst_delval (set, value:i)
+
+# Update set to match insertion or deletions to table
+rst.x:procedure rst_addtab (set:i, loval:i, nval:i)
+rst.x:procedure rst_deltab (set, loval:i, nval:i)
+
+# Logical operations on a set
+rst.x:pointer procedure rst_and (set1:i, set2:i)
+rst.x:pointer procedure rst_or (set1:i, set2:i)
+rst.x:pointer procedure rst_not (nrow:i, set1:i)
+
+# Check to see if a row is in the set
+rst.x:bool procedure rst_inset (set:i, value:i)
+
+# Get number of rows in the set
+rst.x:int procedure rst_nelem (set:i)
+
+# Retrieve the i-th row from the set
+rst.x:int procedure rst_rownum (set:i, index:i)
+
+# Make a string representation of a set
+rst.x:procedure rst_show (set:i, str:o, maxch:i)
+
+# Routines to read arrays
+generic/tcsrdaryb.x:procedure tcs_rdaryb (tp:i, descrip:i, irow:i, maxbuf:i, nbuf:o, buffer:o)
+generic/tcsrdaryc.x:procedure tcs_rdaryt (tp:i, descrip:i, irow:i, maxch:i, maxbuf:i, nbuf:o, buffer:o[maxch:maxbuf])
+generic/tcsrdaryd.x:procedure tcs_rdaryd (tp:i, descrip:i, irow:i, maxbuf:i, nbuf:o, buffer:o)
+generic/tcsrdaryi.x:procedure tcs_rdaryi (tp:i, descrip:i, irow:i, maxbuf:i, nbuf:o, buffer:o)
+generic/tcsrdaryr.x:procedure tcs_rdaryr (tp:i, descrip:i, irow:i, maxbuf:i, nbuf:o, buffer:o)
+generic/tcsrdarys.x:procedure tcs_rdarys (tp:i, descrip:i, irow:i, maxbuf:i, nbuf:o, buffer:o)

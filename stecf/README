@@ -1,0 +1,30 @@
+The "stecf" IRAF Layered Package
+Version 1.2, July 2001
+
+This directory tree contains a variety of Iraf tasks, grouped in
+packages, which have been developed at the Space Telescope European
+Coordinating Facility. They are mostly, but not exclusively, to help
+with the reduction and analysis of Hubble Space Telescope data.
+
+More details concerning the content of these packages can be found at:
+
+http://www.stecf.org/software/stecf-iraf/
+
+including a link to a poster paper presented at the ADASS 99 conference
+in which this software was described.
+
+Instructions for installing the packages are given in the INSTALL file.
+
+First release, Richard Hook, ST-ECF, May 2000
+
+Updated to V1.1, November 2000 - removed drizzle and drizzle IRAF variable
+and installed latest version of IMPOL which includes ACS support.
+Richard Hook
+
+Updated to V1.2, July 2001 - added the "specres" package and an updated
+"impol" package, both from Jeremy Walsh. This version goes into Scisoft
+III, July 2001.
+
+Updated version of V1.2 put on web pages to fix problem discovered
+with driztools/traxy+tranback. Richard Hook, November 2001.
+

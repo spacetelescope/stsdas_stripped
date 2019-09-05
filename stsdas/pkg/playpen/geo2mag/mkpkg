@@ -1,0 +1,8 @@
+$checkout playpen.a ../
+$update playpen.a
+$checkin playpen.a ../
+$exit
+
+playpen.a:
+        t_geo2mag.x     <tbset.h>
+        sphere.x        <math.h> "sphere.h"

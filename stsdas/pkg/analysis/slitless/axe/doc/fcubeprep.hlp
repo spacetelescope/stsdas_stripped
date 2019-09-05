@@ -1,0 +1,130 @@
+.help fcubeprep Jun2010 axe
+.ih
+NAME
+fcubeprep -- compute fluxcube images from a set of MultiDrizzled images
+.ih
+USAGE
+.nf
+fcubeprep grism_image segm_image filter_info AB_zero dimension_info interpol
+.fi
+.ih
+PARAMETERS
+.ls grism_image
+Name of the MultDrizzled grism image.
+.le
+.ls segm_image
+Name of the SExtractor segmentation image.
+.le
+.ls filter_info
+File containing filter info for direct images.
+.le
+.ls (AB_zero = yes) [boolean]
+Is direct image filter info in AB mags?
+.le
+.ls (dimension_info) [float,float,float,float]
+Numbers to extend the natural image size [left, right, bottom, top].
+.le
+.ls (interpol) [poly5|poly3|linear|nearest]
+Interpolation type used in the blotting.
+.le
+.ih
+DESCRIPTION
+The task generates fluxcube images for grism images, which can then be used
+to compute contamination or optimal weights on the basis
+of the fluxcube emission model.
+
+The header of a MultiDrizzled grism image is analyzed and the names
+and drizzle parameters of all input images are extracted. Then the
+segmentation image (given in parameter 'segm_image') and all direct filter
+images (given in parameter 'filter_info') are used to create a fluxcube
+image for every science extension of an input image.
+
+The fluxcube images can span a larger area than their corresponding input
+images. The number of rows and columns (with respect to the input image)
+can be modified with the parameter 'dimension_info'. This makes it possible
+to take into account known objects outside of the input image area in the
+computation of the contamination.
+
+For each MultiDrizzled direct image the triplet
+'image_name, central wavelength in [nm], zeropoint' must be known. For a
+single direct image this information can be specified directly as a
+parameter. If several images at different wavelengths are
+available, the information is stored in a text file, using one line for each
+direct image, with the filename given as the parameter value. The
+zeropoints provided can be in either the AB- or in ST-magnitude system.
+The parameter 'AB_zero' must be set to 'yes' if the zeropoints are
+in the AB magnitude system and to 'no' for ST zeropoints.
+The filter_info file 'grappa_dirims.lis', which specifies the filter info 
+for three direct images, could look as follows:
+
+.nf
+grappa_f555w_drz.fits, 555, 25.672
+grappa_f606w_drz.fits, 606, 26.655
+grappa_f435w_drz.fits, 435, 25.157
+.fi
+
+The zeropoints given are in the ST-magnitude system, it is therefore
+necessary to to set 'AB_zero="no"' when running the task.
+
+The output fluxcube images will have filenames of the form:
+.nf
+'<input image name>_<cfitsio extension number>.FLX.fits', e.g.
+.fi
+
+.nf
+j90zn1p2q_flt.fits --> j90zn1p2q_flt_2.FLX.fits and j90zn1p2q_flt_5.FLX.fits
+.fi
+
+for the ACS image 'j90zn1p2q_flt.fits'.
+
+The drizzle coefficients files (such as 'j90zn1p2q_flt_coeffs1.dat'
+and  'j90zn1p2q_flt_coeffs2.dat' for the ACS image given above) must
+be present when running the task fcubeprep. It is most  convenient  to
+run  the  task  directly  in  the  directory where the MultiDrizzled grism
+image was created.
+
+The projection of the MultiDrizzled direct images back into the
+coordinate system of each input grism image is done with the task
+'blot' from the IRAF/STSDAS dither package. The parameter 'interpol' specifies
+which algorithm 'blot' uses for the image resampling. 
+
+To work properly the MultiDrizzled grism image and all MultiDrizzled
+direct images must have the same dimensions, and every pixel
+(x,y) in every image must represent the same position (RA,Dec) on the sky!
+  
+.ih
+EXAMPLES
+1. Create fluxcube images for all input images used to create the
+MultiDrizzled grism image 'grappa_g800l_drz.fits' using the segmentation
+image 'grappa_f555w_segm.fits' and the direct images specified in the
+file 'grappa_dirims.lis':
+.nf
+
+     ax> fcubeprep grappa_g800l_drz.fits grappa_f555w_segm.fits
+                   grappa_dirims.lis
+.fi
+
+2. As in 1, but add 100 collumns to the left and 50 rows at the top
+of each fluxcube extension. Use a linear resampling in the 'blot' task.
+.nf
+
+     ax> fcubeprep grappa_g800l_drz.fits grappa_f555w_segm.fits
+                   grappa_dirims.lis "100,0,50,0" linear
+.fi
+
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to the aXe manual for more detailed information about using this task:
+.nf
+
+http://axe.stsci.edu/axe/
+
+.fi
+.ih
+SEE ALSO
+iolprep
+.endhelp

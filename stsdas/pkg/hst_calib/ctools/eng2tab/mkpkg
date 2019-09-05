@@ -1,0 +1,10 @@
+$checkout ctools.a ../
+$update ctools.a
+$checkin ctools.a ../
+$exit
+
+ctools.a:
+	t_eng2tab.x	<cif.h>
+	bu_obj.x	<ctotok.h> <error.h> <evexpr.h> <imhdr.h> \
+			<tbset.h> <pkg/dttext.h> "bu_obj.h" "bu_obj.com"
+	;

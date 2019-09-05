@@ -1,0 +1,103 @@
+.help stamps Jul2005 axe
+.ih
+NAME
+stamps -- generate stamp images from a pixel extraction table
+.ih
+USAGE
+.nf
+stamp grism config
+.fi
+.ih
+PARAMETERS
+.le
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Name of grism/prism extraction configuration file.
+.le
+.ls (sampling = drizzle) [drizzle|rectified|trace]
+Which sampling should be used generating the stamp?
+.le
+.ls (drzpath = false) [boolean]
+Use the directory indicated by the system variable $AXE_DRIZZLE_PATH
+to located the input PET and write the output stamp image (STP).
+.le
+.ls (in_af = "") [string]
+Name to use for the input AF file with the stamp images instead of the default.
+.le
+.ls (in_pet = "") [string]
+Name to use for the input PET file with the stamp images instead of the default.
+.le
+.ls (out_STP = "") [string]
+Name to use for the output file with the stamp images instead of the default.
+.le
+.ih
+DESCRIPTION
+This task uses the content of a Pixel Extraction Table (PET) file to 
+generate a Stamp Image File (STP) containing stamp images of the BEAMs that 
+were extracted.
+
+The task can create different kind of stamp images:
+
+.nf
+sampling="drizzle"  : fully resampled stamp images in the
+                      trace length - cross dispersion plane
+                      with the trace axis parallel to the
+                      x-axis
+sampling="rectified": not resampled stamp images in the
+                      trace length - cross dispersion plane
+                      with the trace axis parallel to the
+                      x-axis
+sampling="trace":     trace axis and cross dispersion axis
+                      as in the flt-image
+.fi
+
+This task allows one to quickly check that the extraction angle used was the 
+appropriate one. Because this task uses the content of a PET and not the 
+original input slitless image, it offers a good check of what pixels were used 
+during the extraction process.
+
+Using drizzle sampling the stamp images could even be used to combine
+spectra of the same object from different images (similar to axedrizzle).
+To aid this usage, each stamp image (extension '[BEAM_<object id><beam id>]')
+is accompanied by the corresponding weight image
+(extension '[WEIG_<object id><beam id>]').
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input PET would be
+called <grism-rootname>_<science extension>.PET.fits and the output stamps
+image file would be <grism-rootname>_<science extension>.STP.fits. 
+.ih
+EXAMPLES
+1. Create a stamp image for all beams in the corresponding PET file
+using the 'drizzle'-sampling:
+
+.nf
+  ax> stamps test_grism_1.fits SLIM.conf.test.0 sampling='drizzle'
+.fi
+
+2. As in 1., but use the environmental variable $AXE_DRIZZLE_PATH
+to load the PET and save the resulting stamp file:
+
+.nf
+  ax> stamps test_grism_1.fits SLIM.conf.test.0 sampling='drizzle'
+             drzpath='yes'
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+.endhelp

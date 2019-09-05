@@ -1,0 +1,27 @@
+
+ This directory contains the following source files which correspond to
+ examples in the CVOS User's Guide.  The names of the source files have
+ been modified slightly from the examples presented in the CVOS User's 
+ Guide in order to be unique and to generate uniquely named executables.  
+ In order to compile the source code, one must either rename the uniquely
+ named mkpkg file to "mkpkg" (e.g., rename h_mkpkg to mkpkg), or one must
+ explicitly name on the command line the mkpkg file to be interpreted 
+ (e.g., mkpkg -f h_mkpkg).
+
+ Please note that due to potential conflicts in file name length, a new macro 
+ (IRAF_SZ_FNAME) will be defined in the c_iraf.h file in the next version of
+ the CVOS.  At this time, the source files here define and use the local
+ SZ_FNAME macro.  
+
+ README          - this file
+ h_openimage.c   - Example 1: Source for the host-level C task, h_openimage.
+ h_mkpkg         - Example 2: Host-level C task mkpkg file for Example 1.
+ n_openimage.c   - Example 4: Source for the native IRAF C task, n_openimage.
+ n_mkpkg         - Example 5: Native IRAF C task mkpkg file for Example 4.
+ n_openimage.par - Example 6: Native IRAF C task parameter file for Example 4.
+
+ h_globalhandler.c - Example 9: Source for the host-level C task, 
+                     h_globalhandler.
+ h_globalmkpkg     - Host-level C task mkpkg for Example 9.
+ wrtable.c         - Example 10: Source for the host-level C task, wrtable.
+ wrtable_mkpkg     - Example 11: Host-level C task mkpkg file for Example 10.

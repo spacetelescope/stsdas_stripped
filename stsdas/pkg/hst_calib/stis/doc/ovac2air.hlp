@@ -1,0 +1,109 @@
+.help ovac2air June2002 stis.ovac2air
+.nj
+.ih
+NAME
+ovac2air -- Convert wavelengths from vacuum to air.
+.ih
+USAGE
+ovac2air input <output>
+.ih
+DESCRIPTION
+The task 'ovac2air' will convert the wavelengths in
+the WAVELENGTH column of 1-D extracted STIS spectra from vacuum to air.
+Only wavelengths longer than 2000 Angstroms will be converted;
+shorter wavelengths will not be modified.
+See below for further details.
+
+If both input and output file names are given,
+the input file is first copied to output,
+and 'ovac2air' operates on the output file.
+If only one name is given,
+'ovac2air' modifies that file in-place.
+
+The input file should be an _x1d.fits or _sx1.fits file,
+i.e. the table written by 1-D extraction.
+There can actually be multiple tables in the one file,
+e.g. for repeatobs data;
+all tables in the file will be processed.
+After correction, a HISTORY record will be added to the table header
+(not to the primary header) saying that the correction was applied.
+
+The expression for the index of refraction of air
+at "standard conditions" is
+.nf
+    ns = 1 + 643.28e-7 + 294981.e-7 / (146. - sigma**2) +
+                           2554.e-7 / (41. - sigma**2)
+.fi
+
+where sigma is the wavenumber,
+the reciprocal of the wavelength in micrometers.
+This is for dry air with 0.03 percent carbon dioxide,
+at a pressure of 101325 Pa (760 mm mercury)
+and a temperature of 288.15 K (15 C).
+
+To correct to air wavelengths at a different temperature or pressure,
+use 'tcalc' instead of 'ovac2air',
+and modify (ns-1) using either of the following expressions:
+
+.nf
+    n - 1 = (ns - 1) * (P / Ps) * (Ts / T)
+
+    where
+
+        T = temperature in Kelvins
+        P = pressure in Pascals
+        Ts = 288.15 K
+        Ps = 101325 Pa
+        ns = index of refraction of air given above
+        (see Cox, p 262)
+
+or
+    n - 1 = (ns - 1) * P * (1 + P * beta(T)) * (1 + 15*alpha) /
+                     (760 * (1 + 760*beta15) * (1 + T*alpha))
+
+    where
+
+        T = temperature in degrees C
+        Ts = 15 degrees C
+        P = pressure in mm of mercury
+        Ps = 760 mm
+        alpha = 0.00366
+        beta(T) = (1.049 - 0.015*T)*1.e-6
+        beta15 = 8.13e-7
+        ns = index of refraction of air given above
+        (see AIP Handbook, p 6-111)
+.fi
+.ih
+PARAMETERS
+.ls input
+Input file name containing 1-D extracted spectra.
+.le
+.ls output
+If this parameter is null,
+the input file will be modified in-place.
+If an output file was specified,
+the input file will be copied to 'output',
+and the WAVELENGTH column in that copy will be modified.
+.le
+.ih
+EXAMPLES
+1. Convert the wavelengths in o47s01k9m_x1d.fits from vacuum to air,
+writing the output to o47s_air_x1d.fits:
+
+.nf
+	cl> ovac2air o47s01k9m_x1d.fits o47s_air_x1d.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+
+The expression for the index of refraction of air is from
+Edlen, B., 1953, J Opt Soc Amer, vol 43, p 339;
+or see 2000, Allen's Astrophysical Quantities, edited by A.N. Cox, p 262;
+or the American Institute of Physics Handbook, edited by D.E. Gray, p 6-111.
+.ih
+SEE ALSO
+ctools.vac2air
+.endhelp

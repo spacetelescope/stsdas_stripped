@@ -1,0 +1,73 @@
+	****  GCOMBINE task ****
+										
+CY Zhang, STScI, July 1994
+
+Revision history:
+	V 1.3.0   /  5 Jul 94	CYZhang: Initial implementation
+
+GCOMBINE -- Combine a set of GEIS images while rejecting outliers
+
+The following STSDAS source modules are required:
+
+	  FILE		CONTAINS
+	___________	_________________________
+	x_gcombine.x	"task" statement
+	t_gcombine.x	t_gcombine, g_gcombine, gc_init, ty_max, gc_input, 
+			gc_outut, gc_nsmodel
+	g_combine.gx	gcombine$t
+	gc_scale.x	g_scale, g_getszw, g_nmvar, g_mask
+	gc_gdata.gx	g_getdata
+	gc_cclip.gx	g_accdclip$t, g_mccdclip$t
+	gc_rsclip.gx	g_arsigclip$t, g_mrsigclip$t
+	gc_asclip.gx	g_aavsigclip$t, g_mavsigclip$t
+	gc_eclip.gx	g_aerrclip$t, g_merrclip$t
+	gc_mm.gx	g_mm$t
+	gc_average.gx	g_uaverage$t, g_paverage$t
+	gc_median.gx	g_median, g_med$t
+	gc_sigma.gx	g_usigma$t, g_psigma$t
+	gc_sort.gx	gc_sort$t, gc_2sort$t
+	gc_util.x	g_log1, g_log2, g_section, myparse, gc_filnam
+	gc_stat.gx	g_secstat$t, g_mode$t
+	gcombine.h
+	gcombine.com
+
+
+Program design overview, including calling arguments:
+
+    t_gcombine ()		-- get input parameters, alloc structures
+	g_gcombine 		-- init input/output files, do combine, close 
+				   up files 
+	    gc_init 		-- open input images and check on consistency
+	    gc_nsmodel  	-- get noise model parameters
+	    gc_output   	-- open combined image, rej_cnt image, and 
+				   sigma image
+	    gcombine$t		-- do actual rejection and combining
+		g_scale		-- get scaling factors and weights
+		    g_getszw	-- get scaling and weighting options
+		    g_nmvar	-- get variance from noise model
+		    g_secstat$t -- get image section for statistics
+		    g_mode$t	-- get mode, median, or mean of image section
+		    g_log1	-- log useful information
+		    g_log2      -- log more useful information
+		g_getdata$t	-- get image lines, do masking and thresholding
+		    g_sort$t    -- sort data array
+		    g_2sort$t 	-- sort data and image ID arrays
+		g_accdclip$t 	-- ccdcliping using mean
+		    g_nmvar	-- get variance from noise model
+		g_mccdclip$t	-- ccdcliping using median
+		    g_nmvar	-- get variance from noise model
+		g_arsigclip$t	-- robust sigma clipping using mean
+		g_mrsigclip$t	-- robust sigma clipping using median
+		g_aavsigclip$t	-- average sigma clipping using mean
+		g_mavsigclip$t	-- average sigma clipping using median
+		g_aerrclip$t	-- error clipping using mean
+		g_merrclip$t	-- error clipping using median
+		g_mm$t		-- clipping low and high
+		g_uaverage$t	-- uniform weighted average
+		g_paverage$t	-- pixel-wise weighted average
+		g_median$t	-- get median
+		g_usigma$t	-- get sigma map with uniform weights
+		    g_nmvar	-- get variance from noise model
+		g_psigma$t	-- get sigma map with error maps
+
+

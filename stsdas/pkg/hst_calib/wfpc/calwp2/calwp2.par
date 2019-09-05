@@ -1,0 +1,4 @@
+# Parameter file for CALWFP (actually accessed by the module t_calwfp)
+#
+inname,s,a,,,,input file rootname
+outname,s,a,,,,output file rootname [optional]

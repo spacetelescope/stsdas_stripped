@@ -1,0 +1,7 @@
+input,s,a,,,,>input image
+output,s,a,,,,>output image
+size,i,h,3,3,,>size of filtering box
+threshold,r,h,INDEF,,,>threshold
+niter,i,h,1,1,,>number of iterations
+verbose,b,h,no,,,>verbose ?
+mode,s,h,al,,,

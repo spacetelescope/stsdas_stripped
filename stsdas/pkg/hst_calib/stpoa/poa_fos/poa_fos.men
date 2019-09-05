@@ -1,0 +1,13 @@
+Menu for the package stpoa.poa_fos
+
+         poa_calfos - Post Operational Archive Pipeline calibration for FOS.
+    poa_preproc_fos - Task for preprocessing FOS data, for additional 
+                      keywords needed by poa_calfos.
+         processfos - Task for running the FOS preprocessing and pipeline 
+                      back-to-back.
+       pfos_pix2wav - Task to calculate wavelength positions from FOS pixel 
+                      positions.
+       pfos_dispfit - Obtain dispersion coefficients for FOS ccs6 
+                      reference file.
+
+(Type "help poa_fos opt=sys" for more information about the poa_fos package).

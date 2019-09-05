@@ -1,0 +1,19 @@
+input,f,a,"",,, Input file list
+output,f,a,"",,, Output file list
+salgorithm,s,h,"quick","|quick|iter|constant|none|",, Sky fit algorithm (quick|iter|constant|none)
+skyvalue,r,h,0.0,,, User sky value
+smin,r,h,INDEF,,, Minimum sky scaling factor
+smax,r,h,INDEF,,, Maximum sky scaling factor
+maxiter,i,h,12,0,, Maximum number of sky computation iterations
+tol,r,h,0.002,0,, Fractional tolerance for sky convergence
+keepflags,b,h,yes,,, Keep source flags in output image?
+flatfield,s,h,"",,, Flatfield file name for sky subtraction
+statregions,pset,h,"",,, Image sections for measuring statistics (pset)
+dqon,b,h,yes,,, Turn on pixel masking by Data Quality bits?
+nicdqpar,pset,h,"",,, Data Quality bits (pset)
+rmedian,b,h,no,,, Do ring median filtering before computing rms?
+rin,r,h,6.0,0,, Inner radius for ring filter
+rout,r,h,12.0,0,, Outer radius for ring filter
+verbose,b,h,yes,,, Verbose output?
+version,s,h,"30Sep2005",,, Date of installation
+mode,s,h,al

@@ -1,0 +1,431 @@
+.help FOC_USER_GEO Jul88 "FOC 8.1"
+.ih
+CHAPTER
+FOC_USER_GEO -- user cookbook for geometrically calibrating and correcting 
+                   FOC images
+
+.ih
+SUMMARY
+Summary of FOC_USER_GEO:
+
+.nf
+Sections:
+	Introduction
+	First things first
+	Now what?
+	Grid generation
+	rmark
+	rfindx
+	rfitx
+	revalfitx
+	Finally!!
+.fi
+
+.ih
+Introduction
+
+This cookbook is intended to help users reduce FOC data. The software described 
+here may also be used to perform other corrections besides instrumental 
+distortion.
+The data is supposed to be on disk in either SDAS (.hhh) or IRAF (.imh) format.
+The task 
+rfits (in the dataio package) can be used to read a 
+FITS tape and write the images on disk.
+
+some definitions :
+.ls reseau mark: 
+fiducial marks in the image made at the photocathode of the 
+instrument. 
+.le
+.ls grid: 
+table with reseaux positions
+.le
+.ls identifier: 
+name of one of the grids in a reseau file
+.le
+.ih
+First things first
+Now that you have the image, what's next? You must use the package 
+focgeom inside stsdas, 
+
+.nf
+$ irafx
+$ cl
+
+           STScI VMS/IRAF Revision 2.6 Fri Apr 22 14:58:42 EDT 1988
+        This is the STScI development version of VMS/IRAF version 2.6. 
+
+      dataio      language    noao        softools    utilities   
+      dbms        lists       plot        stsdas      
+      images      local       sdas        system      
+
+cl> stsdas
+      astrometry  fos         rsdputil    stlocal     ttools      
+      cdbsutil    fourier     simulators  telemetry   tvdisplay   
+      fgs         hrs         spectra     timeseries  wfpc        
+      foc         hsp         statistics  tools       
+st> foc
+      FOC_PRINT_GUIDE   focgeom           focphot           
+      focapropos        focops            focutility        
+
+fo> focgeom
+      findresx      rdirectoryx   rfixx         rplotx        slitanglex
+      geomcorrx     revalfitx     rgenx         rprintx       
+      rappendx      rfindx        rinterx       rtodbx        
+      rdifferx      rfitx         rmarkerx      rtransformx   
+.fi
+
+A very brief description of the tasks in this packages is obtained by  typing 
+help
+
+.nf
+fo> help
+findresx      automatic approximate location of reseau
+geomcorrx     geometrically correct an image
+rappendx      append reseau entries from one file to another
+rdifferx      take differences between reseau entries and plot histogram
+rdirectoryx   print directory of entries in reseau file
+revalfitx     evaluate fitc produced by rfitx at specified points
+rfindx        locate reseau marks in an image
+rfitx         fit distortion field with a choice of functions
+rfixx         fix holes in reseau file entries
+rgenx         generate reseau file or entry
+rinterx       perform simple interpolation between reseau grids
+rmarkerx      interactive approximate location of reseau marks
+rplotx        plot magnified vector differences between reseaux
+rprintx       print out reseau data
+rtodbx        print reseau data suitably for images package geometry tasks
+rtransformx   perform linear transformations on reseau(x) coordinates
+slitanglex    measure angle of long slit spectrum to axis 1
+.fi
+
+For a more detailed description type  help focgeom opt=sys, 
+ help reseau_files   for more information about reseau files and 
+ help foc_conventions for more information about FOC specific 
+conventions.
+.br
+In the rest of this cookbook we'll describe in more detail some of these tasks.
+.ih
+Now what?
+Now that you have the image on disk and have loaded the  focgeom 
+package you can start the corrections. It is convenient, at this point to run
+the task imstat (in the images package) to know something 
+about your data. Typical output of  imstat looks like this:
+
+.nf
+##             IMAGE      PIXELS        MEAN     STD DEV     MINIMUM     MAXIMUM
+             rot5330       48636        1.58       60.33          0.       7494.
+.fi
+
+The next step in the reduction is to know where the reseaux marks are. There are
+two ways to do it. The first one is to put the image up on the tv (using the 
+task  load in  sdas.tvdisplay). The parameters  imin and 
+ imax should be set at very low values (generally between 0 and 10) as 
+the position of the reseau the intensity value of that pixel is zero. Your image
+will look like the one in Figure 1.
+
+
+.nf
+                     See Figure 1 
+             FOC image with reseaux marks
+.fi
+
+Then, 
+using the task  tvcursor  generate a table with  the positions of the 
+marks. This table must be completed by rows starting with the mark 
+at the lower left corner of the image and going to the right. If there are 
+incomplete columns, the position of the reseaux in them can be measured at the 
+end and following a certain order, i.e. going upwards in these columns. It is 
+important to remember the way this table was generated. 
+
+The other way of the determining the positions of the marks is by using the 
+task  rmark of the  focgeom package. This task will generete in 
+your 
+screen a plot of your image in which you can locate the marks. In order to use 
+it you must generate a grid.
+.ih
+Grid generation
+Grids are generated using the task  rgenx. An edited parameter file might
+look like this:
+.nf
+############ include an epar output
+.fi
+
+As  coordfile you can give either a table or a text file with the 
+positions. If this is the case then  gridtype = grid. If you just want to
+generate a generic grid and use  coordfile = STDIN, in which you specify 
+the beginning and end of the marks (e.g., 0 500 0 500), then  gridtype = 
+squa. 
+As a reseau file can contain multiple entries ( you might like to have in it the
+correct and distorted positions), the parameter  entry will give a name 
+to the generated grid. With  rdir reseau--file you can list all the 
+entries in the table.
+
+Besides the distorted grid and the ``theoretical" 
+(i.e. the ``where I want them" 
+positions) you will need a large grid (30 by 30, for example) to evaluate the 
+fit.
+
+
+NOTE: In the present implementation of SDAS/IRAF 
+tvcursor generates 
+tables consisting of two files (.tbh and .tbd, a data and header file). To use 
+the tasks in the focgeom package these tables need to be converted to a "new" 
+format using the task told in the stsdas.ttools package
+
+.ih
+rmark
+
+Now you have a reseau file and an image you can locate the marks with   
+rmark. A typical screen is shown in the following figure.
+
+.nf
+                 Figure 2
+.fi
+
+Several things can be done at this stage, in particular moving marks 
+to better positions. The commands that enable you to perform them are the 
+commands that follow:
+
+.nf
+        Interactive Geometric Approximate Reseau Location Keystrokes
+    
+    
+    ?   print options for keystrokes
+    b   go  back  to the original template positions 
+    f   specify 4 sets of  reseau  mark  and  the  new  location.
+    l   lock  on  to the reseau 
+    o   specify  1  reseau  mark  and  its  new location. 
+    p   move  one  point.  
+    q   exit the interactive approximate reseau location and  write  the
+        new  positions  to the output reseau file. 
+    r   replot all the points. 
+    s   show  the  new  reseau  positions. 
+    t   specify 2 sets of reseau  mark  and  the  new  locations.
+    u   undo the changes in positions since the last s.
+    
+    :show                   List parameters
+    :upper          r       Upper limit to mark image pixels
+    :lower          r       Lower limit to mark image pixels
+    :border         i       Border around image edge to ignore
+    :outside        yes/no  Plot image points outside interval (lower,upper)
+    :maxpoints      i       Maximum number of points of image to plot
+    :xsearch        i       x side of box used to search for min pixel
+    :ysearch        i       y side of box used to search for min pixel
+    :x1             r       Alter viewport lower x
+    :x2             r       Alter viewport upper x
+    :y1             r       Alter viewport lower y
+    :y2             r       Alter viewport upper y
+.fi
+
+As there might be bad data near the end of the images specify a sufficient large
+mask with  border.
+
+A complete list and explanation is in the appendix with the listing of all the 
+help files of this package.
+
+.ls tvcursor  vs. rmarkx
+If you don't know anything about you image, it is easy to use  tvdisplay 
+and get the cursor positions as rmark can take long to draw the image in the 
+terminal screen. For a succesion of images, in which the last reseau file is 
+used as the distorted position of the next file it is more convenient to use 
+ rmark.
+.le
+.ih
+rfind
+Now that you found approximate positions in the distorted grid, you can use
+ rfind to accurately locate the marks.
+A parameter file might be
+
+.nf
+
+        input = "xiv001"        >input image         (required)
+        inres = "res13_13"      >input  reseau file  (optional)
+     refentry = "approx13"      >input  reseau entry (optional)
+       outres = "rfindout14"    >output reseau file  (optional)
+        entry = "tape1401"      >output reseau entry (optional)
+    modelfile = "model1.mod"    >model data
+     (search1 = 7)              >search area axis1
+     (search2 = 7)              >search area axis2
+       (depth = 50.)            >depth required for acceptance
+   (coordfile = "")             >coordinate file with x,y pairs
+       (ncols = 8)              >grid size -  number of columns
+       (nrows = 8)              >grid size -  number of rows
+     (verbose = no)             >print diagnostic messages
+    (noindefs = yes)            >leave unlocated mark coords unchanged ( NOT IN
+       (inner = 19)             >number of found inner marks
+       (outer = 16)             >number of found outer marks
+        (mode = "al")           
+.fi
+
+In this example we can see the importance of the  entry parameter to 
+identify the different grids in the reseaux files. 
+
+.ls Models
+The parameter  models specify a table with a list of the 
+reseaux models used to identify the marks. Figure 2 shows surface plot of some 
+of the models listed in the following table and Figure 3 actual FOC reseau 
+marks.
+
+
+.nf
+5 5
+100 100 100 100 100
+100  75  50  75 100
+100  50   0  50 100
+100  75  50  75 100
+100 100 100 100 100
+5 5 
+100 100 100 100 100
+100  40  20  40  100
+100  20  10  20 100
+100  40  20  40 100
+100 100 100 100 100
+5 5
+100 100 100 100 100
+100 70 20 70 100
+100 20 10 20 100
+100 70 20 70 100
+100 100 100 100 100
+8 6
+100 100 100 100 100 100 100 100
+100 75 75 50 50 75 75 100
+100 75 50 25 25 50 75 100
+100 75 50 25 25 50 75 100
+100 75 75 50 50 75 75 100
+100 100 100 100 100 100 100 100
+7 6
+100 100 100 100 100 100 100
+100 80 80 80 80 80 100
+100 60 40 20 40 60 100
+100 60 40 20 40 60 100
+100 80 80 80 80 80 100
+100 100 100 100 100 100 100
+6 6
+100 100 100 100 100 100
+100 75 50 50 75 100
+100 50 25 25 50 100
+100 50 25 25 50 100
+100 75 50 50 75 100
+100 100 100 100 100 100
+
+.fi
+.le
+.nf
+      Figure 3
+    Reseaux marks -- models
+.fi
+
+.nf
+       Figure 4
+   FOC reseaux marks 
+.fi
+.ih
+rfitx
+The following step is the actual fitting of the marks to the new position. This 
+is done with  rfit. Rfitx computes the transformation required to map 
+the coordinate system of a geometrically corrected image to the  coordinate  
+system of a distorted image. The coordinates of the reference points in the two 
+images are listed in one or two reseau file(s). The distorted positions may have
+been measured accurately as reseau locations by  rfindx, or as star 
+positions by  daophot for example. The fitted functions can be 
+a power series polynomial or a Legendre or  Chebyshev  polynomial  surface  of 
+order  xxorder  and xyorder  in  x  and  yxorder  and  yyorder  in  y.   
+Cross-terms are optional. 
+
+This task uses the general IRAF fiting routines with several specific commands, 
+namely,
+
+.nf
+    
+    
+    ?       Print options
+    f       Fit the data and graph with the current graph type (g, x, r, y, s)
+    g       Graph the data and the current fit
+    x,r     Graph the x fit residuals versus x and y respectively
+    y,s     Graph the y fit residuals versus x and y respectively
+    d,u     Delete or undelete the data point nearest the cursor
+    o       Overplot the next graph
+    c       Toggle the constant x, y plotting option
+
+
+    t       Plot a line of constant x, y through the nearest data point     
+    l       Print xshift, yshift, xscale, yscale, xrotate, yrotate
+    v       display magnified vector residuals of fit
+    q       Exit the interactive curve fitting
+    
+    The  parameters  listed  below  can  be  changed  interactively with
+    simple colon commands. Typing the parameter  name  alone  will  list
+    the current value.
+    
+    :show                           List parameters
+    :function [value]               Fitting function (chebyshev, legendre)
+    :xxorder :xyorder [value]       X fitting function xorder, yorder
+    :yxorder :yyorder [value]       Y fitting function xorder, yorder
+    :xxterms :yxterms [y/n]         Include cross-terms in X, Y fit
+    :reject [value]                 Rejection threshold
+    :magnification [value]          Magnification of vector residuals
+    
+.fi
+
+Typical screens of  rfitx are shown in Figures 3 and 4. Figure 3 is an 
+example of the magnify distorted vectors while Figure 4 shows typical residuals 
+fo a fit.
+
+.nf
+   Figure ?
+Vector residuals
+.fi
+
+.nf
+Figure ?
+Fit residuals
+.fi
+
+The  final  fit is stored in a simple text file in a format suitable
+for use by  geotran  in  the   images  package,  or  may  
+be  used  by
+revalfitx  in  the  focgeom package to produce reseau files for 
+input to  geomcorrx.   
+
+
+    The transformation computed in this model is arbitrary and does  not
+    correspond to a physically meaningful model. However the first order
+    terms can be given a simple geometrical interpretation as  described
+    below.
+.nf    
+            xin = a + b * xref + c * yref
+            yin = d + e * xref + f * yref
+.fi
+    
+    The  coefficients can be interpreted as follows. Xref0, yref0, xin0,
+    yin0 are the origins in the reference and input frames respectively.
+
+.nf    
+            b = xscale * cos (xrot)
+            c = yscale * sin (xrot)
+            e = -xscale * sin (yrot)
+            f = yscale * cos (yrot)
+            a = xoin - b * xrefo - c * yref0
+            d = yoin - e * xref0 - f * yref0
+.fi    
+
+.ih
+revalfitx    
+The  input  to   revalfitx  will  be  a  reseau  file
+transformed  by,  for  example  the optical distortions, in order to
+combine distortion fields. In this task we use the reference reseau file with a 
+large number of points. If necessary use the task  rappendx to append 
+different entries to the same reseau file.
+.ih
+Finally!!
+
+After all these manipulations your file is ready to be corrected of all 
+instrumental distortions with  geomcorrx. If no coordinates of the 
+photocathode are given (as is the case with the ESA--PCD iamges) leave 
+ sampbeg and  linebeg as 1. The parameter jacobian should be set 
+to 
+yes in order to preserve the counts. It is recommended that you specify larger 
+output axis that the input ones, to allow for any rotations of the images.
+    
+.endhelp

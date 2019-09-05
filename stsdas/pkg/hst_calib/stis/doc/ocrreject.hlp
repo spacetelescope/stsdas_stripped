@@ -1,0 +1,245 @@
+.help ocrreject Dec1999 stis
+.ih
+NAME
+ocrreject -- Generate a STIS CCD file free of cosmic rays from multiple 
+exposures of the same field.
+.ih
+USAGE
+.nf
+ocrreject input output
+.fi
+.ih
+PARAMETERS
+.ls input
+Input CCD file or list of files to be processed through ocrreject.
+The value can include wildcards,
+or it can be the name of a file (preceded by "@")
+that contains a one-column list of file names.
+.le
+.ls output
+Name of output cosmic-ray clean image/spectrum.
+.le
+
+The following parameters are optional.
+If any of them is included,
+it will overwrite its corresponding value
+in the CRREJTAB, the Cosmic-Ray Rejection Parameters Table:
+
+.ls (crrejtab = "")
+Optional parameter for input cosmic-ray rejection parameters table.
+If a value is specified for this parameter,
+the task will read the rejection parameters from this table
+instead of the table named by the CRREJTAB keyword
+in the input primary header(s).
+.le
+.ls (scalense = "")
+Multiplicative scale factor in PERCENT applied to the noise.
+It is equivalent to the column SCALENSE in the CRREJTAB.
+.le
+.ls (initgues = "")
+The initial value estimate scheme.
+Allowed values are "min", "med", and "". 
+It is equivalent to the column INITGUES in the CRREJTAB.
+.le
+.ls (skysub = "")
+Sky subtraction method.
+Allowed values are "none", "mode", and "". 
+If "mode" is used, the background level
+is computed as the mode of the input image.
+Each input image will have
+one background value which will be subtracted from the image
+before the CR rejection calculations.
+If "none" is selected,
+no sky calculation is performed or subtracted from the data.
+It is equivalent to the column SKYSUB in the CRREJTAB.
+.le
+.ls (crsigmas = "")
+Sigmas used in cosmic ray rejection during each successive iteration. 
+The rejection process can be iterative.
+After computing a summed image, it is fed back in as the "initial
+guess" and the calculation is repeated.
+Both the number of iterations and the value of N
+(the number of sigmas used in rejecting pixels)
+are specifiable separately for each iteration.
+For example, CRSIGMAS="4,3" performs two iterations,
+with 4-sigma rejection on the first iteration, and 3-sigma
+rejection on the second iteration.
+It is equivalent to the column CRSIGMAS in the CRREJTAB.
+.le
+.ls (crradius = INDEF)
+Rejection propagation radius in pixels.
+For example, radius=1.0 will reject a total of 5 pixels
+in a "+" shaped pattern,
+radius=1.5 will reject a total of 9 pixels as a 3 by 3 square.
+Pixels next to outliers can also be flagged out as cosmic rays
+and excluded from use in determining the output CR-free summed image.
+The neighboring pixels are discarded if their values
+are discrepant from the guess image by more than
+crthresh*sigmas*noise, where crthresh is a real. 
+If value is INDEF, the task will read the 
+value from the column CRRADIUS in the CRREJTAB.
+.le
+.ls (crthresh = INDEF)
+Rejection propagation threshold.
+If crthresh = 0., then all n pixels are immediately rejected.
+If value is INDEF, the task will read the 
+value from the column CRTHRESH in the CRREJTAB.
+.le
+.ls (badinpdq = INDEF) 
+Data quality flag bits to reject.
+This parameter set can be used to exclude 
+pixels with certain data quality bit values.
+If value is INDEF, the task will read the value from the column BADINPDQ
+in the CRREJTAB.
+.le
+.ls (crmask = "")
+Allowed values are "yes", "no", and "".
+
+crmask = "yes" means that the cosmic rays that are detected
+should be flagged in the _input_ data quality (DQ) images.
+Note that cosmic rays will not normally be flagged in the output file.
+For a given pixel,
+if cosmic rays are detected for some but not all of the input images,
+the output value is considered good,
+so that pixel will not be flagged as a cosmic ray hit in the output DQ.
+It is only if cosmic rays are detected in all input images
+that that pixel will be flagged as a cosmic ray in the output DQ.
+
+crmask = "" means that the value should be read from
+the CRMASK column in the CRREJTAB,
+the cosmic ray rejection parameters table.
+The CRMASK column in the current CRREJTAB contains "yes" for every row,
+so the default is in fact to modify the input DQ images.
+This is an exception to our general rule not to modify input files.
+.le
+.ls (verbose = no)
+Print verbose time stamps.
+.le
+.ih
+DESCRIPTION
+The task 'ocrreject' provides routine calibration for STIS data. The task
+applies a cosmic ray rejection algorithm to STIS CCD files (images and
+spectra) to produce a cosmic-ray clean image. The task is similar to the
+STSDAS task crrej -a series of separate CRSPLIT exposures are combined to
+produce a single summed image, where discrepant (different by some number of
+sigma from the guess value) are discarded in forming the output image.
+
+INPUT AND OUTPUT IMAGES
+
+To obtain a more efficient final image free of cosmic rays, the STIS Pipeline
+group has elected to perform the combination of the individual CRSPLIT
+exposures into a single cosmic-ray rejected image before bias and dark image
+subtraction. This way, it is recommended to perform cosmic ray rejection
+after each exposure has had its data quality file initialized and the its
+overscan bias level subtracted (i.e. 'dqicorr' and 'blevcorr' set to
+PERFORM in 'basic2d'), but before the subtraction of a bias frame, dark and
+flatfielding of the data. The cosmic-ray clean image then should continue
+through the remainder of the 2-D image reduction ('basic2d') to produce a
+flat-fielded CR-rejected image. For an explanation for performing
+cosmic-ray rejection before bias/dark subtraction, refer to STIS ISR 96-018,
+The STScI STIS Pipeline V: Cosmic Ray Rejection, Baum et al, July, 1996.
+
+PROCESSING STEPS and REFERENCE FILES
+
+The input images may have different exposure times. The SCI headers
+(i.e. [sci,n] extensions) keyword containing the total exposure
+time of each data set should be specified by the parameter EXPTIME.
+
+The final combined SCI image has an effective exposure time equal
+to the sum of exposure times of all input images. For pixels free
+from cosmic rays, the final pixel value is simply the sum of all
+input pixel values. For pixels having one or more CR in their input
+stacks, the final pixel value is the sum of the good pixels,
+normalized to the total exposure time of all input images. If all
+pixels are bad, the output pixel value is filled with 0.
+
+The final ERR extension image is proportional to the square-root of
+the output SCI image, but smaller by a factor that depends upon the
+square-root of the number of non-rejected input values used to
+compute the SCI pixel values.
+
+The final DQ extension image is formed as the boolean AND of all
+stack data quality flags and the BADINPDQ parameter. The output dq
+image can alternatively be flagged with the CR-bit (8192) if all
+input SCI values are rejected; this condition can happen only when
+a neighboring pixel has been affected by cosmic rays, and the
+CRRADIUS and CRTHRESH parameters are different from zero.
+
+Keywords containing information about the rejection parameters used 
+by the task are written in the primary header of the output
+file under the section COSMIC RAY REJECTION ALGORITHM PARAMETERS. Other
+important keywords written by ocrreject are: 
+
+.nf
+    SKYSUM : Total sky level subtracted prior to CR rejection.
+    REJ_RATE : Cosmic ray impact rate (pixels/sec)
+    NCOMBINE : Number of input files used to perform CR rejection.
+.fi
+
+The keyword CRCORR in the output primary header will be set to COMPLETE by 
+the task itself.
+
+The cosmic-ray rejection parameters can be entered as single input 
+parameters, or from an input Cosmic Ray rejection Parameters Table. The
+table with the parameters can be supplied in the primary header keyword 
+CRREJTAB, or as from the input parameter 'table'.
+The values of those parameters may depend on the number of CRSPLIT input 
+images and on the exposure time of each image.  If reading the parameters 
+from a table, 'ocrreject' selects the appropriate row from the table based 
+first on the value of CRSPLIT and on the value of TEXPTIME/CRSPLIT. If the 
+values of CRSPLIT in the table are less than the number of CRSPLIT in the 
+input image (i.e. NEXTEND/3), then ocrreject will choose from the rows that
+contain the maximum number of CRSPLIT, based on the value of
+MEANEXP closest to but still greater than TEXPTIME/CRSPLIT.
+
+The column definitions in the CRR table are similar in names and definitions
+to the optional input parameters of the task. There are 2 extra columns in 
+the table: CRSPLIT and MEANEXP which help in the row selection process as
+explained above.
+
+ENVIRONMENT VARIABLES AND OREF
+
+When an environment variable is used as part of the reference table name
+(e.g. "oref" in CRREJTAB = "oref$h1v12041o_crr.fits"),
+the variable must have been set (in Unix) before logging into IRAF,
+and the directory name must include the trailing "/".
+Setting an IRAF environment variable will not work, nor will using ! to 
+escape from the cl.
+For example,
+
+.nf
+    setenv oref /data/reffiles/stdata/
+
+    # if the reference files are in the default directory, use
+    setenv oref ./
+.fi
+
+EXAMPLES
+
+1. To reject cosmic rays and create 1 final summed image from a set
+of datasets whose data quality files have been updated, and their
+sci images have been overscan bias subtracted.
+The input file name is "o3yc02kbm_blev.fits",
+and the output should be written to o3yc02kbm_crj_tmp.fits.
+The reference table is in the directory "/data/reffiles/stdata/".
+Note that we must have assigned oref as an environment variable in Unix
+before starting the cl, and the value must include the trailing "/".
+.nf
+
+	 cl> show oref
+	 /data/reffiles/stdata/
+         cl> ocrreject o3yc02kbm_blev.fits o3yc02kbm_crj_tmp.fits
+
+.fi
+.ih
+REFERENCES
+.nf
+STIS ISR 96-18, S. Baum et al, July 1996.
+STIS TIR 97-04, D. Shaw et al, March 1997.
+Iraf task written by R. Katsanis.
+ocrreject routines written by J. C. Hsu.
+.fi
+.ih
+SEE ALSO
+ calstis, crrej (in stsdas.hst_calib.wfpc)
+.endhelp

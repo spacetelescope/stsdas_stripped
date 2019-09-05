@@ -1,0 +1,49 @@
+.help nicmos Jun97 stsdas.hst_calib.nicmos
+.ih
+NAME
+nicmos -- Calibration and Analysis of NICMOS Observations.
+.ih
+INTRODUCTION 
+The 'nicmos' package contains the Routine Science Data Processing (RSDP)
+calibration codes ('calnica' and 'calnicb'), routines to generate the
+calibration reference files and tables required by 'calnic[ab]', routines
+to generate the parameters needed for observation planning and instrument 
+configuration, and routines to display and analyze NICMOS data. 
+The RSDP pipeline, operated at STScI, provides consistent calibration of
+NICMOS observations.
+The purpose of the STSDAS calibration software is first, to provide the 
+calibration parameters used in RSDP, and second, to calibrate NICMOS
+observations.
+
+NICMOS data are stored in multi-extension FITS files. Each extension
+stores a Header-Data-Unit (HDU), which is the familiar "image" used by
+IRAF tasks, composed of a pixel array and its associated header.
+The first HDU in any NICMOS FITS file is a special one, because it contains
+only header information with an empty (null) data array, and is called the
+Primary Header Unit (PHU).
+ 
+HDUs can be addressed by their absolute offset in the file, with the PHU
+indexed to unit number 0 (zero). Thus the primary header is accessed by
+using the construct "filename.fits[0]", and the 9th extension HDU by
+"filename.fits[9]". Alternatively, HDUs can be accessed by the values of
+the EXTNAME and EXTVER keywords found in their headers.
+For instance, to access the HDU that has EXTNAME="SCI" and EXTVER=1
+in its header, use "filename.fits[sci,1]".
+ 
+Since NICMOS exposures are always comprised of 5 associated HDUs, these
+sets of 5 HDUs are refered to as image sets or IMSETs, and are identified by a
+common EXTVER number. The EXTNAMEs in each NICMOS IMSET are SCI, ERR, DQ,
+SAMP and TIME. As an example, the 20th IMSET in a NICMOS MultiAccum file
+is comprised of 5 HDUs that have the EXTNAMEs above and the common value
+of 20 in their EXTVER keyword.
+ 
+Notice that IMSETs are abstract entities, in the sense that there is no
+way for a generic IRAF task (such as imcopy or imstatistics) to access a
+given IMSET as a whole. This type of access is performed only by tasks in
+this package. Notice also that the physical order in which HDUs are stored
+in a file is not important, since IMSETs are defined by keyword values in
+the HDU headers, and not by the physical ordering of the HDUs. Thus it is good
+practice to avoid using the absolute offset naming when describing NICMOS
+files but rather use the EXTNAME/EXTVER combination.
+
+.endhelp

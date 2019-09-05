@@ -1,0 +1,81 @@
+.help engextr Aug94 stsdas.hst_calib.wfpc
+.ih
+NAME
+engextr -- Extract information from WFPC or WFPC2 engineering data.
+.ih
+USAGE
+engextr infile outtable
+.ih
+DESCRIPTION
+This task is used to extract information from the Wide Field/Planetay Camera
+(WFPC or WFPC2) engineering files (i.e., those with the extionsion '.x0h')
+and write to an STSDAS table.  A full description of the engineering data can
+be found in ICD-08 Appendix V for WFPC and Appendix VI for WFPC2.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input WFPC/WFPC2 engineering data file (.x0h file).  A file name template can be used to 
+process several files).
+.le
+.ls outtable = "" [string]
+Name of the output table (or a file template).  If this parameter is a directory
+name, the output tables will have the same root names as those of the input 
+files with a '.tab' extension.  Each input file generates one output table.
+The output table has the following columns:
+
+.nf
+MNEMONIC	The Mnemonic name as documented in ICD-08,
+		Appendix V or VI. (ch*8)
+KEYWORD		Keyword name corresponding to the mnemonic. 
+		(ch*8)
+VALUE		The value of either the mnemonic or the 
+		keyword. (ch*18)
+HEX		The hexadecimal value of the mnemonic or the 
+		keyword. (int)
+COMMENT		Comments. (ch*24)
+.fi
+.le
+.ls (errval) = FFFFx [integer]
+Fill value for the 'HEX' column in output table.  If an engineering quantity has
+a bad data mask at the corresponding pixel, this fill value will be written to
+the 'HEX' column.
+.le
+.ls (loc_execute) = 93 [integer]
+Pixel location of the EXECUTE command.
+.le
+.ls (loc_infrequent) = 95 [integer]
+Pixel location of the INFREQUENT command.
+.le
+.ls (loc_prepare) = 97 [integer]
+Pixel location of the PREPARE/READOUT command.
+.le
+.ls (loc_riua) = 99 [integer]
+Pixel location of the RIU A command.
+.le
+.ls (loc_riub) = 101 [integer]
+Pixel location of the RIU B command.
+.le
+.ls (verbose) = no [boolean]
+Print verbose messages?
+.le
+.ih
+EXAMPLES
+1. Extarct the engineering data for all WF/PC engineering files in the local 
+directory and put the output tables in the same directory with the same root 
+name:
+
+.nf
+wf> engextr *.x0h .
+.fi
+.ih
+REFERENCE
+1. Appendix V to the SI to SI C&DH Interface Control Document ST ICD-08, 
+JPL January 1990.
+
+2. Appendix VI to the SI to SI C&DH Interface Control Document ST ICD-08, 
+JPL June 1992.
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

@@ -1,0 +1,7 @@
+input,f,a,,,,"Input spectra to find masks for"
+output,f,a,,,,"Output masks of spectra"
+device,s,h,"stdgraph",,,"Graphics device to use"
+marker,s,h,"cross","|point|fill|box|plus|cross|diamond|hline|vline|hebar|vebar|circle",,"Marker type"
+msize,r,h,0.01,0.,1.,"Size of marker"
+cursor,*gcur,h,"",,,"Graphics cursor"
+Version,s,h,"8Jul93",,,"Date of installation"

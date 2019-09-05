@@ -1,0 +1,8 @@
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	resample.x	<mach.h> <math.h> <error.h> <imhdr.h> <math/iminterp.h> 
+	;

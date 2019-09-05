@@ -1,0 +1,72 @@
+# Make the spec_polar package
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+
+
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	spec_polar.a
+	$call	spec_polar
+	;
+
+install:
+	$move xx_spec_polar.e stsdasbin$x_spec_polar.e
+	;
+
+spec_polar:
+linkonly:
+	$omake x_spec_polar.x
+
+        $link   x_spec_polar.o spec_polar.a ../fos.a \
+                ../calfos.a -liraf77 -lf77util -luttables -ltbtables \
+                -lxtools -lgflib -lgilib -o xx_spec_polar.e
+ 
+
+	;
+spec_polar.a:
+	t_comparesets.x	<imhdr.h> <gset.h> <error.h> <ctype.h>
+	t_pcombine.x	<imhdr.h>
+	t_plbias.x	<imhdr.h>
+	t_polave.x	<imhdr.h>
+	t_polbin.x	<imhdr.h> <tbset.h>
+	t_polcalc.x	<imhdr.h>
+	t_polnorm.x	<imhdr.h>
+	t_polplot.x	<imhdr.h> <gset.h>
+	axmarg.x	<gset.h>
+	badwp.x
+	binerr.x
+	binwav.x
+	calcpol.x	<imhdr.h>
+	calpol.f
+	errzero.x
+	mkfname.x
+	mkgstr.x
+	rdata.x
+	spcinq.f
+	spcnfg.f
+	spcopn.f
+	spcpol.f
+	spcprc.f
+	spcrd.f
+	spcwrt.f
+	spgref.f
+	spoc1h.f
+	sposiz.f
+	stoke_norm.x
+	toroot.x    <iraf77.h>
+	wdata.x
+	;

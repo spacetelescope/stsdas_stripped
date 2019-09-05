@@ -1,0 +1,20 @@
+#################################################################################
+# Update the NOISEMODEL application code in the wfpc package.			#
+#										#
+#	Development version:	8/91 by RAShaw					#
+
+$checkout	wfpc.a ../
+$update		wfpc.a
+$checkin	wfpc.a ../
+$exit
+
+wfpc.a:
+	calcnoise.x	<imhdr.h> <imset.h> <mach.h> 
+	fitnoise.x	<mach.h> "nmcom.h"
+	nmcolon.x	<gset.h> "nmcom.h"
+	subsectn.x	<ctype.h>
+	t_noisemodel.x	<gset.h> <imhdr.h> <imset.h> <mach.h> <error.h>\
+			<syserr.h> "nmcom.h" 
+	;
+
+$exit

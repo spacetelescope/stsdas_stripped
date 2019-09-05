@@ -1,0 +1,137 @@
+.help mssplit May07 stsdas.toolbox.imgtools.mstools
+.ih 
+NAME
+mssplit -- Split apart or extract the image sets (IMSETs) from 
+NICMOS, STIS, ACS and WFC3 images.
+.ih 
+USAGE 
+mssplit inimg outimg 
+.ih
+DESCRIPTION
+The 'mssplit' task will extract the specified image sets (IMSETs)
+from NICMOS, STIS, ACS, and WFC3 observations that contain 
+multiple IMSETs and copy the IMSET into a new file
+(or files for multiple IMSETs).  
+
+NICMOS and WFC3/IR IMSETs consist of five image extensions with the following
+image extension names: SCI, ERR, DQ, SAMP, and TIME.  STIS, ACS, and WFC3/UVIS
+IMSETs consist
+of three image extensions with the following image extension names:
+SCI, ERR, and DQ.  Each new output file will consist of the Primary Header 
+Unit (PHU) from the original input image which consists of descriptive
+information common to all IMSETs in the original file, followed by the 
+specified IMSET and its associated IMSET-specific information.
+The IMSET is specified via the 'extension' parameter which refers to the
+value of the FITS keyword, EXTVER, and not the sequential image extension
+in the file.  Since all associated image extensions within an IMSET possess 
+the same value 
+for the EXTVER keyword, using this as the specification discriminator will
+ensure that the appropriate grouping of image extensions remains
+intact.  There is an input parameter, 'retain', which allows the original
+values of the EXTVER keywords to be retained in each new output file; the
+default is 'retain = no'.
+
+INPUT
+
+The primary inputs are the input and output image names.
+The value of 'inimg' is a single image name, and the value of 'outimg'
+can either be a 
+single image name,  several image names separated by commas on the command
+line, or a file (i.e., @output.lst).  In addition, the output image 
+name entry can be left blank.  In this instance,
+the output file names will adopt the root of the input file name concatenated
+with the EXTVER values chosen and a '.fits' suffix.
+
+.ih
+PARAMETERS
+.ls inimg [file name]
+Parameter 'inimg' contains the name of the file to be split or expanded.
+.le
+.ls outimg [file name list/template]
+Parameter 'outimg' contains the name(s) of the resultant output 
+file(s) which will contain only one IMSET per file.  Alternatively,
+if this entry is blank, output file names will be generated based upon the 
+root of the input file name concatenated with the EXTVER values chosen and 
+a '.fits' suffix. 
+.le
+.ls (extension = "1") [string]
+These are the EXTVER values for the IMSETs which are 
+to be expanded.  
+'Extension' may have a single value, many values separated by commas, or
+an asterisk "*".  The asterisk indicates that all EXTVERs in the input file
+should be expanded.
+.le
+.ls (retain = no) [boolean]
+Upon splitting into separate files, the 'retain' parameter allows the user 
+to determine whether 
+or not the original EXTVERs from the input file should be retained, or if the
+new output files containing individual IMSETs should all have EXTVER values 
+set to 1.  'Retain = yes' should be used with caution.  Although retaining 
+the original EXTVERs is a means for the user to track the origin of the 
+IMSET, many tasks will not work with files whose IMSETs have random EXTVER 
+values. 
+
+.le
+It should be noted that the four input parameters can be specified with
+the minimum number of unique characters, i.e., in=n3s20304t_raw.fits, 
+out=temp.fits, ext=10, or ret-.
+
+This task uses the NEXTEND keyword in the PHU of the input file to determine
+the number of extensions in the input FITS file.  If the number of
+extensions in the FITS file has been altered, but the NEXTEND keyword has
+not been updated to reflect the true value, this task may generate 
+unexpected results.  The 'catfits' routine can be used to check any FITS
+file for actual contents.
+
+This task assumes that the individual images which comprise each specified
+IMSET are all present in the input file.
+
+.le
+.ih
+EXAMPLES
+1. Extract a single IMSET, designed by EXTVER = 10, from the 
+MULTIACCUM image, 'n3s20304t_raw.fits', and store this data in the new 
+file 'n3_10.fits'.  The new file will have the same Primary Header 
+Unit as the original FITS file with the NEXTEND keyword updated to 5 
+(for the 5 image extensions belonging to a NICMOS IMSET).  The EXTVER
+value in the new output file will be set to 1.
+
+.nf
+   cl> mssplit inimg=n3s20304t_raw.fits outimg=n3_10.fits ex=10 ret-
+.fi
+
+2. Repeat the first example, but create two output files as designed in 
+a list file, and choose the EXTVER of 5 and 9. In addition, retain the
+original EXTVER values.
+
+.nf
+   cl> mssplit in=n3s20304t_raw.fits out=@out.lst ext=5,9 retain+
+.fi
+
+3. Expand an entire MULTI-ACCUM image and use default output file names.  The
+output file names will be 'n3s20304t_raw01.fits'...'n3s20304t_raw26.fits'.  
+The EXTVER values in the new output files will be set to 1.
+
+.nf
+   cl> mssplit n3s20304t_raw.fits ""  extension=* retain=no
+.fi
+
+.ih
+NOTES
+This task does not update any instrument-dependent FITS keywords.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+This script was written by M.D. De La Pena, SSG.  
+.le
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.le
+.ih
+SEE ALSO
+msjoin, catfits
+.endhelp

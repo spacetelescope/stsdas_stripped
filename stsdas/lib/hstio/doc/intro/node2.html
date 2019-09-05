@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> General Structure of Science Data</TITLE>
+<meta name="description" value=" General Structure of Science Data">
+<meta name="keywords" value="intro">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html28 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html26 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html20 HREF="node1.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html29 HREF="node3.html"> ANSI C Structures </A>
+<B>Up:</B> <A NAME=tex2html27 HREF="intro.html">Data Structures in STIS </A>
+<B> Previous:</B> <A NAME=tex2html21 HREF="node1.html"> Fundamental Design and </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00020000000000000000> General Structure of Science Data</A></H1>
+<P>
+While a detailed discussion of STIS and NICMOS instrument data is beyond
+the scope of this paper, we can present the general structure of the
+associated science data.  The science data files utilize FITS
+image extensions (Ponz, 1994).  Data from both instruments may be
+represented as sequences of FITS Header-Data-Units (HDUs) containing
+two-dimensional arrays.  These HDUs are grouped as an array of science
+data, together with a data quality array and an error array, representing,
+respectively, an array of boolean conditions that identify various
+possible anomalous conditions that may be associated with each pixel and
+the error associated with each pixel.  In addition, NICMOS has two
+additional arrays, an array identifying the number of samples associated
+with each pixel and an array identifying the integration time associated
+with each pixel.  The structure of the FITS file for both instruments is
+shown below.
+<P>
+<P><IMG ALIGN=BOTTOM SRC="_26023_tabbing10.gif"><P>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:26:56 EDT 1996</I>
+</ADDRESS>
+</BODY>

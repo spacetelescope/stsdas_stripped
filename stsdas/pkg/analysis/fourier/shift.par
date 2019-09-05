@@ -1,0 +1,5 @@
+input,f,a,"",,,"image(s) to be shifted"
+output,f,a,"",,,"output images"
+shift,s,a,"center",,,"amount of shift in pixels"
+verbose,b,h,yes,,,"print names of files?"
+mode,s,h,"al"

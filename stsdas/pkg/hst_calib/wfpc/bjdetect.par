@@ -1,0 +1,10 @@
+input, s, a, "*.x0h", , ,	"input image name"
+thresh, r, a, 0.09, , ,		"threshold"
+nbins, i, a, 8, , ,  		"number of bins"
+ncomp, i, a, 7, , ,  		"number of neighbors to be compared"
+
+x1, i, h, 5, , ,		"x boundary"
+x2, i, h, 14, , ,		"x boundary"
+out_format, s, h, "calwp2", "calwp2|general|detail", ,	"output format"
+
+mode,s,h,"al"

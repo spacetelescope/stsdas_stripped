@@ -1,0 +1,250 @@
+.help splice Jul2000 ctools
+.nj
+.ih
+NAME
+splice -- Splice spectra that were written by 'x1d'.
+.ih
+USAGE
+splice intable outable
+.ih
+DESCRIPTION
+This task is used to splice spectra,
+averaging in overlap regions.
+All rows of all input tables will be combined,
+producing one output spectrum.
+
+The wavelengths for the output spectrum can be specified explicitly
+by setting 'wavetab' to the name of a table of wavelengths.
+If a table of wavelengths is not specified,
+the output wavelengths will be computed by 'splice'
+such that the wavelengths will vary smoothly.
+Note that the wavelengths will typically not be uniformly spaced.
+Wavelengths in all tables are assumed to be strictly increasing.
+See the 'wavetab' and 'spacing' parameters for further information.
+
+The computations to determine the output FLUX, ERROR, and DQ values are
+accomplished as follows:
+
+.nf
+    tot_wgt(k)   = sum (wgt(i,j) * sw * dlambda)
+
+    out_flux(k)  = sum (in_flux(i,j) * wgt(i,j) * sw * dlambda) / tot_wgt(k)
+
+    out_error(k) = sqrt[ sum ((in_error(i,j) * wgt(i,j) * dlambda)**2) ] /
+                         tot_wgt(k)
+
+    out_dq(k)    = in_dq(i,j) OR out_dq(k)
+
+    where
+        i   = index over input arrays
+        j   = index over wavelength bins in each input array
+        k   = index over wavelength bins in the output array
+        dlambda = overlap region of current input bin to current output
+                  bin in Angstroms
+        sw  = input scalar weight
+        wgt(i,j)      = input weight in wavelength bin j for spectrum i
+        in_flux(i,j)  = input flux in wavelength bin j for spectrum i
+        in_error(i,j) = input error in wavelength bin j for spectrum i
+        in_dq(i,j)    = input dq in wavelength bin j for spectrum i
+
+        out_flux(k)  = output flux for bin k
+        out_error(k) = output error for bin k
+        out_dq(k)    = output dq for bin k
+
+.fi
+
+The input data bins are assigned to the output data bins according to the
+overlap of the input and output wavelengths.
+If the DQ value for an input bin is found to satisfy the 'sdqflags'
+parameter (i.e, the DQ value is a component of the 'sdqflags' value), then
+the data from that input bin will NOT be used in the combination process.
+The wavelengths in the input and output tables are given at pixel centers,
+and the wavelengths are typically not uniformly spaced.
+'splice' must therefore compute wavelengths at the pixel edges
+in order to determine the limits of each bin,
+then accumulate flux into bins,
+then convert the output wavelengths back
+to wavelengths at the pixel centers.
+The method used for computing wavelengths at pixel edges is as follows.
+If wl[i] and wl[i+1] are wavelengths at pixel centers,
+the pixel edge between them is taken to be (wl[i] + wl[i+1]) / 2.
+The left edge of the first pixel is wl[1] - (wl[2] - wl[1]) / 2,
+with a similar expression for the right edge of the last pixel.
+
+If the first input table and the output table are both FITS files,
+and if the output file does not already exist,
+the primary header of the first input table will be copied to output,
+and HISTORY records will be added giving the names of the input tables.
+
+The columns in the output table will contain either scalar values or arrays,
+depending on the WAVELENGTH column in the first input table.
+While the test is made on the WAVELENGTH column alone,
+it is assumed that the WAVELENGTH, FLUX, ERROR, DQ, and WEIGHT columns
+will all have the same length (one if scalar, or typically 1024 if array).
+However, some tables in the input list
+may contain scalar columns
+while other tables contain array columns,
+and the array lengths in different tables need not be the same.
+The output table contains columns for NELEM, WAVELENGTH, FLUX, ERROR, and DQ.
+.ih
+PARAMETERS
+.ls intable [file name template]
+A list of tables to be spliced together.
+
+If an input FITS file contains more than one table that are to be combined,
+each such table needs to be listed individually; see example 3.
+.le
+.ls outtable [file name]
+The name of the output table.
+.le
+.ls (wavetab = "") [file name]
+The name of an optional table
+containing a column of wavelengths.
+If this is null or blank,
+'splice' will compute the wavelengths.
+If 'wavetab' is specified,
+the wavelengths in this table will be used for the output table.
+If 'wavetab' contains only one column,
+the column name does not matter.
+If it contains more than one column,
+the column name must be given by 'wl_name',
+i.e. the same as the columns in the input tables.
+If the column contains arrays,
+the table should contain only one row;
+a particular row can be specified using the row-selector syntax,
+e.g. "rootname_x1d.fits[r:sporder=316]".
+The entire allocated array length will be used
+(i.e. no NELEM column is read).
+If the wavelength array contains any zero or INDEF values, however,
+the array will be truncated at that point.
+The wavelengths must be in increasing order.
+There must be at least two wavelengths in the table;
+this is because 'splice' integrates flux into bins,
+and with only one output wavelength,
+the bin size would be undetermined.
+
+The 'synphot.genwave' task can be used to create
+a table of uniformly spaced wavelengths,
+based on minimum and maximum values and an increment.
+.le
+.ls (spacing = "coarse") [string, allowed values:  fine | coarse]
+When computing the wavelengths for the output spectrum,
+this parameter specifies whether the wavelengths
+should be finely spaced or coarsely spaced.
+This parameter is ignored if 'wavetab' is specified.
+If spacing = "fine",
+the wavelength increment per output pixel
+will be at least as fine as the spacing of any input table
+at the same wavelength.
+If spacing = "coarse",
+the output wavelength increment
+will be at least as large as the spacing of any input table
+at the same wavelength.
+Resolution is better preserved using fine spacing,
+but the values and errors of nearby pixels will be correlated.
+Coarse spacing reduces the correlation between adjacent pixels.
+.le
+.ls (sdqflags = 31743) [integer, min=0, max=32767]
+"Serious" data quality flags,
+the logical OR of the bit flags that are serious enough
+to warrent excluding the data.
+The default is (32767 - 1024),
+which means that all data quality flags
+except "small blemish" (1024)
+are considered serious.
+"Hot pixel" (16) is another flag
+that you might want to exclude for CCD data,
+since there can be many pixels flagged as such
+that are really just "warm" rather that "hot"
+and were adequately corrected by the DARKCORR step.
+.le
+.ls (wl_name = "wavelength") [string]
+The name of column containing the wavelengths.
+The name must be the same in all input tables.
+.le
+.ls (flux_name = "flux") [string]
+The name of column containing flux data.
+.le
+.ls (err_name = "error") [string]
+The name of column containing the statistical error estimates.
+.le
+.ls (dq_name = "dq") [string]
+The name of column containing data quality values.
+.le
+.ls (wgt_name = "weight") [string]
+The name of column containing the array of weights.
+If a column by this name is not found,
+the weights will be set to one.
+Values for this column can be generated by 'fweight' or 'pweight'.
+
+See also the 'sw_name' parameter.
+.le
+.ls (sw_name = "sweight") [string]
+The name of column containing the scalar weight.
+This could be the exposure time, for example.
+If a column by this name is not found,
+and if the name is not null,
+'splice' will look for a header keyword.
+If neither is found, the scalar weight will be set to one.
+
+If 'fweight' or 'pweight' is used to generate the weight column,
+then no scalar weighting should need to be applied,
+since the exposure time will be included in the weight.
+
+If an input table contains scalar columns,
+the scalar weight will be gotten only when reading the first row.
+
+See also the 'wgt_name' parameter.
+.le
+.ls (n_name = "nelem") [string]
+The name of column containing the number of elements in the arrays.
+This column is not needed
+if the input tables contain scalar columns rather than arrays.
+.le
+.ls (verbose = yes) [boolean]
+.le
+.ih
+EXAMPLES
+1.  Splice all rows of o52z24010_x1d.fits.
+
+.nf
+    st> splice o52z24010_x1d.fits splice.fits
+.fi
+
+2.  Splice all rows of all FITS files in the current directory.
+Use the values in "wl.txt" for the wavelengths in the output table.
+The output can be either FITS or STSDAS format.
+
+.nf
+    st> splice *.fits splice.fits wavetab="wl.txt"
+    st> splice *.fits splice.tab wavetab="wl.txt"
+.fi
+
+3.  Table rpt.fits contains three tables; splice them all together.
+
+.nf
+    st> splice rpt.fits[1],rpt.fits[2],rpt.fits[3] splice.fits
+.fi
+
+4.  The original table has been converted by 'txtable'
+from columns of arrays to scalars,
+with file names "x1d_r0001.tab", "x1d_r0002.tab", "x1d_r0003.tab", etc.
+Splice all these together.
+Since the first input table contains scalar columns,
+the output can even be written to a text file
+(using STDOUT as the table name sets the table type to "text").
+
+.nf
+    st> splice x1d_r*.tab splice.fits
+    st> splice x1d_r*.tab splice.tab
+    st> splice x1d_r*.tab STDOUT > splice.txt
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge and Michele De La Pena.
+.ih
+SEE ALSO
+synphot.genwave, fweight, pweight, sflux
+.endhelp

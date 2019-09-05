@@ -1,0 +1,107 @@
+set repo=https://svn.stsci.edu/svn/ssb/stsci_python/stsdas
+
+set branch=release_2013-03
+
+set VER=3.15
+
+
+Making the branch
+--
+
+svn checkout -q $repo/trunk stsdas
+
+cd stsdas
+
+# change version number:
+	vi stsdas/stsdas.par stsdas/stsdas_motd tables/tables.par tables/tables_motd stecf/stecf.par 
+
+
+# check version/date in release notes
+vi stsdas/RELEASE_NOTES.TXT tables/RELEASE_NOTES.TXT stecf/RELEASE_NOTES
+
+svn commit -m'version changes'
+
+svn copy $repo/trunk $repo/branches/$branch
+
+
+Making the source distribution
+--
+
+cd $workdir
+
+svn checkout -q $repo/branches/$branch stsci_iraf-$VER
+
+cd stsci_iraf-$VER
+
+release_tools/svn_notes
+
+find . -name .svn -exec rm -rf {} ';'
+
+cd ..
+
+tar cf /eng/ssb/dist/$branch/stsci_iraf-$VER-local.tar.gz  stsci_iraf-$VER
+
+rm -rf stsci_iraf-$VER/stlocal
+
+tar cf /eng/ssb/dist/$branch/stsci_iraf-$VER.tar.gz  stsci_iraf-$VER
+
+
+
+Making a binary distribution
+--
+
+cd /usr/stsci
+
+rm -rf stsci_iraf-$VER
+
+tar xf  /eng/ssb/dist/$branch/stsci_iraf-$VER-local.tar.gz 
+
+cd stsci_iraf-$VER
+
+iraf
+
+./install_helper
+
+release_tools/make_all >& logfile
+
+tr -d '[\015]' < logfile | egrep -v -f /eng/ssb/auto/prog/lib/mkpkg_patterns | less
+
+cd stsdas/bin.$IRAFARCH
+
+tar zxf /eng/ssb/dist/$branch/aXeTZ-whatever.$IRAFARCH.tar.gz
+
+cd ../..
+
+rm logfile *.proto
+
+cd ..
+
+tar zcf /eng/ssb/dist/$branch/stsci_iraf-$VER-local.$IRAFARCH.tar.gz stsci_iraf-$VER
+
+tar zcf /eng/ssb/dist/$branch/stsci_iraf-$VER.$IRAFARCH.tar.gz stsci_iraf-$VER  `ls -d stsci_iraf-$VER/* | grep -v -e '/stlocal' `
+
+tar zcf /eng/ssb/dist/$branch/tables-$VER.$IRAFARCH.tar.gz `ls -d stsci_iraf-$VER/* | grep -v -e '/stsdas' -e '/stecf' -e '/stlocal' `
+
+
+
+Installing it locally
+--
+
+cd /usr/stsci
+
+tar zxf /eng/ssb/dist/$branch/stsci_iraf-$VER-local.$IRAFARCH.tar.gz
+
+cd stsci_iraf-$VER
+
+./install_helper 
+
+vi $iraf/unix/hlib/extern.pkg
+	delete anything about
+		tables
+		stsdas
+		stecf
+		stlocal
+
+	:r extern.pkg
+
+log out, back in; try the interactive test

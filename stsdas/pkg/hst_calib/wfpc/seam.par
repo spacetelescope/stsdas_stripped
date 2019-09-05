@@ -1,0 +1,9 @@
+infile, f, a, "", , , 	Input file name
+outfile, f, a, "", , , 	Output file name
+
+length, i, h, 15, 3, ,	Length of each stitch (pixels)
+width, i, h, 1, 1, ,	Number of stitches used to determine the background
+delta, r, h, 0.1, 0., ,	Discrimination level for bad pixels
+npbg, i, h, 3, 1, ,	Number of pixels used to determine background in each stitch
+
+mode, s, h, "al"

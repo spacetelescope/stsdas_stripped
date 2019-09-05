@@ -1,0 +1,154 @@
+.help CalTempFromBias May08 stsdas.hst_calib.nicmos
+.ih
+NAME
+CalTempFromBias -- Calculate the temperature of the detectors from their measured bias.
+
+.ih
+USAGE
+CalTempFromBias input
+.ih
+DESCRIPTION
+
+
+The routine first makes an estimate of the
+signal in the 0th read and subtracts it off. The goal is a clean measure of
+the bias level in each of the quads in the 0th read. This is usually done by
+taking the difference between the 1st and 2nd reads, which in ALL NICMOS
+sequences have exactly the same exposure time. This difference removes any
+shading, and gives a fairly linear signal image, which is then subtracted
+from the 0th read. An amp-glow image is also subtracted. If there are only 2
+reads in the image, a signal estimate is made using the 1st minus 0th read
+difference. This leaves some shading, so a threshold is employed to only
+subtract the signal if it is larger than the error induced by the residual
+shading. There is also a placeholder for a ringcleaner, but it isn't
+implemented at this time, as there's probably no need.  The temperature cannot be
+determined from an ACCUM mode exposure, as the pertinent bias information has
+been subtracted away onboard the spacecraft before downlink. Once the signal
+is removed, the median value of each quad of the cleaned 0th read is
+determined. These 4 numbers are then used in the algorithms below. Strictly
+speaking, each pixel is a separate diode and should be treated individually,
+but experiments show that there is no gain to be had over averaging
+a quad in terms of absolute temperature resolution, and its far easier to carry
+around only 4 sets of coefficients than 65000 coefficients!
+
+There are actually two methods for calculating the temperature from
+bias in the routine. The methods are named the Blind-Correction method
+and the Quietest-Quad method.
+
+Both work on the pretext that the voltage drop across a diode changes as
+some function of the temperature. Each NICMOS detector is an array of 65536
+diodes. Each detector is further broken down into 4 quadrants. This is
+significant, because each quadrant is biased separately (each one gets its
+own reset voltage, which is the voltage that is actually measured when
+reading out the array). Immediately following the reset the applied reset voltage across each diode
+is measured. The NICMOS detectors are
+currently biased at 0.6 Volts (keywords ND*BIASV in the spt files). In a
+perfect world, all one would need to do to get the temmperature of a give
+quadrant would be to measure the value of a given pixel right after reset and
+apply a simple function that relates counts to temperature. And that's just
+what each of the above algoritms does, but each handles the
+imperfections of the world a little differently - each has a different
+strength in a particular situation.
+
+There is a large "noise" on the reset levels of the quads. This is sometimes
+referred to as the kTC noise, although that is a misnomer. This noise appears
+as random jumps in the mean bias level of each quad of up to ± 200 DN from
+readout to readout. Since the bias increases by about 290 DN/K, a 400 DN
+PtoP random error on the measurement of the bias translates into more than a
+degree of uncertainty in the derrived temperature. A method to remove the
+noise is desireable.
+
+It has been discovered that the apparently "random" reset levels are
+not so random. They fall into 6-13 (maybe more) discreet, quantized levels,
+which I call "states". The quads are independent, but their reset levels are
+fixed relative to one another in a given state. Unfortunately, it seems that
+the states are not constant with time; since the states can not definetely 
+be determined, the state information can not be reliably used as a method in
+calculating the temperature from bias.
+
+The Blind-Correction algorithm uses the fact that certain quad
+differences can be scaled and subtracted from another quad to give "near-
+perfect" correction without the need to figure out which state is which. This
+method has the obvious advantage that it doesn't care what the states have
+done in the past or future. The reason it even works is likely because of the 
+timing differences between quads. 
+
+The Quietest-Quad method uses the fact that the amplitude of the noise signal on
+some of the quads is lower than on the other quads (smaller phase probably).
+By using just that quiet quad, or an average of the two quietest quads in
+some cases, one can gte a temperature that is accurate to ± 0.15 K, without
+any correction whatsoever.
+
+By default, both algorithms are run and temperatures and error estimates made for
+each. The errors are then cascaded to select the one with the smallest error,
+and that temperature is returned as the result. Maximum uncertainty should
+not be larger than 0.15-0.2 K. 
+
+
+.ih
+PARAMETERS
+.ls input = "" [filename]
+Input filename.
+.le
+.le
+.ls (edit_type = "RAW") [string, values: RAW, SPT]
+Type of file in which keywords will be updated.
+.le
+.ls (hdr_key = "TFBT") [string]
+Name of keyword for temperature.
+.le
+.ls (err_key = "TFBE") [string]
+Name of keyword for error associated with temperature estimate.
+.le
+.ls (nref_par = "/grp/hst/cdbs/nref/") [string]
+Name of the directory containing the nonlinearity file.
+.le
+.ls (force = "") [string, values: S(tate),B(lind),Q(uietest]
+Character for name of algorithm whose value is to be returned, regardless of which algorithm
+ had the lowest estimated sigma. 
+.le
+.ls (noclean = "no") [boolean]
+Flag to force use of UNCLEANed 0th read
+.le
+
+.ih
+EXAMPLES
+1. Calculate the temperature for the NICMOS image
+"n8tf30jnq_raw.fits" using both algorithms, and write the default keywords for the algorithm
+having the least estimated sigma to the input file.
+
+.nf
+--> tfb = CalTempFromBias.CalTempFromBias( "n8tf30jnq_raw.fits")
+--> [temp, sigma, winner ]= tfb.calctemp()
+--> stat = tfb.update_header( temp, sigma, winner)
+.fi
+
+2. Calculate the temperature for the same image using only the Quietest-Quad algorithm,
+ write the keywords MYHKEY for the temperature and MYEKEY for the estimate of the associated
+ error for the temperature to the SPT file "n8tf30jnq_spt.fits"
+
+.nf
+--> tfb = CalTempFromBias.CalTempFromBias( "n8tf30jnq_raw.fits", edit_type="SPT",
+            force="QUIET", hdr_key="MYHKEY", err_key="MYEKEY")
+--> [temp, sigma, winner ]= tfb.calctemp()
+--> stat = tfb.update_header( temp, sigma, winner)
+.fi
+
+
+.ih
+REVISIONS
+Initial implementation: May 2008.
+.ih
+BUGS
+
+.ih
+REFERENCES
+This task was written by D. Grumm based on the description and prototype code by Eddie Bergeron.
+
+.ih
+SEE ALSO
+
+.ih
+
+.endhelp
+

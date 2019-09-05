@@ -1,0 +1,3 @@
+input,s,a,,,,SIAF file name
+output,s,a,,,,SDAS table name
+mode,s,h,"a",,,

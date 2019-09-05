@@ -1,0 +1,173 @@
+.help polimplot V2.00 November00 
+.ih
+NAME
+polimplot  -- Plot a polarization vector map 
+
+USAGE
+polimplot inpol inpopa poi_err inpoer inpaer xybin poscal polow pohigh pacorr
+xysam polab title xlabel ylabel device left right bottom top erase
+
+.ih
+PARAMETERS
+.ls inpol = "" [name]
+Input linear polarization image (in %) to plot.
+.le
+.ls inpopa = "" [name]
+Input image for position angle of linear polarization vectors (degrees).
+.le
+.ls poi_err = "" [boolean]
+Switch to control whether polarization errors are plotted as separate vectors.
+.le
+.ls inpoer = "" [name]
+Name of corresponding polarization error image (%). Must be same size
+as polarization image.
+.le
+.ls inpaer = "" [name]
+Name of corresponding polarization position angle error image (degrees). 
+Must be same size as polarization image.
+.le
+.ls xybin = "" [integer]
+Binning factor in x and y direction used to produce polarization
+images from data frames.
+.le
+.ls poscal = "" [real]
+Scaling factor to convert linear polarization (in %) to length in pixels.
+.le
+.ls polow = "" [real]
+Lowest value of percentage polarization to plot.
+.le
+.ls pohigh = "" [real]
+Highest value of percentage polarization to plot.
+.le
+.ls pacorr = "" [real]
+Additive correction to position angles for plotting.
+.le
+.ls xysam = "" [integer]
+Number of points to skip in each axis when plotting vectors
+(0 to plot all pixel vectors).
+.le
+.ls polab = "" [boolean]
+Switch to control labelling of plot.
+.le
+.ls title = "" [name]
+Title for plot.
+.le
+.ls xlabel = "" [name]
+Label for X (lower) axis.
+.le
+.ls ylabel = "" [name]
+Label for Y (left) axis.
+.le
+.ls device = "" [name]
+Graphics device for plot.
+.le
+.ls (left = "") [real]
+Viewport limit in Normalised Device Coordinates (NDC): minimum X.
+.le
+.ls (right = "") [real]
+Viewport limit in NDC: maximum X.
+.le
+.ls (bottom = "") [real]
+Viewport limit in NDC: minimum Y.
+.le
+.ls (top = "") [real]
+Viewport limit in NDC: maximum Y.
+.le
+.ls erase = "" [boolean]
+Switch to control whether graphics device is erased before vector plot.
+Should be set false for hardcopy devices.
+.fi
+
+.le
+.ih
+DESCRIPTION
+This task is a flexible tool for plotting a polarization
+vector map from two images of the polarization and the position angle
+of the polarization vector. Whilst it can be used to plot general
+vector maps, it is primarily aimed at polarization maps, such as the
+output images from the task hstpolima. 
+
+If polarization and position angle error images are available there is
+an option to plot them as vectors centred on the plotted points
+but with larger and smaller lengths given by the plus and minus 
+polarization error bars and rotations given by the maximum and mimumum 
+offset angles specified by the plus and minus position angle errors.
+The 'error' vectors are plotted as dotted lines. Note however that
+the polarization and position angle errors may not strictly be 1 sigma 
+errors, so this should be seen as an illustrative tool.
+
+If the data has been binned in producing the polarization and position
+angle maps, and it is required to plot the vector map on the unbinned 
+scale, then the binning factor must be supplied 
+in order to match the polarization map with an unbinned image or plot.
+If the binning factor is not given then the labelled plot will display 
+binned pixels only.
+
+In order to convert the polarization in percent to a length, a scalar
+multipler is used to convert vector length to pixel length before 
+plotting. A little trial and error, together with altering the 
+parameter to control the parameter which sets the number of points to 
+skip over in plotting (parameter xysam), will soon produce a map where 
+the vectors do not overlay each other. 
+
+The range of polarization values to plot can be selected - this helps
+to avoid having points (dots) where the polarization is zero or very close to 
+zero, or where there may be large polarization values (usually
+associated with large errors). An additive correction can be applied 
+to the position angle values to ensure that the absolute position angle is
+plotted. Such rotations can be introduced by instrument rotation 
+or realignment of images.
+
+In order to overplot the polarization vector map on an image device
+(imd) it is necessary to specify the normalised device coordinates
+(NDC) of the left and right ends of the X axis and the bottom and
+top ends of the Y axis. Once an image has been displayed, the
+NDC of the four limits can be determined using
+stsdas.graphics.sdisplay imdisp_pos. The four values can then be 
+entered in order to the parameters left, right, bottom, top. 
+See the help for fieldplot and imdisp_pos for more details.
+
+.ih
+EXAMPLES
+.nf
+1. To plot an unbinned 512x512 pixel polarization map and 
+vectors for the errors over the polarization range 2 to 100%, 
+correcting the position angle by +12.5 degrees and plotting 
+every fourth point, with axes and labelling on the standard 
+graphics display in square format:
+
+cl> polimplot inpol="nebpol.fits" inpopa="nebpa.fits" poi_err=yes
+    inpoer="nebpoer.fits" inpaer="nebpaer.fits" xybin=1 
+    poscal=0.25 polow=2.0 pohigh=100.0 pacorr=12.5 xysam=3
+    polab=yes title="Reflection Nebula" xlabel="Alpha"
+    ylabel="Delta" device="stdgraph" left=0.19 right=0.82
+    bottom=0.12 top=0.96 erase=yes
+
+2. To display an intensity image on the image display device,
+determine the NDC of the corners of the displayed image and
+overplot a polarization map which has been produced by binning the
+raw data by 2x2, plotting the polarization range 1 to 50% and
+plotting every second point, without error vectors or labelling:
+
+cl> display ima="nebint.fits"
+cl> imdisp_pos image="nebint.fits"
+cl> lpar imdisp_pos
+cl> polimplot inpol="nebpol.fits" inpopa="nebpa.fits" poi_err=no
+    inpoer="" inpaer="" xybin=2 poscal=0.10 polow=1.0 pohigh=50.0 
+    pacorr=0.0 xysam=1 polab=no title="" xlabel="" ylabel="" 
+    device="imdr" left=0.3402 right=0.6598 bottom=0.3402 
+    top=0.6598 erase=yes
+
+.fi
+
+.ih
+BUGS
+.nf
+None known.
+.fi
+
+.ih
+SEE ALSO
+hstpolima, polimodel, fieldplot, imdisp_pos
+.fi
+.endhelp

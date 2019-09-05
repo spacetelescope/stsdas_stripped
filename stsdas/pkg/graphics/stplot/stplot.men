@@ -1,0 +1,22 @@
+Menu for the package stsdas.graphics.stplot
+
+        axispar - Specify axis and scaling parameters (pset for 'sgraph')
+         catlim - Specify star catalog limits (pset for 'skymap').
+       colnames - Specify star catalog column names (pset for 'skymap').
+          dvpar - Specify device parameters (pset).
+      fieldplot - Graph vector field.
+         grlist - Parse a group format image section.
+         grplot - Overplot several images from a group format file.
+         grspec - Interactively plot several images from a group format file.
+      histogram - Plot or list the histogram of a table column, image, or list.
+            igi - Interactive Graphics Interpreter.
+        newcont - Draw contours of two-dimensional data.
+	 pltpar - Specify graph parameters (pset for 'sgraph').
+        psikern - IRAF GIO Kernel to produce PostScript output.
+             rc - Interactively label a plot with text strings.
+	 sgraph - Graph one or more image sections or lists.
+         skymap - Draw a star chart.
+         siaper - Plot the science instrument apertures of HST.
+          stfov - Plot HST science instrument apertures over an image.
+
+(Type "help stplot option=sysdoc" for detailed information about 'stplot').

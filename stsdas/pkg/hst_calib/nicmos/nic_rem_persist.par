@@ -1,0 +1,8 @@
+calcfile,s,a,"",,,,"Input PED file"
+targfile,s,a,"",,,,"Input CAL file"
+persist_lo,r,h,0.5,,,,"minimum allowed value of the persistence"
+used_lo,r,h,0.5,,,,"minimum allowed fraction of pixels used"
+persist_model,s,h,"",,,,"filename containing persistence frame"
+persist_mask,s,h,"",,,,"filename containing pixel mask"
+
+

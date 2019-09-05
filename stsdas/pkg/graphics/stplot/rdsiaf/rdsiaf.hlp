@@ -1,0 +1,40 @@
+.help rdsiaf Mar00 stlocal.cdbsutil
+.ih
+NAME
+rdsiaf -- Read values from a PDB SIAF file into an SDAS table
+.ih
+USAGE                               
+rdsiaf input ouput
+.ih 
+DESCRIPTION
+This task reads in the aperture descriptions from the Project Data
+Base (PDB) Science Instrument Aperture File (SIAF) and writes them
+into an SDAS table. This table can be used by siaper, which plots the
+telescope apertures.The table will have one row for each aperture read
+from the file.
+.ih
+PARAMETERS
+.ls input [file name]
+The name of the science instrument aperture file (SIAF) in the project
+data base (PDB). This file can be downloaded from the STScI web
+site. The URL for the page is currently:
+.nf
+http://www.stosc.stsci.edu/prd/sciopsdb/siaf.html
+.fi
+.le
+.ls output [file name] 
+Name of the SDAS table produced by this task.
+.le
+.ih
+EXAMPLES
+1. Read an SIAF file into an SDAS table:
+
+cd> rdsiaf siaf.dat cosiaf.tab
+
+.ih
+BUGS
+.ih
+SEE ALSO
+siaper
+
+.endhelp

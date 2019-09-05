@@ -1,0 +1,15 @@
+Menu for the package STSDAS.analysis
+
+         dither - Dithered image combination.
+        fitting - Curve fitting tools.
+        fourier - Fourier analysis.
+           gasp - Access the HST Guide Star Catalog on CD-ROM.
+       isophote - Elliptical isophote image analysis.
+        nebular - Tasks for analyzing nebular emission lines
+        restore - Deconvolve or filter 1- or 2-dimensional images.
+       slitless - Slitless spectroscopy software.
+     statistics - Statistical analysis software.
+
+(Type "help analysis option=sysdoc" for general information
+about the `analysis' package.)
+

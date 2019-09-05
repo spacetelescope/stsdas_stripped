@@ -1,0 +1,150 @@
+.help traxy Oct04 stsdas.analysis.dither
+.ih
+NAME
+traxy v1.91 -- Transform an X,Y position from input to output pixel position using the same conventions as drizzle
+.ih
+USAGE
+traxy xin yin 
+.ih
+PARAMETERS
+.ls xin = 400 [real]
+The X pixel position in an input frame to be transformed.
+.le
+.ls yin = 400 [real]
+The Y pixel position in an input frame to be transformed.
+.le
+.ls (nxin = 800) [real]
+The X dimension of the input image (this is used to determine the
+centre which is the origin of the transformations).
+.le
+.ls (nyin = 800) [real]
+The Y dimension of the input image (this is used to determine the
+centre which is the origin of the transformations).
+.le
+.ls (nxout = 800) [real]
+The X dimension of the output image (this is used to determine the
+centre which is the origin of the transformations).
+.le
+.ls (nyout = 800) [real]
+The Y dimension of the output image (this is used to determine the
+centre which is the origin of the transformations).
+.le
+.ls (scale = 1.0) [real]
+Linear size of output pixels in terms of input pixels. A scale of
+0.5 means a magnification of two from input to output.
+.le
+.ls (xsh = 0.0) [real]
+A shift in X to be applied to the input position after the geometric transform.
+This shift may be defined either in the input or output frame, according to
+the value of the "shft_fr" parameter. Shifts are always along the axes of
+the image. Positive values shift the image to the right. Units are
+determined by the "shft_un" parameter. 
+.le
+.ls (ysh = 0.0) [real]
+A shift in Y to be applied to the input position after the geometric transform.
+This shift may be defined either in the input or output frame, according to
+the value of the "shft_fr" parameter. Shifts are always along the axes of
+the image. Positive values shift the image upwards. Units are
+determined by the "shft_un" parameter. 
+.le
+.ls (rot = 0.0) [real]
+The rotation in degrees anti-clockwise to be applied to the input image after
+the non-linear part of the transform has been performed.  Whether or not
+the rotation is applied after or before the shifts is determined by
+the value of the "shft_fr" parameter.  
+.le
+.ls (coeffs = "") [file name]
+The name of a text file containing the coefficients for the geometrical
+transformation to be applied. These geometric transformations are always 
+applied before the shifts, rotations and scale changes specified by other 
+parameters.
+.le
+.ls (sh_units = "input") [string]
+Whether the shifts are specified in units of "input" or "output" pixels.
+.le
+.ls (shft_fr = "input") [string]
+The frame in which the shifts are applied, or to put it another way,
+whether to apply the rotation before the shifts. If "output" the input
+image center is mapped to the center of the output grid, rotated about
+that center and then shifted along the grid of the output image. If "input"
+then the input image center is mapped to the center of the output
+image, shifted along the grid of the output image and then rotated about the
+center of the output image. See notes below for a definition of the center of
+rotation.
+.le
+.ls (xgeoim = "") [file name]
+The name of an additional distortion correction image, in the X-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the X direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (ygeoim = "") [file name]
+The name of an additional distortion correction image, in the Y-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the Y direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (align = "center") [string]
+Whether the reference point used in transforming the input image
+coordinates to the output ones is aligned on the corner or center of
+a pixel. If the task is being used to mimic shift-and-add this should
+be set to "corner" otherwise, and particularly when performing interlacing,
+it should be set to "center". More details of the definition of the
+image centers are given below.
+.le
+.ls (lambda = 555.0) [real]
+The wavelength (in nm) associated with the image. This is used for the
+"Trauger" style coefficients for which the distortion is a weak function of
+wavelength. It is only relevant for WFPC2 and is otherwise ignored.
+.le
+.ls (silent = no) [boolean]
+Whether to run silently. If this is set to yes then the conversion is done
+silently, no output is written to the screen but the task parameters xout
+and yout are set and can be accessed by a subsequent task.
+.ih
+DESCRIPTION
+This task transforms an X,Y position, assumed to be on an input virtual
+image of size nxin,nyin, onto a virtual output image of size nxout,nyout
+using the conventions of the drizzle task. So, if an object on an input image 
+at a certain position is drizzled with a given set of parameters then the 
+position of that object on the output can be predicted using traxy with the
+same parameter values. The inverse transformation can be accomplished using
+the companion task tranback.
+
+.ih
+IMPORTANT NOTE ON SECONDARY PARAMETERS
+Versions of Traxy from V1.0 also use the "secondary geometric parameters"
+which are held in the pset dr2gpar. These allow for the possibility of
+an additional transformation after the standard geometrical distortion
+correction and linear transformation have been applied. More details of
+the use and value of this feature are given in the help file for drizzle
+which should be consulted. Note that these parameters may be inspected
+and modified using "epar dr2gpar" - they are not accessible from the
+traxy parameter list.
+
+Users are warned to check the values of the parameters in this pset!
+If they are set they will be used and a warning message issued but they
+can easily be forgotten and hence lead to curious results.
+
+.ih
+EXAMPLES
+.nf
+If a star is at the position 123,456 on an input (800x800) WFPC2 image
+where will it end up on an output drizzled image?
+
+First the parameters of the traxy task are set to match those used by
+drizzle then:
+
+cl> traxy 123 456 
++ TRAXY Version 1.0 (5th December 2001)
+-Opening coefficients file: drizzle$coeffs/wf3-trauger
+ Xin,Yin:  123.00000 456.00000  Xout,Yout:    542.64987  1071.76303
+
+.fi
+.ih
+TIMINGS
+It is, as one would expect, very quick!
+.ih
+SEE ALSO
+drizzle, blot, tranback
+.endhelp

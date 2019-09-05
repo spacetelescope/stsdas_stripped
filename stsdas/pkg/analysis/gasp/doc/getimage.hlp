@@ -1,0 +1,100 @@
+.help getimage May94 stsdas.analysis.gasp
+.ih
+NAME
+getimage -- Extract an image from the CD-ROM all sky survey
+.ih
+USAGE
+getimage
+.ih
+DESCRIPTION
+The task 'getimage'  is a program for accessing the compressed image
+data from the CD-ROM set of the Digitized Sky Survey.  Given the center
+coordinates and size of a field, 'getimage' will extract the
+corresponding data from the CD-ROM discs, uncompress the data, and
+write them to an image file.  The output images may be written as FITS
+files or GEIS (hhh/hhd) images.  
+
+The output filename is formed from a text string, up to four characters
+in length, that is one of the input parameters. The output filename is
+a  concatenation of this text string and the 4-character plate-id that
+identifies the plate from which the image was extracted.  If the output
+file is a FITS file, the filename extension is 'fits'; for GEIS files,
+it is the usual 'hhh' and 'hhd'.  Examples of output filenames are
+'Test01d2.fits', or 'smag01d2.hhh/smag01d2.hhd'.
+
+The GetImage software, that comes with the CD-ROM set, must be
+installed on your system independently of STSDAS.  It can be executed
+in a stand-alone mode or from within the GASP package.  The task
+'getimage' executes the GetImage software as a foreign task.  If you
+attempt to execute the 'getimage' task and you get an error of the form
+"getimage: Command not found," you must make certain that the GetImage
+software directory is in your login path.  This will enable you to
+execute the GetImage software by entering 'getimage' both in
+stand-alone mode or from within the GASP package of STSDAS.   
+
+The mount point of your local CD-ROM reader is one of the hidden
+parameters of this task. If you are running under UNIX, it must be
+properly set before executing this task.  This parameter is ignored on
+VMS systems.
+
+If you plan to run the GetImage software both in a stand-alone mode as
+well as from within the GASP package, you should keep in mind that some
+of the default values for the parameters of this task are not the same
+as the default execution options in the stand-alone mode.
+.ih
+PARAMETERS
+.ls name [string]
+A text string, at most four characters long, that serves as the name of
+the extracted image.  This string is also used as a prefix to form the
+name of the output file containing the image.  
+.le
+.ls ra [real]
+The right ascension in the form of hh:mm:ss.sss.
+.le
+.ls dec [real]
+The declination in the form of -dd:mm:ss.ss.
+.le
+.ls hsize [real]
+The width, or horizontal size, in arcminutes.  The default is 14.5
+arcminutes, which corresponds to 512 pixels.
+.le
+.ls vsize [real]
+The height, or vertical size, in arcminutes.  The default is 14.5
+arcminutes, which corresponds to 512 pixels.
+.le
+.ls equinox [string]
+The equinox of the user specified ra and dec, either J2000 or B1950.  
+The default is J2000.
+.le
+.ls filtype [string]
+The format of the output file, either fits or geis.  The default is geis.
+.le
+.ls exitopt [bool]
+This option determines whether the CD-ROM disk is left mounted or not
+after getimage has been executed.  If you have many images to extract
+from the same CD-ROM disk, it is convenient to leave that disk mounted.
+A response of 'no', leaves the disk mounted.  The default is 'yes'.
+.le
+.ls cntropt [bool]
+Because the plates overlap somewhat, it is possible for the specified
+field to be on more than one plate.  If this option is 'yes', only
+the field closest to a plate center will be extracted.  If it is 'no',
+all the fields will be extracted.
+.le
+.ls mnt_pnt [string]
+The path name of the directory that serves as the mount point for your
+local CD-ROM reader.
+.le
+.ih
+EXAMPLES
+1. Extract an image from the CD-ROM all sky survey
+.nf
+	
+     ga> getimage "SMAG" 0:51:5.0 -73:0:15.5 equinox=J2000
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

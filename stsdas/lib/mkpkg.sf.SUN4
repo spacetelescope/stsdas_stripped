@@ -1,0 +1,17 @@
+# Mkpkg special file list for SUN/IRAF, Sun-4.
+
+
+$set	XNO	= '& "$xc -cq -/$(MACH) -p stsdas &"'
+#$set	XO1	= '& "$xc -cq -/O1 -/$(MACH) -p stsdas &"'
+#$set	XO2	= '& "$xc -cq -/O2 -/$(MACH) -p stsdas &"'
+
+# Files requiring special compilation due to host compiler bugs.
+
+$special "gasp$gasplib/":
+	regren.f	$(XNO)
+	fitsvd.f	$(XNO)
+	dcmpsv.f	$(XNO)
+	ksbsvd.f	$(XNO)
+	varsvd.f	$(XNO)
+	ccgseq.x	$(XNO)
+	;

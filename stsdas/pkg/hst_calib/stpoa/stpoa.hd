@@ -1,0 +1,12 @@
+# Help directory for the STPOA package
+
+# POA_FOS
+$poa_fos      = "./poa_fos/"
+
+
+poa_fos         men = poa_fos$poa_fos.men,
+                hlp = ..,
+                sys = poa_fos$poa_fos.hlp,
+                pkg = poa_fos$poa_fos.hd,
+                src = poa_fos$poa_fos.cl
+

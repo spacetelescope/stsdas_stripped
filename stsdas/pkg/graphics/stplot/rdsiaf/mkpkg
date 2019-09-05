@@ -1,0 +1,16 @@
+# Update rdsiaf in the stplot package
+# Author: B.Simon 21-Mar-00
+
+$checkout stplot.a ../
+$update   stplot.a
+$checkin  stplot.a ../
+$exit
+
+stplot.a:
+	fmtlist.x
+	getaper.x	
+	nextaper.x	<tbset.h>
+	rdsiaf.x	
+	readaper.x	<tbset.h>
+	siaftab.x	<tbset.h>
+	;

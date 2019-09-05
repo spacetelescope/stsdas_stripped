@@ -1,0 +1,118 @@
+.help carith Jul93 stsdas.analysis.fourier
+.nj
+.ih
+NAME
+carith -- Perform arithmetic on complex images.
+.ih
+USAGE
+carith input1 operation input2 output
+.ih
+DESCRIPTION
+This task will either multiply or divide two complex images,
+where the real and imaginary parts are stored as two separate images.
+As with other tasks in the fourier package,
+the file name for the real part ends in "r",
+and the name for the imaginary part ends in "i".
+Either the real or imaginary part of either input file may be absent,
+in which case that part will normally be taken as zero.
+(The exception is that the 'input1' parameter can be omitted when
+performing division;
+this is interpreted to mean that the output should be the reciprocal
+of the second input.)  For some combinations
+of real and imaginary parts for the input files,
+the output can only be pure real or pure imaginary,
+in which case the part that would be zero will not be created.
+With the exception of setting 'input1="1"', constants 
+are not permitted as input values.
+
+A file name given as either the input or output
+parameter for the 'carith' task
+will have the characters "r" and "i"
+appended to form the names of the real and imaginary
+image parts respectively.
+The task appends "r" to the name and attempts to open
+an image of that name for the real part.
+When 'carith' is trying to open the real part,
+if no image is found with the extended name,
+the task will attempt to open the input image
+using the nonextended name, i.e., without an appended "r".
+If neither image is found, the real part is taken to be zero.
+When the task is trying to open the imaginary part,
+if no image is found with "i" appended to the input name,
+the imaginary part is taken to be zero.
+.ih
+PARAMETERS
+.ls input1 = "" [file name]
+Name of the first input image, e.g., the numerator for division.
+If this parameter is null or "1" and 'operation="/"',
+then the result written to 'output' will be the reciprocal of 'input2'.
+.le
+.ls operation = "/" [string, Allowed values: * or / ]
+The operation may be either multiplication or division.
+.le
+.ls input2 = "" [file name]
+Name of second input, e.g., the denominator for division.
+.le
+.ls output = "" [file name]
+Name of the output file created by this task.
+.le
+.ls (cutoff = -1.e-6) [real]
+Cutoff as a fraction of the maximum of the divisor.
+This is ignored unless division is being performed.
+For regions where the absolute value of the divisor is too small,
+this task fills in by interpolating between neighboring good values
+along a line of the quotient.
+When the small divisor is at the end of a line,
+the value is filled in using the adjacent value on the line.
+Interpolation is performed when the divisor is less than or equal
+to the lower limit.
+If 'cutoff' is greater than zero,
+the entire divisor is searched for the maximum absolute value
+(considering both real and imaginary parts if both exist),
+and the limit for division is this maximum multiplied by 'cutoff'.
+If 'cutoff' is negative,
+the limit for division is taken as the absolute value of the product
+of 'cutoff' and the value at pixel [1,1] of the divisor.
+This may be appropriate when dividing by the Fourier transform of a PSF.
+If 'cutoff' is zero the lower limit is zero.
+.le
+.ls (verbose = yes) [boolean]
+Print actual image names?
+
+Because the names of the images are not specified explicitly
+(because "r" & "i" will be appended),
+it may be a good idea to set this parameter to "yes",
+so you will know what the task is really doing.
+If the operation is division
+and there are values in the denominator that are below the lower limit,
+the number of such values will also be printed.
+.le
+.ih
+EXAMPLES
+1. Take the reciprocal of an image with real part 'dr.hhh'
+and imaginary part 'di.hhh'.
+The real part of the reciprocal will be 'qr.hhh',
+and the imaginary part will be 'qi.hhh'.
+
+.nf
+	fo> carith 1 / d.hhh q.hhh
+.fi
+
+If 'verbose=yes', you could get the following output.
+
+.nf
+	fo> input1 r: [none]
+	fo> input1 i: [none]
+	fo> input2 r: dr.hhh
+	fo> input2 i: di.hhh
+	fo> output r: qr.hhh
+	fo> output i: qi.hhh
+	fo> denominator small at 5 pixels
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help fourier option=sys" for a higher-level description of
+the 'fourier' package.
+.endhelp

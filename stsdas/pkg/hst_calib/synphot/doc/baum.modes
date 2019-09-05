@@ -1,0 +1,12 @@
+Baum Bands: f336w f439w f547m f555w f569w f606w f622w f675w f702w f725lp
+            f785lp f791w f814w f850lp f1042m 
+
+The Baum filter set is a set of 15 broadband and intermediate-band filters
+that are copies of some of the onboard WF/PC-1 filters and were used as 
+part of a ground-based observing campaign to determine calibrations for the
+WF/PC-1 instrument. In order to match the response of the WF/PC-1 flight
+passbands as closely as possible, the throughputs for the Baum filters have
+been multiplied by the spectral response curve of the ground-based CCD
+(measured in the laboratory) and twice by the spectral reflectance of
+aluminum (for details see Harris et al. 1991 AJ, 101, p677).
+

@@ -1,0 +1,1356 @@
+\documentstyle[times,12pt,psfig]{article}
+\raggedbottom
+\textwidth=6.5in
+\textheight=9.0in
+\headheight=0pt
+\topmargin=-0.25in
+\oddsidemargin=0pt
+\evensidemargin=0pt
+\pagestyle{plain}
+\parindent=0pt
+\parskip=12pt
+\begin{document}
+
+\title{A Descritpion of the HSTIO Interface to the STIS and NICMOS Pipelines}
+\author{Allen Farris\\Space Telescope Science Institute\\
+E-mail: farris@stsci.edu}
+\maketitle
+
+\section {
+The HSTIO Header File
+}
+
+\hspace{0.5in} {\bf The hstio.h File}
+\begin{scriptsize}
+\begin{verbatim}
+      1:    # if !defined(HSTIO_)
+      2:    # define HSTIO_
+      3:    
+      4:    #if defined(__cplusplus)
+      5:    extern "C" {
+      6:    # endif 
+      7:    
+      8:    /*
+      9:    ** Data Structures and I/O Function Declarations for
+     10:    ** STScI Calibration Pipeline Software for STIS and NICMOS
+     11:    **
+     12:    ** Version 1.20
+     13:    **
+     14:    ** Nov. 29, 1995
+     15:    **
+     16:    ** Table of Contents
+     17:    **      Basic structures to represent two-dimensional arrays.
+     18:    **      Definitions of Science, Data Quality and Error data.
+     19:    **      Macros to implement 2-d array indexing.
+     20:    **      Definition of data sections.
+     21:    **      Definition of Header "card" image arrays.
+     22:    **      Definition of I/O descriptor.
+     23:    **      Definitions of Single and Multi-Group data structures.
+     24:    **      Declarations of error handling functions.
+     25:    **      Declarations of high-level I/O functions.
+     26:    **      Declarations of header manipulation functions.
+     27:    **      Declarations of low-level I/O functions.
+     28:    **      Declarations of functions to initialize, allocate and free
+     29:    **              data storage contained within data structures.
+     30:    **
+     31:    ** History
+     32:    ** Version 1.00 (06/21/95).
+     33:    ** Revisions to version 1.00 to produce version 1.01 (08/03/95).
+     34:    **      Corrected bug in definition of IHdr.
+     35:    **      Changed declaration of putMultiGroup function.
+     36:    **      Changed the ordering within structures to Sci, Err, Dq.
+     37:    ** Revisions to version 1.01 to produce version 1.10 (09/28/95).
+     38:    **      Corrected bug in definition of OUT_OPTION.
+     39:    **      Added ifdef extern C to accomodate C++.
+     40:    **      Added support for NICMOS samples and integration time data.
+     41:    **      Made IODesc structure private by changing to void pointer
+     42:    **          and changed the definitions of the IO_OPTIONS and added 
+     43:    **          functions to retrieve data from the IODesc structure.
+     44:    **      Added open and close FITS file functions.
+     45:    **      Major revision to functions to manipulate header arrays.
+     46:    **      Added additional error handling functions
+     47:    **      Revised definition of single and multi-group structures
+     48:    **          to achieve greater compatibility between the two
+     49:    ** Revisions to version 1.10 to produce version 1.11 (09/29/95).
+     50:    **      Added an option parameter to the putGroupHdr functions.
+     51:    ** Revisions to version 1.11 to produce version 1.20 (11/29/95).
+     52:    **      Major revisions to the low-level I/O function and to the
+     53:    **          low-level data structures.  References to Sci, Err, and
+     54:    **          DQ were removed from the low-level structure and function
+     55:    **          names in favor of generic names such as float and short.
+     56:    **      
+     57:    **      
+     58:    */
+     59:    
+     60:    # include <stdlib.h>
+     61:    
+     62:    typedef struct {
+     63:            short *buffer;          /* the pointer to the beg. of the buffer */
+     64:            int buffer_size;        /* the size of the full 2-d array in the */
+     65:            int tot_nx;             /* buffer.                               */
+     66:            int tot_ny;             /*     buffer_size = tot_nx*tot_ny       */
+     67:            int nx;                 /* The size of the current "view" of the */
+     68:            int ny;                 /* full 2-d array.                       */
+     69:            short *data;            /* The pointer to the beginning of the   */
+     70:                                    /* subsection of the full 2-d array.     */
+     71:    } ShortTwoDArray;
+     72:    
+     73:    typedef struct {
+     74:            float *buffer;
+     75:            int buffer_size;
+     76:            int tot_nx;
+     77:            int tot_ny;
+     78:            int nx;
+     79:            int ny;
+     80:            float *data;
+     81:    } FloatTwoDArray;
+     82:    
+     83:    
+     84:    /* 
+     85:    ** The Following macros are used to represent 2-d indexing.  
+     86:    ** Two dimensional arrays are stored in FITS order.
+     87:    **
+     88:    **        ny
+     89:    **        ^
+     90:    **      N | a05   a15   a25   a35
+     91:    **      A | a04   a14   a24   a34
+     92:    **      X | a03   a13   a23   a33
+     93:    **      I | a02   a12   a22   a32
+     94:    **      S | a01   a11   a21   a31
+     95:    **      2 | a00   a10   a20   a30
+     96:    **         ---------------------------> nx
+     97:    **            NAXIS1
+     98:    **
+     99:    **      NAXIS1 is 4 and NAXIS2 is 6
+    100:    **      PIX(a,1,4) accesses a14
+    101:    */
+    102:    
+    103:    # define Pix(a,i,j)      (a).data[(j)*(a).tot_nx + (i)]
+    104:    # define DQPix(a,i,j)    (a).data[(j)*(a).tot_nx + (i)]
+    105:    # define DQSetPix(a,i,j,value) (a).data[(j)*(a).tot_nx + (i)] = (value)
+    106:    
+    107:    # define PPix(a,i,j)      (a)->data[(j)*(a)->tot_nx + (i)]
+    108:    # define PDQPix(a,i,j)    (a)->data[(j)*(a)->tot_nx + (i)]
+    109:    # define PDQSetPix(a,i,j,value) (a)->data[(j)*(a)->tot_nx + (i)] = (value)
+    110:    
+    111:    /*
+    112:    **              Examples of using macros.  
+    113:    **
+    114:    ** Suppose we have the following declarations and that these data 
+    115:    ** structures have been properly initialized and allocated.
+    116:    **
+    117:    **      SciData picture;
+    118:    **      DQData dataqual_in1, dataqual_in2, dataqual_out;
+    119:    **      short val;
+    120:    **
+    121:    ** Now set all the diagonal pixels in the picture array to 1.
+    122:    **
+    123:    **      for (i = 0; i < min(picture.nx,picture.ny); i++) 
+    124:    **              Pix(picture,i,i) = 1.0F;
+    125:    **
+    126:    ** Now combine the two data quality arrays.
+    127:    **
+    128:    **      for ( j = 0; j < dataqual_out.ny; j++)
+    129:    **          for (i = 0; i < dataqual_out.nx; i++) {
+    130:    **              val = DQPix(dataqual_in1,i,j) | DQPix(dataqual_in2,i,j);
+    131:    **              DQSetPix(dataqual_out,i,j,val);
+    132:    **          }
+    133:    **
+    134:    */
+    135:    
+    136:    /*
+    137:    ** The data section structure can be used to read sections of an image
+    138:    ** from disk into memory.  It is intended to be used only for high-level
+    139:    ** I/O operations.  At present, the entire array is read into memory.
+    140:    */
+    141:    typedef struct {
+    142:            int x_beg;              /* The beginning coordinates of the     */
+    143:            int y_beg;              /* section.                             */
+    144:            int sx;                 /* The sizes of the X and Y dimensions  */
+    145:            int sy;                 /* of the section.                      */
+    146:    } DataSection;
+    147:    
+    148:    # define HDRSize 81
+    149:    typedef char HdrArray[HDRSize]; /* Headers are simply an array of fixed */
+    150:                                    /* length, null terminated strings that */
+    151:                                    /* represent FITS card images.          */
+    152:    
+    153:    typedef struct {
+    154:            int nlines;             /* The number of lines actually used.   */
+    155:            int nalloc;             /* Number of lines currently allocated. */
+    156:            HdrArray *array;        /* The buffer of card images.           */
+    157:    } Hdr;
+    158:    
+    159:    /*
+    160:    ** I/O Options and the I/O Descriptor Pointer
+    161:    **
+    162:    ** The I/O descriptor pointer points to an I/O structure that is
+    163:    ** used internally within the I/O functions.
+    164:    */
+    165:    # if !defined(IO_OPTIONS_)
+    166:    # define IO_OPTIONS_
+    167:    enum IO_OPTION_ {
+    168:            Sequential = 0x1, 
+    169:            Random = 0x2,
+    170:            ReadOnly = 0x4,
+    171:            WriteOnly = 0x8,
+    172:            ReadWrite = 0x10,
+    173:            New = 0x20,
+    174:            Overwrite = 0x40,
+    175:            Force = 0x80,
+    176:            Inherit = 0x100,
+    177:            Dupname = 0x200,
+    178:            NoDupname = 0x400,
+    179:            RemainOpen = 0x800,
+    180:            Geis = 0x1000,
+    181:            Tape9 = 0x2000,
+    182:            Std = 0x4000,
+    183:            Disk = 0x8000
+    184:    };
+    185:    typedef enum IO_OPTION_ OP_OPTION;
+    186:    # endif
+    187:    typedef void *IODescPtr;
+    188:    
+    189:    /*
+    190:    ** The following data structures define combinations of both
+    191:    ** headers and data.
+    192:    */
+    193:    typedef struct {
+    194:            IODescPtr iodesc;
+    195:            DataSection section;
+    196:            Hdr hdr;
+    197:            FloatTwoDArray data;
+    198:    } FloatHdrData;
+    199:    
+    200:    typedef struct {
+    201:            IODescPtr iodesc;
+    202:            DataSection section;
+    203:            Hdr hdr;
+    204:            ShortTwoDArray data;
+    205:    } ShortHdrData;
+    206:    
+    207:    typedef FloatHdrData SciHdrData;
+    208:    typedef FloatHdrData ErrHdrData;
+    209:    typedef ShortHdrData DQHdrData;
+    210:    typedef ShortHdrData SmplHdrData;
+    211:    typedef FloatHdrData IntgHdrData;
+    212:    
+    213:    /*
+    214:    ** The SingleGroup data structure is used for single images or single 
+    215:    ** groups from a multi-group file.  The disk file name together with
+    216:    ** the group number uniquely identifies the source of the data array
+    217:    ** in the file.  The group number is the FITS EXTVER keyword value.
+    218:    */
+    219:    typedef struct {
+    220:            char *filename;
+    221:            int group_num;
+    222:            Hdr *globalhdr;
+    223:            SciHdrData sci;
+    224:            ErrHdrData err;
+    225:            DQHdrData dq;
+    226:    } SingleGroup;
+    227:    
+    228:    typedef struct {
+    229:            char *filename;
+    230:            int group_num;
+    231:            Hdr *globalhdr;
+    232:            SciHdrData sci;
+    233:            ErrHdrData err;
+    234:            DQHdrData dq;
+    235:            SmplHdrData smpl;
+    236:            IntgHdrData intg;
+    237:    } SingleNicmosGroup;
+    238:    
+    239:    /*
+    240:    ** The MultiGroup data structure is used to read members of a multi-group
+    241:    ** file.
+    242:    */
+    243:    typedef struct {
+    244:            int ngroups;            /* number of groups contained in the struct  */
+    245:            SingleGroup *group;
+    246:    } MultiGroup;
+    247:    
+    248:    typedef struct {
+    249:            int ngroups;            /* number of groups contained in the struct  */
+    250:            SingleNicmosGroup *group;
+    251:    } MultiNicmosGroup;
+    252:    
+    253:    /*
+    254:    ** Error Handling Function Declarations
+    255:    */
+    256:    enum HSTIOERROR_ { 
+    257:            OK, NOMEM, BADOPEN, BADCLOSE, BADREAD, BADWRITE, BADEXTNAME, 
+    258:            BADHSIZE, NOGET, NOPUT, BADDIMS, BADTYPE, NOSCI, BADSCIDIMS, 
+    259:            BADGROUP, BADGET, BADFITSEQ, BADFITSQUOTE, BADFITSNUMERIC, 
+    260:            BADFITSTYPE, BADPUT, BADNAME, BADBITPIX, BADNDIM, BADEXIST
+    261:    };
+    262:    typedef enum HSTIOERROR_ HSTIOError;
+    263:    HSTIOError hstio_err();
+    264:    char *hstio_errmsg();
+    265:    typedef void (*HSTIOErrHandler)();
+    266:    int push_hstioerr(HSTIOErrHandler);
+    267:    int pop_hstioerr();
+    268:    
+    269:    /* 
+    270:    ** High-level I/O Function Declarations
+    271:    */
+    272:    int openFitsFile(char *filename, unsigned long option);
+    273:    int closeFitsFile(char *filename);
+    274:    int getSci(char *filename, int extver, SciHdrData *);
+    275:    int putSci(char *filename, int extver, SciHdrData *, int option);
+    276:    int getErr(char *filename, int extver, ErrHdrData *);
+    277:    int putErr(char *filename, int extver, ErrHdrData *, int option);
+    278:    int getDQ(char *filename, int extver, DQHdrData *);
+    279:    int putDQ(char *filename, int extver, DQHdrData *, int option);
+    280:    int getSmpl(char *filename, int extver, SmplHdrData *);
+    281:    int putSmpl(char *filename, int extver, SmplHdrData *, int option);
+    282:    int getIntg(char *filename, int extver, IntgHdrData *);
+    283:    int putIntg(char *filename, int extver, IntgHdrData *, int option);
+    284:    int getFloatHD(char *filename, char *extname, int extver, FloatHdrData *);
+    285:    int putFloatHD(char *filename, char *extname, int extver, FloatHdrData *, int option);
+    286:    int getShortHD(char *filename, char *extname, int extver, ShortHdrData *);
+    287:    int putShortHD(char *filename, char *extname, int extver, ShortHdrData *, int option);
+    288:    int getSingleGroup(char *filename, int extver, SingleGroup *);
+    289:    int putSingleGroupHdr(char *filename, SingleGroup *, int option);
+    290:    int putSingleGroup(char *filename, int extver, SingleGroup *, int option);
+    291:    int getSingleNicmosGroup(char *filename, int extver, SingleNicmosGroup *);
+    292:    int putSingleNicmosGroupHdr(char *filename, SingleNicmosGroup *, int option);
+    293:    int putSingleNicmosGroup(char *filename, int extver, SingleNicmosGroup *, 
+    294:            int option);
+    295:    int getMultiGroupHdr(char *filename, MultiGroup *);
+    296:    int getMultiGroup(MultiGroup *, int ngroup, int extver);
+    297:    int putMultiGroupHdr(char *filename, MultiGroup *, int option);
+    298:    int putMultiGroup(char *filename, int extver, MultiGroup *, int ngroup, 
+    299:            int option);
+    300:    int getMultiNicmosGroupHdr(char *filename, MultiNicmosGroup *);
+    301:    int getMultiNicmosGroup(MultiNicmosGroup *, int ngroup, int extver);
+    302:    int putMultiNicmosGroupHdr(char *filename, MultiNicmosGroup *, int option);
+    303:    int putMultiNicmosGroup(char *filename, int extver, MultiNicmosGroup *, 
+    304:            int ngroup, int option);
+    305:    
+    306:    /*
+    307:    ** Functions for Accessing and Manipulating Keywords in a FITS Keyword List
+    308:    */
+    309:    
+    310:    # if !defined(BOOL_)
+    311:    # define BOOL_
+    312:    enum Bool_ { False = 0, True = 1 };
+    313:    typedef enum Bool_ Bool;
+    314:    # endif
+    315:    # define NotFound NULL
+    316:    typedef void *FitsKw;
+    317:    enum FitsDataType_ { FITSNOVALUE = 0, FITSLOGICAL, FITSBIT, FITSCHAR, 
+    318:            FITSBYTE, FITSSHORT, FITSLONG, FITSFLOAT, FITSDOUBLE, FITSCOMPLEX, 
+    319:            FITSICOMPLEX, FITSDCOMPLEX, FITSVADESC, FITSSTRING
+    320:    };
+    321:    typedef enum FitsDataType_ FitsDataType;
+    322:    
+    323:    /* 
+    324:    ** Making a FITS Header 
+    325:    **
+    326:    ** These return 0 is successful and -1 if an error occurred.
+    327:    */
+    328:    int makePrimaryArrayHdr(Hdr *, FitsDataType, int dims, int *ndim);
+    329:    int makeImageExtHdr(Hdr *, FitsDataType, int dims, int *ndim, 
+    330:            char *extname, int extver);
+    331:    
+    332:    /* 
+    333:    ** Finding keywords in a FITS keyword list.
+    334:    **  
+    335:    ** The "find" function starts at the beginning of the list and finds the 
+    336:    ** first occurence of the desired keyword.  The "findnext" function  
+    337:    ** begins at the current position and returns the next occurence of the 
+    338:    ** keyword.  NotFound is returned if no such keyword is found.  The "first" 
+    339:    ** function sets the current position to the beginning of the list.
+    340:    ** The "next" function sets the position to the next keyword in the list.
+    341:    ** "Next" returns NotFound after the last keyword in the list.  "GetKw"
+    342:    ** returns the n-th keyword.  The special function "insertfirst" is used to
+    343:    ** position the cursor prior to the first item in the list so that a new
+    344:    ** keyword may be inserted at the beginning of the list.  (Insert functions
+    345:    ** always insert keywords at a position after the cursor.)
+    346:    */
+    347:    FitsKw findKw(Hdr *, char *name);
+    348:    FitsKw findnextKw(Hdr *, char *name);
+    349:    FitsKw first(Hdr *);
+    350:    FitsKw next(FitsKw);
+    351:    FitsKw getKw(Hdr *, int n);
+    352:    FitsKw insertfirst(Hdr *);
+    353:    
+    354:    /* 
+    355:    ** Accessing and changing name, value, or comment in a FITS keyword.
+    356:    ** 
+    357:    ** These functions must be preceded by a "find" or "findnext" operation.
+    358:    ** Data conversions in the "get" routines:
+    359:    **              FITS Type       Possible Requested Type
+    360:    **              ---------       -----------------------
+    361:    **              Logical         Bool, Int
+    362:    **              Int             Int, Double
+    363:    **              Float           Float, Double
+    364:    **              Double          Double
+    365:    **              String          String
+    366:    ** If the requested type conversion is not allowed, an error code is set.
+    367:    */
+    368:    char *getKwName(FitsKw);
+    369:    char *getKwComm(FitsKw);
+    370:    FitsDataType getKwType(FitsKw);
+    371:    Bool getBoolKw(FitsKw);
+    372:    int  getIntKw(FitsKw);
+    373:    float getFloatKw(FitsKw);
+    374:    double getDoubleKw(FitsKw);
+    375:    int getStringKw(FitsKw, char *str, int maxch);
+    376:    int putKwName(FitsKw, char *name);
+    377:    void putKwComm(FitsKw, char *comment);
+    378:    int putBoolKw(FitsKw, Bool value);
+    379:    int putIntKw(FitsKw, int value);
+    380:    int putFloatKw(FitsKw, float value);
+    381:    int putDoubleKw(FitsKw, double value);
+    382:    int putStringKw(FitsKw, char *value);
+    383:    
+    384:    /* 
+    385:    ** Adding keywords to a FITS Header.
+    386:    **
+    387:    ** The new keywords are added to the end of the keyword list.  There
+    388:    ** is no "END" keyword maintained in the list.  The software writing
+    389:    ** the FITS header automatically adds an "END" keyword before writing
+    390:    ** the header.
+    391:    **
+    392:    */
+    393:    int addBoolKw(Hdr *, char *name, Bool value, char *comment);
+    394:    int addIntKw(Hdr *, char *name, int value, char *comment);
+    395:    int addFloatKw(Hdr *, char *name, float value, char *comment);
+    396:    int addDoubleKw(Hdr *, char *name, double value, char *comment);
+    397:    int addStringKw(Hdr *, char *name, char * value, char *comment);
+    398:    int addSpacesKw(Hdr *, char *comment);
+    399:    int addCommentKw(Hdr *, char *comment);
+    400:    int addHistoryKw(Hdr *, char *comment);
+    401:    
+    402:    /* 
+    403:    ** Inserting keywords in a FITS Header.
+    404:    **
+    405:    ** The keywords are inserted after the current position.  The position
+    406:    ** is set with the "find", "first" and "next" functions.
+    407:    **
+    408:    */
+    409:    FitsKw insertBoolKw(FitsKw, char *name, Bool value, char *comment);
+    410:    FitsKw insertIntKw(FitsKw, char *name, int value, char *comment);
+    411:    FitsKw insertFloatKw(FitsKw, char *name, float value, char *comment);
+    412:    FitsKw insertDoubleKw(FitsKw, char *name, double value, char *comment);
+    413:    FitsKw insertStringKw(FitsKw, char *name, char * value, char *comment);
+    414:    FitsKw insertSpacesKw(FitsKw, char *comment);
+    415:    FitsKw insertCommentKw(FitsKw, char *comment);
+    416:    FitsKw insertHistoryKw(FitsKw, char *comment);
+    417:    
+    418:    /*
+    419:    ** Adding and inserting already formatted FITS cards to the list
+    420:    **
+    421:    ** These functions take an already formatted FITS "card" and either adds
+    422:    ** the string to the list or inserts it after the current position.  If
+    423:    ** the string is less than 80 bytes it is padded with spaces to 80 bytes.
+    424:    ** If the string is more than 80 bytes it is truncated.
+    425:    */
+    426:    int addFitsCard(Hdr *, char *card);
+    427:    FitsKw insertFitsCard(FitsKw, char *card);
+    428:    
+    429:    /* 
+    430:    ** Deleting keywords in a FITS Header. 
+    431:    **
+    432:    ** The "del" function must be preceeded by a "find" or "findnext" operation.
+    433:    ** The "delAllKw" function deletes all keywords.
+    434:    */
+    435:    void delKw(FitsKw);
+    436:    void delAllKw(Hdr *);
+    437:    
+    438:    /* 
+    439:    ** Low-level I/O Function Declarations
+    440:    */
+    441:    IODescPtr openInputImage(char *filename, char *extname, int extver);
+    442:    IODescPtr openOutputImage(char *filename, char *extname, int extver, Hdr *hdr,
+    443:            int dim1, int dim2, FitsDataType type);
+    444:    IODescPtr openUpdateImage(char *filename, char *extname, int extver, Hdr *hdr);
+    445:    void closeImage(IODescPtr );
+    446:    
+    447:    char *getFilename(IODescPtr);
+    448:    char *getExtname(IODescPtr);
+    449:    int getExtver(IODescPtr);
+    450:    int getNaxis1(IODescPtr);
+    451:    int getNaxis2(IODescPtr);
+    452:    int getType(IODescPtr);
+    453:    
+    454:    int getHeader(IODescPtr, Hdr *);
+    455:    int putHeader(IODescPtr);
+    456:    
+    457:    int getFloatData(IODescPtr, FloatTwoDArray *);
+    458:    int putFloatData(IODescPtr, FloatTwoDArray *);
+    459:    int getShortData(IODescPtr, ShortTwoDArray *);
+    460:    int putShortData(IODescPtr, ShortTwoDArray *);
+    461:    
+    462:    int getFloatLine(IODescPtr, int line, float *);
+    463:    int putFloatLine(IODescPtr, int line, float *);
+    464:    int getShortLine(IODescPtr, int line, short *);
+    465:    int putShortLine(IODescPtr, int line, short *);
+    466:    
+    467:    int getFloatSect(IODescPtr, int x_beg, int y_beg, int sx, int sy, FloatTwoDArray *);
+    468:    int putFloatSect(IODescPtr, int x_beg, int y_beg, int sx, int sy, FloatTwoDArray *);
+    469:    int getShortSect(IODescPtr, int x_beg, int y_beg, int sx, int sy, ShortTwoDArray *);
+    470:    int putShortSect(IODescPtr, int x_beg, int y_beg, int sx, int sy, ShortTwoDArray *);
+    471:    
+    472:    /*
+    473:    ** Initialization, Allocation, and Freeing Storage Function Declarations
+    474:    */
+    475:    # define IFloatData { NULL, 0, 0, 0, 0, 0, NULL }
+    476:    void initFloatData(FloatTwoDArray *);
+    477:    int allocFloatData(FloatTwoDArray *, int, int);
+    478:    void freeFloatData(FloatTwoDArray *);
+    479:    # define IShortData { NULL, 0, 0, 0, 0, 0, NULL }
+    480:    void initShortData(ShortTwoDArray *);
+    481:    int allocShortData(ShortTwoDArray *, int, int);
+    482:    void freeShortData(ShortTwoDArray *);
+    483:    # define IHdr { 0, 0, NULL }
+    484:    void initHdr(Hdr *);
+    485:    int allocHdr(Hdr *, int);
+    486:    int reallocHdr(Hdr *, int);
+    487:    void freeHdr(Hdr *);
+    488:    int copyHdr(Hdr *to, Hdr *from);
+    489:    
+    490:    # define IFloatHdrData { NULL, { 0, 0, 0, 0 }, IHdr, IFloatData }
+    491:    void initFloatHdrData(FloatHdrData *);
+    492:    int allocFloatHdrData(FloatHdrData *, int, int);
+    493:    void freeFloatHdrData(FloatHdrData *);
+    494:    # define IShortHdrData { NULL, { 0, 0, 0, 0 }, IHdr, IShortData }
+    495:    void initShortHdrData(ShortHdrData *);
+    496:    int allocShortHdrData(ShortHdrData *, int, int);
+    497:    void freeShortHdrData(ShortHdrData *);
+    498:    
+    499:    # define ISingleGroup { NULL, 0, NULL, IFloatHdrData, IFloatHdrData, \
+    500:    IShortHdrData }
+    501:    void initSingleGroup(SingleGroup *);
+    502:    int allocSingleGroup(SingleGroup *, int, int);
+    503:    void freeSingleGroup(SingleGroup *);
+    504:    # define IMultiGroup { 0, NULL }
+    505:    void initMultiGroup(MultiGroup *);
+    506:    int allocMultiGroup(MultiGroup *, int);
+    507:    void freeMultiGroup(MultiGroup *);
+    508:    
+    509:    # define ISingleNicmosGroup { NULL, 0, NULL, IFloatHdrData, IFloatHdrData, \
+    510:    IShortHdrData, IShortHdrData, IFloatHdrData }
+    511:    void initSingleNicmosGroup(SingleNicmosGroup *);
+    512:    int allocSingleNicmosGroup(SingleNicmosGroup *, int, int);
+    513:    void freeSingleNicmosGroup(SingleNicmosGroup *);
+    514:    # define IMultiNicmosGroup { 0, NULL }
+    515:    void initMultiNicmosGroup(MultiNicmosGroup *);
+    516:    int allocMultiNicmosGroup(MultiNicmosGroup *, int);
+    517:    void freeMultiNicmosGroup(MultiNicmosGroup *);
+    518:    
+    519:    #if defined(__cplusplus)
+    520:    }
+    521:    # endif
+    522:    
+    523:    # endif
+\end{verbatim}
+\end{scriptsize}
+
+\section {
+Manipulating FITS Header Keywords
+}
+
+\subsection{ Making a FITS Header }
+
+\begin{scriptsize}
+\begin{verbatim}
+    328:    int makePrimaryArrayHdr(Hdr *, FitsDataType, int dims, int *ndim);
+    329:    int makeImageExtHdr(Hdr *, FitsDataType, int dims, int *ndim, 
+    330:            char *extname, int extver);
+\end{verbatim}
+\end{scriptsize}
+
+These routines make header arrays with the minimal set of FITS keywords.
+They return 0 is successful and -1 if an error occurred.
+
+\subsection{ Finding keywords in a FITS keyword list.}
+
+\begin{scriptsize}
+\begin{verbatim}
+    347:    FitsKw findKw(Hdr *, char *name);
+    348:    FitsKw findnextKw(Hdr *, char *name);
+    349:    FitsKw first(Hdr *);
+    350:    FitsKw next(FitsKw);
+    351:    FitsKw getKw(Hdr *, int n);
+    352:    FitsKw insertfirst(Hdr *);
+\end{verbatim}
+\end{scriptsize}
+
+The ``find'' function starts at the beginning of the list and finds the 
+first occurence of the desired keyword.  The ``findnext'' function  
+begins at the current position and returns the next occurence of the 
+keyword.  NotFound is returned if no such keyword is found.  The ``first'' 
+function sets the current position to the beginning of the list.
+The ``next'' function sets the position to the next keyword in the list.
+``Next'' returns NotFound after the last keyword in the list.  ``GetKw''
+returns the n-th keyword.  The special function ``insertfirst'' is used to
+position the cursor prior to the first item in the list so that a new
+keyword may be inserted at the beginning of the list.  (Insert functions
+always insert keywords at a position after the cursor.)
+
+\subsection{ Accessing and changing name, value, or comment in a FITS keyword.}
+
+\begin{scriptsize}
+\begin{verbatim}
+    368:    char *getKwName(FitsKw);
+    369:    char *getKwComm(FitsKw);
+    370:    FitsDataType getKwType(FitsKw);
+    371:    Bool getBoolKw(FitsKw);
+    372:    int  getIntKw(FitsKw);
+    373:    float getFloatKw(FitsKw);
+    374:    double getDoubleKw(FitsKw);
+    375:    int getStringKw(FitsKw, char *str, int maxch);
+    376:    int putKwName(FitsKw, char *name);
+    377:    void putKwComm(FitsKw, char *comment);
+    378:    int putBoolKw(FitsKw, Bool value);
+    379:    int putIntKw(FitsKw, int value);
+    380:    int putFloatKw(FitsKw, float value);
+    381:    int putDoubleKw(FitsKw, double value);
+    382:    int putStringKw(FitsKw, char *value);
+\end{verbatim}
+\end{scriptsize}
+
+These functions must be preceded by a ``find'' or ``findnext'' operation.
+Data conversions in the ``get'' routines:
+
+\begin{tabbing}
+\null \hspace{0.5in} \= \hspace{1.5in} \= \kill
+\> FITS Type	\> Possible Requested Type \\
+\> ------------ \>------------------------------ \\
+\> Logical	\> Bool, Int \\
+\> Int		\> Int, Double \\
+\> Float	\> Float, Double \\
+\> Double	\> Double \\
+\> String	\> String
+\end{tabbing}
+
+If the requested type conversion is not allowed, an error code is set.
+
+\subsection{ Adding keywords to a FITS Header. }
+
+\begin{scriptsize}
+\begin{verbatim}
+    393:    int addBoolKw(Hdr *, char *name, Bool value, char *comment);
+    394:    int addIntKw(Hdr *, char *name, int value, char *comment);
+    395:    int addFloatKw(Hdr *, char *name, float value, char *comment);
+    396:    int addDoubleKw(Hdr *, char *name, double value, char *comment);
+    397:    int addStringKw(Hdr *, char *name, char * value, char *comment);
+    398:    int addSpacesKw(Hdr *, char *comment);
+    399:    int addCommentKw(Hdr *, char *comment);
+    400:    int addHistoryKw(Hdr *, char *comment);
+\end{verbatim}
+\end{scriptsize}
+
+The new keywords are added to the keyword list just prior to the
+``END'' keyword.
+
+\subsection{ Inserting keywords in a FITS Header. }
+
+\begin{scriptsize}
+\begin{verbatim}
+    409:    FitsKw insertBoolKw(FitsKw, char *name, Bool value, char *comment);
+    410:    FitsKw insertIntKw(FitsKw, char *name, int value, char *comment);
+    411:    FitsKw insertFloatKw(FitsKw, char *name, float value, char *comment);
+    412:    FitsKw insertDoubleKw(FitsKw, char *name, double value, char *comment);
+    413:    FitsKw insertStringKw(FitsKw, char *name, char * value, char *comment);
+    414:    FitsKw insertSpacesKw(FitsKw, char *comment);
+    415:    FitsKw insertCommentKw(FitsKw, char *comment);
+    416:    FitsKw insertHistoryKw(FitsKw, char *comment);
+\end{verbatim}
+\end{scriptsize}
+
+The keywords are inserted after the current position.  The position
+is set with the ``find'', ``first'' and ``next'' functions.
+
+\subsection{ Adding/Inserting already formatted keywords }
+
+\begin{scriptsize}
+\begin{verbatim}
+    426:    int addFitsCard(Hdr *, char *card);
+    427:    FitsKw insertFitsCard(FitsKw, char *card);
+\end{verbatim}
+\end{scriptsize}
+
+These functions take an already formatted FITS "card" and either adds
+the string to the list or inserts it after the current position.  If
+the string is less than 80 bytes it is padded with spaces to 80 bytes.
+If the string is more than 80 bytes it is truncated.
+
+\subsection{ Deleting keywords in a FITS Header. }
+
+\begin{scriptsize}
+\begin{verbatim}
+    435:    void delKw(FitsKw);
+    436:    void delAllKw(Hdr *);
+\end{verbatim}
+\end{scriptsize}
+
+The ``del'' function must be preceeded by a ``find'' or ``findnext'' operation.
+The ``delAllKw'' function deletes all keywords.
+
+\section {
+Error handling in hstio.c
+}
+
+I have built in some degree of flexibility into the error handling.
+The routines that return status information return 0 if successful and
+-1 for an error.  You can access further error information via the
+functions: 
+
+\begin{scriptsize}
+\begin{verbatim}
+                HSTIOError hstio_err();
+                char *hstio_errmsg();
+\end{verbatim}
+\end{scriptsize}
+
+The first merely returns an enumerated code.  The second returns a text
+string with the error message itself.  These functions can be examined
+after any operation.  ``hstio\verb+_+err()'' will return 0 if there 
+was no error.
+
+In addition, you can install a global error handler.  Suppose you have a
+function of the form:
+
+\begin{scriptsize}
+\begin{verbatim}
+                void detect_error() {
+                        fprintf(stderr,"There was an ERROR!\n%s\n",
+                                hstio_errmsg());
+                        ... or whatever ...
+                        ... decide what to do ...
+                }
+\end{verbatim}
+\end{scriptsize}
+
+Then, you can install this function as a global error handler with the 
+function:
+
+\begin{scriptsize}
+\begin{verbatim}
+                push_hstioerr(detect_error);
+\end{verbatim}
+\end{scriptsize}
+
+There is a stack of function pointers (limited to a nesting depth of 32, 
+which is arbitrary).  If there is a non-zero pointer on the stack, that
+function is automatically called when an error occurs.  You are free to
+do anything in the error handling function: print a message, abort, or 
+whatever.  Execution continues after executing the error handling function.
+
+Of course, there is also a pop function:
+
+\begin{scriptsize}
+\begin{verbatim}
+                pop_hstioerr();
+\end{verbatim}
+\end{scriptsize}
+
+So, you can manipulate the error handling stack as you see fit, e. g. by
+installing a new error handling function at the beginning of some complex
+procedure and popping it at the end.  At any point, if you want to override
+the action of the global handler and give special handling after executing
+some function, you can merely push 0 onto the stack before executing the
+operation.  That prevents the global error handler from being called.  Of
+course, the pop function then restores the global error handler.
+
+\section {
+IRAF initialization
+}
+
+You don't have to call the c\verb+_+irafinit routine anymore.  The openXXImage
+routines do that.  You still can call c\verb+_+irafinit if you need to for
+other reasons.
+
+
+\section {
+OpenOutputImage
+}
+
+If the openOutputImage() routine is used to write a primary header,
+then the file designated by the filename must NOT already exist.  If it
+does already exist, an error is returned.  If the openOutputImage() 
+routine is used to write an extension image, that HDU is appended to the
+end of the file.
+
+
+\section {
+OpenUpdateImage
+}
+
+If the openUpdateImage() routine is used the file designated by the
+filename must already exist.  The HDU number associated with extname and
+extver is read and then re-written.
+
+The openUpdateImage() routine automatically reads the header associated
+with the image.  You do not have to do a separate getHeader().
+
+
+\section {
+Append versus Overwrite in high-level functions
+}
+
+In general, for all high-level I/O functions, if the option parameter
+is 0, whatever HDUs are involved are either written to a newly created
+file or appended to the end of an existing file.  In other words, no
+existing data is destroyed.  However, if the option parameter is
+Overwrite, whatever HDUs are involved overwrite HDU number extver.
+
+For putSingleGroup:\\
+\null \hspace{0.5in}
+	if option is 0, extver is ignored\\
+\null \hspace{1.0in}
+		if the file does NOT exist\\
+\null \hspace{1.5in}
+			the global header is written and\\
+\null \hspace{1.5in}
+			the single group is written\\
+\null \hspace{1.0in}
+		else if the file DOES exist\\
+\null \hspace{1.5in}
+			the single group is appended\\
+\null \hspace{1.0in}
+		endif\\
+\null \hspace{0.5in}
+	else if option is Overwrite\\
+\null \hspace{1.0in}
+		the file MUST exist\\
+\null \hspace{1.0in}
+		the single group overwrites HDU number extver\\
+\null \hspace{0.5in}
+	endif
+
+For putSingleGroupHdr:\\
+\null \hspace{0.5in}
+	if option is 0\\
+\null \hspace{1.0in}
+		the file must NOT exist\\
+\null \hspace{1.0in}
+		the primary HDU is written\\
+\null \hspace{0.5in}
+	else if option is Overwrite\\
+\null \hspace{1.0in}
+		the file MUST exist\\
+\null \hspace{1.0in}
+		the primary HDU is overwritten\\
+\null \hspace{0.5in}
+	endif
+
+
+\section {
+SingleGroup and MultiGroup Structures
+}
+
+The SingleGroup and MultiGroup structures have been changed.  They
+are now:
+
+\begin{scriptsize}
+\begin{verbatim}
+    219:    typedef struct {
+    220:            char *filename;
+    221:            int group_num;
+    222:            Hdr *globalhdr;
+    223:            SciHdrData sci;
+    224:            ErrHdrData err;
+    225:            DQHdrData dq;
+    226:    } SingleGroup;
+    227:    
+    228:    typedef struct {
+    229:            char *filename;
+    230:            int group_num;
+    231:            Hdr *globalhdr;
+    232:            SciHdrData sci;
+    233:            ErrHdrData err;
+    234:            DQHdrData dq;
+    235:            SmplHdrData smpl;
+    236:            IntgHdrData intg;
+    237:    } SingleNicmosGroup;
+\end{verbatim}
+\end{scriptsize}
+
+This is much more convenient than the previous definition because it
+makes a multi-group merely an array of single groups.  However, this
+complicates the handling of the global header.  Fortunately, this
+complication is completely buried in the I/O routines, at least if you
+use the normal init-alloc-free routines.  Here's what those routines do. 
+The SingleGroup case is fairly easy to handle.  InitSingleGroup merely
+sets the pointer globalhdr to NULL, allocSingleGroup allocates it, and
+freeSingleGroup frees it.  For a multigroup, group[0] contains the space
+for the actually allocated filename and the global header.  The other
+groups in the multi-group merely point to the same allocated space. 
+This means that there is only one global header and one filename, so it
+doesn't matter which group you use to change things in the global header. 
+The freeMultiGroup routine is smart enough to free only group[0].
+Neither input nor output have to be changed; everything should work
+just as before.
+
+In the test examples, output has been copied from input.  Handling
+output from scratch, i.  e.  generating it from completely new data,
+might take some explanation.  Here's a code fragment as an example.
+Notice that the individual groups within a MultiGroup do not have to
+have the same dimensionality.
+
+\begin{scriptsize}
+\begin{verbatim}
+        SingleGroup sg;
+        MultiGroup mg;
+
+        initSingleGroup(&sg);
+        initMultiGroup(&mg);
+
+        allocSingleGroup(&sg,128,128);
+        ... fill the global header ...
+        ... fill the data arrays ...
+        putSingleGroup("filename",1,&sg,0);
+        freeSingleGroup(&sg);
+
+        allocMultiGroup(&mg,3);
+        allocSingleGroup(&mg.group[0],128,128);
+        allocSingleGroup(&mg.group[1],256,256);
+        allocSingleGroup(&mg.group[2],512,512);
+
+        ... fill the global header ...
+        ... fill data group[0] ...
+        ... fill data group[1] ...
+        ... fill data group[2] ...
+
+        for (k = 0; k < 3; ++k)
+            putMultiGroup("filename",(k + 1),&mg,k,0);
+        freeMultiGroup(&mg);
+\end{verbatim}
+\end{scriptsize}
+
+\section{Example Programs}
+
+\subsection{Reading an Image or Image groups}
+\begin{scriptsize}
+\begin{verbatim}
+      1:    # include <hstio.h>
+      2:    # include <stdio.h>
+      3:    
+      4:    void showHdr(Hdr *h, char *title) {
+      5:            int i;
+      6:            printf("%s: number of lines: %d\n",title, h->nlines);
+      7:            if (h->array != NULL)
+      8:                    for (i = 0; i < h->nlines; ++i)
+      9:                            printf("%s\n",h->array[i]);
+     10:            printf("\n");
+     11:    }
+     12:    
+     13:    void showFloatData(FloatTwoDArray *x, char *title) {
+     14:            int i;
+     15:            printf("%s:\n",title);
+     16:    
+     17:            printf("(%d, 0) %g ",0,PPix(x,0,0));
+     18:              for (i = 1; i < 5; ++i) printf("%g ",PPix(x,i,0)); 
+     19:              printf(" ... ");
+     20:            printf("(%d, 0) %g ",(x->nx - 5),PPix(x,(x->nx - 5),0));
+     21:              for (i = x->nx - 4; i < x->nx; ++i) printf("%g ",PPix(x,i,0));
+     22:              printf("\n");
+     23:    
+     24:            printf("(%d, 1) %g ",0,PPix(x,0,1));
+     25:              for (i = 1; i < 5; ++i) printf("%g ",PPix(x,i,1)); 
+     26:              printf(" ... ");
+     27:            printf("(%d, 1) %g ",(x->nx - 5),PPix(x,(x->nx - 5),1));
+     28:              for (i = x->nx - 4; i < x->nx; ++i) printf("%g ",PPix(x,i,1));
+     29:              printf("\n");
+     30:    
+     31:            printf("(%d, max - 2) %g ",0,PPix(x,0,x->ny - 2));
+     32:              for (i = 1; i < 5; ++i) printf("%g ",PPix(x,i,x->ny - 2)); 
+     33:              printf(" ... ");
+     34:            printf("(%d, max - 2) %g ",(x->nx - 5),PPix(x,(x->nx - 5),x->ny - 2));
+     35:              for (i = x->nx - 4; i < x->nx; ++i) printf("%g ",PPix(x,i,x->ny - 2));
+     36:              printf("\n");
+     37:    
+     38:            printf("(%d, max - 1) %g ",0,PPix(x,0,x->ny - 1));
+     39:              for (i = 1; i < 5; ++i) printf("%g ",PPix(x,i,x->ny - 1)); 
+     40:              printf(" ... ");
+     41:            printf("(%d, max - 1) %g ",(x->nx - 5),PPix(x,(x->nx - 5),x->ny - 1));
+     42:              for (i = x->nx - 4; i < x->nx; ++i) printf("%g ",PPix(x,i,x->ny - 1));
+     43:              printf("\n");
+     44:            printf("\n");
+     45:    }
+     46:    
+     47:    void showShortData(ShortTwoDArray *x, char *title) {
+     48:            int i;
+     49:            printf("%s:\n",title);
+     50:    
+     51:            printf("(%d, 0) %d ",0,PPix(x,0,0));
+     52:              for (i = 1; i < 5; ++i) printf("%d ",PPix(x,i,0)); 
+     53:              printf(" ... ");
+     54:            printf("(%d, 0) %d ",(x->nx - 5),PPix(x,(x->nx - 5),0));
+     55:              for (i = x->nx - 4; i < x->nx; ++i) printf("%d ",PPix(x,i,0));
+     56:              printf("\n");
+     57:    
+     58:            printf("(%d, 1) %d ",0,PPix(x,0,1));
+     59:              for (i = 1; i < 5; ++i) printf("%d ",PPix(x,i,1)); 
+     60:              printf(" ... ");
+     61:            printf("(%d, 1) %d ",(x->nx - 5),PPix(x,(x->nx - 5),1));
+     62:              for (i = x->nx - 4; i < x->nx; ++i) printf("%d ",PPix(x,i,1));
+     63:              printf("\n");
+     64:    
+     65:            printf("(%d, max - 2) %d ",0,PPix(x,0,x->ny - 2));
+     66:              for (i = 1; i < 5; ++i) printf("%d ",PPix(x,i,x->ny - 2)); 
+     67:              printf(" ... ");
+     68:            printf("(%d, max - 2) %d ",(x->nx - 5),PPix(x,(x->nx - 5),x->ny - 2));
+     69:              for (i = x->nx - 4; i < x->nx; ++i) printf("%d ",PPix(x,i,x->ny - 2));
+     70:              printf("\n");
+     71:    
+     72:            printf("(%d, max - 1) %d ",0,PPix(x,0,x->ny - 1));
+     73:              for (i = 1; i < 5; ++i) printf("%d ",PPix(x,i,x->ny - 1)); 
+     74:              printf(" ... ");
+     75:            printf("(%d, max - 1) %d ",(x->nx - 5),PPix(x,(x->nx - 5),x->ny - 1));
+     76:              for (i = x->nx - 4; i < x->nx; ++i) printf("%d ",PPix(x,i,x->ny - 1));
+     77:              printf("\n");
+     78:            printf("\n");
+     79:    }
+     80:    
+     81:    void show_iodesc(IODescPtr x) {
+     82:            printf("IODesc: filename = %s extname = %s extver = %d\n\tnaxis1 = %d \
+     83:    naxis2 = %d data type = %d\n", getFilename(x), getExtname(x), getExtver(x), 
+     84:                    getNaxis1(x), getNaxis2(x), getType(x));
+     85:    }
+     86:    
+     87:    void detect_err() {
+     88:            printf("HSTIO Error (%d): %s\n",hstio_err(),hstio_errmsg());
+     89:            exit(0);
+     90:    }
+     91:    
+     92:    int main(int argc, char **argv) {
+     93:            IODescPtr pri, sci, dq, err;
+     94:    #ifdef EX3
+     95:            IODescPtr outpri, outsci, outdq, outerr;
+     96:    #endif
+     97:    
+     98:            Hdr prihdr, scihdr, dqhdr, errhdr;
+     99:            FloatTwoDArray scidata;
+    100:            ShortTwoDArray dqdata;
+    101:            FloatTwoDArray errdata;
+    102:            int i;
+    103:            char *tmp;
+    104:    
+    105:            SciHdrData scihdrdata;
+    106:            DQHdrData  dqhdrdata;
+    107:            ErrHdrData errhdrdata;
+    108:            SingleGroup sg;
+    109:            MultiGroup mg;
+    110:    
+    111:            int A = 1; /* low-level routines */
+    112:            int B = 3; /* high-level XXHdrData routines */
+    113:            int C = 4; /* high-level SingleGroup */
+    114:            int D = 5; /* high-level MultiGroup */
+    115:    
+    116:            /*
+    117:            ** Command line arguments: 
+    118:            **      1. input file name
+    119:            **      2. output file name
+    120:            */
+    121:    #ifdef EX3
+    122:            if (argc != 3) {
+    123:                    printf("Wrong number of input arguments: ex3 input output\n");
+    124:                    exit(0);
+    125:            }
+    126:            printf("Executing program ex3 -- test of pipeline I/O routines\n");
+    127:            printf("Input: input file reading 6 groups of Sci, Err, DQ.\n");
+    128:            printf("Output: output file creating 6 groups of Sci, Err, DQ.\n");
+    129:    #else
+    130:            if (argc != 2) {
+    131:                    printf("Wrong number of input arguments: ex2 input\n");
+    132:                    exit(0);
+    133:            }
+    134:            printf("Executing program ex2 -- test of pipeline I/O routines\n");
+    135:            printf("Input: input file reading 6 groups of Sci, Err, DQ.\n");
+    136:    #endif
+    137:    
+    138:            /* install the error handler */
+    139:            push_hstioerr(detect_err);
+    140:    
+    141:            /*
+    142:            ** Initialize the data structures.
+    143:            */
+    144:            initFloatData(&scidata);
+    145:            initShortData(&dqdata);
+    146:            initFloatData(&errdata);
+    147:            initHdr(&prihdr);
+    148:            initHdr(&scihdr);
+    149:            initHdr(&dqhdr);
+    150:            initHdr(&errhdr);
+    151:    
+    152:            initFloatHdrData(&scihdrdata);
+    153:            initShortHdrData(&dqhdrdata);
+    154:            initFloatHdrData(&errhdrdata);
+    155:            initSingleGroup(&sg);
+    156:            initMultiGroup(&mg);
+    157:    
+    158:            /*
+    159:            ** First, we will use the low-level I/O routines to open
+    160:            ** and read the primary header, and the first three
+    161:            ** extension image arrays.
+    162:            */
+    163:            printf("\n======= Primary header: read =========\n");
+    164:            pri = openInputImage(argv[1],"",0);
+    165:            getHeader(pri,&prihdr);
+    166:            show_iodesc(pri);
+    167:            showHdr(&prihdr,"Primary Header Keywords");
+    168:            printf("======= Primary header: read complete =========\n");
+    169:    #ifdef EX3
+    170:            outpri = openOutputImage(argv[2],"",0,&prihdr, 0, 0, 0);
+    171:            closeImage(outpri);
+    172:    #endif
+    173:            closeImage(pri);
+    174:            freeHdr(&prihdr);
+    175:    
+    176:        for (i = A; i <= A + 1; ++i) {
+    177:            printf("\n======= Science data: read =========\n");
+    178:            sci = openInputImage(argv[1],"SCI",i);
+    179:            getHeader(sci,&scihdr);
+    180:            show_iodesc(sci);
+    181:            showHdr(&scihdr,"Science Header Keywords");
+    182:            getFloatData(sci,&scidata);
+    183:            showFloatData(&scidata,"Selected Science Data");
+    184:            printf("======= Science data: read complete =========\n");
+    185:    #ifdef EX3
+    186:            outsci = openOutputImage(argv[2],"sci",i,&scihdr, 
+    187:                    getNaxis1(sci), getNaxis2(sci),0);
+    188:            putFloatData(outsci,&scidata);
+    189:            closeImage(outsci);
+    190:    #endif
+    191:            closeImage(sci);
+    192:            freeFloatData(&scidata);
+    193:            freeHdr(&scihdr);
+    194:    
+    195:            printf("\n======= Error data: read =========\n");
+    196:            err = openInputImage(argv[1],"ERR",i);
+    197:            getHeader(err,&errhdr);
+    198:            showHdr(&errhdr,"Error Header Keywords");
+    199:            getFloatData(err,&errdata);
+    200:            show_iodesc(err);
+    201:            showFloatData(&errdata,"Selected Error Data");
+    202:            printf("======= Error data: read complete =========\n");
+    203:    #ifdef EX3
+    204:            outerr = openOutputImage(argv[2],"err",i,&errhdr, 
+    205:                    errdata.nx, errdata.ny,0);
+    206:            putFloatData(outerr,&errdata);
+    207:            closeImage(outerr);
+    208:    #endif
+    209:            closeImage(err);
+    210:            freeFloatData(&errdata);
+    211:            freeHdr(&errhdr);
+    212:    
+    213:            printf("\n======= Data Quality data: read =========\n");
+    214:            dq = openInputImage(argv[1],"DQ",i);
+    215:            getHeader(dq,&dqhdr);
+    216:            showHdr(&dqhdr,"Data Quality Header Keywords");
+    217:            getShortData(dq,&dqdata);
+    218:            show_iodesc(dq);
+    219:            showShortData(&dqdata,"Selected Data Quality Data");
+    220:            printf("\n======= Data Quality data: read complete =========\n");
+    221:    #ifdef EX3
+    222:            outdq = openOutputImage(argv[2],"dq",i,&dqhdr, 
+    223:                    dqdata.nx, dqdata.ny,0);
+    224:            putShortData(outdq,&dqdata);
+    225:            closeImage(outdq);
+    226:    #endif
+    227:            closeImage(dq);
+    228:            freeShortData(&dqdata);
+    229:            freeHdr(&dqhdr);
+    230:    
+    231:        }
+    232:    
+    233:            /*
+    234:            ** Now, we will test the high-level routines.
+    235:            ** First, test getSci, getErr, and getDQ.
+    236:            */
+    237:            printf("\n======= Science data: read =========\n");
+    238:            getSci(argv[1],B,&scihdrdata);
+    239:            show_iodesc(scihdrdata.iodesc);
+    240:            showHdr(&scihdrdata.hdr,"Science Header Keywords");
+    241:            showFloatData(&scihdrdata.data,"Science Data");
+    242:            printf("======= Science data: read complete =========\n");
+    243:    #ifdef EX3
+    244:            putSci(argv[2],B,&scihdrdata,0);
+    245:    #endif
+    246:            freeFloatHdrData(&scihdrdata);
+    247:    
+    248:            printf("\n======= Error data: read =========\n");
+    249:            getErr(argv[1],B,&errhdrdata);
+    250:            show_iodesc(errhdrdata.iodesc);
+    251:            showHdr(&errhdrdata.hdr,"Error Header Keywords");
+    252:            showFloatData(&errhdrdata.data,"Error Data");
+    253:            printf("======= Error data: read complete =========\n");
+    254:    #ifdef EX3
+    255:            putErr(argv[2],B,&errhdrdata,0);
+    256:    #endif
+    257:            freeFloatHdrData(&errhdrdata);
+    258:    
+    259:            printf("\n======= Data Quality data: read =========\n");
+    260:            getDQ(argv[1],B,&dqhdrdata);
+    261:            show_iodesc(dqhdrdata.iodesc);
+    262:            showHdr(&dqhdrdata.hdr,"DQ Header Keywords");
+    263:            showShortData(&dqhdrdata.data,"Data Quality Data");
+    264:            printf("======= Data Quality data: read complete =========\n");
+    265:    #ifdef EX3
+    266:            putDQ(argv[2],B,&dqhdrdata,0);
+    267:    #endif
+    268:            freeShortHdrData(&dqhdrdata);
+    269:    
+    270:            /*
+    271:            ** Now, test getSingleGroup.
+    272:            */
+    273:            printf("\n======= Single group data: read =========\n");
+    274:            getSingleGroup(argv[1],C,&sg);
+    275:            printf("Filename: %s group %d\n",sg.filename,sg.group_num);
+    276:            showHdr(sg.globalhdr,"Global header");
+    277:            showHdr(&sg.sci.hdr,"Science Header Keywords");
+    278:            showFloatData(&sg.sci.data,"Science Data");
+    279:            showHdr(&sg.err.hdr,"Error Header Keywords");
+    280:            showFloatData(&sg.err.data, "Error Data");
+    281:            showHdr(&sg.dq.hdr,"DQ Header Keywords");
+    282:            showShortData(&sg.dq.data, "Data Quality Data");
+    283:            printf("======= Single group data: read complete =========\n");
+    284:    #ifdef EX3
+    285:            putSingleGroup(argv[2],C,&sg,0);
+    286:    #endif
+    287:            freeSingleGroup(&sg);
+    288:    
+    289:            /*
+    290:            ** Finally, test getMultiGroup.
+    291:            */
+    292:            printf("\n======= Multiple group data: read =========\n");
+    293:            allocMultiGroup(&mg,4);
+    294:            getMultiGroupHdr(argv[1],&mg);
+    295:            for (i = 0; i < 2; ++i)
+    296:                { getMultiGroup(&mg,i,(i + D)); }
+    297:            printf("Filename: %s\n",mg.group[0].filename);
+    298:            showHdr(mg.group[0].globalhdr,"Global header");
+    299:            for (i = 0; i < 2; ++i) {
+    300:                showHdr(&mg.group[i].sci.hdr,"Science Header Keywords");
+    301:                showFloatData(&mg.group[i].sci.data,"Science Data");
+    302:                showHdr(&mg.group[i].err.hdr,"Error Header Keywords");
+    303:                showFloatData(&mg.group[i].err.data,"Error Data");
+    304:                showHdr(&mg.group[i].dq.hdr,"DQ Header Keywords");
+    305:                showShortData(&mg.group[i].dq.data,"Data Quality Data");
+    306:            }
+    307:            printf("======= Multi group data: read complete =========\n");
+    308:    #ifdef EX3
+    309:            for (i = 0; i < 2; ++i)
+    310:                putMultiGroup(argv[2],(i + D),&mg,i,0);
+    311:    #endif
+    312:            freeMultiGroup(&mg);
+    313:    
+    314:            return 0;
+    315:    }
+    316:    
+\end{verbatim}
+\end{scriptsize}
+
+\subsection{Illustration of Low-Level I/O Routines}
+\begin{scriptsize}
+\begin{verbatim}
+      1:    # include <hstio.h>
+      2:    # include <stdio.h>
+      3:    
+      4:    /***************************************************************************
+      5:    
+      6:            Illustration of the low-level I/O routines
+      7:                            using
+      8:            Data Structures and I/O Function Declarations for
+      9:            STScI Calibration Pipeline Software for STIS and NICMOS
+     10:    
+     11:    Input data structures, such as FloatTwoDArray and Hdr, each have
+     12:    initilization, allocation, and free routines: initFloatData,
+     13:    allocFloatData, freeFloatData. 
+     14:    
+     15:    On input, if the data structures already have storage allocated and that
+     16:    storage is the same size as the requested data, that data storage is
+     17:    reused.  If it is not the same size, the old storage is freed and new
+     18:    storage is allocated.  If storage has not been allocated, then the input
+     19:    routines allocate it. 
+     20:    
+     21:    It is the responsibility of the application program to free the
+     22:    allocated storage. 
+     23:    
+     24:    ***************************************************************************/
+     25:    
+     26:    void detect_err() {
+     27:            printf("HSTIO Error (%d): %s\n",hstio_err(),hstio_errmsg());
+     28:            exit(0);
+     29:    }
+     30:    
+     31:    int main(int argc, char **argv) {
+     32:            IODescPtr in;
+     33:            FloatTwoDArray x = IFloatData;
+     34:            Hdr h = IHdr;
+     35:            IODescPtr out;
+     36:            FloatTwoDArray z = IFloatData;
+     37:            int i, j;
+     38:    
+     39:            /* install the error handler */
+     40:            push_hstioerr(detect_err);
+     41:    
+     42:            initFloatData(&x); /* Initialize the data structures.  Failure to */
+     43:            initFloatData(&z); /* initilize the data structures increases the */
+     44:            initHdr(&h);     /* probablilty of getting a core dump.         */
+     45:    
+     46:            /* This section illustrates the input case. */
+     47:            in = openInputImage("infile.fit","",0);
+     48:            getFloatData(in,&x);
+     49:            getHeader(in,&h);
+     50:            closeImage(in);
+     51:            for (j = x.ny - 1; j >= 0; --j) {       /* Do something with    */
+     52:                for (i = 0; i < x.nx; ++i)          /* the data,            */
+     53:                    printf("%g ", Pix(x,i,j));
+     54:                printf("\n");
+     55:            }
+     56:            for (i = 0; i < h.nlines; ++i)          /* and the header.      */
+     57:                    printf("%s\n", h.array[i]);
+     58:            freeFloatData(&x);                      /* The application must */
+     59:            freeHdr(&h);                            /* free storage.        */
+     60:    
+     61:            /* This section illustrates the output case. */
+     62:            allocFloatData(&z,5,5);                 /* Storage must be      */
+     63:            allocHdr(&h,25);                        /* allocated.           */
+     64:            for (j = z.ny - 1; j >= 0; --j)         /* Fill the data array  */
+     65:                for (i = 0; i < z.nx; ++i)          
+     66:                    Pix(z,i,j) = (i + 1) * 1000.0 + j + 1;
+     67:            /* And, also fill the header array */
+     68:            addFloatKw(&h,"CRVAL1",1.5," "); 
+     69:            addFloatKw(&h,"CRVAL2",2.5," "); 
+     70:            addFloatKw(&h,"CRPIX1",3.5," "); 
+     71:            addFloatKw(&h,"CRPIX2",4.5," "); 
+     72:            addFloatKw(&h,"CD1_1",5.5," "); 
+     73:            addFloatKw(&h,"CD1_2",6.5," "); 
+     74:            addFloatKw(&h,"CD2_1",7.5," "); 
+     75:            addFloatKw(&h,"CD2_2",8.5," "); 
+     76:            addIntKw(&h,"TEST1",34," "); 
+     77:            addBoolKw(&h,"TEST2",True," "); 
+     78:    
+     79:            out = openOutputImage("outfile1.fit","sci",0,&h,5,5,0);
+     80:            /* the openOutputImage routine writes the header */
+     81:            putFloatData(out,&z);                   /* write the data.      */
+     82:            closeImage(out);
+     83:            freeFloatData(&z);                      /* Then, free the       */
+     84:            freeHdr(&h);                            /* storage.             */
+     85:    
+     86:            /* This section illustrates copying data from one file to another */
+     87:            in = openInputImage("infile.fit","sci",0);
+     88:            getHeader(in,&h);
+     89:            getFloatData(in,&x);
+     90:            closeImage(in);
+     91:            out = openOutputImage("outfile2.fit","sci",0,&h,
+     92:                    getNaxis1(in),getNaxis2(in),0);
+     93:            putFloatData(out,&x);
+     94:            closeImage(out);
+     95:            freeFloatData(&x);
+     96:            freeHdr(&h);
+     97:    
+     98:            return 0;
+     99:    }
+    100:    
+\end{verbatim}
+\end{scriptsize}
+
+\end{document}

@@ -1,0 +1,11 @@
+# Update the newgeom application code in the focutility package library.
+# Author: R. JEDRZEJEWSKI  16th July 1990
+
+$checkout focutility.a ../
+$update   focutility.a
+$checkin  focutility.a ../
+$exit
+
+focutility.a:
+	t_newgeom.x	<imhdr.h>
+	;

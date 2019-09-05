@@ -1,0 +1,4 @@
+input,f,a,,,,Image template
+text,f,a,,,,History text
+verbose,b,h,no,,,Verbose message switch
+mode,s,h,al

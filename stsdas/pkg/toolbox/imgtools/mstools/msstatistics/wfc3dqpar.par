@@ -1,0 +1,22 @@
+#  WFC3 data quality parameters
+#
+#  02-Jun-2010: Updated flags to match current WFC3 set
+#
+rs,b,h,yes,,,"Reject Reed-Solomon errors?"
+fill,b,h,yes,,,"Reject filled pixels?"
+baddet,b,h,yes,,,"Reject bad detector pixels?"
+badzero,b,h,yes,,,"Reject bad IR zero read pixels?"
+hotpix,b,h,yes,,,"Reject hot (high dark current) pixels?"
+ctetail,b,h,yes,,,"Reject pixels in CTE tails (UVIS only)?"
+unstable,b,h,yes,,,"Reject unstable pixels (IR only)?"
+warmpix,b,h,yes,,,"Reject warm pixels?"
+badbias,b,h,yes,,,"Reject bad bias pixels?"
+satpix,b,h,yes,,,"Reject saturated pixels?"
+badflat,b,h,yes,,,"Reject bad flatfield pixels?"
+trap,b,h,yes,,,"Reject charge trap pixels (UVIS only)?"
+atodsat,b,h,yes,,,"Reject A-to-D saturated pixels (UVIS only)?"
+zerosig,b,h,yes,,,"Reject pixels with signal in the IR zero read?"
+mdcr,b,h,yes,,,"Reject CR's flagged by MultiDrizzle?"
+calcr,b,h,yes,,,"Reject CR's flagged by calwf3?"
+crosstalk,b,h,yes,,,"Reject crosstalk/ghost pixels?"
+mode,s,h,al

@@ -1,0 +1,7 @@
+infile, s, a, "", , ,			">Input file name"
+outtable, s, a, "", , ,			">Output table name"
+
+graphtab, s, h, "crcomp$hstgraph_*.tab", , ,	">graph table name"
+comptab, s, h, "crcomp$hstcomp_*.tab", , ,	">component table name"
+
+mode, s, h, "al"

@@ -1,0 +1,8 @@
+infile, f, a, "", , , 	Input data file template
+inmask, f, a, "", , , 	Input data quality file template
+outfile, f, a, "", , , 	Output data file template
+maxgap, i, a, 10, 1, ,	Largest gap width allowed for interpolation
+fillval, r, a, INDEF, , ,	Fill value used for gap larger than maxgap
+dqpar, pset, h, , , ,	Data Quality File parameters
+
+mode, s, h, "al"

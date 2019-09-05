@@ -1,0 +1,7 @@
+input,f,a,,,,>input image
+lowerlimit,r,a,INDEF,,,>lower limiting value
+upperlimit,r,a,INDEF,,,>upper limiting value
+maxvals,i,h,1000,1,,>maximum number of points to print
+border,i,h,0,0,,>width of border around all axes
+outside,b,h,no,,,>mark points outside specified interval?
+mode,s,h,al

@@ -1,0 +1,26 @@
+# Gaussians function parameters.
+#
+a,r,h,0.,,,>initial guess for baseline zero point
+b,r,h,0.,,,>initial guess for baseline slope
+ampl1,r,h,INDEF,,,>initial guess for 1st amplitude
+cent1,r,h,INDEF,,,>initial guess for 1st center
+fwhm1,r,h,INDEF,,,>initial guess for 1st fwhm
+ampl2,r,h,INDEF,,,>initial guess for 2nd amplitude
+cent2,r,h,INDEF,,,>initial guess for 2nd center
+fwhm2,r,h,INDEF,,,>initial guess for 2nd fwhm
+ampl3,r,h,INDEF,,,>initial guess for 3rd amplitude
+cent3,r,h,INDEF,,,>initial guess for 3rd center
+fwhm3,r,h,INDEF,,,>initial guess for 3rd fwhm
+va,b,h,no,,,>vary baseline zero point ?
+vb,b,h,no,,,>vary baseline slope ?
+vampl1,b,h,yes,,,>vary 1st amplitude ?
+vcent1,b,h,yes,,,>vary 1st center ?
+vfwhm1,b,h,no,,,>vary 1st fwhm ?
+vampl2,b,h,yes,,,>vary 2nd amplitude ?
+vcent2,b,h,yes,,,>vary 2nd center ?
+vfwhm2,b,h,no,,,>vary 2nd fwhm ?
+vampl3,b,h,yes,,,>vary 3rd amplitude ?
+vcent3,b,h,yes,,,>vary 3rd center ?
+vfwhm3,b,h,no,,,>vary 3rd fwhm ?
+version,s,h,"07Jun90",,,>date of installation
+mode,s,h,al

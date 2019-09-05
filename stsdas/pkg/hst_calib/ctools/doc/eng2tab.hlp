@@ -1,0 +1,558 @@
+.help eng2tab Jan95 ctools
+.ih
+NAME
+eng2tab -- Extract information from engineering data and place in tables
+.ih
+USAGE
+eng2tab input output
+.ih
+DESCRIPTION
+eng2tab, using a supplied "definition table", extracts bit-pack
+information from Hubble Space Telescope (HST) observations, and places
+the information into a table.
+
+Observations from all of HST's instruments produce images that contain
+some sort of engineering data, usually in the Unique Data Log (UDL)
+and Standard Header Packet (SHP) files.  The image data in these files
+contain bit-packed information.  Specifically, individual bits or
+small numbers of bits contain specific information.  However, since
+these information bits are packed into full words, accessing that
+information is tedious.  eng2tab, through the use of the "definition
+table", helps to automate the process of retrieving such information.
+
+.ls ALGORITHM
+The problem is to get the value of a piece of information from a
+bit-packed array.  This 'item' may be just a single bit, a few bits, a
+whole word, or multiple words, in the image data.  Thus, to get the
+value of an item, some extraction method needs to be defined.  The
+'extract' expression, specified for each item, is a function that
+transforms the image data into the value for the desired item.
+
+Very often, the value of an item itself encodes information.  For
+example, a bit flag which can have values 0 or 1 may mean that a
+shutter is open or closed, or a calibration lamp is on or off.  To
+translate these "meaningless" numerical values into something more
+human-understandable, one can define a 'format' expression.  The
+'format' expression defines a function to transform an item's value
+into some other, hopefully more useful, value.
+
+Thus, the whole extraction process can be expressed by the formula:
+
+.nf
+	item's value = format (extract (image data))
+.fi
+
+The 'definition file' contains the extract and format information for
+each possible item in a particular image type.
+.le
+.ls DEFINITION FILE
+The expressions to extract and format items are specified in a
+"definition file".  This file is an IRAF Text DataBase.  
+
+The format of the definition file is a text file.  Each item is
+defined by a series of lines.  The format of each item definition is
+as follows:
+
+.nf
+	begin item_name
+	    extract  extract_expression
+	    format   format_expression
+	    units    units_description
+	    descrip  general_description
+.fi
+
+An item begins with a line that has "begin" followed by the name of
+the item.  An item name can be anything, as long as it is no more than
+19 characters (SZ_COLNAME from tables) long.  The following lines
+define the separate "fields" of the item definition.  They can appear
+in any order and do not all need to be defined.  Each line can be up
+to 1023 characters long (SZ_COMMAND).  The fields are as
+follows:
+.ls extract
+The extract expression is found by a line beginning with the word
+"extract" followed by an arbitrary expression used to extract the
+item's value from the parent data.
+.le
+.ls format
+The format expression is found by a line beginning with the word
+"format" followed by an arbitrary expression used to 'format' the
+item's value.
+.le
+.ls units
+The units field, defined by a line beginning with the word "units", is
+used when writing a BU object out to a table.  The value of the units
+field is placed in the column's "units" descriptor.  The length of the
+units field should be no more than 19 characters (SZ_COLUNITS).
+.le
+.ls descrip
+The descrip field, defined by a line beginning with the word
+"descrip", simply contains a description of the item.  Currently,
+eng2tab makes no use of this field.
+.le
+.le
+.ls EXPRESSIONS
+Expressions are used to define the 'extract' and 'format' functions.
+An expression is a simple mathematical formula.
+
+The following Fortran-type arithmetic operators are supported.  If the
+second argument of the exponentiation is not an integer, the result
+will be undefined if the the first argument is not positive.  Again, 
+remember that integer division truncates.
+ 
+.nf
++	addition		-	subtraction
+*	multiplication		/	division
+-	negation		**	exponentiation
+//	concatenation
+.fi
+
+The following logical operators are supported. Logical operators will
+return a value of 1 if true or 0 if false. 
+
+.nf
+||	logical or		&&	logical and
+=	equality		!=	inequality
+<	less than		>	greater than
+<=	less or equal		>=	greater or equal
+!	not
+.fi
+
+The following functions are supported. These functions all take a
+single argument, which may be an expression. The argument or result of
+trigonometric functions are in radians.
+
+.nf
+abs 	absolute value		acos 	arc cosine
+asin 	arc sine		atan 	arc tangent
+cos 	arc cosine		str	convert to string
+exp 	E raised to power	int 	convert to integer
+log 	natural logarithm	log10 	common logarithm
+nint 	nearest integer		real	convert to real
+sin 	sine			tan 	tangent
+sqr 	second power		sqrt 	square root
+
+.fi
+
+The following functions take two arguments.
+
+.nf
+atan2 	arc tangent		max 	maximum
+min 	minimum			mod 	modulus
+and	Bit-wise AND		shift	Bit-wise SHIFT
+.fi
+
+The function "lin" implements piece-wise linear interpolation.  The
+function looks like:
+
+.nf
+	lin (v,pairs)
+.fi
+
+where 'v' is the X value for which to interpolate the Y value.
+'pairs' is a string containing x/y pairs of numbers which define the
+points to interpolate/extropolate from.
+
+The following functions implement decision-making concepts:
+
+.nf
+x ? true:false	If 'x' is true, then return the 'true' expression
+		If 'x' is false, then return the 'false' expression
+
+switch (key,val0,val1,...,val14)
+		If key is an integer between 0 and 14, return the
+		value of the key'th expression.  Note that not
+		all arguments need to be defined.
+
+word_find (key,strval)
+		'strval' is a space/comma separated list of words.
+		Return the key'th word in the list.
+.fi
+
+For the 'extract' expression, there is only one variable allowed:
+
+.nf
+	d[i]
+.fi
+
+This variable is the value of the 'i'th element of the image array.
+
+For the 'format' expression, the 'd[i]' variable is available, along
+with the variable:
+
+.nf
+	v
+.fi
+
+The value of 'v' is the value of the item after it has been extracted
+from the image data.
+
+If a name of an item appears in another item's extract or format
+expressions, the name will be treated as a variable whose value
+is the result of the item's extract expression.  Care must be taken
+not to create recursive or circular definitions; such definitions will
+cause the item not be given a value or formatted.
+.le
+.ls ITEM MATCHING
+The parameter 'items' is used to determine which items in the
+definition database are extracted from the data.  The value of 'items'
+is a comma/space separated list of "regular expressions".  A regular
+expression is a pattern matching language to help specify.  See the
+help for the 'match' task for a description of regular expression
+pattern matching.
+.le
+.le
+.ls OUTPUT TABLE
+The columns in the output table are the item names as found in the
+definition file.  The units associated with each column comes from the
+'units' field in the definition file.  The datatype of each column
+depends on whether the 'format' expression has been used.  If the
+parameter 'format' is "no" or a 'format' expression does not exist for
+a particular item, the column will be an integer column.
+
+However, if the 'format' parameter is "yes" and a 'format' field
+exists for an item, the datatype of the column depends on the result
+of the 'format' expression.
+
+There is also a column, 'file', which contains the file name of the
+source image data.
+.le
+.ls PREDEFINED DEFINITION FILES
+As of the current release STSDAS, the following definition files are
+distributed.  They can be found in the directory "ctools$eng2tab".
+.ls ghrs_udl_def.db
+Definitions for the GHRS UDL file.  For HST observations, the image
+for which this definition file is relevant has the extension ".ulh".
+.le
+.ls ghrs_x0h_def.db
+Definitions for the GHRS extracted data file.  For HST observations, the image
+for which this definition file is relevant has the extension ".x0h".
+.le
+.ls ghrs_shp_temps_def.db
+Definitions to retrieve various temperature monitors from the Standard
+Header Packet (SHP) image for the GHRS.  For HST observations, the image
+for which this definition file is relevant has the extension ".shh".
+
+For HST observation, the SHP is common among all instruments and
+contains much more information that defined in this definition file.
+The definitions included here relate only to the temperature monitors
+found in the SHP header keywords under the section "CDBS KEYWORDS" for
+GHRS observations.
+.le
+.ih
+PARAMETERS
+.ls input [file name template]
+A list of images to extract the information from.
+.le
+.ls output [file name]
+Table to place the extract information.
+.le
+.ls (definition [file name])
+Name of the text database file containing the definitions of the items
+to extract from the input images.  See the discussion for details on
+the format.
+.le
+.ls (items = "*") [string]
+The items to extract from the input data.  See the help for the task
+'match' for a discussion of the syntax for pattern matching.
+.le
+.ls (defext = "") [string]
+Extension to place onto the input file names, if the input file names
+do not have a specified extension.
+.le
+.ls (format = yes) [boolean]
+If yes, the 'format' expression, found in the definition file,  will
+be used to translate item values before writing to the table.  If no,
+only the integer values of the extracted items will be written.
+.le
+.ih
+EXAMPLES
+The following examples demonstrate how to run the task and usage of
+its various parameters.
+
+1. Using the GHRS UDL definition file supplied with STSDAS, decode the
+information in the GHRS observation z0x20107m UDL file.
+
+.nf
+	cl> eng2tab z0x20107m.ulh ulh.tab \
+	definition=ctools$eng2tab/ghrs_uld_def.db
+.fi
+
+2. Same as example 1, but do not format the table.  Note that the
+table contents are now only integer columns.
+
+.nf
+	cl> eng2tab z0x20107m.ulh ulh.tab \
+	definition=ctools$eng2tabghrs_uld_def.db format-
+.fi
+
+3. To always use the ULH extension on file names, set the 'defext' to
+"ulh".
+
+.nf
+	cl> eng2tab z0x20107m ulh.tab definition=ghrs_uld_def.db \
+	defext="ulh"
+.fi
+
+4. Some examples of matching items.  Only extract the information for
+the 'zconof_det1' and 'zconof_det2' items from the GHRS UDL definiton
+file.
+
+.nf
+	cl> eng2tab z0x20107m.ulh ulh.tab definition=ghrs_uld_def.db \
+	items="zconof_det1,zconof_det2"
+.fi
+
+5. Retrieve all items that have to do with BIN ID from a GHRS UDL
+file.
+
+.nf
+	cl> eng2tab z0x20107m.ulh ulh.tab ghrs_uld_def.db items="zdefid"
+.fi
+
+The following examples demonstrate how to construct and use the
+definition files.
+
+6.  A basic entry.  This entry retrieves the 6th element out of an
+integer image.  No other formatting or processing is done to it.
+
+.nf
+	begin basic
+		extract	d[6]
+		format	v
+		descr	Just get the 6th pixel out.
+		units	pixel units
+.fi
+
+7. The following entry is from the ghrs_udl_def.db file.  The item
+'zfacolim' resides in the 8th pixel of the UDL image.  Its value can
+range from 0 to 65535.  Since the pixels in a UDL image are only
+16-bits (short), any task that reads this pixel may interpret it as a
+signed value, turning any valid value greater than 32767 into a
+negative number.  To prevent this, use the bit function 'and' to force
+it into a positive number.
+
+.nf
+begin zfacolim
+	extract	and(d[8],65535)
+	descr	Maximum allowable coincidence counts per integration period, 0-65535
+	format	v
+	units	counts/integration  
+.fi
+
+8. The following entry is from the ghrs_udl_def.db  file.  The item
+'zflim' is a 25 bit value.  Since each pixel in the UDL image is only
+16 bits, the zflim value is split over two pixels of the image.  The
+9 most significant bits reside in pixel 9 while the least significant
+16 bits reside in pixel 10.  Combine these to get the actual value.
+
+A note about the two 'and's:  The first garauntees that the rest
+of the bits in pixel 9 are zero.  The second makes sure that the value
+of pixel 10 is taken as a positive number.
+
+.nf
+begin zflim
+	extract	and(d[9],511)*65536 + and(d[10], 65535)
+	descr	On-the-fly adder limit
+	format	v
+	units	counts              
+.fi
+
+9. The following entry is from the ghrs_udl_def.db  file.  The item
+'zfconof_det2' is a bit-flag, residing in bit 8 of the first pixel in
+the UDL.  The flag indicates whether detector 2 for the GHRS is 1 (on)
+or 0 (off).  The extract expression simply isolates that bit.  The
+format expression uses the function 'word_find' to translate the value
+into a string.  If the value is '0', word_find will return "off", and
+if '1', word_find will return "on".
+
+.nf
+begin zfconof_det2
+	extract	and(shift(d[1],-7),1)
+	descr	Detector 2 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+.fi
+
+10. The following entry is from the ghrs_udl_def.db  file.  The item
+'zfix1_present' is a bit flag indicating whether an address code is
+present for address 1.  Instead of using 'word_find' as the format
+expression, a boolean expression is used instead to create a boolean
+column in the table, as opposed to a string column as would be created
+in example 9.  If the extracted value is equal to 1, the boolean value
+in the column will be 'true' or 'yes'.
+
+.nf
+begin zfix1_present
+	extract	and(shift(d[25],-15),1)
+	descr	Address code present for address #1
+	format	v==1
+	units	boolean             
+.fi
+
+11. Example of a conditional expression. The following entry is from
+the ghrs_udl_def.db file.  The item 'zfscidmp' is a two's compliment
+number.  Since the input image may or may not be unsigned, the extract
+expression forces the value to be unsigned (since the default data
+type of UDL images is unsigned).  The format expression is then used
+to re-sign the value.  This is done by checking how large the unsigned
+value is.  If greater than 32767, subtract 65536, else just use the
+value.
+
+.nf
+begin zfscidmp
+	extract	and(d[15],65535)
+	descr	Number of substep patterns between data dumps
+	format	v>32767?v-65536:v
+	units	substep pattern     
+.fi
+
+12. The following entry is from the ghrs_shp_temps_def.db file and
+demonstrates the use of the 'lin' linear interpolation function.  The
+monitor 'zpcc1' is a photocathode current monitor.  The value of the
+monitor as returned in the image is a value from 0 to 255.  However,
+the current is actually measured in milliamps.  To map the image value
+to milliamps, linear interpolation is used.  The interpolation is
+based on two pairs of values: when the pixel is 0, the current is 0.
+If the value is 255, the current is 196.154 milliamps.  The entry
+looks like:
+
+.nf
+begin zpcc1
+	extract	d[273]
+	descr	Det. 1 photocathode current
+	format	lin(v,"0 0 255 +1.96154e2")
+	units	mAmp
+.fi
+
+See entry 'zpabt1' for an example of linear interpolation using more
+than two pairs of values.
+
+13. The following entries are from the ghrs_shp_temps_def.db file.
+This example demonstrates the use of other items in an item's
+expression and is a demonstration of how well the definition database
+handles complicated data dependencies and expressions.
+
+A feature of the SHP data, at least for the GHRS, is that a pixel can
+be multiplexed, i.e. a single pixel will hold different values which
+mean different things depending on certain conditions.  For this
+example, pixel 357 from the SHP can hold any of five temperature
+monitor values.
+
+Which temperature is represented at any one time is determined by a
+formula that involves information from four other pixels within the
+SHP.  The formula is:
+
+.nf
+	pid10 = page - int (12 * page / real (nminor + 1 - 10))
+.fi
+
+The value of this formula, pid10, determines which temperature resides
+at pixel 357.  So, starting from the bottom, we first find the value
+of nminor by the record:
+
+.nf
+begin nminor
+	extract	d[901]
+	descr	Minor frame number
+	format	v
+	units	frame number
+.fi
+
+However, the value of 'page' is not so easily determined.  There are
+two sources of 'page' in the SHP, depending on which GHRS detector is
+on.  The page sources for each individual detector is found from the
+entries 'page1' and 'page2':
+
+.nf
+begin page1
+	extract (and(d[260],15))
+	descr	System 1 page I.D.
+	format	v
+	units	id
+begin page2
+	extract (and(d[261],15))
+	descr	System 2 page I.D.
+	format	v
+	units	id
+.fi
+
+Which value of page should be used is determined by knowing which
+detector is on.  There are two items which indicate detector status.
+However, for this case, one only needs to know whether detector 1 is
+on; it will be assumed that if detector 1 is off, detector 2 is
+on.  The record for the status of detector 1 is:
+
+.nf
+begin syson1
+	extract and(shift(d[260],-7),1)
+	descr	System 1 main electronics box on
+	format	word_find(v,"off,on")
+	units	on/off
+.fi
+
+Now, the value of 'page' can be defined relative to these three
+definitions:
+
+.nf
+begin page
+	extract	syson1=1?page1:page2
+	descr	Page number of the current SHP dump
+	format	v
+	units	page
+.fi
+
+Note the use of the above items in the 'extract' field of 'page'.
+Also note that the 'page' entry itself does not represent any direct
+data from the SHP image; it is more of a function definition than an
+"item" definition in the SHP datastream.
+
+To carry the idea further, one can now define an item which embodies
+the function:
+
+.nf
+begin pid10
+	extract	page - int (12 * page / real (nminor + 1 - 10))
+	descr	Page id calculations (n=10)
+	format	v
+	units	page id
+.fi
+
+Finally, one can now extract a temperature monitor from pixel 357
+depending on the value of the 'pid10' item, for example, the
+temperature monitor 'zsct1':
+
+.nf
+begin zsct1
+	extract	d[357]
+	descr	Det. 1 spectral calibration lamp temperature
+	format	pid10!=0?INDEF:-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+.fi
+
+If the value of 'pid10' is 0, then the value of item 'zsct1' is a
+polynomial expression based on the extracted value from pixel 357.  If
+it is not 0, then the value is declared undefined, INDEF.
+
+For further comparison, examine entries ztst11, zobt11, zet11, and
+zet31.
+
+Note that this entry could have also been written as:
+
+.nf
+begin zsct1
+	extract	pid10!=0?INDEF:d[357]
+	descr	Det. 1 spectral calibration lamp temperature
+	format	-5.51991e1 + v*(1.46379 + v*(-2.31820e-2 + v*(2.45424e-4 + v*(-1.41260e-6 + v*(4.13073e-9 + v*(-4.74151e-12))))))
+	units	degrees Celsius
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+STSDAS Contact: Jonathan Eisenhamer
+
+For information about the GHRS and tasks related to it, explore the
+STSDAS package 'hst_calib.hrs'.
+.ih
+SEE ALSO
+.endhelp

@@ -1,0 +1,20 @@
+# Update the coxreg application code in the statistics package library
+# Author: BALL, 30-DEC-1987
+# Revised by BSIMON, 19-NOV-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	coxreg.f       		
+	cxdata.x	<tbset.h>	
+	cxprint.x
+	cxtitle.x	<tbset.h>
+	factor.f       		
+	gamma.f        		
+	pchisq.f       		
+	tie.f          		
+	t_coxreg.x
+	;

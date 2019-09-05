@@ -1,0 +1,63 @@
+WFPC1
+
+The WF/PC-1 keywords consist of a list of filters, detectors, and 
+miscellaneous keywords. The miscellaneous keywords include baum, which
+accounts for the Baum spot, dn, which converts units from electrons to data
+numbers (DNs), cal, which accounts for the flat-field correction, and cont#,
+which accounts for changes in sensitivity between decontamination events
+(see below).
+
+The WF/PC-1 has twelve independently positionable filter wheels, each of which
+has five positions, including a clear position. Detectors 1 through 4
+correspond to the Wide Field camera, while 5 through 8 are the Planetary
+camera. A typical WF/PC-1 observation mode string would be "WFPC,F550W,4,DN".
+
+Instrument: wfpc, wfc, wf (all equivalent), pc
+
+Detectors: 1 2 3 4 5 6 7 8
+
+Miscellaneous: baum dn cal cont#
+
+Filter Wheel 1: f673n f8nd g450 g800
+
+Filter Wheel 2: f122m f336w f439w g200 g200m2
+
+Filter Wheel 3: pol0 pol60 pol120 f1083n
+
+Filter Wheel 4: f157w f194w f230w f284w
+
+Filter Wheel 5: f569w f658n f675w f791w
+
+Filter Wheel 6: f631n f656n f664n f702w
+
+Filter Wheel 7: f375n f437n f502n f588n
+
+Filter Wheel 8: f368m f413m f492m f622w
+
+Filter Wheel 9: f547m f555w f648m f718m
+
+Filter Wheel 10: f785lp f814w f875m f1042m
+
+Filter Wheel 11: f128lp f469n f487n f517n
+
+Filter Wheel 12: f606w f725lp f850lp f889n
+
+The detector specifications 1 through 4 are valid only when used in conjunction
+with the wf, wfc, or wfpc instrument keywords, and detectors 5 through 8 are
+only valid when used with the pc keyword. If a detector number is not
+specified, the default detector for WF is #2, and the default for PC is #6.
+
+The cont# keyword references a "parameterized" component throughput table,
+meaning that the throughput is a function of some other variable besides
+wavelength. In this case, the extra variable is the Modified Julian Date and
+is used to account for the gradual decline in throughput between
+decontamination events, as well as the sudden increase in throughput
+immediately after a decontamination. Data exists for 48384.0 < MJD < 49329.0
+(8 May 1991 to 8 December 1993), in intervals of 20-30 days. To use this
+capability in simulations, include the string cont#ddddd in your obsmode
+specification, where ddddd is the desired MJD value (which can be given as
+either an integer or real value). For example, to get the throughput for the
+F336W filter on MJD 48753, use obsmode="wfpc,f336w,cont#48753". The synphot
+expression evaluator interpolates between the dates for which data exists in
+the table to arrive at an estimate of the throughput on the requested date.
+

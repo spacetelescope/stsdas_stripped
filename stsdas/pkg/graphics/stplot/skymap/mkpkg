@@ -1,0 +1,47 @@
+# Make the skymap task
+
+$checkout stplot.a ../
+$update stplot.a
+$checkin stplot.a ../
+$exit
+
+stplot.a:
+	cartsph.x	<math.h> skymap.h
+	catparms.x	<tbset.h> skymap.h
+	cattitle.x	<gset.h> skymap.h
+	chanear.x
+	chartgrid.x	<math.h> <gset.h> <psiescape.h> skymap.h
+	chartstars.x
+	chlegend.x	<math.h> <gset.h> skymap.h
+	chtext.x
+	coordunits.x	<math.h> <tbset.h>
+	curgrid.x	<math.h> <gset.h> skymap.h
+	drawcm.x	<math.h> <gset.h> skymap.h
+	drawconnect.x
+	drawlabels.x	<ctype.h> <gset.h> <psiescape.h> skymap.h
+	drawstars.x
+	efilledstar.x
+	erasestar.x
+	filledstar.x
+	gridscale.x	<math.h> <gset.h> skymap.h
+	linlabel.x	<gset.h> skymap.h
+	magscale.x	<mach.h> <gset.h> <math.h> skymap.h
+	openstar.x
+	prjconst.x
+	prtbox.x
+	prtcoords.x
+	prtnear.x	<gset.h> skymap.h
+	raddms.x	<math.h> skymap.h
+	radhms.x	<math.h> skymap.h
+	roundup.x
+	selectstars.x
+	skychart.x
+	skyclose.x	skymap.h
+	skylegend.x
+	skyopen.x	<gset.h> skymap.h
+	skyparms.x	<math.h> skymap.h
+	sphcart.x
+	starkey.x
+	t_skymap.x	<gset.h> <tbset.h> <psiescape.h> skymap.h
+	validpos.x
+	;

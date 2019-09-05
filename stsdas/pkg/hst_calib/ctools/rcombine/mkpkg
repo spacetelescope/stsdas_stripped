@@ -1,0 +1,15 @@
+#   Make the rcombine task
+#   Author: Dave Bazell Mar-1992
+#
+
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	imfree.x
+	mkfname.x
+	mkgstr.x
+	rcombine.x <imhdr.h> "rcombine.h"
+	;

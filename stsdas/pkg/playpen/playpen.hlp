@@ -1,0 +1,70 @@
+.help playpen Jul97 stsdas
+.ih
+NAME
+playpen -- Prototype STSDAS tasks 
+.ih
+INTRODUCTION
+Tasks or packages that are being developed are often placed in the 
+`playpen' package.  This provides often very useful functionality 
+to users early in the development phase of a package.  While 
+`playpen' might rightly be considered a testbed for new utilities, 
+the tasks themselves have undergone the same testing and validation 
+as other STSDAS tasks.  Users should simply be aware that the 
+functionality, the user interface, the parameters, and even the 
+task names themselves may change with little or no warning.  As 
+tasks or packages are more fully developed, they may be moved 
+elsewhere within STSDAS -- e.g., to the `analysis' package -- but 
+this will usually occur with major releases, rather than with 
+minor, "patch" releases.  A brief summary of the tasks is given in 
+the table below; details may be found in the following sections. 
+
+.nf
+                     Table 1. PLAYPEN Tasks
+ +---------------------------------------------------------------+
+ | Task         | Description                                    |
+ +---------------------------------------------------------------+
+ | edge         | 2-D image edge massaging                       |
+ | fill         | Baade-Lucy background filling algorithm        |
+ | hstpos       | Show the position of HST on a world map        |
+ | hsubtract    | Baade-Lucy background subtraction algorithm    |
+ | immean       | Compute image mean & save as a task parameter  |
+ | jimage       | Create a jitter image from U2,U3 coordinates   |
+ | lgrlist      | Expand a list of image names & group numbers   |
+ | saolpr       | Print and image from the display               |
+ +---------------------------------------------------------------+
+.fi
+.ih
+GENERAL DESCRIPTION
+
+The `hsubtract' and `fill' tasks implement the Baade-Lucy 
+algorithms for dealing with sky background in direct images.  This 
+method is designed to take care of the spatial high-frequency 
+component in the background.  It fills "pits" (pixels below the 
+average background) by local flux reshuffling.  The `hsubtract' 
+task subtracts a reference background, either from a reference 
+image or a computed background.  These tasks, along with the `edge' 
+task for modifying image edges by windowing or overlapped edge 
+extension, are useful for contitioning images prior to using the 
+image restoration tasks.  
+
+The `lgrlist' task is an enhancement of the `stplot.grlist' task.  
+It expands a list of image names, including a range of group 
+numbers, into an explicit list of individual image names with an 
+explicit section and group number.  This input list of images can 
+include wildcards, @-lists, etc.  
+
+Two HST-specific utilities are also included in the `playpen' 
+package.  The `jimage' task uses a list of U2-U3 pointing 
+coordinates and creates an image that reflect the "jitter" 
+information.  The `hstpos' task plots the position of HST at 
+specified times on a Mollweide projection of the world.  The task 
+uses information contained in the headers of uncalibrated, GEIS-
+format HST data, and is most useful for determining whether a given 
+observation was likely to be affected by terminator crossings, or 
+by the South Atlantic Anomaly.  The `geo2mag' task for converting 
+geocentric coordinates to and from geomagnetic coordinates, while 
+not HST specific, is also useful for gaining insight about the 
+quality of HST data.  
+.ih
+SEE ALSO  
+.endhelp

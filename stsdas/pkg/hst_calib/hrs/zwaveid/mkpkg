@@ -1,0 +1,18 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+	t_waveid.x	<error.h> <imhdr.h> <cif.h> "../mkwave/mkw.h" \
+			"wid.h" "ot.h"
+	wid_line.x	"line.h"
+	widllb.x	<tbset.h> "line.h"
+	widloe.x	<pkg/center1d.h> "wid.h" "line.h"
+	widot.x		<error.h> <tbset.h> "ot.h"
+	widowb.x	"wid.h" "ot.h" "line.h"
+	widwad.x	<gset.h> <pkg/gtools.h> "wid.h" "../mkwave/mkw.h"
+	wid.x		"wid.h"
+	wp.x
+	xc.x		<pkg/center1d.h>
+;

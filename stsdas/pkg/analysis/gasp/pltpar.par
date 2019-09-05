@@ -1,0 +1,9 @@
+xcrpix,r,h,,,,X Reference pixel
+ycrpix,r,h,,,,Y Reference pixel
+xcrval,r,h,,,,X Coordinate at reference pixel in degrees
+ycrval,r,h,,,,Y Coordinate at reference pixel in degrees
+xpxsiz,r,h,,,,X Pixel size mirons
+ypxsiz,r,h,,,,Y Pixel size mirons
+xcdelt,r,h,,,,X Coordinate increment per pixel
+ycdelt,r,h,,,,Y Coordinate increment per pixel
+pltscl,r,h,,,,Plate scale arcsec/mm

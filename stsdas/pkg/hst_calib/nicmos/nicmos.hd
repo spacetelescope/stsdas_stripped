@@ -1,0 +1,28 @@
+# Help directory for the NICMOS package
+
+$nicmos		= "stsdas$pkg/hst_calib/nicmos/"
+$doc		= "nicmos$doc/"
+
+asnexpand	hlp=doc$asnexpand.hlp,	src=nicmos$asnexpand/asnexpand.c
+biaseq 		hlp=doc$biaseq.hlp,	src=nicmos$biaseq/t_biaseq.c
+calnica		hlp=doc$calnica.hlp,	src=nicmos$calnica/calnica.cl
+calnicb		hlp=doc$calnicb.hlp,	src=nicmos$calnicb/calnicb.cl
+CalTempFromBias	hlp=doc$CalTempFromBias.hlp,   src=nicmos$CalTempFromBias_iraf.py
+iterstat	hlp=doc$iterstat.hlp,	src=nicmos$iterstat.cl
+markdq		hlp=doc$markdq.hlp,	src=nicmos$t_markdq.x
+mosdisplay	hlp=doc$mosdisplay.hlp, src=nicmos$mosdisplay.cl
+ndisplay	hlp=doc$ndisplay.hlp,	src=nicmos$ndisplay.cl
+nic_rem_persist	hlp=doc$nic_rem_persist.hlp,   src=nicmos$nic_rem_persist_iraf.py
+nicpipe 	hlp=doc$nicpipe.hlp,	src=nicmos$nicpipe.cl
+pedsky		hlp=doc$pedsky.hlp,	src=nicmos$pedsky/t_pedsky.c
+pedsub		hlp=doc$pedsub.hlp,	src=nicmos$pedsub/t_pedsub.c
+pstack		hlp=doc$pstack.hlp,	src=nicmos$pstack.cl
+pstats		hlp=doc$pstats.hlp,	src=nicmos$pstats.cl
+puftcorr	hlp=doc$puftcorr.hlp,   src=nicmos$puftcorr_iraf.py
+rnlincor	hlp=doc$rnlincor.hlp,   src=nicmos$rnlincor_iraf.py
+saaclean	hlp=doc$saaclean.hlp,   src=nicmos$saaclean_iraf.py
+sampcum		hlp=doc$sampcum.hlp,	src=nicmos$sampcum.cl
+sampdiff	hlp=doc$sampdiff.hlp,	src=nicmos$sampdiff.cl
+sampinfo	hlp=doc$sampinfo.hlp,	src=nicmos$sampinfo.cl
+statregions	hlp=doc$statregions.hlp, src=nicmos$statregions.par
+

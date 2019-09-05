@@ -1,0 +1,30 @@
+# Help directory for the TOOLBOX.TOOLS package
+
+$tools		= "stsdas$pkg/toolbox/tools/"
+$doc		= "stsdas$pkg/toolbox/tools/doc/"
+$ddiff		= "stsdas$pkg/toolbox/tools/ddiff/"
+$epoch		= "stsdas$pkg/toolbox/tools/epoch/"
+$fparse         = "stsdas$pkg/toolbox/tools/fparse/"
+$mkapropos	= "stsdas$pkg/toolbox/tools/mkapropos/"
+$tepoch		= "stsdas$pkg/toolbox/tools/tepoch/"
+$tprecess	= "stsdas$pkg/toolbox/tools/tprecess/"
+$uniq		= "stsdas$pkg/toolbox/tools/uniq/"
+$unstep		= "stsdas$pkg/toolbox/tools/unstep/"
+$newredshift    = "stsdas$pkg/toolbox/tools/newredshift/"
+
+base2dec	hlp=doc$base2dec.hlp,	src=tools$base2dec.cl
+ddiff		hlp=doc$ddiff.hlp,	src=ddiff$ddiff.x
+dec2base	hlp=doc$dec2base.hlp,	src=tools$dec2base.cl
+epoch		hlp=doc$epoch.hlp,	src=epoch$epoch.x
+fparse          hlp=doc$fparse.hlp,     src=fparse$t_fparse.x
+mkapropos	hlp=doc$mkapropos.hlp,	src=mkapropos$t_mkapropos.x
+newredshift     hlp=doc$newredshift.hlp, src=newredshift$t_newredshift.x
+tepoch		hlp=doc$tepoch.hlp,	src=tepoch$t_tepoch.x
+tprecess	hlp=doc$tprecess.hlp,	src=tprecess$tprecess.x
+uniqfile	hlp=doc$uniqfile.hlp,	src=uniq$uniqfile.x
+uniqid		hlp=doc$uniqid.hlp,	src=uniq$uniqid.x
+uniqname	hlp=doc$uniqname.hlp,	src=uniq$uniqnam.x
+uniqtab		hlp=doc$uniqtab.hlp,	src=uniq$uniqtab.x
+
+readgeis	hlp=doc$readgeis.hlp
+fitsdiff	hlp=doc$fitsdiff.hlp

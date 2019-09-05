@@ -1,0 +1,38 @@
+.help gaussfit Feb90 stsdas.contrib
+.ih
+NAME
+gaussfit -- Least squares and robust estimation program.
+.ih
+USAGE
+gaussfit model environment
+.ih
+DESCRIPTION       
+The 'gaussfit' task solves least squares and robust 
+estimation problems.  It includes a programming language for 
+formulating the estimation problems, a compiler and 
+interpreter, and an algebraic manipulator for analytically 
+calculating the required partial derivatives.
+
+This task was developed by William H. Jefferys, Barbara E. McArthur, 
+James McCartney, and Mike Fitzpatrick.  It is an IRAF foregin task
+that is meant to be run from the host level and not from within the cl.
+The task and its programming language are described in detail in a 
+separate manual that can be obtained from the STSDAS group at STScI.
+
+The programming language provides an easy way to formulate 
+general nonlinear problems; problems where the equation of 
+conditions contain more than one observation; problems with 
+correlated observations; problems where exact constraints 
+among parameters must be enforced; and certain robust 
+estimation methods that generalize least squares to 
+non-Euclidean metrics.  It also provides greater immunity  
+against outliers than does the classic least squares method.
+.ih
+PARAMETERS
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

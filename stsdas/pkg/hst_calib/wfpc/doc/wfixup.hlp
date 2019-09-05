@@ -1,0 +1,101 @@
+.help wfixup Jul95 stsdas.hst_calib.wfpc
+.ih
+NAME
+wfixup -- Interpolate in the X direction over bad pixels of WFPC images.
+.ih
+USAGE
+wfixup infile inmask outfile maxgap fillval
+.ih
+DESCRIPTION
+This task takes an input image and its data quality file, checks for pixels
+been flagged "bad" in the data quality file and does a simple linear 
+one-dimensional interpolation over these bad pixels.  The result is a 
+cosmetically better image when displayed but may not be precise enough for
+scientific merit.
+
+Here is how the task works:
+In every row of an image, if one or more contiguous pixels have a data quality
+value which is specified as undesirable (see below), the two "good" points 
+at the two ends of these pixels will be used to carry out a simple linear 
+interpolation.
+For example, if pixels 4, 5, 6, are bad, pixel 3 has a value of 10, and
+pixel 7 has the value of 12, then pixels 4, 5, 6, will be filled with the 
+values of 10.5, 11, and 11.5, respectively.
+
+You can specify which types of pathologies are to be rejected by
+setting various flags in the `dqpar' pset.  For example, setting 
+`rsbit = yes' means all input values that suffered Reed-Solomon errors 
+are "bad" and the task wfixup will interpolate over these pixels.
+
+Sometimes there are long stretchs of bad pixels, or there is only one end point
+(i.e., the bad pixels are at the beginning or end of the row).  In these
+situations you may not want to do the linear interpolation but instead 
+just populate these pixels with some pre-determined fill value.  This can be 
+done by specifying the maximum length of contiguous bad pixels (parameter 
+'maxgap'), so when the stretch of bad pixels is longer than this number, 
+they will be filled with the value specified in the parameter 'fillval'.  
+If 'fillval' is equal to INDEF, original pixel values are preserved in the 
+bad pixels.  
+In the case of only one (or none) end point being available,
+(i.e. the bad pixels are at the beginning or end of the row), it will be 
+treated the same as if the 'maxgap' limit were exceeded.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input file template.  Input files must be two-dimensional and of
+REAL data type.  
+.le
+.ls inmask = "" [string]
+Name of the input data quality file template.  Input data quality file must
+be 2-dimensional and contain SHORT data type.  
+Each input file should have one corresponding data quality file.  
+.le
+.ls outfile = "" [string]
+Name of the output data file template.  
+Each output file should have one corresponding output data quality file.  
+If the the value of this parameter is NULL, the input data file will be updated.
+.le
+.ls maxgap = 10 [int, min = 1]
+Maximum number of contiguous bad pixels allowed in a row.  If there are more 
+bad pixels than this number, these pixels will be filled with the fill value 
+specified in the next parameter.
+.le
+.ls fillval = INDEF [real]
+Fill value used to fill the pixels which are in a long stretch of bad data.
+If this parameter has the value of INDEF, original data values are kept.
+.le
+.ls (dqpar = "") [pset]
+Pset name for DQF parameters.
+.le
+.ih
+EXAMPLES
+1. Interpolate over the bad columns in the WFPC image 'in.r6h' using
+the file 'in.b6h' as a data quality mask file and create the output
+file 'new.r6h'. Use a gap width of 10.
+.nf
+
+wf> wfixup in.r6h in.b6h new.r6h maxgap=10 fillval=INDEF
+.fi
+
+2. Same as above but only do the second group.  In this case, the output 
+image will only have one group.
+.nf
+
+wf> wfixup in.r6h[2] in.b6h[2] new.r6h maxgap=10 fillval=INDEF
+.fi
+
+3. An unlikely but legal example: use one subsection of a data quality file's
+third group to fixup one subsection (must have the same size) of an image's
+second group.
+.nf
+
+wf> wfixup jc.hhh[2][1:95,1:95] m.hhh[3][2:96,2:96] new maxgap=10 fillval=INDEF
+.fi
+
+.ih
+REFERENCE
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

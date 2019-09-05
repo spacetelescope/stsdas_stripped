@@ -1,0 +1,167 @@
+.help tepoch Apr98 stsdas.toolbox.tools
+.ih
+NAME
+tepoch -- Convert time between different formats in a table.
+.ih
+USAGE
+tepoch input incol outcol qualifier outfmt outtype
+.ih
+DESCRIPTION
+This task offers a convenient tool to convert time data between several
+formats in a table.  It is based on the task EPOCH.  See the help file 
+of EPOCH for more details.
+
+This task covers two categories of time formats:
+.ls
+1) A qualifier followed by one or more arguments, e.g., JD2440000 where 
+JD is the qualifier and 2440000 is the argument.
+In this task the qualifier can either be part of the value or be specified
+in the user parameter.
+.le
+.ls
+(2) Civil calendar, e.g., Nov 11, 1953, or 11/20/79.
+.le
+
+This task has most features of EPOCH:
+.ls
+(1) Case insensitivity, e.g., the following are equivalent: (a) JD or jd, 
+(b) NOVEMBER, november, or November.
+.le
+.ls
+(2) In most cases, input strings can be "sloppy", e.g., there can
+be one or more spaces or tabs or no space at all between the qualifier and 
+its argument.
+.le
+.ls
+(3) Liberal use of delimiters is allowed, e.g., March 28, 1953 can be 
+specified
+as "Mar 28, 1953", or "Mar. 28, 1953", or "Mar-28-1953".
+.le
+ 
+Civil calendar dates can be specified using virtually any 
+punctuation---including dashes---to 
+separate day, month, and year.   Because the dash is the same character as 
+the minus sign, the minus sign loses its arithmetic meaning, and negative
+day, month or year can not be used in input strings.
+
+The suffix BC (or B.C.) can be used in its usual meaning, e.g., 1 BC = 0 AD,
+2 BC = -1 AD, etc.  Minus signs retains their arithmetic significance for 
+input strings of the first category (qualifier and argument).  The suffix
+AM or PM is also supported.
+
+There is a limit on how far into the past or future this task can go.  The 
+limit  is about
++/- 2.1 billion days or +/- 5.8 million years from now.  If the input 
+argument exceeds this limit, an error message will be issued.
+.ih
+PARAMETERS
+.ls  input [string]
+Input table name.
+.le
+.ls  incol [string]
+Input time column name. 
+.le
+.ls  outcol [string]
+Output time column name. 
+.le
+.ls  qualifier [string = ""]
+The qualifier used to specify time strings of the first category 
+(see description above).  When this parameter is set, input values
+need only to include the argument, for example: 
+
+.nf
+"JD 2460000" 
+
+is equivalent to 
+
+"2460000" qualifier="jd"
+
+You can have redundant qualifier:
+
+"JD2460000" qualifier="jd"
+
+but NOT inconsistent qualifiers:
+
+"jd2460000" qualifier="dmf"
+
+.fi
+.br
+The following values are allowed as the qualifier:
+.br
+(1) JD, Julian date.
+.br
+(2) MJD, modified Julian date, i.e., MJD = JD - 2400000.5.
+.br
+(3) J, Julian epoch, i.e., 2000.0 + (JD-2451545) / 365.25.
+.br
+(4) B, Besselian epoch, i.e., 1900.0 + (JD-2415020.31352) / 365.242198781.
+.br
+(5) DMF, number of seconds since January 1, 1980, 0h.
+.br
+(6) SMS, yyyy.ddd hh:mm:ss.
+.br
+(7) CDBS, the calibration data base time format, yyyymmdd:hhmmss.ss.  
+The number of digits must be preserved, i.e., if
+the month is a single digit, a zero must be filled in for the first month digit.
+Information after the colon (including the colon) is optional.
+.br
+(8) GEISUT, this qualifier needs two arguments that represent the integer 
+representations of UTC found in the standard header packet file header.
+The first argument is UTCO1 (bytes 5-8 of UTCO) second is UTCO2 (byte 1-4 
+of UTCO).  The two arguments must be separated by at least one space or 
+tab.
+.br
+(9) EPCHTIME, number of seconds since January 1, 1985, 0h.
+.br
+(10) TIMEFFEC, same as EPCHTIME.
+.br
+(11) OBSSTRTT, number of seconds since January 0, 1985, 0h.
+.br
+(12) ENG, the engineering format, YMDhhmm, Y is the year.  It has the 
+range of
+1-9 and A-Z where 1 = 1981 and A = 1990, B = 1991, Z = 2015, etc.  
+M is the month.  It has the range of 1-9 and A-C where 1 = January and 
+A = October.  D is the day.  It has the range of 1-9 and A-V where 1 = 1st 
+and A = 10th.  Hours are two digits (00-24), so are minutes (00-60).  
+In the output, if the year is out of range, it prints a "*".
+.le
+.ls  outfmt [string = ""] [string, Allowed values: date|jd|mjd|sms|dmf|eng]
+The output time format.
+.le
+.ls  outtype [string = "s"] [string, Allowed values: s|d|p]
+The output data type. The value "d" is for double precision, it does not apply
+to the output formats of "date" or "eng".  The value "s" is string and applies
+to any format.  The value "p" will attach the qualifier as a prefix to 
+the output value.   For example, if outtype = "s" and outfmt = "mjd", 
+the output is simply, e.g., "54321".  But if outtype = "p", then the output 
+is "MJD 54321".
+.le
+.ls    (dmy_style = "mdy") [string, Allowed values: mdy|dmy|ymd]
+The order of day, month, year if the input time string is of the second 
+category.  The default is the American style (month, day, year).
+.le
+.ls    (add1900 = yes) [boolean]
+Add 1900 to the year if it is less than 100?
+.le
+.ls    (calendar = "ns") [string, Allowed values: ns | os]
+Specifies whether the input time string is Gregorian calendar ("ns", new
+style) or Julian calendar ("os", old style).  
+
+Please read the help file of EPOCH for more details.
+.le
+.ih
+EXAMPLES
+1.  Convert the year-month-day string in the first column of table jctb
+to Julian days and put them in the third column as strings:
+
+.nf
+    tepoch jctb c1 c3 "" "jd" "s"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+SEE ALSO
+epoch
+.endhelp

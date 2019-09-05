@@ -1,0 +1,284 @@
+STPOA -- An IRAF package of Utilities developed by the
+         Post Operational Archive Project at the ST-ECF
+ 
+Anastasia Alexov, Paul Bristow, Florian Kerber, Michael Rosa
+
+July 2000 - release V1.0
+May  2001 - release V1.1
+Aug  2001 - release V1.2
+Nov  2001 - release V1.2.1
+Feb  2002 - release V1.2.2
+
+We are releasing minor changes to the "final" calibration tools for the 
+Post Operation Archive (POA) of the Faint Object Spectrograph (FOS),
+developed as Iraf tasks at the Space Telescope European Coordinating
+Facility (ST-ECF) into an Iraf package called "stpoa". This package 
+currently contains only calibration software for the FOS and will 
+in the future contain other HST post operational instrument 
+calibration software.
+
+The package may be down-loaded from http://www.stecf.org/poa/software/
+[ This link will no longer work after ECF shuts down. ]
+
+and online help is available from the same place.  Binaries are
+also available for down-load for Solaris 2.6.  Note that this 
+package has been built successfully on Solaris, and will probably 
+do so on other architectures although this isn't guaranteed.
+
+After the Revision Notes, you will find installation instructions.
+
+***************************************************************************
+
+Revision Notes:
+
+First release (V1.0) July 2000.
+ V1.0 - Binaries for ssun and instructions made available.
+
+Second release (V1.1) May 2001.
+ V1.1 - Added POA corrected calibration flat fields to the release.
+      - Added a new wavelength calibration reference table with
+        10 coeff's per correction;  added new wavelength algorithms
+        for modes with a POA correction.
+      - Added functionality to POA pre-processor to update the
+        header for FOS data that fit the POA processing criteria.
+      - Added functionality to POA all-processor to find out if the
+        data fit the POA processing criteria;  if not, then to run
+        'calfos' instead of 'poa_calfos'.
+      - Fixed bugs with velocity calculations; typos.
+      - Added new output ascii file which describes the POA 
+        corrections via "header keyword" per spectrum.
+      - Removed updates of POA group header keywords, since this
+        technique was replaced by the new ascii output file.
+
+Third release (V1.2) August 2001 ["final" release of POA FOS].
+ V1.2 - All new and updated calibration reference files have been
+	standardized under CDBS (uniq names and header content).  The 
+	user should not be affected by this change. The pipeline can 
+	be run using either the internal or external (CDBS) versions 
+	of the POA reference files. 
+      - POA pre-COSTAR flats have been derived for the first time.
+      - Wavelength coefficients have been changed to only include
+	solutions for POA criteria data;  otherwise, old 'calfos' values
+	are used.
+      - Dark/Background scaling has been changed so that it is now a
+	function of the magnetic L-shell parameter at  the position of 
+	the telescope when the data were taken.
+      - SPECTROSCOPY mode dark correction was changed to accommodate the
+	ACCUM data; this is a bug fix from the 'calfos' software.
+      - Added new tool called "pfos_pix2wav" which calculates the 
+	wavelength positions from a table of FOS pixel positions.
+      - Added capabilities to 'poa_procfos_all' in being able to run 
+	on a list of FOS rootnames.
+      - Error status propogation was added to places where it was missing
+	or not working ('calfos' bug fixes).
+      - Wavelegnth calibration tables were updated to include UPPER/LOWER
+	values (matching SINGLE);  table values for PRISM were set back
+	to the 'calfos' values.
+
+Forth release (V1.2.1) November 2001 [minor changes to "final" POA FOS].
+ V1.2.1 - Bug fixes were done for Dec Alpha compilation problems.
+      - Six more POA re-processed flatfields were added;  these were
+	mistakenly missed in the previous releases.
+      - The tool 'pfos_pix2wav' was updated;  sub-pixel corrections can
+	now be made for input pixel positions;  wavelengths can even be
+	calculated for IMAGE mode data.
+      - The POA sample data repository was updated with more example 
+	data files.
+      - The scattered light correction has been turned off for all cases
+	in the poa_calfos pipeline.
+      - Bug fix: If WAV_CORR was turned off, then none of the flux
+	calibration corrections could be performed;  they are now being
+	turned off as well.
+      - POA dispersion coeff reference table (ccs6) was updated with 
+	changes to the H40 coeffs which were more accurate after more 
+	scientific verification was performed.
+      - The task 'pfos_dispfit' was added as a new POA FOS tool;  it is
+	used to obtain dispersion coefficients for FOS ccs6 reference file.
+
+Forth release (V1.2.2) February 2002 [minor changes to "final" POA FOS].
+ V1.2.2 - The scattered light correction switch is now being turned off
+	using the POA FOS pre-processor script instead the pipeline itself;  
+	even though no POA processing will perform the scattered light 
+	correction, we've left the possibility of allowing the user to 
+	switch the correction on in the POA pipeline.
+      - V1.2.1 set the flux calibration corrections to OMIT if WAV_CORR was
+	turned off;  however, these flux corrections should have been set
+	to SKIPPED;  this has now been fixed.
+      - 15 POA flatfield reference file headers have been updated in order
+	to be CDBS compliant (USEAFTER - changed format, DESCRIP - added, 
+        PEDIGREE - added)
+      - Renamed 'poa_procfos_all' task to 'processfos'.
+
+***************************************************************************
+
+To install this package in your local IRAF system, take the following steps:
+ 
+0)      Make sure that you have the STSDAS and TABLES packages from STScI
+	installed on your system if you want to build the STPOA
+	package from source. 
+
+1)	The package is distributed as compressed tar archives. The 
+	tar archives may be down-loaded from the above URL. To obtain the 
+	package via ftp (assuming a UNIX/LINUX Operating System):
+
+	    % ftp ftp.eso.org 
+	    login: anonymous
+	    password: [your user name]
+	    ftp> cd /pub/stpoa
+	    ftp> binary
+	    ftp> get stpoa-v1.2.2.tar.Z  
+	      ... [ option to download Solaris 2.6 binaries:
+                    ftp> get stpoa-v1.2.2-bin.ssun.tar.Z ]
+	    ftp> quit
+
+2)	Create a directory to contain the STPOA external package files.  This
+	directory should be outside the IRAF directory tree and must be owned
+	by the IRAF account.  In the following examples, this root directory
+	is named <directory>/stpoa.  Make the appropriate file name 
+	substitutions for your site. A personal installation is also possible
+	in which case the definitions will go into a personal file such
+	as loginuser.cl rather than the system extern.pkg.
+ 
+3)	Log in as user IRAF and edit the extern.pkg file in the 
+	$iraf/unix/hlib directory to define the package to the CL.  From 
+	the IRAF account, outside the CL, you can move to this directory 
+	with the command:
+
+            % cd $hlib
+
+	Define the environment variable stpoa to be the pathname to the stpoa
+	root directory.  UNIX pathnames must be terminated with a '/'.
+	Edit extern.pkg to include:
+
+            reset stpoa	= <directory>
+            task  stpoa.pkg   = stpoa$stpoa.cl
+
+	Near the end of the $hlib/extern.pkg file, update the definition
+	of helpdb so it includes the stpoa help database, copying the syntax
+	already used in the string.  Add this line before the line containing
+	a closing quote:
+ 
+	    ,stpoa$lib/helpdb.mip\
+
+4)      (Optional) Add to $hlib/clpackage.men the package description:
+ 
+            stpoa - STPOA utilities package from ESO/ST-ECF POA Group
+ 
+5)	Unpack the tar file into the STPOA root directory.
+
+	On a UNIX system, where ftpdir is the pathname of the directory
+	into which the package was ftp'ed and stpoa is the STPOA root
+	directory:
+	    % cd $stpoa 
+	    % zcat $ftpdir/stpoa-v1.2.2.tar.Z | tar xvf -
+
+	The archive file can be deleted once the package has been
+	successfully installed.
+ 
+  At this stage you can either install binaries which are available from
+  the web pages for some architectures or alternatively build the package
+  from source.
+
+  First the binaries option:
+
+6a) If you have not done so already, download the appropriate 
+    compressed tar file from the same place. The naming convention 
+    is stpoa-v1.2.2-bin.{arch}.tar.Z - eg, stpoa-v1.2.2-bin.ssun.tar.Z 
+    for Solaris.
+
+7a) Expand the compressed file in the "stpoa" package top-level
+    directory:
+
+	% cd $stpoa
+	% zcat $ftpdir/stpoa-v1.2.2-bin.{arch}.tar.Z | tar xvf -
+
+	Delete the compressed tar file when it is no longer needed.
+
+8a) Make sure that the bin directory is appropriately linked:
+
+	% rm bin
+	% ln -s bin.{arch} bin
+
+     Jump to step 9...
+
+Alternatively, if you need to rebuild follow these steps:
+
+6b)     Restart IRAF and "cd stpoa$".
+
+7b)	Symbolically link the appropriate binary directory to bin.
+	bin is originally linked to bin.generic for distribution.
+
+        On a SPARCstation running Solaris 2.*, type
+	    cl> mkpkg ssun
+
+        On a DEC Alpha running Digital Unix, type
+	    cl> mkpkg alpha
+
+        On a PC running Linux, type
+	    cl> mkpkg linux
+
+        Other architectures are available and have corresponding bin.{arch}
+	directories. For additional architectures, make a directory with the 
+	proper bin.{arch} name, and link it to bin
+
+        Note that this package has been built successfully on Solaris, and 
+        will probably do so on other architectures although this isn't 
+        guaranteed.
+
+8b)     Make the package by typing
+	    cl> mkpkg -p stsdas update >&spool
+
+	The spool file should be reviewed upon completion to make sure
+	there were no errors.
+
+9)	As a final installation step, you should build the stpoa help 
+        database within IRAF. Restart IRAF and "cd stpoa$lib", type
+	    cl> softools
+	    cl> mkhelpdb root.hd helpdb.mip
+
+10)	If you are NOT working on a Linux system, skip to number 11.
+	If working on a Linux box, you will need to execute the following
+	set of steps to unpack the fits reference files into stsdas
+        table format.  The internal reference files are located within
+	the stpoa package, under the "ref$", "pref$", and "pwav$"
+	variable names.  These variables are set automatically when
+	the stpoa.poa_fos package has been loaded.
+	
+	a) Restart IRAF; load "stpoa" and "poa_fos"; and "cd ref$".
+
+	b) Open the following packages: "tables.fitsio".
+
+	c) Convert the fits files to table files: 
+	   del *.cye,*.cyf
+	   strfits *.fit "" "" oldirafname=yes
+
+	d) Move to next location:  "cd stpoa$poa_fos/data"
+
+	e) Convert the fits files to GEIS files: 
+	   imdel y*h
+           del y0k4510dt_pix.tab
+	   strfits *.fit "" "" oldirafname=yes
+	   strfits y0k4510dt_pix.fits "" "" oldirafname=yes
+
+	f) Move to next location:  "cd stpoa$poa_fos/pwav"
+
+	g) Convert the fits files to GEIS files:
+           del  *.cy6
+	   strfits *.fit "" "" oldirafname=yes
+
+	h) Move to next location:  "cd stpoa$poa_fos/pref"
+
+	i) Convert the fits files to GEIS files: 
+           imdel *.r1h
+	   strfits *.fit "" "" oldirafname=yes
+
+11)	Up-to-date hypertext help is available on the World Wide Web at
+
+	http://www.stecf.org/poa/software/
+	[ This link will no longer work after ECF shuts down. ]
+
+12)     Problems with the installation should be reported to aalexov@eso.org
+
+Anastasia Alexov, July 2000 (based on the stecf and rvsao installation 
+instructions written Richard Hook and Doug Mink, respectively)
+Updated to V1.2.2, February 2001.

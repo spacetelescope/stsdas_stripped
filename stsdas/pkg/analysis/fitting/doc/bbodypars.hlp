@@ -1,0 +1,35 @@
+.help bbodypars Feb90 stsdas.analysis.fitting
+.ih
+NAME
+bbodypars -- Edit the parameters for fitting a black body function.
+.ih
+USAGE
+bbodypars
+.ih
+PARAMETERS
+.ls (temp = INDEF) [real]
+Initial guess for the temperature of black-body function. If INDEF,
+the task will set it to a pre-defined value.
+.le
+.ls (ampl = INDEF) [real]
+Initial guess for the amplitude of black-body function at reference 
+point. If INDEF, the task will set it to the maximum value in the 
+dependent variable.
+.le
+.ls (ref = INDEF) [real]
+Reference point in the independent variable scale. If INDEF, the task 
+will set it to the midpoint value in the independent variable.
+.le
+.ls (vtemp = yes) [boolean]
+Vary black-body temperature?
+.le
+.ls (vamp = yes) [boolean]
+Vary amplitude at reference point?
+.le
+.ls (vref = no) [boolean]
+Vary X axis reference point ?
+.le
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

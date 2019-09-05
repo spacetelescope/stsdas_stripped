@@ -1,0 +1,30 @@
+# IMRES package
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	libpkg.a
+	$call	imres
+	;
+
+install:
+	$move	xx_imres.e ../../bin/x_imres.e
+	;
+
+imres:
+	$omake	x_imres.x
+	$link	x_imres.o libpkg.a -liraf77  -liminterp -o xx_imres.e
+	;
+
+libpkg.a:
+	cplucy.f
+	seeing.f
+	apomask.f
+	fftetc.f
+	;

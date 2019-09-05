@@ -1,0 +1,15 @@
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	t_specalign.x	<imhdr.h> <math/curfit.h> <od.h>
+        errfcn.x
+        sacomb.x        
+        sacrec.x        <math/curfit.h>
+        safit.x         <math/curfit.h> <od.h>
+        saread.x        <imhdr.h> <tbset.h> <od.h>
+        sashid.x        <math/iminterp.h>
+        sarese.x        <math/iminterp.h>
+	;

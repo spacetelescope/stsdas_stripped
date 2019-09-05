@@ -1,0 +1,4 @@
+input,s,a,"",,,"input table"
+output,s,a,"",,,"output table"
+verbose,b,h,yes,,,"verbose output?"
+mode,s,h,"al"

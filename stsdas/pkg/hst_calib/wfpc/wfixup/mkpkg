@@ -1,0 +1,14 @@
+# Update the wfixup application code in the wfpc package library
+# Author: HSU, 18-Jan-1993
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_wfixup.x	
+	wfixup_in.x    	
+	wfixup_do.x
+	wfixup_check.x	<imhdr.h>	
+	;

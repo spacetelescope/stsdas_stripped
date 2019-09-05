@@ -1,0 +1,7 @@
+input,s,a,"",,,"Rootname of the FOS observation"
+pixtab,s,a,"",,,"Input table with pixel positions"
+wavtab,s,a,"",,,"Output table with just wavelength positions"
+sub_pix,b,h,yes,,,"Apply the sub-pixel correction from '.poa' file?"
+poafile,s,h,"",,,"Rootname of the poa_calfos output '.poa' file"
+specnum,i,h,-1,-1,,"Spec number for the sub-pixel correction"
+mode,s,h,"al"

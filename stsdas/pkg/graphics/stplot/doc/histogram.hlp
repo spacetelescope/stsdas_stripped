@@ -1,0 +1,101 @@
+.help histogram May95 stsdas.graphics.stplot
+.ih
+NAME
+histogram -- Plot or list the histogram of a table column, image, or 
+list.
+.ih
+USAGE
+histogram input
+.ih
+DESCRIPTION
+This task will plot the histogram (i.e., frequency distribution) of an
+input file.  Input files can be tables, images, or text files.  The
+task first computes the histogram and then either plots or lists it.
+Plot limits can be specified, or the entire range can be plotted.
+
+It is possible to specify limits such that the bin values decrease with
+bin number, for example, 'z1' will be less than 'z2', etc.  It is not
+possible to reverse the sense of the bins when using INDEF to let the
+task find the extreme data value.
+.ih
+PARAMETERS
+.ls input [file name]
+Name of the input table, image, or text file. File name extensions can 
+be omitted, unless there is a danger of confusion (such as when an image 
+and table both have the same  root name). The task automatically 
+determines the input file type by first trying to read it as a table, 
+then an image, and finally, as a text file.  
+.le
+.ls (colname) [string]
+The name of the column to use if the input file is a table.
+.le
+.ls (nbins = 512) [integer, min=1]
+The number of histogram bins to use. Data outside the range 'z1' to 'z2' 
+are ignored.
+.le
+.ls (z1 = INDEF) [real]
+The minimum data value to use. Note that this is different from the  
+central value of the first bin. If 'z1' is INDEF, then the lowest value 
+in 'input' is used.
+.le
+.ls (z2 = INDEF) [real]
+The maximum data value to use. This is different from the central value
+of the highest bin. If 'z2' is INDEF, then the highest value in 'input'
+is used.  If 'z1' and 'z2' are both set to INDEF (the default), then all
+data values will be used.  If 'z1' > 'z2' then bin values will
+decrease, both in the plotted histogram and the listing to STDOUT.  It
+is not possible to reverse the sense of the bins if either 'z1' or 'z2'
+is INDEF.
+.le
+.ls (listout = no) [boolean]
+Print histogram values instead of plotting?
+.le
+.ls (title = Histogram: ) [string]
+Title for plot. The file name will be appended to this string.
+.le
+.ls (xlabel = Data values) [string]
+Title for the X axis.
+.le
+.ls (ylabel = Count) [string]
+Title for the Y axis.
+.le
+.ls (logplot = yes) [boolean]
+Should the Y axis of the plot be on a log scale?
+.le
+.ls (fulline = yes) [boolean]
+Should the histogram lines be drawn to the base of the plot?  Setting 
+'fulline=no' will draw a stepped graph. 
+.le
+.ls (cumulative = no) [boolean]
+Should the cumulative histogram be calculated?
+.le
+.ls (dvpar = "") [pset]
+Pset name for device parameters.  Parameters can be individually changed
+from the command line or can be edited as a group using ':e' from
+'eparam sgraph' or from the cl, 'eparam dvpar' or simply 'dvpar'.
+Details about these parameters are available by typing "help dvpar".
+.le
+.ih
+EXAMPLES
+1.  Plot the histogram of the input file 'infile'. If 'infile' is a 
+table then the column name must be given and its histogram plotted. Note 
+that if there is a table 'infile.tab' and an image 'infile.hhh' then 
+table would be the file that is used because of the precedence in which 
+file types are tested (see 'input' parameter above). To avoid confusion 
+the extension may be given explicitly.
+.nf
+
+   to> histogram infile
+
+.fi
+2.  Specify limits on the input data such that bin values decrease:
+.nf
+
+  to> histogram infile z1=337 z2=100
+ 
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

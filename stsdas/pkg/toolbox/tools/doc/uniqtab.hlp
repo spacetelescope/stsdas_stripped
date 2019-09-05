@@ -1,0 +1,65 @@
+.help uniqtab Aug91 stsdas.toolbox.tools
+.ih
+NAME
+uniqtab -- Give all the files in an STSDAS table unique names.
+.ih
+USAGE
+uniqtab input colnames instr
+.ih
+DESCRIPTION
+This task renames the files named in an STSDAS table and updates the
+table to reflect the new names. Files are renamed according to the
+CDBS unique naming conventions (these conventions are described in the
+help files for the 'uniqfile' and 'uniqname' tasks). The first 
+parameter, 'input', gives
+the names of one or more tables containing file names. The second
+parameter, 'colnames', give the names of the table columns containing
+file names. If the table contains the names of both the header and
+data files of an image, both column names should be specified. The
+third parameter, 'instr', gives the name of the instrument associated
+with the files in the STSDAS table. The file names generated using the
+CDBS unique naming convention are a function of the associated
+instrument.
+
+.ih
+PARAMETERS
+.ls input [file name template]
+Name of the STSDAS table(s) containing file names.
+.le
+.ls colnames [string]
+The names of the columns in the STSDAS table which contain file names.
+The files may be images or STSDAS tables. Column names should be
+separated by blanks or commas.
+.le
+.ls instr [string, allowed values: fgs | hsp | wfpc | wfp2 | foc | 
+fos | hrs | multi ]
+
+HST instrument name. If a file is used by more than one instrument, the 
+value passed to 'instr' should be "multi".
+.le
+.ls (directory = " ") [string]
+Renamed files will be placed in this directory.
+.le
+.ls (verbose = yes) [boolean]
+Print a message on the terminal display showing the old and new file 
+names each time a file is renamed?
+.le
+.ih
+EXAMPLES
+1. Rename the files in 'fos_deliver.tab' according to CDBS conventions.
+
+.nf
+  to> uniqtab fos_deliver.tab header_file,data_file fos
+.fi
+
+.ih
+BUGS
+Because of the structure of the CDBS unique naming convention, two
+seconds must elapse between generating file names. This means it can
+take a long time to rename all the files in a table with a large
+number of rows.
+.ih
+SEE ALSO
+uniqfile, uniqname
+
+.endhelp

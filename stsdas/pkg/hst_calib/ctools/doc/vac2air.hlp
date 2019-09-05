@@ -1,0 +1,38 @@
+.help vac2air Jul98 stsdas.hst_calib.ctools
+.ih
+NAME
+vac2air -- Convert wavelength scales from vacuum to air above 2000 angstroms.
+.ih
+USAGE
+vacwair input output
+.ih
+DESCRIPTION
+'vac2air' converts wavelength scales from vacuum to air above 2000 angstroms.
+'vac2air' processes all groups of a multigroup GEIS file.  Please note that
+'vac2air' works ONLY for GEIS image files, such as the C0H files produced for
+GHRS and FOS data.
+.ih
+PARAMETERS
+.ls input [image file name]
+Input wavelength image.
+.le
+.ls output [image file name]
+Output wavelength image.
+.le
+.ih
+EXAMPLES
+1. Convert all groups of the wavelength image 'y00vk10gr.c0h' 
+and create a corrected image, 'v2a10g.c0h'.
+
+.nf
+fo> vac2air y00vk10gr.c0h v2a10g.c0h.
+.fi
+.ih
+BUGS
+Works only for GEIS image files.
+.ih
+SEE ALSO
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu.
+.endhelp

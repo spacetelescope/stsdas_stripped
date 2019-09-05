@@ -1,0 +1,12 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	ypp_image.x	"ypp.h"	<imhdr.h>
+	ypp_imdsp.x	"ypp.h"	<imhdr.h>
+	ypp_obsum.x
+	ypp_calib.x	"ypp.h"
+	ypp_polerr.x	<imhdr.h>
+	;

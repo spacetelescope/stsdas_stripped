@@ -1,0 +1,71 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS = "-DNATIVE_IRAF -Inolibc \
+		'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$update splice.a
+	$update fweight.a
+
+	$call linkonly2
+	;
+
+linkonly:
+	$set XFLAGS = "-DNATIVE_IRAF -Inolibc \
+		'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+linkonly2:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+
+	$omake t_splice.c <xclio.h> splice.h
+	$omake fweight.c <c_iraf.h> <xclio.h> <ximio.h> fweight.h
+	$omake pweight.c <c_iraf.h> <xclio.h> <ximio.h> pweight.h
+
+	$link t_splice.o splice.a \
+		-lcvos -lc -ltbtables \
+		-o xx_splice.e
+
+	$link fweight.o fweight.a \
+		-lcvos -ltbtables -lc \
+		-o xx_fweight.e
+
+	$link pweight.o fweight.a \
+		-lcvos -ltbtables -lc \
+		-o xx_pweight.e
+	;
+
+install:
+	$move xx_splice.e stsdasbin$x_splice.e
+	$move xx_fweight.e stsdasbin$x_fweight.e
+	$move xx_pweight.e stsdasbin$x_pweight.e
+	;
+
+splice.a:
+	allocspec.c	splice.h
+	deltawl.c	splice.h
+	newspec.c	splice.h
+	readtable.c	<xtables.h> <c_iraf.h> splice.h
+	positivewl.c	splice.h
+	setwl.c		<xtables.h> <c_iraf.h> splice.h
+	shiftwl.c
+        splice.c	<ximio.h> splice.h
+	sumspectra.c	splice.h
+	writetable.c	<ximio.h> <xtables.h> <c_iraf.h> splice.h
+	;
+
+fweight.a:
+	makewgt.c	<xtables.h> fweight.h
+	spline.c
+	getapthr.c	<c_iraf.h> <xtables.h> pweight.h
+	getinfo.c	<c_iraf.h> <ximio.h> <xtables.h> pweight.h
+	getpct.c	<c_iraf.h> <xtables.h> pweight.h
+	getphot.c	<c_iraf.h> <xtables.h> pweight.h
+	heliofactor.c	pweight.h
+	interp1d.c
+	photwgt.c	<c_iraf.h> <ximio.h> <xtables.h> pweight.h
+	sameint.c
+	;

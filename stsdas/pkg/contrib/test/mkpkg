@@ -1,0 +1,44 @@
+# Make the gaussfit package
+# Author: Barbara McArthur, 18-JAN-1989
+
+$checkout astrometry.a ../
+$update astrometry.a
+$checkin astrometry.a ../
+$exit
+
+linkonly:
+	$call linkonly@..
+	;
+
+astrometry.a:
+	arithops.c     		defines.h datum.h 
+	compile.c      		symtab.h compile.h def.h 
+	errhandle.c    		defines.h 
+	functs.c       		defines.h datum.h house.h files.h robust.h 
+	gauss.c        		defines.h datum.h house.h simpledefs.h \
+				files.h 
+	gfitmain.c     		defines.h files.h 
+	house.c        		defines.h alloc.h house.h housemem.h files.h \
+				datum.h simpledefs.h 
+	isymtab.c      		defines.h machine.h 
+	list.c         		defines.h datum.h 
+	logicops.c     		defines.h datum.h 
+	machine.c      		defines.h machine.h files.h compile.h \
+				strings.h 
+	matrixman.c    		defines.h datum.h house.h files.h robust.h 
+	minsum.c       		defines.h house.h 
+	opcodes.c      		defines.h datum.h house.h files.h machine.h 
+	par2.c         		defines.h par2.h strings.h 
+	quicksort.c    		
+	relops.c       		defines.h datum.h 
+	robust.c       		defines.h house.h files.h 
+	sfiles.c       		defines.h sfiles2.h datum.h strings.h \
+				machine.h 
+	symtab.c       		def.h symtab.h 
+	tables.c       		defines.h tables.h unix.h strings.h par2.h 
+	util.c         		
+	valuestack.c   		defines.h files.h datum.h 
+	ytab.c         		strings.h symtab.h def.h compile.h defines.h \
+				machine.h lexyy.h 
+	fatale.x
+	;

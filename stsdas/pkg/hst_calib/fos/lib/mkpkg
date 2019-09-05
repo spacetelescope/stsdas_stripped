@@ -1,0 +1,46 @@
+# Update the lib application code in the fos package library
+# Author: CDBS, 6-MAY-1988
+
+$checkout fos.a ../
+$update   fos.a
+$checkin  fos.a ../
+$exit
+
+fos.a:
+	ccprt.f        		
+	covsrt.f       		
+	crossc.f       		
+	dmnmax.f       		
+	gaussj.f       		
+	lfit.f         		
+	lfit2.f        		
+	lfit3.f        		
+	lookup.f       		
+	minmax.f       		
+	mrqcof.f       		
+	mrqmin.f       		
+	poly1.f        		
+	polyft.f       		
+	splie2.f       		
+	splin2.f       		
+	spline.f       		
+	splint.f       		
+	tabinv.f       		
+	taccor.f       		
+	taedge.f       		
+	tainfo.f       		
+	ygmode.f       		
+	ygptrn.f       		
+	ysrri.f
+	yxptrn.f       		
+	zindex.f       		
+	zinteg.f       		
+	zlintp.f       		
+	zmrqs1.f       		
+	zmrqsp.f       		
+	zpksr2.f       		
+	zspfit.f       		
+	zspldr.f       		
+	zsplin.f       		
+	ztplat.f       		
+	;

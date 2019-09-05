@@ -1,0 +1,5 @@
+input,s,a,,,,Input file (produced by getreffile)
+source,s,h,"obc,okr,ref",,,List of sources to verify
+verify,b,h,yes,,,Verify each change to the header?
+update,b,q,yes,,,Update header keyword?
+mode,s,h,"a",,,

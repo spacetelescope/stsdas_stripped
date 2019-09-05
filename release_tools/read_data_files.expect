@@ -1,0 +1,22 @@
+foc.fits         ../scidata/foc.hhh  512  512       32 13/08/91   HZ4            
+fos.fits         ../scidata/fos.hhh  2064           32 04/01/93   WD0501+527     
+hsp.fits         ../scidata/hsp.hhh  5000           32 14/10/91                  
+hrs.fits         ../scidata/hrs.hhh  2000 4         32 01/09/92   B-PIC          
+cosiaf.fits      ../scidata/cosiaf.t                16                           
+                ab.fits             
+czptnelinec.fits null_image                         8  10/09/93                  
+                 ../scidata/czptneli 66   3015  Ncols=  7 
+                 renamed to ../scidata/czptnelinec.tab
+czscoffc.fits    ../scidata/czscoffc                16                           
+                .tab.fits           
+saa.fits         null_image                         8  03/11/93                  
+                 ../scidata/saa01.ta 736  17    Ncols= 46 
+                 renamed to ../scidata/saa.tab
+de200.fits       ../scidata/de200.ta 0              8                            
+                b.fits              
+lftemplate.fits  ../scidata/lftempla 3              32                           
+                te.hhh              
+xmatrix.fits     ../scidata/xmatrix. 51   48        32                           
+                hhh                 
+ymatrix.fits     ../scidata/ymatrix. 63   48        32                           
+                hhh                 

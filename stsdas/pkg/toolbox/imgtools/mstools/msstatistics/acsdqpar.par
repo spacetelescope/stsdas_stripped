@@ -1,0 +1,19 @@
+#  ACS data quality parameters
+#
+#  02-Jun-2010: Updated flags to match current ACS set
+#
+rs,b,h,yes,,,"Reject Reed-Solomon errors?"
+fill,b,h,yes,,,"Reject filled pixels?"
+baddet,b,h,yes,,,"Reject bad detector pixels?"
+masked,b,h,yes,,,"Reject masked pixels?"
+hotpix,b,h,yes,,,"Reject hot (high dark current) pixels?"
+ctetail,b,h,yes,,,"Reject pixels in CTE tails?"
+warmpix,b,h,yes,,,"Reject warm pixels?"
+badbias,b,h,yes,,,"Reject bad bias pixels?"
+satpix,b,h,yes,,,"Reject saturated pixels?"
+badflat,b,h,yes,,,"Reject bad flatfield pixels?"
+trap,b,h,yes,,,"Reject charge trap pixels (UVIS only)?"
+atodsat,b,h,yes,,,"Reject A-to-D saturated pixels (UVIS only)?"
+mdcr,b,h,yes,,,"Reject CR's flagged by MultiDrizzle?"
+calcr,b,h,yes,,,"Reject CR's flagged by calwf3?"
+mode,s,h,al

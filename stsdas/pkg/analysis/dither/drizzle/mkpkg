@@ -1,0 +1,123 @@
+#   Make the drizzle package
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+dev:
+    $call relink
+    $call devinstall
+    ;
+# The -z flag is necessary to enable drizzle handle very large images.
+
+relink:
+	$set LFLAGS = "$(LFLAGS) -z"
+	$update drizzle.a
+	$call	drizzle
+	$call	wdrizzle
+    $call   wblot
+	$call	blot
+    $call   tranback
+    $call   traxy
+    $call   wcs2dr
+    $call   wtranback
+    $call   wtraxy
+	;
+
+install:
+	$move	xx_drizzle.e stsdasbin$x_drizzle.e
+	$move	xx_wdrizzle.e stsdasbin$x_wdrizzle.e
+	$move	xx_blot.e stsdasbin$x_blot.e
+	$move	xx_wblot.e stsdasbin$x_wblot.e
+	$move	xx_tranback.e stsdasbin$x_tranback.e
+	$move	xx_traxy.e stsdasbin$x_traxy.e
+	$move	xx_wcs2dr.e stsdasbin$x_wcs2dr.e
+	$move	xx_wtranback.e stsdasbin$x_wtranback.e
+	$move	xx_wtraxy.e stsdasbin$x_wtraxy.e
+	;
+devinstall:
+	$move	xx_drizzle.e stsdasdev$x_drizzle.e
+	$move	xx_wdrizzle.e stsdasdev$x_wdrizzle.e
+	$move	xx_wblot.e stsdasdev$x_wblot.e
+	$move	xx_blot.e stsdasdev$x_blot.e
+	$move	xx_tranback.e stsdasdev$x_tranback.e
+	$move	xx_traxy.e stsdasdev$x_traxy.e
+	$move	xx_wcs2dr.e stsdasdev$x_wcs2dr.e
+	$move	xx_wtranback.e stsdasdev$x_wtranback.e
+	$move	xx_wtraxy.e stsdasdev$x_wtraxy.e
+	;
+
+wdrizzle:
+linkonly:
+	$omake	x_wdrizzle.x
+	$link	x_wdrizzle.o drizzle.a -liraf77 -o xx_wdrizzle.e
+	;
+wblot:
+linkonly:
+	$omake	x_wblot.x
+	$link	x_wblot.o drizzle.a -liraf77 -o xx_wblot.e
+	;
+drizzle:
+linkonly:
+	$omake	x_drizzle.x
+	$link	x_drizzle.o drizzle.a -liraf77 -o xx_drizzle.e
+	;
+blot:
+linkonly:
+	$omake	x_blot.x
+	$link	x_blot.o drizzle.a -liraf77 -liminterp -o xx_blot.e
+	;
+tranback:
+linkonly:
+	$omake	x_tranback.x
+	$link	x_tranback.o drizzle.a -liraf77 -o xx_tranback.e
+	;
+traxy:
+linkonly:
+	$omake	x_traxy.x
+	$link	x_traxy.o drizzle.a -liraf77 -o xx_traxy.e
+	;
+wtranback:
+linkonly:
+	$omake	x_wtranback.x
+	$link	x_wtranback.o drizzle.a -liraf77 -o xx_wtranback.e
+	;
+wtraxy:
+linkonly:
+	$omake	x_wtraxy.x
+	$link	x_wtraxy.o drizzle.a -liraf77 -o xx_wtraxy.e
+	;
+wcs2dr:
+linkonly:
+	$omake	x_wcs2dr.x 
+	$link	x_wcs2dr.o drizzle.a -liraf77 -o xx_wcs2dr.e
+	;
+
+drizzle.a:
+	wdrizzle.f
+	drizzle.f
+	blot.f
+    doblot.f
+    inter2d.f
+    bieval.f
+    ioutil.f
+	drutil.f
+    tranback.f
+    traxy.f
+    wcs2dr.f
+    timtem.x
+    wtranback.f
+    wtraxy.f
+    wblot.f
+	;

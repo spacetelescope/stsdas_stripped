@@ -1,0 +1,29 @@
+# DRIZTOOLS package
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	libpkg.a
+	$call	driztools
+	;
+
+install:
+	$move	xx_driztools.e ../../bin/x_driztools.e
+	;
+
+driztools:
+	$omake	x_driztools.x
+	$link	x_driztools.o libpkg.a -liraf77 -liminterp -o xx_driztools.e
+	;
+
+libpkg.a:
+	timtem.x
+        steep.f
+        satmask.f
+	;

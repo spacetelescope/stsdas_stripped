@@ -1,0 +1,19 @@
+Menu for the package stsdas.analysis.fourier
+
+       autocorr - Autocorrelate an image.
+         carith - Multiply or divide complex images.
+       crosscor - Cross-correlate two images.
+         factor - Display prime factors of a number.
+      fconvolve - Convolve two images.
+        forward - Compute forward Fourier transform of an image.
+      frompolar - Convert amplitude & phase to real & imaginary parts.
+        inverse - Compute inverse Fourier transform of an image.
+     listprimes - Display first N prime numbers.
+      powerspec - Compute the power spectrum of an image.
+          shift - Shift an image by a specified number of pixels.
+      taperedge - Apply a cosine bell or linear taper to image edges.
+        topolar - Convert real & imaginary parts to amplitude & phase.
+
+
+(Type "help fourier option=sysdoc" for general information 
+about the 'fourier' package).

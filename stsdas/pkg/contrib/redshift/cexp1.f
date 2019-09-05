@@ -1,0 +1,14 @@
+      COMPLEX FUNCTION CEXP1(A,B) 
+      COMPLEX CMPLX 
+      DATA HAPI,PI,TWOPI/1.570796327,3.141592654,6.283185308/ 
+C     C=AMOD(B+SIGN(PI,B),TWOPI)-SIGN(PI,B) 
+C     BA=ABS(C) 
+C     T=HAPI-BA 
+C     IF(T.LT.0) BA=PI-BA 
+C     B2=BA*BA 
+C     CEXP1=CMPLX(SIGN(1.+B2*(-.49670+B2*.03705),T), 
+C    $            SIGN(BA*(1.+B2*(-.16605+B2*.00761)),C))/ 
+C    $            (1.+A*(1.+A*(.5+A*(.166666+A*.04166666)))) 
+      CEXP1=CMPLX(COS(B),SIN(B))/EXP(A)
+      RETURN 
+      END 

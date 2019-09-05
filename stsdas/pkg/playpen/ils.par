@@ -1,0 +1,15 @@
+input,s,a,,,,">input image(s)"
+psf,s,a,,,,">psf image(s)"
+output,s,a,,,,">output image"
+model,s,h,"",,,">model image"
+wmask,s,h,"",,,">bad pixel mask / weight image(s)"
+ilspars,pset,h,,,,">regularization / adaptivity / PSF pset"
+niter,i,h,10,1,,">number of iterations"
+limchisq,r,h,1.,,,">limit of chi-squared for convergence"
+xsizeout,i,h,0,0,,">X dimension of output image"
+ysizeout,i,h,0,0,,">Y dimension of output image"
+center,b,h,no,,,">center input data in output image ?"
+nsave,i,h,0,0,,">output result every nsave iteration"
+verbosity,i,h,2,0,2,">verbosity level"
+mode,s,h,al
+

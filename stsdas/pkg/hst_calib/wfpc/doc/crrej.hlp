@@ -1,0 +1,231 @@
+.help crrej Jul96 stsdas.hst_calib.wfpc
+.ih
+NAME
+crrej -- Generate an image free of cosmic rays from multiple exposures of the 
+same field.
+.ih
+USAGE
+crrej input output masks sigmas 
+.ih
+DESCRIPTION
+One  way  to  reduce the cosmic rays (CR) registered in images is to
+take multiple exposures of the same field and combine the images  by
+rejecting  very  high  counts  in  each pixel stack.  This task is a
+sophisticated implementation of this simple idea.  It allows  the
+user to combine images of different exposure length
+even in the presence of a varying background or "sky".
+ 
+CRREJ has the following features and characteristics:
+ 
+.nf
+(1) DIFFERENT EXPOSURE TIMES
+.fi
+  The input images may have different exposure times.  The  header
+keyword  containing  the  exposure  time  should be specified by the
+parameter EXPNAME.   The  final  combined  image  has  an  effective
+exposure  time  equal  to  the  sum  of  exposure times of all input
+images.  For pixels free from cosmic rays, the final pixel value  is
+simply  the  sum  of  all  input  pixel  values.
+For pixels  having one or more CR in their input stacks, the final pixel
+value is the sum  of  the  good  pixels,  normalized  to  the  total
+exposure  time  of  all  input  images.   If all pixels are bad, the
+output pixel value is filled by the value specified in FILLVAL. 
+
+.nf
+(2) CHOICE OF INITIAL GUESS
+.fi
+  Computing the average value of each pixel from the input images it 
+uses only those pixels within N*(sigma) of some "initial guess" image.  
+Pixels too far above AND BELOW the initial estimate are rejected and not 
+used in the average.  Pixels which are too low are rejected so as to 
+avoid a negative bias on the result.  This initial guess is produced by 
+taking either the median or the minimum of the input images (the latter 
+is particularly useful when only 2 or 3 images are available).
+
+.nf
+(3) NOISE MODEL
+.fi
+  The "sigma" includes a constant noise  term  (READNOISE),  noise
+proportional  to  the square root of counts (statistical noise), and
+noise  proportional  to  the   counts  (SCALENOISE).   The latter  
+is useful when the pointing of the telescope has changed by a small
+fraction of a pixel between images.   Under such circumstances, the
+undersampling of the image by the CCD will cause stars to be rejected
+as cosmic rays if a scale noise is not included.
+ 
+.nf
+(4) PROPAGATE REJECTIONS
+.fi
+  It is possible to perform a more stringent test for cosmic rays
+in pixels adjacent  to  rejected  pixels.  The radius over which pixels will 
+be subjected to special scrutiny is controllable  in  units
+of  pixels  (RADIUS).  Pixels inside of RADIUS which differ from
+the expected value by PFACTOR*SIGMAS will be rejected.  The default
+setting of RADIUS=1.5 and PFACTOR=0.5 tests all pixels adjacent
+to rejected pixels with SIGMAS one-half that used in the primary
+rejection.  Setting PFACTOR=0 causes all pixels within RADIUS to be rejected.
+
+.nf
+(5) ITERATIVE REJECTION
+.fi
+  The rejection process can  be  iterative.   After  computing  a
+summed image,  it  is  fed  back in as the "initial guess" and the
+calculation is repeated.  Both the  number  of  iterations  and  the
+value  of  N  (the  number  of  sigmas used in rejecting pixels) are
+specifiable separately for each iteration (SIGMAS).  
+For example, SIGMAS="4,3" performs two iterations, with 4-sigma
+rejection on the first iteration, and 3-sigma rejection on the
+second iteration.
+
+The purpose  of
+the  iterations  is  two  fold:  (a) to allow the solution to slowly
+achieve  an  equilibrium,  and  (b)  to  allow  for  propagation  of
+information about rejected pixels into adjacent pixels.
+
+.nf
+(6) DATA QUALITY FILES
+.fi
+  An option allows the user to create or modify image masks, one for 
+each input image, showing the location of pixels estimated to have cosmic 
+ray hits.  The masks are in I2 format (the format of HST data quality files).  
+At cosmic ray locations, the value specified in CRDQVAL is logically OR'ed
+with the corresponding data quality pixel.
+
+.nf
+(7) SKY SUBTRACTION
+.fi
+  Setting SKY=MODE will cause a sky to be estimated and removed from
+each image.  SKY=NONE turns off sky subtaction.  The sum of the skies
+will be placed in the header keyword set by the parameter skyname.
+
+.nf
+(8) MULTIPLE GROUPS
+.fi
+  This task works on multi-group images as well as single group images.
+
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input images.  Needs at least two.
+.le
+.ls output = "" [string]
+Name of the output file, i.e., the cosmic ray free image. 
+Output pixel values will be the sums from the stack of input images.
+.le
+.ls masks = "" [string]
+Input/Output data quality files.  Each file in the list corresponds to an input 
+image.  This is NOT a data quality file corresponding to the combined output 
+image. 
+
+This parameter is optional, i.e. this output 
+file will not be created if this parameter is NULL.  If these files already
+exist, the information in these files are used to exclude data during 
+the CR rejection calculation.  The cosmic ray DQ flags generated by this 
+task will be logically OR'ed with pixel values in these files.
+.le
+.ls sigmas = "8,6,4" [string]
+Sigmas used in cosmic ray rejection during each successive iteration.
+.le
+.ls (radius) = 1.5 [real, min = 0.]
+Rejection propagation radius in pixels.  For example, radius=1.0 will reject 
+a total of 5 pixels in a "+" shaped pattern, radius=1.5 will reject a total 
+of 9 pixels as a 3 by 3 square.
+.le
+.ls (pfactor) = 0.5 [real, min = 0.]
+The "propagation factor"  See (7) above.
+.le
+.ls (initial) = "min" [string, allowed values: min | med]
+The initial value estimate scheme.  Allowed values are "min" and "med".
+Minimum ("min") is usually preferred rather than the median ("med"), especially 
+when there are only a few input images.
+.le
+.ls (lower) = -99. [real]
+The lower limit of the input data to be used.  Data lower than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no lower limit.
+.le
+.ls (upper) = 4096. [real]
+The upper limit of the input data to be used.  Data higher than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no upper limit.
+.le
+.ls (sky) = "none" [string, allowed values: mode | none]
+The method to calculate the background level.  If "mode" is used, the 
+background level uses the mode value of the image.  Each input image will 
+have one background value which will be subtracted from the image 
+before the CR rejection calculations.  If "none" is selected, no sky
+calculation is performed or subtracted from the data.
+.le
+.ls (expname) = "exptime" [string]
+Name of the keyword where the exposure time (in seconds) information is 
+stored.  If this keyword is NULL, each input image will be assumed to have 
+equal exposure time. 
+
+You can specify up to 3 keyword names here.  In the output image, each of the
+specified keywords equals to the sum of the same keyword from
+all input images.  Only the first keyword is used for scaling.
+For example: you can specify "exptime,darktime" for WFPC2 images.
+.le
+.ls (readnoise) = "0.72" [string]
+Read out noise in DN.
+The user may specify separate values for each group.  For example, if 
+readnoise="0.7, 0.6", then 0.7 will be applied to the first group and 0.6
+will be applied to the second (and all the rest) group(s).
+.le
+.ls (atodgain) = "7" [string]
+Detector gain in electrons/DN.
+The user may specify separate values for each group.  For example, if 
+atodgain="7., 7.1, 7.2", then 7.0 will be applied to the first group, 7.1
+will be applied to the second group, and 7.2 will be applied to the third 
+group (and all the rest) group(s).
+.le
+.ls (scalenoise) = "3,1" [string]
+Multiplicative term in PERCENT from the noise model.
+The user may specify separate values for each group.  For example, if 
+scalenoise="2.0, 1.0", then 2% will be applied to the first group and 1%
+will be applied to the second (and all the rest) group(s).
+.le
+.ls (dq) [pset]
+Data quality filter pset.  This parameter set can be used to exclude pixels
+with certain data quality bit values.
+.le
+.ls (skyname)  = "BACKGRND" [string]
+If this is set to a group parameter name in the input image, the sky values
+calculated in this task will be used to update that group parameter.
+For WFPC2, this is usually set to 'BACKGRND'.
+.le
+.ls (crdqval) = 128 [int, min = 1]
+The data quality value indicating the pixel is affected by the cosmic ray.
+For WFPC2, the default value 128 is used.
+.le
+.ls (fillval) = 0. [real]
+If all pixels are rejected in a stack, the output pixel value will be filled 
+by the value specified here.
+.le
+.ls (verbose) = yes [boolean]
+Print out detailed messages as the task progresses?
+.le
+.ih
+EXAMPLES
+1. Get a cosmic-ray-free combined image from all .c0h images in the local 
+directory.
+
+.nf
+w_> crrej *.c0h crfree.hhh "" "4,4,3,2" 
+.fi
+
+2. Two WFPC images are not precisely aligned due to a fractional pixel
+shift in pointing between images.  Dividing one image by another shows that
+near the cores of stellar PSF's the ratio in counts from one image to the next
+can be as high as 1.5 in the PC and perhaps 1.05 in the WF.  Therefore
+set scaleno = 10,1 while setting sigmas=8,6,5.
+.ih
+REFERENCE
+John Biretta, May 18, 1993 memo.
+.ih
+BUGS
+This program, under IRAF v2.14, encounters a 'invalid floating point operation' when input images with pixel type of SHORT are provided.  Input images with pixel type of REAL work as expected.
+.ih
+SEE ALSO
+imcombine, combine, gcombine
+.endhelp

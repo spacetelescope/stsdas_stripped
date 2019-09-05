@@ -1,0 +1,47 @@
+.help FOC_GLOSSARY Jul88 "FOC 12"
+.ih
+CHAPTER
+FOC_GLOSSARY -- glossary of FOC terms
+
+.ih
+PARAMETER
+.ls entry                    
+identifier of a row in a reseau file. It often corresponds to the
+IPPSSOOT of the image from which the data came.
+.le
+.ls ESA                     
+European Space Agency
+.le
+.ls FOC                   
+Faint Object Camera
+.le
+.ls geometric distortion
+distortion in an image introduced, in the case of the FOC, by
+the intensifier and camera read sections of the PDA, as well a
+small amount from the ST and FOC optics
+.le
+.ls grid                
+table with reseaux positions
+.le
+.ls identifier 
+name of one of the grids in a reseau file
+.le
+.ls PDA              
+Photon Detector Assembly - the detector unit of the FOC
+.le
+.ls reseau grid
+a grid of reseau marks
+.le
+.ls reseau file
+an STSDAS table file containing information about 	
+positions of reseau marks in one or more images;
+may also contain other positional data
+.le
+.ls reseau mark
+fiducial mark in the image made by a mark etched into 
+the photocathode of the instrument. 
+.br
+see also reseau grid, reseau file, entry
+.le
+
+.endhelp

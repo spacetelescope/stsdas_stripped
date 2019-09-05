@@ -1,0 +1,68 @@
+# Make the hrs package
+# Author: DJL, 15-Jun-89 to include calhrs
+# Major Revision: 13Jan93
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+debug:
+	$set XFLAGS = "-fgqz $(XFLAGS)"
+        $set LFLAGS = "-z $(LFLAGS)"
+	$call relink
+	;
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	hrs.a
+	$update calhrs.a
+	$call	hrs
+	;
+
+install:
+	$move	xx_hrs.e stsdasbin$x_hrs.e
+	$move	xx_calhrs.e stsdasbin$x_calhrs.e
+	;
+
+linkonly:
+hrs:
+	$omake	x_hrs.x
+	$omake	x_calhrs.x
+
+	$link   x_calhrs.o calhrs.a hrs.a \
+		-liraf77 -lf77util -luttables -lstxtools -ltbtables \
+		-o xx_calhrs.e
+
+	$link	x_hrs.o hrs.a \
+		-liraf77 -lf77util -luttables -ltbtables \
+		-lxtools -lgflib -lgilib -liminterp -lstxtools -lcurfit\
+		-o xx_hrs.e
+	;
+
+hrs.a:
+	@dopoff
+	@lib
+	@mkwave
+        @obsum
+	@reflux  
+	@spiralmap
+	@tacount
+	@waveoff
+	@zavgtemp
+	@zwavefit
+	@zwaveid
+	;
+
+calhrs.a:
+	@calhrs
+	;

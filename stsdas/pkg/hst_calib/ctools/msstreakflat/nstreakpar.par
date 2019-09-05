@@ -1,0 +1,5 @@
+niter,i,h,7,1,,>Number of iterations
+widths,s,h,"250,190,125,80,50,30,15",,,>smoothing boxcar half-widths
+badmask,i,h,0,,,>Output bad pixels' mask (zero selects default)
+nicdqpar,pset,h,"",,,>Active NICMOS data quality bits (pset)
+mode,s,h,al

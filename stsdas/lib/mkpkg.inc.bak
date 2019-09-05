@@ -1,0 +1,30 @@
+# Global MKPKG definitions for the STSDAS packages.
+
+$set XFLAGS	= "$(XFLAGS) -p stsdas"
+$set XVFLAGS	= "$(XVFLAGS) -p stsdas"
+$set LFLAGS	= "$(LFLAGS) -p stsdas"
+
+
+$set USE_LOCAL	    = yes	# Compile and link stsdas/local ?
+$set USE_ASTROMETRY = no	# Compile and link astronemetry package?	
+$set USE_GASP	    = no	# THIS PACKAGE IS STILL VMS DEPENDENT.
+$set USE_STDB	    = no 
+$set USE_PLAYPEN    = no
+$set USE_VDISPLAY   = no	# This package is VMS only
+
+$ifeq (MACH, sparc) then
+$include "stsdas$lib/mkpkg.sf.SUN4"
+$else $ifeq (MACH, i386) then
+$include "stsdas$lib/mkpkg.sf.I386"
+$else $ifeq (MACH, mc68020) then
+$include "stsdas$lib/mkpkg.sf.SUN3"
+$else $ifeq (MACH, mips) then
+$include "stsdas$lib/mkpkg.sf.DC3100"
+$else
+$include "stsdas$lib/mkpkg.sf.VMS"
+$end
+
+# The CDBS libraries are VMS- and Omnibase-dependent
+
+	# Omnibase interface library
+	$set	OMNILIB = "sys\$library:ss_lib.a"

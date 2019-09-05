@@ -1,0 +1,89 @@
+.help stisnoise August2003 stis
+.ih
+NAME
+stisnoise -- Remove fixed pattern noise from STIS images.
+.ih
+USAGE
+stisnoise input
+.ih
+PARARETERS
+.ls input [string]
+The name of the input image. It can be either a raw or flat-fielded
+image.
+.le
+.ls (exten = 1) [integer]
+FITS extension to be read
+.le
+.ls (outfile = "") [string]
+The name of the filtered output image.
+.le
+.ls (freq = 0.) [real]
+Output parameter for the frequency of the maximum peak.
+.le
+.ls (ampl = 0.) [real]
+Output paramter for the amplitude of the maximum peak.
+.le
+.ls (fwhm = 0.) [real]
+Output paramter for the FWHM of the maximum peak.
+.le 
+.ls (boxcar = '') [integer]
+The width of the boxcar smoothing (in frequency bins) to be applied.
+.le
+.ls (wipe = '') [string]
+A 3-element array (e.g. "0.0 0.05 0.0"), specifying how to modify the
+data in frequency space. If set, the image is converted to a 1-D time
+series, fourier transformed to frequency space, modified, inverse
+transformed back to time space, and converted back to a 2-D image.
+The first and second elements specify the range in frequencies to be
+scaled (in hz), and the third element specifies the scaling factor
+(should be 0-1).
+.le
+.ls (window = '') [string]
+A 3-element array (e.g. "0.5 0.5 0.1"), specifying how to modify the
+data in frequency space.  The first element is the center of the
+window (in hz). The second element is the width of the window (in hz).
+The third element controls the tapering of the window - it is the
+scale (in hz) of the tapering width.  Specifically, a square bandstop
+is convolved with a gaussian having the FWHM given by the third
+parameter.
+.le
+.ls (dc = yes) [boolean]
+The power in the first freq bin is set to zero for better plotting of
+the power spectrum.
+.le
+.ls (verbose = yes) [boolean]
+Set to 0 if you do not want brief information about each image.
+.le
+.ih
+DESCRIPTION
+Computes an FFT on STIS CCD frames to evaluate fixed pattern noise.
+Fixed pattern noise is most obvious in a FFT of bias frames from side
+the B electronics.  Optional filtering to correct the fixed pattern
+noise is provided through keywords 'boxcar', 'wipe', and 'window'. The
+'freq', 'ampl', and 'fwhm' parameters return information about the
+maximum peak in the FFT and can be used for filter the data.  Filtered
+data can be saved as an output file.
+.ih
+EXAMPLES
+.ls
+1. Find frequency, amplitude, and FWHM of domimant peak in FFT of
+image.
+.nf
+
+        --> stisnoise o6ib01010_raw.fits
+        Target: NGC5139, Amp: D, Gain: 4
+        FFT Results: max freq: 0.0433,  max ampl: 0.4094,  fwhm: 0.0867
+
+.fi
+.ih
+BUGS
+In my code?
+.ih
+REFERENCES
+.ls
+IDL task written by T. Brown (STScI)
+.le
+.ls
+IRAF task written by P. Barrett (STScI)
+.le
+.endhelp

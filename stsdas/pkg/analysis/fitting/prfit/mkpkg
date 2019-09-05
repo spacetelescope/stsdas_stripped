@@ -1,0 +1,11 @@
+# Update the prfit application code in the fitting package.
+# Author: I.Busko, 13_AUG-1990
+
+$checkout fitting.a ../
+$update   fitting.a
+$checkin  fitting.a ../
+$exit
+
+fitting.a:
+	prfit.x		<tbset.h> ../nlfit/nlfit.h ../lib/curfitdef.h
+	;

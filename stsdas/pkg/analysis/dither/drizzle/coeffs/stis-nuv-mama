@@ -1,0 +1,10 @@
+# STIS NUV-MAMA cubic distortion coefficients from Eliot Malumuth (Hughes STX)
+# Derived from on-orbit measurements of star fields
+# (STIS Instrument Handbook v4.0, 28 Jun 2000, Table 14.35)
+cubic
+
+0.0            1.0012028       0.0013076       2.1601775e-06  4.4898824e-06
+3.6799185e-07  7.8642354e-09  -4.4964820e-09  -9.4924845e-09  8.1604066e-09
+
+0.0             -0.0020401       1.0155082     -5.4187456e-08   5.4307736e-06
+-1.1148970e-06  -1.2745906e-08  -1.1466186e-08  1.0237078e-09  -3.4448314e-09

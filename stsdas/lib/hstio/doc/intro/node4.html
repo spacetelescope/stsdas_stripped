@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  I/O Functions Related to ANSI C Data Structures </TITLE>
+<meta name="description" value="  I/O Functions Related to ANSI C Data Structures ">
+<meta name="keywords" value="intro">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html48 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html46 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html40 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html49 HREF="node5.html"> Consequences of this </A>
+<B>Up:</B> <A NAME=tex2html47 HREF="intro.html">Data Structures in STIS </A>
+<B> Previous:</B> <A NAME=tex2html41 HREF="node3.html"> ANSI C Structures </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00040000000000000000>  I/O Functions Related to ANSI C Data Structures </A></H1>
+<P>
+Supporting these data structures is an I/O interface module called
+HSTIO.  High-level functions in the HSTIO interface include:
+1) functions to initialize all data structures, to allocate and
+free memory needed by the data structures,
+2) macros to access elements of the two-dimensional data arrays,
+3) functions to get and set values associated with header keywords,
+4) functions to read and write entire Science, Error, and Data Quality HDUs,
+as well as NICMOS Samples and Integration Times HDUs,
+5) functions to read and write single and multiple groups of
+{Science, Error, Data Quality} or, for NICMOS, groups of 
+{Science, Error, Data Quality, Samples, Integration Times}.
+These functions recognize local conventions used in conjunction
+with the various HDUs, and generate arrays of the proper 
+dimensionality and value.
+<P>
+The HSTIO interface also includes a number of lower-level functions
+that can be used if there is insufficient memory to store entire HDUs.
+These include:
+1) opening and closing a particular image in a FITS file,
+2) reading and writing the FITS header associated with an image,
+3) reading and writing the data array associated with an image, and
+4) reading and writing arbitrary lines or arbitrary two-dimensional sections
+of a data array associated with an image.
+<P>
+The structure of the software is shown in Figure 1.  All of the
+high-level functions are implemented in terms of the lower-level functions.
+These lower-level functions are implemented using IRAF's image I/O, enhanced
+by the addition of the FITS kernel with support for image extensions.
+<P>
+<IMG ALIGN=BOTTOM SRC="_26023_tex2html_wrap47.gif">
+<b>Figure 1:  HSTIO Interface</b>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:26:56 EDT 1996</I>
+</ADDRESS>
+</BODY>

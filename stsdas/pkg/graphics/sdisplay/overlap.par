@@ -1,0 +1,7 @@
+input1,s,a,,,,>left/bottom input image
+input2,s,a,,,,>right/top input image
+output,s,a,,,,>output image
+dx,i,a,0,0,,>X overlap in pixels
+dy,i,a,0,0,,>Y overlap in pixels
+weight,s,h,"cos","|linear|cos",,>weighting mode
+mode,s,h,al

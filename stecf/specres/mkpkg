@@ -1,0 +1,96 @@
+# MKPKG file for the SPECRES Package
+
+$call update
+$exit
+
+update:
+	$call update@src
+
+	$ifeq (HOSTID, vms) $purge [...] $endif
+	;
+
+relink:
+	$call relink@src
+
+	$ifeq (HOSTID, vms) $purge [...] $endif
+	;
+
+
+# STRIP -- Strip the ADCCDROM directories of all sources and other files not
+# required to run the system, or for user programming.
+
+strip:
+	!rmfiles -f lib/strip.specres
+	;
+
+
+# SUMMARY -- [UNIX] mkpkg summary: output a summary of the spooled mkpkg
+# output, omitting most of the mundane chatter.  Used to scan large spool
+# files for errors.
+
+summary:
+	$ifeq (HOSTID, unix)
+	    ! grep -v ':$$' spool | grep -v '^xc' | grep -v '^ar'\
+	    | grep -v '^check file'
+	$else
+	    $echo "mkpkg summary only available on a UNIX system"
+	$endif
+	;
+
+
+# SUN/IRAF multiple architecture support.
+# ----------------------------------------
+
+showfloat:				# show current float option
+	$verbose off
+	!$(hlib)/mkfloat.csh
+	;
+generic:				# make architecture indep. (no bins)
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh generic -d $(DIRS)
+	;
+sparc:					# install sparc binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh sparc -d $(DIRS)
+	;
+ssun:					# install ssun binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh ssun -d $(DIRS)
+	;
+hp700:					# install hp700 binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh hp700 -d $(DIRS)
+	;
+linux:					# install linux binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh linux -d $(DIRS)
+	;
+freebsd:				# install freebsd binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh freebsd -d $(DIRS)
+	;
+alpha:					# install alpha binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh alpha -d $(DIRS)
+	;
+irix:					# install irix binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh irix -d $(DIRS)
+	;
+rs6000:					# install rs6000 binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh rs6000 -d $(DIRS)
+	;
+redhat:					# install redhat binaries
+	$verbose off
+	$set DIRS = "src lib"
+	!$(hlib)/mkfloat.csh redhat -d $(DIRS)

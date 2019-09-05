@@ -1,0 +1,73 @@
+.help qmosaic Apr94 stsdas.hst_calib.wfpc
+.ih
+NAME
+qmosaic -- A quick mosaic of the 4 individual WF/PC or WFPC2 frames into 1 image.
+.ih
+USAGE
+qmosaic input output 
+.ih
+DESCRIPTION
+This task will produce a quick mosaic of the four groups that comprise the full 
+WFPC or WFPC2 field of view.  The input frames may be composed of either 4 
+one-group images, or one 4-group (multigroup) WFPC or WFPC2 image.  The output 
+file is a GEIS image with one group, where the 4 input frames have been 
+placed in their proper quadrants.  In the case of WFPC2, you can specify which
+interpolation method you want to scale the PC frame or not to shrink to the WF
+scale at all (i.e. preserve the PC resolution).
+
+The number of input images is flexible:  it can take any number of input
+frames, either in multi-group or single group format.  If the number of input
+frames is less than 4, the missing quadrant will be filled with zeros.  If 
+there are more than 4 input frames, the last repeated frame will overwrite
+the previous one of the same detector.
+
+A more sophisticated mosaic task is available (WMOSAIC) to correct for the 
+geometric distortion and inter-chip rotations, offsets, and scale differences.
+.ih
+PARAMETERS
+.ls input [string]
+List of input images.  The input specification is either one 4-groups image or 
+4 individual, one-group images.
+.le
+.ls output [string]
+The name of the output image, which must be different than the name(s) of the 
+input image(s).  The layout of the input images on output is:
+
+.nf
+		---------
+		| 1 | 4 |
+		|   |   |
+	        ---------
+		| 2 | 3 |
+		|   |   |
+                ---------
+.fi
+.le
+.ls (interp) = "spline3" [string]
+Method of interpolation for the PC frame of WFPC2 only.  Two dimensional 
+interpolation type to be used are: "nearest" neighbor, "linear" bilinear, 
+"poly3" bicubic polynomial, "poly5" biquintic polynomial, and "spline3" 
+bicubic spline.  If "none" is specified, the WFPC2's PC frame will not be 
+scaled down.  For more details of these interpolation algorithms, see 
+the help file math$interp/Iinterp.hlp.
+.le
+.ih
+EXAMPLES
+1.  Mosaic one 4-group input image of 800x800 each, 'wr1.c0h', into a 
+1600x1600 pixel output image 'wr1mos.hhh'.  
+
+.nf
+     wf> qwmosaic  wr1.c0h  wr1mos.hhh 
+
+.fi
+2. There are 4 images (800x800) with one group each, namely 'im1.hhh', 
+'im2.hhh', 'im3.hhh', and 'im4.hhh'.  Form a mosaic called 'imout.hhh'.
+
+.nf
+     wf> qwmosaic im*.hhh imout.hhh 
+.fi
+
+.ih
+SEE ALSO
+wmosaic, imgtool.gcopy
+.endhelp

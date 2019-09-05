@@ -1,0 +1,11 @@
+# Update the pixlocate application code in the imgtools package library
+# Author: GIARETTA, 23-FEB-1988
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	pixlocate.x       		<imhdr.h> 
+	;

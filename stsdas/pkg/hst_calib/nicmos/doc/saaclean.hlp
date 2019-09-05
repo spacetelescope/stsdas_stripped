@@ -1,0 +1,219 @@
+.help saaclean Aug2006 stsdas.hst_calib.nicmos
+.ih
+NAME
+saaclean -- remove SAA persistence signal from a NICMOS image
+.ih
+USAGE
+saaclean calcimage targimage output clobber saaperfile
+.ih
+DESCRIPTION
+The saaclean task measures and removes an estimate of the SAA persistence signal in a NICMOS image. It was written using Python and relies on the Python interface to the IRAF environment, PyRAF, for its operation. As a result, this task can only be run under PyRAF.
+
+There are two input images to the task. "Calcimage" is the image from which the SAA persistence correction will be calculated. It must be at least partially calibrated, including zero-read subtraction, dark subtraction, and linearization. The image may also be flatfielded. It is generally recommended that the sky and pedestal signal be corrected by applying the pedsub task to this image. 
+
+"Targimage" is the image to which the SAA persistence correction will be applied. It will generally be the same as the "calcimage", but this allows the SAA correction to be decoupled from any other corrections.
+
+The output image is a new file, containing data from the targimage corrected by the SAA persistence correction. Its FITS header is also taken from targimage, updated by the SAACLEAN task which adds a section of header keywords. 
+
+Running pedsub on the output image after saaclean is also generally recommended to obtain optimal results.
+
+Saaclean runs on a single science image (i.e. not on all the separate readouts of a NICMOS MULTIACCUM file).  It operates on the [SCI,1] extension, if present, which is appropriate when the task is run on, e.g., the _cal type images that are the final product of the "calnica" calibration pipeline. If this extension is not present, it falls back to the primary extension in the file.
+
+By default, saaclean will produce an image of the SAA persistence signal by scaling and combining the two SAA exposures associated with the science image as specified in the SAADARK related keywords in the header file. In this case, the associated images and their _asn file must be present in the directory with the science image. Alternatively, a pre-existing SAA persistence image can be specified by the user.
+
+The task works by determining an appropriate scale factor by which to multiply the persistence image before subtracting it from the science image. It does this iteratively, measuring the noise in the image after each subtraction, then fits a parabola to the results to determine the minimum. Noise measurements are determined by the standard deviation in the resulting image as measured by imstatistics. 
+
+The SAA persistence image frequently has two distinct domains of high and low signal. These domains are fit independently. Task performance is quite sensitive to the value of the threshold separating the high and low domains. 
+By default, the task will estimate the threshold by fitting a combined gaussian-polynomial function to the histogram data, and then set the threshold to a value that is 3.5 times the standard deviation of the Gaussian. Alternatively,  the threshold may be specified by the user after a visual inspection of the (flat fielded) SAA persistence image histogram.
+
+An estimate of the noise reduction with the best scale factor is made for each domain. The reduction must exceed the percentage specified by "noisethresh" for the correction to be applied. If the low signal domain correction is greater than (noisethresh)%, but the high signal domain correction is not, the low domain correction will be applied to the entire image. (The converse is not true, however: if the high signal domain correction is above the threshold, but the low signal domain correction is not, the high signal domain correction is applied only to the pixels in the high signal domain.)
+
+Before performing any corrections, the task flags problem pixels, pixels at the edges, and pixels in the central row and column, to exclude them from the estimate and correction process. The DQ extension of the calcimage is used to identify problem pixels.
+
+A summary of the results is written to standard output. A number of header keywords are also updated in the output (cleaned) FITS file.
+
+.ih
+PARAMETERS
+.ls calcimage [file]
+Name of the input image on which the correction will be calculated.
+This will normally be a single IMSET file (_cal type) that has been processed
+through "calnica" and subsequently pedestal-corrected.  The full file name must be given.
+.le
+.ls targimage [file]
+Name of the input image to which the correction will be applied.
+This will normally be a single IMSET file (_cal type) that has been processed
+through "calnica". The full file name must be given.
+.le 
+.ls output [file]
+Name of the output image created by applying the SAA correction to the specified targimage. Must be a full file name specification and the numbers of input and output images must be equal.
+.le
+.ls clobber = no [boolean]
+Clobber files if they already exist? If clobber=yes, the task will overwrite as necessary any files it attempts to create; otherwise, the task will exit with an exception.
+
+.le
+.ls (readsaaper = no) [boolean]
+Read the SAA persistence image from a file? If set to "yes", the task will construct the SAA persistence image from the SAA darks, using the next set of parameters.
+.le
+.ls saaperfile="saaper.fits" [file]
+Filename for the SAA persistence image. If readsaaper=yes, it will
+read the SAA persistence image from this file. If readsaaper=no and writesaaper=yes, it will write the constructed image to this file. If both are set to no, this parameter is ignored.
+.le
+.ls (writesaaper=yes) [boolean]
+If yes, write the SAA persistence image.
+.le
+.ls (flatsaaper=yes) [boolean]
+Flatfield the SAA persistence image before applying? 
+.le
+.ls (darkpath="saaref$") [string]
+Path specification in which the individual camera darks can be found. If the SAADFILE keyword is set in the post-SAA dark exposures, it will override this keyword and the task will look for the filename specified in that keyword. Otherwise, the task will look for filenames of the form cN_saadarkref_drk.fits, where N is the camera number, in this directory. 
+.le
+.ls (scale=0.54) [real]
+Scale factor between the two individual SAA exposures into a single image. This value depends on the time separating the two exposures, but the default value will be appropriate for 99% of all cases.
+.le
+.ls (wf1=0.7) [real]
+Weight factor for the first SAA exposure.
+.le
+.ls (wf2=0.3) [real]
+Weight factor for the second SAA exposure.
+.le
+.ls (crthresh = 0.3) [real]
+Threshold for cosmic ray rejection in the SAA exposures. Each exposure is compared to an appropriately-scaled version of the other. Pixels in this scaled difference which exceed the crthresh are set to the pixel value in the other exposure.
+.le
+.ls (noisethresh = 1.0) [real]
+Noise reduction threshold (percent). If the percentage noise reduction is less than this value, no correction will be applied. The noise reduction is computed separately for the high and low signal domains, and independent decisions are made.
+.le
+.ls (binsigfrac = 0.3) [real]
+Stddev fraction for excluding narrow bins from the fitting process. The best scale factor is determined by iteratively applying a scale factor to the persistence image, subtracting it from the calcimage, and computing the standard deviation of the resulting image as a measure of the remaining noise. A parabola is then fit to these data to determine the best scale factor to produce the minimum noise. The binsigfrac parameter is used to exclude outlier bins from the fitting process. Any bin which produces a standard deveiation less than (binsigfrac*the original data) is excluded from the fit.
+.le
+.ls (stepsize=0.008) [real]
+Step size to use in iteratively computing the multiplicative factor to use before subtraction.
+.le
+.ls (fitthresh=yes) [boolean]
+  Iteratively fit the threshold between the low and high
+pixel domains? If set to yes, then a Gaussian +polynomial
+is fit to the low-valued pixel histogram, and the threshold
+between the low and high domains is the mean + 3.5 times
+the FWHM. In this case the next parameter, "thresh", behaves
+as an output parameter containing this calculated threshold.
+.le 
+.ls (thresh=INDEF) [real]
+ If  "fitthresh"  is  set  to "yes", this parameter is an
+ output parameter containing the threshold that was used
+ to  separate the low-valued and high-valued pixel domains
+ of the persistence image. Otherwise, this is an input
+ parameter which can be given a user-specified value
+for the threshold separating the low and high valued pixel
+domains. It is in the same units as the SAA persistence image.
+.le 
+.ls (histbinwidth=0.5) [real] 
+Set the width of the histogram bins to be used in computing the histogram 
+of the SAA
+persistence image to compute the threshold. It is in the same units as the
+SAA persistence image. 
+.le 
+.ls
+(nclip=3) [integer] 
+Set the number of clipping iterations to be used
+in analyzing the histogram of the SAA persistence image to compute the
+threshold. This parameter is passed into the PyRAF imagestats routine.
+.le
+
+.ls (hirange=0.4) [real]
+Maximum multiplier value to check in the iteration for the high signal domain.
+.le
+.ls (lorange=0.25) [real]
+Maximum multiplier value to check in the iteration for the low signal domain.
+.le
+.ls (fitmult=yes) [boolean]
+Fit a parabola to determine the minimum multiplicative factor? If no, the multiplicative factor yielding the minimum noise is taken straight from the iterative steps, with no interpolation.
+.le
+.ls (applied="") [string, values:both|low everywhere|high only|none|n/a|aborted]
+Domains to which the correction was applied: both corrections applied separately to the high and low signal domains; low signal domain correction applied to the entire image; high signal domain correction applied to its domain only; or no correction applied anywhere. This last case may occur if the image is not SAA impacted (n/a), if the task aborts, or if the noise correction was below the value specified in noisethresh. This is a task output parameter.
+.le
+.ls (hi_nr="") [real]
+Noise reduction achieved in high signal domain. This is a task output parameter.
+.le
+.ls (lo_nr="") [real]
+Noise reduction achieved in low signal domain. This is a task output parameter.
+.le
+.ls (alldiags=no) [boolean]
+Produce all possible diagnostic files? If set to yes, image files containing the mask and the flat-fielded SAA persistence image are produced, along with a variety of text files (described above). These are used primarily for testing/debugging purposes.
+.le
+.ls (diagroot="diag") [string]
+Root filename for the diagnostic files produced if alldiags=yes. Additional strings will be appended to this value to produce the final output filenames.
+.le
+
+.ih
+DIAGNOSTIC FILES
+
+If alldiags=yes, a variety of diagnostic files are produced. These are:
+.le
+.ls _flat_saaper.fits [image]
+The flat-fielded SAA persistence image. This may be usefully inspected if there are problems with the threshold fitting.
+.le
+.ls _mask.fits [image]
+An image showing the pixels that were masked out of the computed SAA persistence model.
+.le
+.ls _high_signal_domain.dat [text]
+A text file listing the data used to determine the optimal scale factor for the high signal domain. A parabola is fit to this data, and its minimum provides the resulting scale factor. This file may be usefully plotted if there are problems with the scale factor fitting in this domain. The relevant columns are the first two, scale factor versus sigma. The sigma (standard deviation) is a measure of the noise remaining in the image after subtracting the SAA persistence model with this scale factor applied.
+.le
+.ls _low_signal_domain.dat [text]
+As above, but for the low signal domain.
+.le
+.ls _gp_hist.txt [text]
+A text file listing the actual data used by the gauss-polynomial fitting routine to determine the threshold. The flatfielded SAA persistence image data undergoes some preprocessing before fitting, in order to obtain a robust and optimal fit. This file may be usefully inspected if there are problems with the fitting procedure.
+.le
+.ls _gp_iters.txt [text]
+A text file listing the six coefficients of the gauss-poly fit for each iteration in the least-squares fitting. The coefficient ordering is as printed to stdout: gaussian amplitude, gaussian mean, gaussian sigma, constant term, linear term, quadratic term. This file may be usefully inspected if there are problems with the fitting procedure, particularly convergence problems.
+
+.ih
+EXAMPLES
+
+1. Estimate and subtract SAA persistence signal from the calibrated image n8g6cnh3q_cal1.fits which has had pedsub applied to it, storing the result in the output image n8g6cnh3q_cal2.fits and the constructed SAA persistence image as n8g6cnh3q_saa.fits.
+
+.nf
+--> saaclean n8g6cnh3q_ped.fits n8g6cnh3q_ped.fits n8g6cnh3q_cal2.fits writesaaper=yes saaperfile=n8g6cnh3q_saa.fits
+.fi
+
+2. Correct the image from the previously constructed SAA persistence image using a predetermined threshold value of 0.29.
+
+.nf
+--> saaclean n8g6cnh3q_ped.fits n8g6cnh3q_ped.fits n8g6cnh3q_cal2.fits readsaaper=yes saaperfile=n8g6cnh3q_saa.fits thresh=0.29
+.fi
+
+3. Estimate the SAA persistence signal from the pedestal-corrected image n8rfipfzq_ped.fits, but apply the correction to the image produced by CALNICA, n8rfipfzq_cal.fits. Store the result in n8rfipfzq_cln.fits.
+
+.nf
+--> saaclean n8rfipfzq_ped.fits n8rfipfzq_cal.fits n8rfipfzq_cln.fits saaperfile=n8rfipfzq_saa.fits
+.fi
+.ih
+REVISIONS
+.le
+Version 0.97dev,   8-Aug-2006: generated additional diagnostics 
+.le
+Version 0.96dev,  21-Apr-2006: implemented gauss-poly fitting 
+.le 
+Version 0.88, 21-Mar-2006 (STSDAS v3.5, Pyraf 1.2.1): change to task parameters
+.le 
+Initial release: Version 0.5,  15-Sep-2005 (STSDAS v3.3.1, PyRAF 1.1.2)
+
+.ih
+BUGS
+
+
+.ih
+RESTRICTIONS
+
+The task cannot at this time automatically determine the optimal scale factor for use in constructing the SAA persistence image, which depends on the time interval between the two exposures. The default value will be appropriate for 99% of the cases.
+
+The task cannot at this time produce appropriate image darks from accum-mode TDD darks. Appropriate dark images must be precomputed and located in the path specified by the "darkpath" parameter.
+.ih
+REFERENCES
+
+This task was implemented in PyRAF by Victoria G. Laidler (CSC/STScI) based on the IDL implementation by, and with testing and support from, Louis E. Bergeron (STScI).
+
+A description of the algorithm and the original IDL implementation can be found in ISR NICMOS 2003-009, "Removal of Cosmic Ray Persistence From Science Data using the Post-SAA Darks", by Louis E. Bergeron and Mark E. Dickinson. This document also contains a detailed description of the SAA persistence problem, as well as some usage advice. It can be found online through the NICMOS web page at http://www.stsci.edu/hst/nicmos .
+.ih
+SEE ALSO
+pedsub
+.endhelp

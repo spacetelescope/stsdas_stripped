@@ -1,0 +1,14 @@
+# Update the moveheader application code in the imgtools package library
+# Author: B.Simon, 01-MAR-1989
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	cancpy.x
+	countgrp.x
+	cpygrp.x	<imhdr.h>  <imio.h>  moveheader.h
+	moveheader.x
+	;

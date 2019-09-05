@@ -1,0 +1,15 @@
+#  NICMOS data quality parameters
+#
+rs,b,h,yes,,,"Reject Reed-Solomon errors ?"
+sat,b,h,yes,,,"Reject saturated pixels ?"
+cray,b,h,yes,,,"Reject cosmic ray hits ?"
+lin,b,h,yes,,,"Reject pixels with poor linearity correction ?"
+dark,b,h,yes,,,"Reject pixels with poor dark correction ?"
+flat,b,h,yes,,,"Reject pixels with poor flatfield correction ?"
+grot,b,h,yes,,,"Reject pixels affected by grot ?"
+defect,b,h,yes,,,"Reject defective pixels ?"
+telemetry,b,h,yes,,,"Reject pixels with telemetry problem ?"
+badpix,b,h,yes,,,"Reject bad pixels determ. by calibration ?"
+source,b,h,yes,,,"Reject source pixels ?"
+zread,b,h,yes,,,"Reject zero-read-corrected pixels ?"
+mode,s,h,al

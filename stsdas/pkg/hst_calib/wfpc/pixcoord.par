@@ -1,0 +1,18 @@
+image,s,a,,,,Image name
+catalog,s,a,,,,Star catalog file
+name,s,a,,,,Star id column(s) in star catalog
+ra,s,a,,,,Right ascension column in star catalog
+dec,s,a,,,,Declination column in star catalog
+coordfile,s,h,default,,,Coordinate file
+nterm,i,h,3,1,6,Number of terms in least squares fit
+boxsize,i,h,11,3,25,Search box size
+tvcmd,s,h,"display(image='$1',frame=$2)",,,Command to display image
+tvframe,i,h,1,,,Display frame to use
+label,s,h,rownumber,rownumber|name,,"Star label type (rownumber, name)"
+mkcolor,s,h,white,white|red|green|blue|yellow,,Marker color
+mksize,i,h,11,3,25,Marker size
+script,s,h," ",,,Name of script used to run task non-interactively
+ra_unit,s,q,deg,hours|degrees|radians,,Units of right ascension
+dec_unit,s,q,deg,degrees|radians,,Units of declination
+cur,*imcur,h,,,,Image cursor
+mode,s,h,"a"

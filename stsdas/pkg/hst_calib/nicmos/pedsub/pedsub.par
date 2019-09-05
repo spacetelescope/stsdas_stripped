@@ -1,0 +1,22 @@
+input,f,a,"",,, Input file list
+output,f,a,"",,, Output file list
+filter,s,h,"mask","|none|median|mask|",, Image filter type (none|median|mask)
+minbox,i,h,INDEF,0,256, Inner box radius for median filter
+maxbox,i,h,INDEF,0,256, Outer box radius for median filter
+dorefine,b,h,yes,,, Refine quick'n'dirty pedestal estimate?
+nrefine,i,h,41,3,, Number of refinement trial values
+refstep,r,h,INDEF,0,, Refinement step size
+reforder,i,h,5,0,10, Refinement fit polynomial order
+doquadeq,b,h,yes,,, Equalize quadrants?
+eqorder,i,h,1,-2,7, Quadrant eq fit order
+eqpix1,i,h,2,1,128, First pix in quad eq fit
+eqpix2,i,h,10,1,128, Last pix in quad eq fit
+eqflat,b,h,yes,,, Do quad eq with constant*Flat?
+flatfield,s,h,"",,, Flatfield file name for pedestal subtraction
+statregions,pset,h,"",,, Image sections for measuring statistics (pset)
+dqon,b,h,yes,,, Turn on pixel masking by Data Quality bits ?
+nicdqpar,pset,h,"",,, Data Quality bits (pset)
+logfile,s,h,"",,, Processing log file name
+verbose,b,h,yes,,, Verbose output?
+Version,s,h,"30Sep2005",,, Date of installation
+mode,s,h,al

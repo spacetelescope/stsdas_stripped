@@ -1,0 +1,58 @@
+.help apomask V1.0 Mar00
+.ih
+NAME
+apomask -- Create an apodizing mask image with zero background and a circular central mask with rounded off edge
+.ih
+USAGE
+apomask output xdim ydim radius sigma k xpos ypos
+.ih
+PARAMETERS
+.ls output = "" [image]
+The name for the output mask image to be created.
+.le
+.ls xdim = 512 [integer]
+The X dimension of the input image.
+.le
+.ls ydim = 512 [integer]
+The Y dimension of the input image.
+.le
+.ls radius = 12.0 [real]
+The radius of the central disk of the output image which is to be set to
+one.
+.le
+.ls sigma = 2.0 [real]
+The sigma of the roll-off region around the central disk. 
+.le
+.ls k = 0.5  [real]
+Linear size of output pixels in terms of input pixels. A scale of
+0.5 means a magnification of two from input to output.
+.le
+.ls xpos = 256 [real]
+The position of the centre of the central disk in the image (x).
+.le
+.ls ypos = 256 [real]
+The position of the centre of the central disk in the image (y).
+.ih
+DESCRIPTION
+This task is for creating images to be used as apodizing masks, typically
+PSFs are multiplied by such images to clean up the outer areas but there
+are other uses too. The output image is zero except for a central circular
+area which is set to 1.0 and a "roll-off" region around this central area
+where the value drops smoothly to zero. The roll-off is a gaussian
+determined by the sigma parameter. The parameter "k" controls the
+limb-darkening of the central disk. A value of 0.5 represents a uniform
+disk. 
+
+.ih
+EXAMPLES
+.nf
+
+
+.fi
+.ih
+TIMINGS
+It is, as one would expect, very quick!
+.ih
+SEE ALSO
+drizzle, blot, tranback
+.endhelp

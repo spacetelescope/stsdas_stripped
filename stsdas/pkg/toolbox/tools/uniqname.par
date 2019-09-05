@@ -1,0 +1,4 @@
+extension,s,a,"",,,"File extension"
+instr,s,a,"","fgs|hsp|wfpc|wfp2|foc|fos|hrs|multi",,"HST instrument name"
+value,s,h,"",,,"File name"
+mode,s,h,"al",,,

@@ -1,0 +1,12 @@
+# Update the fconvolve application code in the fourier package library
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	fconvolve.x      	<imhdr.h> ../fourier.h ../fterr.h 
+	ftsmallv.x		<imhdr.h> ../fourier.h
+	ftvxcopy.x		<imhdr.h> ../fourier.h
+	;

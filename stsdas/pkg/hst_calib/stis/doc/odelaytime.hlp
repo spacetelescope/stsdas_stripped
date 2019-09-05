@@ -1,0 +1,190 @@
+.help odelaytime Jun2003 stsdas.hst_calib.stis
+.nj
+.ih
+NAME
+odelaytime -- Correct for light delay time for STIS time-tag data.
+.ih
+USAGE
+odelaytime input earth_ephem obs_ephem distance dist_unit
+.ih
+DESCRIPTION
+The Space Telescope Imaging Spectrograph (STIS) aboard the Space Telescope
+is capable of timing observations to a temporal resolution of 125 microseconds.
+The effects on the observed times of both the orbital motions of the Earth
+and the telescope may need to be corrected to the
+solar-system barycenter.
+This task modifies a STIS file in-place
+to correct for light delay from three sources:  (1) general relativistic
+effects (up to 2 milliseconds),
+(2) displacement of the telescope from the center of the Earth
+(up to 20 milliseconds),
+(3) and displacement of the Earth from the solar-system barycenter
+(up to 500 seconds).
+
+Most of the description below refers to time-tag events tables.
+This task may also be applied to files of 1-D extracted spectra
+or files containing image sets,
+in which case only the headers will be modified.
+
+Running this task results in changes to header keywords
+and to the TIME column (parameter 'in_col').
+The light delay time correction
+at the beginning (end) of the exposure
+will be added to the keywords
+TEXPSTRT (TEXPEND) in the primary header,
+and to EXPSTART (EXPEND) in each EVENTS table header.
+A correction relative to the exposure start time
+will be added to the TIME column in every EVENTS table.
+Note that these changes are in-place and are not reversible.
+
+In files created by Generic Conversion,
+the TIME column is actually a 32-bit integer
+with scaling parameters TSCAL1 and TZERO1,
+so it will be interpreted as double precision by the table I/O software.
+However, the accuracy is limited
+by the TSCAL1 increment, which is 0.000125 second.
+
+The START and STOP columns in the GTI table extension
+will be modified in the same way as the values in the TIME column.
+
+A header keyword DELAYCOR with a value "COMPLETE"
+will be written to the primary header.
+Two HISTORY records will be added,
+one to say that the times have been corrected,
+and the other to give the name of the 'obs_ephem' (ORB) table.
+If 'odelaytime' is called on a file that already has
+DELAYCOR = "COMPLETE",
+a message will be printed,
+and no further correction will be applied.
+
+The STIS-specific aspects of this task are
+the header keywords and the fact that
+the values in the TIME column are relative to
+the exposure start time.
+
+This task relies on NEXTEND in the primary header
+for the total number of extensions in the file.
+The input files are assumed to be FITS format.
+.ih
+PARAMETERS
+.ls input = "" [file name template]
+A list of one or more FITS-format STIS time-tag files,
+or files containing 1-D extracted spectra or image sets.
+These files will be modified in-place.
+
+The keywords TEXPSTRT, TEXPEND and DELAYCOR in the primary header
+will be updated, and a HISTORY record will be added.
+The EXPSTART and EXPEND keywords in each EVENTS extension
+(or each image extension) will also be updated.
+For image extensions (as opposed to EVENTS tables),
+only the SCI extensions normally have the EXPSTART and EXPEND keywords.
+They can be present in ERR or DQ extensions as well, however,
+and in that case these headers will also be updated.
+
+For a file with 1-D extracted spectra or image sets,
+only the headers will be modified.
+For time-tag events tables, however,
+the times in the 'in_col' column will also be modified.
+.le
+.ls earth_ephem = "stsdas$data/fits/de200.fits" [string]
+Name of the table containing Earth's state vectors
+(centered at the solar system barycenter).
+This table must have the following columns:
+
+.nf
+"JD"    Julian Day Number corresponding to X,Y,Z (double).
+"X"     X component of the state vector (double).
+"Y"     Y component of the state vector (double).
+"Z"     Z component of the state vector (double).
+.fi
+
+The time of each state vector in the table
+will be converted to MJD by subtracting 2400000.5.
+The times need not be uniformly spaced,
+but they must be strictly increasing.
+.le
+.ls obs_ephem = "" [string]
+One or more tables containing the observer's state vectors
+(centered at Earth's center).
+Each such table must have the following columns:
+
+.nf
+"TIME"  time for X,Y,Z, relative to FIRSTMJD (double).
+"X"     X component of the state vector (double).
+"Y"     Y component of the state vector (double).
+"Z"     Z component of the state vector (double).
+
+and the following table header keyword:
+
+"FIRSTMJD"      Epoch of the first row in the table, in
+                modified Julian date (double).
+.fi
+
+The time of each state vector in the table
+is an offset relative to the FIRSTMJD table header keyword.
+The unit for the TIME column must be specified;
+recognized units are DAY, HOUR or HR, MIN*, S*.
+The times will be converted to MJD by converting to days
+and adding the value of FIRSTMJD.
+The times need not be uniformly spaced,
+but they must be strictly increasing.
+
+For HST observations,
+this can be obtained from the 2 or 3 day HST ephemeris (ORB) files.
+More than one ORB file will be required
+if an observation crosses the boundary
+between the end of one ORB file and the beginning of the next.
+When specifying more than one 'input' file,
+a list of ORB files may be specified for 'obs_ephem'
+in order to cover the range of times in all the input files.
+.le
+.ls distance = 0. [real]
+Distance (or parallax) of the target from the solar system barycenter.
+This is in the unit specified in the 'dist_unit' parameter.
+.le
+.ls dist_unit = "arcsec" [string, allowed values = arcsec|pc|ly|au|km]
+Unit of distance (or parallax).
+Parallax should be specified in arcseconds ("arcsec"),
+while distance can be specified in parsecs ("pc"),
+light years ("ly"), astronomical units ("au"), or kilometers ("km").
+CAUTION: this task will not calculate correct results for
+objects in the solar system.
+.le
+.ls (in_col = "TIME") [string]
+The name of the time column in the EVENTS tables.
+These values are in seconds
+relative to the TEXPSTRT primary header keyword.
+If the input is a time-tag file of EVENTS tables,
+the values in this column will be modified in-place.
+If the input contains 1-D extracted spectra or image sets,
+'in_col' is not relevant.
+.le
+.ls (verbose = yes) [bool]
+Print table names and execution time info?
+.le
+.ih
+EXAMPLES
+1. Apply light time corrections to the barycenter of the
+solar system, in the file "o12345jct_tag.fits".
+Use the Earth ephemeris "de200.fits" and the HST ephemeris "hst.tab".
+Assume that the target has zero parallax.
+.nf
+
+    cl> odelaytime o12345jct_tag.fits de200.fits hst.tab 0 arcsec
+.fi
+
+2. Process all time-tag files in the default directory,
+using the default Earth ephemeris table,
+the HST ephemeris "hst.tab", and zero parallax.
+.nf
+
+    cl> odelaytime *_tag.fits stsdas$data/fits/de200.fits hst.tab 0 arcsec
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+SEE ALSO
+delaytime, hstephem
+.endhelp

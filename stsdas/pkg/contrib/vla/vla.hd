@@ -1,0 +1,11 @@
+
+# Help directory for the STSDAS.CONTRIB.VLA package
+
+$doc     = "stsdas$pkg/contrib/doc/"
+$contrib = "stsdas$pkg/contrib/"
+$vla     = "stsdas$pkg/contrib/vla/"
+
+intensity	hlp=doc$intensity.hlp,		src=vla$intensity.cl
+smooth		hlp=doc$smooth.hlp,		src=vla$smooth.cl
+velocity	hlp=doc$velocity.hlp,		src=vla$velocity.cl
+

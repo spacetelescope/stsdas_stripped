@@ -1,0 +1,70 @@
+.help mssort Jul97 stsdas.toolbox.imgtools.mstools
+.ih
+NAME
+mssort -- Sort a FITS file to get all extensions of like version number
+		together.
+.ih
+WARNING:
+This task can ONLY be used with a FITS image; (ie. no tables) they will cause
+this task to crash!
+
+.ih
+USAGE
+mssort filename filename
+.ih
+DESCRIPTION
+The 'mssort' task is for sorting individual FITS files. 
+It is good for cleaning up any modified FITS files that no longer have extension
+version numbers in order.  It is completely interactive and simple to use.  It
+requires only an input and output and runs from there with no further 
+interaction.  While this task may make 'catfits' output appear more pleasing
+it does nothing to the functionality of the FITS kernel format.
+(ie. INPUT.fits[sci,3] would still be the same data as OUTPUT.fits[sci,3]),
+regardless of any changes in the FITS extension number.
+
+.ih
+PARAMETERS
+.ls INPUT [string]
+A string listing the input FITS file which you want to sort.
+.le
+.ls OUTPUT [string]
+This is a string listing the filename you want for your output sorted FITS file.
+This file can be the same name as the input; but again you would lose all record
+of your input data in that case.
+.le
+.ih
+EXAMPLES
+1. The 'mssort' task is easy to use, and basically requires the input data
+(a FITS file) and an output filename.
+
+ms> mssort IN=data.fits OUT=sort.fits
+
+.nf
+2. The task is designed to prompt you for all the information that it needs
+so you can simply type
+
+ms> mssort data.fits
+
+ or
+
+ft> mssort
+
+And answer the following prompts.  
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+This script was written by E. W. Wyckoff, SSG.  
+.le
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.le
+.ih
+
+SEE ALSO
+
+.endhelp

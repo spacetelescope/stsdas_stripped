@@ -1,0 +1,11 @@
+$checkout ctools.a ../
+$update ctools.a
+$checkin ctools.a ../
+$exit
+
+ctools.a:
+        t_rdsaa.x       "rdsaa_params.com"
+        saaden.x        <tbset.h> "rdsaa.h"
+        saaned.x        <ctype.h> "adb.h" "rdsaa.h"
+        saarda.x        "rdsaa.h" "rdsaa_params.com"
+        saavex.x        "rdsaa.h"

@@ -1,0 +1,46 @@
+.help sum
+.nf ----------------------------------------------------------------------------
+                COMBINING IMAGES: SUMMING ALGORITHM
+
+The input images are summed.  The exposure time of the output image is the
+sum of the input exposure times.  There is no checking for overflow.
+.endhelp -----------------------------------------------------------------------
+
+#$for (silrdx)
+$for (silrd)
+
+#################################################################################
+# SUM --	Compute the sum of the input images for each image line.  	#
+#		This procedure is based upon the `images.imcombine' package.  	#
+#										#
+#		Development version:	11/90	RAShaw				#
+
+procedure sum$t (data, sum, nimages, npts)
+
+# Calling arguments:
+pointer		data[nimages]		# Data pointers
+$if (datatype == sil)
+real		sum[npts]		# Summed line (returned)
+$else
+PIXEL		sum[npts]		# Summed line (returned)
+$endif
+int		nimages			# Number of images to sum
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Loop indexes
+
+begin
+	$if (datatype == sil)
+	call aclrr (sum, npts)
+	$else
+	call aclr$t (sum, npts)
+	$endif
+
+	do j = 1, npts {
+	    do i = 1, nimages {
+	        sum[j] = sum[j] + Mem$t[data[i]+j-1]
+	    }
+	}
+end
+$endfor

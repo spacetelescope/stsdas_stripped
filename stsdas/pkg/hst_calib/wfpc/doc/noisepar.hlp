@@ -1,0 +1,46 @@
+.help noisepar Jul93 stsdas.hst_calib.wfpc
+.ih
+NAME
+noisepar -- Edit the noise model parameter set.
+.ih
+USAGE
+noisepar
+.ih
+DESCRIPTION
+The `noisepar' parameters specify the coefficients of the noise model 
+used to estimate the `sigma', or statisical uncertainty, of the input 
+image pixels that are averaged using various `wfpc' tasks.  The total 
+sigma is the square-root of the quadratic sum of the DN value (scaled 
+by the detector `gain'), the CCD readout noise, and a term that 
+scales as a percentage of DN.  
+
+Note that this is a parameter set (pset), not an executable task; it defines a set 
+of parameters used by other tasks.  Invoking the pset by name runs 
+`eparam' on the parameter set, allowing the user to modify the 
+parameters.  Alternatively, the parameters may be modified on the 
+command line by specifying the pset name and parameter name.  For 
+example, the user can type "noisepar.readnoise=2.0" to set the 
+estimate of the readout noise to 2.0 DNs.  Parameters can also be 
+edited by using `eparam' on the calling task (e.g., by typing "eparam 
+combine"), in which case, `noisepar' will appear as one of the task 
+parameters; the `noisepar' parameters may then be edited by 
+positioning the cursor on the line containing the pset name and 
+typing ":e".  After editing the pset parameters, type <Cntrl>-Z to 
+return to the main task parameter menu.  
+.ih
+PARAMETERS
+.ls (readnoise = 1.73) [real, min=0.]
+Estimated readout noise (in DNs) of the input images.  Note that the 
+default value of 1.73 corresponds to 13 electrons if the inverse gain 
+is 7.5 e-/DN.  
+.le
+.ls (gain = 7.5) [real, min=1.e-6]
+Detector gain in electrons/DN.
+.le
+.ls (scalenoise = 0.0) [real]
+Multiplicative term in noise model, expressed as a percentage of a 
+DN.  That is, a value of 1.0 means a scalenoise of 1 percent.  
+.ih
+SEE ALSO
+combine, noisemodel
+.endhelp

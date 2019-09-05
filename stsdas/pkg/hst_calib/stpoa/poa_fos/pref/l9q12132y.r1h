@@ -1,0 +1,30 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                 2064 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    0 /                                                
+PSIZE   =                    0 /                                                
+DATE    = '06/09/01'           /                                                
+INSTRUME= 'FOS     '           /                                                
+FILETYPE= 'FLAT FIELD'         /                                                
+HEADNAME= 'l9q12132y.hhh'      /                                                
+DATANAME= 'l9q12132y.hhd'      /                                                
+FCHNL   =                    0 /                                                
+NCHNLS  =                  512 /                                                
+NXSTEPS =                    4 /                                                
+OVERSCAN=                    5 /                                                
+APER_ID = 'B-3     '           /                                                
+POLAR_ID= 'C                 ' /                                                
+FGWA_ID = 'H13               ' /                                                
+DETECTOR= 'BLUE              ' /                                                
+PEDIGREE= ' INFLIGHT 15/11/1994' /                                              
+DESCRIP = ' Superflux-derived FOS closeout flatfield'/                          
+USEAFTER= ' November 15, 1994' /                                                
+PASS_DIR=                    0 /                                                
+APER_POS= 'SINGLE  '           /                                                
+HISTORY  FOS_FLAT  6-Sep-2001 11:50:40.00 infile=y2k00107t.c5h                  
+HISTORY   i1k1219ey.r1h renamed to l9q12132y.r1h on Wed 12:13:04 26-Sep-2001    
+END                                                                             

@@ -1,0 +1,20 @@
+instring, s, a, "", , ,		"Input time string"
+qualifier, s, h, " ", "", , 	"Input format qualifier"
+dmy_style, s, h, "mdy", "|mdy|dmy|ymd|", , 	"Day-Month-Year style"
+add1900, b, h, yes, , ,		"Add 1900 if input year < 100 ?"
+timezone, s, h, "gmt", , , 	"Your local time zone"
+calendar, s, h, "ns", "|ns|os|", ,		"Calendar style"
+printout, s, h, "", , ,		"Output formats selections"
+
+mjd, r, h, , , ,		"Output MJD"
+jd, r, h, , , ,			"Output Julian date"
+date, s, h, , , ,		"Output Gregorian calendar date"
+date_os, s, h, , , ,		"Output Julian calendar date"
+dmf, r, h, , , ,		"Output seconds from 1980 Jan 1 0h"
+sms, s, h, , , ,		"Output SMS time format"
+eng, s, h, , , ,		"Output engineering time format"
+year, i, h, , , ,		"Output year"
+month, i, h, , , ,		"Output numeric month"
+day_of_month, r, h, , , ,	"Output day of the month"
+
+mode, s, h, al

@@ -1,0 +1,5 @@
+intable,s,a,"",,,"input tables"
+outtable,s,a,"",,,"output tables or directory"
+direction,s,a,"vs","default|vs|sv",,"type of conversion"
+verbose,b,h,yes,,,"print operations performed?"
+mode,s,h,"q",,,

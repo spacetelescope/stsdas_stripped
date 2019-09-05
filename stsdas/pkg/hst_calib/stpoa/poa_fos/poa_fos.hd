@@ -1,0 +1,20 @@
+# Help directory for the POA_FOS package
+
+$doc	 	      = "stpoa$poa_fos/doc/"
+$poa_calfos  	      = "stpoa$poa_fos/poa_calfos/"
+$pfos_pix2wav  	      = "stpoa$poa_fos/"
+$pfos_dispfit  	      = "stpoa$poa_fos/"
+$poa_preproc_fos      = "stpoa$poa_fos/poa_preproc_fos/"
+$poa_procfos_all      = "stpoa$poa_fos/poa_procfos_all/"
+
+
+poa_calfos	      hlp=doc$poa_calfos.hlp,	
+                      src=poa_calfos$yclfos.f
+pfos_pix2wav	      hlp=doc$pfos_pix2wav.hlp,	
+                      src=pfos_pix2wav$pfos_pix2wav.cl
+pfos_dispfit	      hlp=doc$pfos_dispfit.hlp,	
+                      src=pfos_pix2wav$pfos_dispfit.cl
+poa_preproc_fos	      hlp=doc$poa_preproc_fos.hlp, 
+                      src=poa_preproc_fos$poa_preproc_fos.cl
+processfos 	      hlp=doc$processfos.hlp, 
+                      src=poa_procfos_all$processfos.cl

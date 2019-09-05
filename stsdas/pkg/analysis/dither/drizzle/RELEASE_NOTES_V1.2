@@ -1,0 +1,38 @@
+Release Notes for Drizzle V1.2 & Blot V0.6
+
+Richard Hook & Andy Fruchter, 2nd March 1998
+
+V1.2 is in a minor upgrade of Drizzle released to coincide with
+the release of Drizzle and Blot within the STSDAS "dither" package.
+This file lists the minor changes which have been introduced. 
+The additional task Blot (V0.6) is also released in compatible form
+to work with Drizzle V1.2.
+
+Parameter changes:
+
+Drizzle V1.2 has a new additional parameter and one of the Drizzle
+V1.1 parameters has been withdrawn. As a result users must "unlearn 
+drizzle" before using the new version. Blot has a single new
+parameter. The parameters changes are as follows:
+
+"in_un" is a new option to allow the units of the input data images
+to be "counts-per-second" (cps) rather than counts. This is mainly to
+allow processing of NICMOS images which are supplied in these units.
+This parameter is in both Drizzle and Blot.
+
+The "exp_sc" parameter in Drizzle V1.1 has been removed. Images are now
+always scaled by exposure time (except when the input is already in CPS)
+before combination. This means that the exposure time now must be present
+in the header.
+
+Other Changes:
+
+o A cubic distortion coefficients set for the STIS CCD has been supplied.
+ 
+o Some modules have been separated from the main "drizzle.f" module
+  into the file "drutil.f".
+
+o The WCS is now properly updated independent of the functional form
+  of the geometric transform (previous versions worked correctly
+  on the WFPC2 distortion, but did not include a general solution for
+  the WCS transform.)

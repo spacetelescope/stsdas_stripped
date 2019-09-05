@@ -1,0 +1,75 @@
+.help deaccum Jun97 stsdas.hst_calib.fos
+.ih 
+NAME
+deaccum -- Unstack ACCUM mode FOS images.
+.ih
+USAGE
+deaccum input output
+.ih
+DESCRIPTION
+The 'deaccum' task "unstacks" the accumulated data contained in each group
+of an FOS ACCUM-mode multigroup image. For an ACCUM-mode image the data
+contained in image group "n" represents the accumulation of all data from
+groups 1 through n. This task recursively subtracts the data in group "n-1" from
+that in group "n", so that what remains is the data that was accumulated
+during the exposure time for group "n" only.
+
+For raw (e.g. 'd0h') data files the data in group "n" is the total of all
+counts received for groups 1 through "n" and therefore the "deaccum" process
+simply subtracts the data in group "n-1" from that in group "n". For
+calibrated data files, i.e. any data files where the data have been
+divided by the exposure time (e.g. 'c4h' data in counts per second or 'c1h' data
+in ergs per second), the flux data contained in group "n" is the average
+of groups 1 through "n". Therefore these files are "deaccum'ed" by first scaling
+the data in each group by the total exposure time for that group, subtracting 
+the scaled data in group "n-1" from group "n", and finally dividing the data in 
+each group by the individual group exposure times.
+
+This task will only work for data files that contain "flux" data, i.e. only
+data files that contain pixel values representing source intensity or fluxes.
+It will also work with statistical error ('c2h') files and correctly
+"deaccum's" these data in quadrature.
+This task will NOT work for data files that contain wavelengths ('c0h') or data
+quality values ('q0h' or 'cqh' files).
+
+The group parameter "EXPOSURE" is updated in the output image headers
+to reflect the change in exposure time associated with each data group.
+.ih 
+PARAMETERS
+.ls input [file name template]
+Input image name or list.
+.le
+.ls output [file name template]
+Output image name or list.
+The number of input and output images must the same.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Unstack the calibrated flux data in the image 'y0xi0203t.c1h', writing the 
+results to the new image 'y0xi0203u.c1h'. 
+
+.nf
+	fo> deaccum y0xi0203t.c1h y0xi0203u.c1h
+.fi
+
+2. Unstack the flux data in image 'y15i0206t.c1h' and the error data in image
+'y15i0206t.c2h' into the new images 'y15i0206x.c1h' and 'y15i0206x.c2h'.
+
+.nf
+	fo> deaccum y15i0206t.c1h,y15i0206t.c2h y15i0206x.c1h,y15i0206x.c2h
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+.endhelp 

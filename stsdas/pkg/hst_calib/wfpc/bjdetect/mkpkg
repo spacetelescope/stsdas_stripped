@@ -1,0 +1,12 @@
+# Update the bjdetect application code in the wfpc package library
+# Author: HSU, 25-Jul-1996
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_bjdetect.x	<imhdr.h>
+	bjdet_do.x
+	;

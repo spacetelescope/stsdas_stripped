@@ -1,0 +1,245 @@
+	****  WF/PC--2 Stage I Pipeline for STSDAS and PODPS/RSDP  ****
+										
+Dick Shaw, STSDAS Project Scientist, STScI, July 1992
+
+Revision history:
+	V 1.2.1.0 / 24 Jul 92	RAShaw: Initial implementation
+	V 1.2.1.0 /  6 Aug 92	JCHsu: initial execution-time debugging
+	V 1.2.1.1 / 13 Jul 93	JCHsu: change WFII to WFPC2
+	V 1.3.0.0 / 10 Sep 93	CYZhang: Major changes such as:
+		Add AtoD correction (OPR25362); Add shutter shading 
+		correction (OPR25110); Generate histograms (OPR25364); 
+		Calculate throughput table and the four photometric quantities
+		from GRAPHTAB and COMPTAB (OPR 24645); Compute statistics 
+		for various sections (OPR25162); Fix up a few bugs including 
+		the mistakenly populated DATAMIN and DATAMAX in the headers
+		of the DQF file and the histogram file (.c1h and .c2h files)
+		(OPR 25256).
+	V 1.3.0.1 / 29 Oct 93	CYZhang: Execution-time debugging;
+		Add more error checkings on the reference images;
+		Separate image statistics from the major calibration; 
+		Update the .DGR file; Add LRFWAVE to LRF FILTNAMs.
+
+	14 Dec 93 by CYZhang	Version 1.3.0.1.1:
+	 Fix "file attributes" problem of dgr files on VMS (OPR 25902);
+	 Fix wrong FILETYPE of C1H file (OPR 25908);			
+	 Fix memory corruption problem in u_sec_stat (OPR 25909)	
+
+	 8 Feb 94 by CYZhang	Version 1.3.0.2:
+	 Fine-tuning the code to improve the performance (OPR 26007);
+	 Add function ABS to expression of mismatching of ATODGAIN (OPR 26120);
+	 Put history records for thruput files used in photometry (OPR 26121);
+	 Fix the problem of missing the second line of error messages on VMS
+	 machines (OPR 26124); 
+
+	18 Feb 94 by CYZhang	Version 1.3.0.3:
+	Remove the keyword, "DN", from the PHOTMODE string (OPR 26208);
+	Open c3t file with u_outtab (OPR 26234)	
+
+	22 Feb 94 by CYZhang	Version 1.3.0.4:
+	The global bias level is dedefined by section [9:14,11:790] of
+	the EED file (OPR 26230)
+
+	 1 Mar 94 by CYZhang	Version 1.3.0.5:
+	Trim down the memory used by u_sec_stat	
+
+
+CALWP2 -- Processes a WFPC--2 image in the RSDP pipeline.
+
+This program performs the AtoD correction, Bias Level determination and 
+subtraction, Bias Image subtraction, and Dark image subtractions, flat field 
+correction, and shutter shading correction. The input data quality file (DQF)
+is updated with the DQFs of each reference file together with a static mask 
+DQF.  
+
+This procedure requires the root names of the input and output datasets.  A 
+path name may be included but extensions are not allowed.  If the output name 
+is null, it defaults to the input name.  The extensions ".d0h" and ".q0h" are 
+assumed for the input image and its DQF.  The program flow is controlled 
+through keywords in the header file of the input science image (*.d0h file).  
+Reference file names are also provided in keywords. When running in the 
+PODPS environment, it requires an input ASCII text file of group parameters 
+of the input image having the same root name as the input image with extension
+".dgr". The output files names are derived from the output root name 
+as follows:
+
+	root.c0h    -- output image
+	root.c1h    -- output DQF
+	root.c2h    -- output histogram
+	root.c3t    -- throuput table
+	root.cgr    -- output text file of group params for DMF/DADS
+	root.dgr    -- updated input text file of group params for DMF/DADS
+
+The control keywords are: 
+	MASKCORR, ATODCORR, BLEVCORR, BIASCORR, DARKCORR, 
+	FLATCORR, SHADCORR, DOPHOTOM, DOHISTOS, OUTDTYPE
+
+The reference file names are specified in the keywords:
+	MASKFILE, ATODFILE, BLEVFILE, BLEVDFIL, BIASFILE, BIASDFIL,
+	DARKFILE, DARKDFIL, FLATFILE, FALTDFIL, SHADFILE, GRAPHTAB,
+	COMPTAB
+
+The following STSDAS source modules are required:
+
+	  FILE		CONTAINS
+	___________	_________________________
+	x_calwp2.x	"task" statement
+	t_calwp2.x	t_calwp2
+	u_init.x	u_setup, u_get_act, u_get_ref, u_validate
+	u_proc.x	u_calc, u_dochip, u_hist, u_getatod, u_atod, 
+			u_find_sat (obsolete), u_clip, u_sat, u_blev, 
+			u_stat, u_kwstat
+	u_phot.x	u_photmode, u_photmatch (not used), u_photocalc
+	u_grpkw.x	u_wrt_grp1, u_wrt_grp2, u_wrt_grp3
+	u_util.x	u_addgrp, u_updtkw1, u_updtkw2, u_strpwht
+	u_fio.x		u_input, u_in_gskip, u_output, u_out_gskip, u_grpfile, 
+			u_dgrfile, u_tmpfile, u_reffile, u_ref_gskip, 
+			u_reftab (not used), u_outtab, u_finishup, u_imunmap, 
+			u_tbunmap, u_close
+	u_err.x		u_kwerr, u_message, u_error, u_warn
+	u_sec_stat.x	u_sec_stat, u_getsect, u_smean, u_ghist, u_gmedian,
+			u_modskw, u_get2sect, u_shad_med, u_imgtsec, u_dqftsec
+	u_updtdgr.x	u_updt_dgr, u_getdgr
+	u_context.h	Common block containing ROOTname of image
+	u_incl.h	Macros and data structures
+	u_data.h	DQF condition values and various constants
+
+The latter two are "include" files that are referenced in the source code.  
+Note that all compile-time constants, macros, and structure variables are
+expressed in upper case in the procedures.  To compile and link this routine 
+for IRAF/STSDAS, get into the CL and load the stsdas package.  Then:
+
+	cl> cd hst_calib$wfpc/calwp2
+	cl> mkpkg
+
+and if all goes well, do:
+
+	cl> mkpkg install
+
+Program design overview, including calling arguments:
+
+    t_calwp2 ()				-- get input file rootname, log 
+					   start/finish, alloc structures
+	u_setup (ACT,CAM,NAM,PTR)	-- init constants, open input image
+	    u_get_act (ACT,NAM,imp)	-- get action keywords and reference 
+					   file names
+	    u_validate (ACT,CAM,imp)	-- get other needed data and validate
+					   input image for legal format
+
+	*u_calc (ACT,CAM,KW,NAM,PTR,STAT) - process image (loop for each group)
+	    u_input (grp,fnam)		-- open input files
+	    *u_reffile (CAM,fnam,flag)	-- open reference image file
+	    u_output (grp,fnam,tmpl)	-- open output image files
+	    u_in_gskip (grp,imp)	-- skip to next group of input file
+	    u_out_gskip (grp,imp,tmpl)	-- skip to next group of output file
+	    u_ref_gskip (CAM,imp)	-- skip to next group of open ref file
+
+	    *u_dochip (ACT,CAM,KW,PTR,STAT)   -- do processing on one chip
+		*u_getatod (PTR,CAM,atod)     -- get AtoD
+		*u_blev (CAM,ACT,KW,PTR,atod) -- get bias level from eedfile
+		*u_clip (row,dqf,jpts)        -- reset out-of-range pixels
+		*u_hist (CAM,row,dqf,hist1)   -- histogram of the raw image
+		*u_sat (row,dqf,satrow,jpts)  -- find saturated values
+		*u_atod (CAM,row,rrow,atod)   -- do AtoD correction
+		*u_hist (CAM,rrow,dqf,hist2) -- histogram after AtoD correction
+		*u_hist (CAM,rrow,dqf,hist3)  -- histogram after calibrations
+	    u_photmode (CAM,KW)	-- create photmode string
+	    *u_photcalc(KW,grpnum,tp,graphtab,comptab) -- calculate throughput
+		table from PHOMODE string, and photometry keywords
+	    u_stat (KW,row,dqf,npts)-- accumulate statistics 
+	    *u_updtkw1(outimg,ACT,KW,c0f) -- update header of
+		output calibrated image
+	    *u_updtkw1(outdqf,ACT,KW,c0f) -- update header of
+		output DQF for calibrated image
+	    *u_updtkw1(histimg,ACT,KW,c0f) -- update header of
+		output histogram file
+	    u_finishup (PTR)		-- close any open files
+	    *u_kwstat (NAM,PTR,CAM,ACT,KW,STAT) -- Do statistics & update 
+						statistics header keywords
+		immap (outimg, READ_WRITE, 0) -- Open the calibrated image
+		immap (outdqf, READ_WRITE, 0) -- Open the DQF
+		immap (histimg, READ_WRITE,0) -- Open histogram image
+		u_grpfile (cgr,CGRfnam)	-- open output group param text file
+		*u_sec_stat (imp,dqf,STAT,detnum,full) -- section statistics
+		    *u_getsect (imgarr, dqfarr, npts, nrows, 
+			sec_x1,sec_x2, npix, work, imgs, dqfs) --
+		        get section and allocate memory for work array
+		    *u_smean (imgs,dqfs,npix,work,gpix,STAT) -- compute mean
+		    	for good pixels and put good pixels into work array
+		    *u_ghist (work,gpix,STAT) -- mske histogram of good pixels
+		    *u_gmedian (STAT)	-- compute median, DN and bin number at
+		        10% points of histogram, and histogram width
+		    *u_modskw (STAT) --compute SKEWNESS and BACKGRND
+		    *u_get2sect (imgarr, npts, nrows, x1, x2,
+			y1, y2, npix, work) -- get the pyramid
+		        shadow area and allocate memory for work array
+		    *u_shad_med (work,npix,STAT) -- calculate MEDSHADO
+		    *u_imgtsec (imgarr, npts, nrows, x1, x2, y1, y2) --
+			Get a section from the image array
+		    *u_dqftsec (dqfarr, npts, nrows, x1, x2, y1, y2) --
+			Get a section from the DQF array
+		*u_updtkw2(outimg,KW,STAT,c0f) -- update statistics header
+		    keywords of output calibrated image
+		*u_updtkw2(outdqf,KW,STAT,c0f) -- update statistics header 
+		    keywords of output DQF for calibrated image
+		*u_updtkw2(histimg,KW,STAT,c0f) -- update statistics header 
+		    keywords of output histogram file
+		*u_wrt_grp1 (outim,grpnum,cgr) -- write group params to .CGR 
+		*u_wrt_grp2 (outim,grpnum,cgr) -- write group params to .CGR 
+		*u_wrt_grp3 (outim,grpnum,cgr) -- write IMAGE SECTION 
+		    STATISTICS group params to .CGR textfile
+		u_imunmap (outimg) -- Close the iamge after updating header
+		u_imunmap (outdqf) -- Close the DQF after updating header
+		u_imunmap (histimg)-- Close the histogram after header updating
+		u_close (cgr)      -- Close the newly created .CGR file
+	    *u_updt_dgr (NAM, PTR, CAM) -- Updating .DGR file
+		*cgr = u_cgrfile (CGRfname)-- open .CGR ASCII file as READ_ONLY
+		*dgr = u_dgrfile (DGRfname)--open .DGR ASCII file as READ_WRITE
+		call fmkcopy (DGRname, TMPname) -- make temp file
+		*tmp = u_dgrfile (TMPname)-- open TMP file as READ_WRITE
+		*u_getdgr (dgr, cgr, tmp, grpnum) -- Update DGR file in TMP
+		u_close (cgr)           -- Close .CGR file
+		u_close (dgr)           -- Close .DGR file
+		u_close (tmp)           -- Close TMP file
+		rename (TMPfnam, DGRfname) -- system call to rename TMP file 
+		    to .DGR file, which is now finally updated
+
+Utility Routines:
+	u_addgrp (root,name,grp)	-- add group suffix to file name
+	u_close	(fd)			-- close a text file
+	u_imunmap (im)			-- unmap an image
+	u_strpwht (pstr)		-- strip trailing whitespace from string
+	u_tbunmap (tp)			-- unmap a table
+	*u_updtkw1 (im,ACT,KW,c0f)	-- update action and non-stat keywords
+	*u_updtkw2 (im,ACT,STAT,c0f)	-- update statistics keywords
+	u_error (str)			-- assert and report error condition
+	u_kwerr (kwrd)			-- report a keyword related error
+	u_message (str)			-- report message in uniform format
+	u_warn (str)			-- report non-fatal error condition
+
+* indicates newly added or largely modified procedures -- CYZ 10 Oct 93
+
+This SPP code passes variables to various subroutines in part with pointers to 
+structure variables.  These variables are defined in the "u_incl.h" file and 
+are organized by category:
+
+	Structure	Description
+	_________	________________________________________________________
+	ACT		Values of header keywords defining which calibration 
+			steps (or ACTIONs) to perform.  
+
+	CAM		Camera- or image-specific constants, such as size of 
+			input image, exposure time, filter names, etc.  
+
+	KW		Values of header group parameters that are updated 
+			during the course of calibration. 
+
+	NAM		Names of the input/output files and reference files.  
+
+	PTR		Pointers to the image descriptors for the files in the 
+			NAM structure.  
+
+	*STAT		Values of various section statistics keywords and
+			minimum and maximum values of DQF and histogram files
+
+* indicates newly added data structure -- CYZ 10 Sep 93

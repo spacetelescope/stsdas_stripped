@@ -1,0 +1,65 @@
+.help ecdel May97 stsdas
+.ih
+NAME
+ecdel -- Delete an entire class of FITS extensions from a FITS file.
+.ih
+USAGE
+ecdel input, output, extclass, [Y/N]
+.ih
+DESCRIPTION
+The 'ecdel' task is a simple way to remove an entire FITS 'class'
+(SCI,ERR,DQ,etc.) from a file with one interactive command.
+h
+PARAMETERS
+.ls INPUT [string]
+A string listing the FITS file from which you would like to remove an entire
+'class' type from ALL of the imsets in the file.
+
+.ls OUTPUT [string]
+This is a required parameter which may be the same name as the input file,
+but should not be. In fact, if the same name is chosen the input file is
+overwritten.
+
+.ls EXTNAM [string]
+The name of the 'class' type you would like to remove.  You must match
+one of the names that are listed as those present in it's entirety.
+This match is case sensitive.
+
+.ls DOIT [boolean]
+This parameter requires a yes or no answer only; as to whether you want to 
+remove the extensions that you asked.
+
+.le
+.ih
+EXAMPLES
+The ecdel task is easy to use in a harmless way, to your input data.  All
+that is required is an input FITS file and the knowledge of what you want 
+to do with it.
+
+ft> ecdel IN=nicmosdata.fits OUT=data.noSAMP.fits EXTNAM=SAMP
+
+A command like this will run, asking only for a y/n and showing you how your
+output file is built, without the extension name SAMP.
+
+The task can be run on the command line with all the required input for
+the parameters or it will prompt you for everything that it needs.
+
+ft> ecdel
+
+And answer the following prompts.  A helpful listing of existing extensions is
+provided to make answering the EXTNAM prompt much easier.
+
+.fi
+
+WARNING
+You are able to request the same output name as your input name
+and the task will comply with your request.  The danger is
+that your input file WILL be OVERWRITTEN!  You will lose 
+forever the contents of that input file as it is replaced
+with the output.  You may want to do this but you should just 
+be aware of the circumstance and reminded that you can choose
+a different filename for your output.
+
+SEE ALSO
+extdel, msdel
+.endhelp

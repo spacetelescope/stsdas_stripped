@@ -1,0 +1,22 @@
+# Update the kmestm application code in the statistics package library
+# Author: BALL, 22-DEC-1987
+# Revised by BSIMON, 14-AUG-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	t_kmestm.x	<tbset.h>
+	kmadj.f
+	kmdata.x	<tbset.h>
+	kmdif.f
+	kmestm.x
+	kmprint.x
+	kmtitle.x	<tbset.h>
+	plestm.f
+	setbin.x
+	sumry.f
+	xvar.f
+	;

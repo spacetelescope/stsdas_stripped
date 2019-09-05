@@ -1,0 +1,10 @@
+ 
+IMRES - Image restoration tools. Richard Hook (rhook@eso.org)
+
+cplucy       - Enhanced two-channel photometric restoration method
+
+apomask      - Tool for making apodizing mask images for cleaning up PSF images
+
+seeing       - Generator for simulated ground-based PSFs based on atmospheric
+	       model of Saglia et al.
+

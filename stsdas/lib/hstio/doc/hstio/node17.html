@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Reading an Image or Image groups</TITLE>
+<meta name="description" value=" Reading an Image or Image groups">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html197 HREF="node18.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html195 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html189 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html198 HREF="node18.html"> Illustration of Low-Level </A>
+<B>Up:</B> <A NAME=tex2html196 HREF="node16.html"> Example Programs</A>
+<B> Previous:</B> <A NAME=tex2html190 HREF="node16.html"> Example Programs</A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00091000000000000000> Reading an Image or Image groups</A></H2>
+<P>
+<PRE>      1:    # include &lt;hstio.h&gt;
+      2:    # include &lt;stdio.h&gt;
+      3:    
+      4:    void showHdr(Hdr *h, char *title) {
+      5:            int i;
+      6:            printf(&quot;%s: number of lines: %d\n&quot;,title, h-&gt;nlines);
+      7:            if (h-&gt;array != NULL)
+      8:                    for (i = 0; i &lt; h-&gt;nlines; ++i)
+      9:                            printf(&quot;%s\n&quot;,h-&gt;array[i]);
+     10:            printf(&quot;\n&quot;);
+     11:    }
+     12:    
+     13:    void showFloatData(FloatTwoDArray *x, char *title) {
+     14:            int i;
+     15:            printf(&quot;%s:\n&quot;,title);
+     16:    
+     17:            printf(&quot;(%d, 0) %g &quot;,0,PPix(x,0,0));
+     18:              for (i = 1; i &lt; 5; ++i) printf(&quot;%g &quot;,PPix(x,i,0)); 
+     19:              printf(&quot; ... &quot;);
+     20:            printf(&quot;(%d, 0) %g &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),0));
+     21:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%g &quot;,PPix(x,i,0));
+     22:              printf(&quot;\n&quot;);
+     23:    
+     24:            printf(&quot;(%d, 1) %g &quot;,0,PPix(x,0,1));
+     25:              for (i = 1; i &lt; 5; ++i) printf(&quot;%g &quot;,PPix(x,i,1)); 
+     26:              printf(&quot; ... &quot;);
+     27:            printf(&quot;(%d, 1) %g &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),1));
+     28:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%g &quot;,PPix(x,i,1));
+     29:              printf(&quot;\n&quot;);
+     30:    
+     31:            printf(&quot;(%d, max - 2) %g &quot;,0,PPix(x,0,x-&gt;ny - 2));
+     32:              for (i = 1; i &lt; 5; ++i) printf(&quot;%g &quot;,PPix(x,i,x-&gt;ny - 2)); 
+     33:              printf(&quot; ... &quot;);
+     34:            printf(&quot;(%d, max - 2) %g &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),x-&gt;ny - 2));
+     35:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%g &quot;,PPix(x,i,x-&gt;ny - 2));
+     36:              printf(&quot;\n&quot;);
+     37:    
+     38:            printf(&quot;(%d, max - 1) %g &quot;,0,PPix(x,0,x-&gt;ny - 1));
+     39:              for (i = 1; i &lt; 5; ++i) printf(&quot;%g &quot;,PPix(x,i,x-&gt;ny - 1)); 
+     40:              printf(&quot; ... &quot;);
+     41:            printf(&quot;(%d, max - 1) %g &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),x-&gt;ny - 1));
+     42:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%g &quot;,PPix(x,i,x-&gt;ny - 1));
+     43:              printf(&quot;\n&quot;);
+     44:            printf(&quot;\n&quot;);
+     45:    }
+     46:    
+     47:    void showShortData(ShortTwoDArray *x, char *title) {
+     48:            int i;
+     49:            printf(&quot;%s:\n&quot;,title);
+     50:    
+     51:            printf(&quot;(%d, 0) %d &quot;,0,PPix(x,0,0));
+     52:              for (i = 1; i &lt; 5; ++i) printf(&quot;%d &quot;,PPix(x,i,0)); 
+     53:              printf(&quot; ... &quot;);
+     54:            printf(&quot;(%d, 0) %d &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),0));
+     55:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%d &quot;,PPix(x,i,0));
+     56:              printf(&quot;\n&quot;);
+     57:    
+     58:            printf(&quot;(%d, 1) %d &quot;,0,PPix(x,0,1));
+     59:              for (i = 1; i &lt; 5; ++i) printf(&quot;%d &quot;,PPix(x,i,1)); 
+     60:              printf(&quot; ... &quot;);
+     61:            printf(&quot;(%d, 1) %d &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),1));
+     62:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%d &quot;,PPix(x,i,1));
+     63:              printf(&quot;\n&quot;);
+     64:    
+     65:            printf(&quot;(%d, max - 2) %d &quot;,0,PPix(x,0,x-&gt;ny - 2));
+     66:              for (i = 1; i &lt; 5; ++i) printf(&quot;%d &quot;,PPix(x,i,x-&gt;ny - 2)); 
+     67:              printf(&quot; ... &quot;);
+     68:            printf(&quot;(%d, max - 2) %d &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),x-&gt;ny - 2));
+     69:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%d &quot;,PPix(x,i,x-&gt;ny - 2));
+     70:              printf(&quot;\n&quot;);
+     71:    
+     72:            printf(&quot;(%d, max - 1) %d &quot;,0,PPix(x,0,x-&gt;ny - 1));
+     73:              for (i = 1; i &lt; 5; ++i) printf(&quot;%d &quot;,PPix(x,i,x-&gt;ny - 1)); 
+     74:              printf(&quot; ... &quot;);
+     75:            printf(&quot;(%d, max - 1) %d &quot;,(x-&gt;nx - 5),PPix(x,(x-&gt;nx - 5),x-&gt;ny - 1));
+     76:              for (i = x-&gt;nx - 4; i &lt; x-&gt;nx; ++i) printf(&quot;%d &quot;,PPix(x,i,x-&gt;ny - 1));
+     77:              printf(&quot;\n&quot;);
+     78:            printf(&quot;\n&quot;);
+     79:    }
+     80:    
+     81:    void show_iodesc(IODescPtr x) {
+     82:            printf(&quot;IODesc: filename = %s extname = %s extver = %d\n\tnaxis1 = %d \
+     83:    naxis2 = %d data type = %d\n&quot;, getFilename(x), getExtname(x), getExtver(x), 
+     84:                    getNaxis1(x), getNaxis2(x), getType(x));
+     85:    }
+     86:    
+     87:    void detect_err() {
+     88:            printf(&quot;HSTIO Error (%d): %s\n&quot;,hstio_err(),hstio_errmsg());
+     89:            exit(0);
+     90:    }
+     91:    
+     92:    int main(int argc, char **argv) {
+     93:            IODescPtr pri, sci, dq, err;
+     94:    #ifdef EX3
+     95:            IODescPtr outpri, outsci, outdq, outerr;
+     96:    #endif
+     97:    
+     98:            Hdr prihdr, scihdr, dqhdr, errhdr;
+     99:            FloatTwoDArray scidata;
+    100:            ShortTwoDArray dqdata;
+    101:            FloatTwoDArray errdata;
+    102:            int i;
+    103:            char *tmp;
+    104:    
+    105:            SciHdrData scihdrdata;
+    106:            DQHdrData  dqhdrdata;
+    107:            ErrHdrData errhdrdata;
+    108:            SingleGroup sg;
+    109:            MultiGroup mg;
+    110:    
+    111:            int A = 1; /* low-level routines */
+    112:            int B = 3; /* high-level XXHdrData routines */
+    113:            int C = 4; /* high-level SingleGroup */
+    114:            int D = 5; /* high-level MultiGroup */
+    115:    
+    116:            /*
+    117:            ** Command line arguments: 
+    118:            **      1. input file name
+    119:            **      2. output file name
+    120:            */
+    121:    #ifdef EX3
+    122:            if (argc != 3) {
+    123:                    printf(&quot;Wrong number of input arguments: ex3 input output\n&quot;);
+    124:                    exit(0);
+    125:            }
+    126:            printf(&quot;Executing program ex3 -- test of pipeline I/O routines\n&quot;);
+    127:            printf(&quot;Input: input file reading 6 groups of Sci, Err, DQ.\n&quot;);
+    128:            printf(&quot;Output: output file creating 6 groups of Sci, Err, DQ.\n&quot;);
+    129:    #else
+    130:            if (argc != 2) {
+    131:                    printf(&quot;Wrong number of input arguments: ex2 input\n&quot;);
+    132:                    exit(0);
+    133:            }
+    134:            printf(&quot;Executing program ex2 -- test of pipeline I/O routines\n&quot;);
+    135:            printf(&quot;Input: input file reading 6 groups of Sci, Err, DQ.\n&quot;);
+    136:    #endif
+    137:    
+    138:            /* install the error handler */
+    139:            push_hstioerr(detect_err);
+    140:    
+    141:            /*
+    142:            ** Initialize the data structures.
+    143:            */
+    144:            initFloatData(&amp;scidata);
+    145:            initShortData(&amp;dqdata);
+    146:            initFloatData(&amp;errdata);
+    147:            initHdr(&amp;prihdr);
+    148:            initHdr(&amp;scihdr);
+    149:            initHdr(&amp;dqhdr);
+    150:            initHdr(&amp;errhdr);
+    151:    
+    152:            initFloatHdrData(&amp;scihdrdata);
+    153:            initShortHdrData(&amp;dqhdrdata);
+    154:            initFloatHdrData(&amp;errhdrdata);
+    155:            initSingleGroup(&amp;sg);
+    156:            initMultiGroup(&amp;mg);
+    157:    
+    158:            /*
+    159:            ** First, we will use the low-level I/O routines to open
+    160:            ** and read the primary header, and the first three
+    161:            ** extension image arrays.
+    162:            */
+    163:            printf(&quot;\n======= Primary header: read =========\n&quot;);
+    164:            pri = openInputImage(argv[1],&quot;&quot;,0);
+    165:            getHeader(pri,&amp;prihdr);
+    166:            show_iodesc(pri);
+    167:            showHdr(&amp;prihdr,&quot;Primary Header Keywords&quot;);
+    168:            printf(&quot;======= Primary header: read complete =========\n&quot;);
+    169:    #ifdef EX3
+    170:            outpri = openOutputImage(argv[2],&quot;&quot;,0,&amp;prihdr, 0, 0, 0);
+    171:            closeImage(outpri);
+    172:    #endif
+    173:            closeImage(pri);
+    174:            freeHdr(&amp;prihdr);
+    175:    
+    176:        for (i = A; i &lt;= A + 1; ++i) {
+    177:            printf(&quot;\n======= Science data: read =========\n&quot;);
+    178:            sci = openInputImage(argv[1],&quot;SCI&quot;,i);
+    179:            getHeader(sci,&amp;scihdr);
+    180:            show_iodesc(sci);
+    181:            showHdr(&amp;scihdr,&quot;Science Header Keywords&quot;);
+    182:            getFloatData(sci,&amp;scidata);
+    183:            showFloatData(&amp;scidata,&quot;Selected Science Data&quot;);
+    184:            printf(&quot;======= Science data: read complete =========\n&quot;);
+    185:    #ifdef EX3
+    186:            outsci = openOutputImage(argv[2],&quot;sci&quot;,i,&amp;scihdr, 
+    187:                    getNaxis1(sci), getNaxis2(sci),0);
+    188:            putFloatData(outsci,&amp;scidata);
+    189:            closeImage(outsci);
+    190:    #endif
+    191:            closeImage(sci);
+    192:            freeFloatData(&amp;scidata);
+    193:            freeHdr(&amp;scihdr);
+    194:    
+    195:            printf(&quot;\n======= Error data: read =========\n&quot;);
+    196:            err = openInputImage(argv[1],&quot;ERR&quot;,i);
+    197:            getHeader(err,&amp;errhdr);
+    198:            showHdr(&amp;errhdr,&quot;Error Header Keywords&quot;);
+    199:            getFloatData(err,&amp;errdata);
+    200:            show_iodesc(err);
+    201:            showFloatData(&amp;errdata,&quot;Selected Error Data&quot;);
+    202:            printf(&quot;======= Error data: read complete =========\n&quot;);
+    203:    #ifdef EX3
+    204:            outerr = openOutputImage(argv[2],&quot;err&quot;,i,&amp;errhdr, 
+    205:                    errdata.nx, errdata.ny,0);
+    206:            putFloatData(outerr,&amp;errdata);
+    207:            closeImage(outerr);
+    208:    #endif
+    209:            closeImage(err);
+    210:            freeFloatData(&amp;errdata);
+    211:            freeHdr(&amp;errhdr);
+    212:    
+    213:            printf(&quot;\n======= Data Quality data: read =========\n&quot;);
+    214:            dq = openInputImage(argv[1],&quot;DQ&quot;,i);
+    215:            getHeader(dq,&amp;dqhdr);
+    216:            showHdr(&amp;dqhdr,&quot;Data Quality Header Keywords&quot;);
+    217:            getShortData(dq,&amp;dqdata);
+    218:            show_iodesc(dq);
+    219:            showShortData(&amp;dqdata,&quot;Selected Data Quality Data&quot;);
+    220:            printf(&quot;\n======= Data Quality data: read complete =========\n&quot;);
+    221:    #ifdef EX3
+    222:            outdq = openOutputImage(argv[2],&quot;dq&quot;,i,&amp;dqhdr, 
+    223:                    dqdata.nx, dqdata.ny,0);
+    224:            putShortData(outdq,&amp;dqdata);
+    225:            closeImage(outdq);
+    226:    #endif
+    227:            closeImage(dq);
+    228:            freeShortData(&amp;dqdata);
+    229:            freeHdr(&amp;dqhdr);
+    230:    
+    231:        }
+    232:    
+    233:            /*
+    234:            ** Now, we will test the high-level routines.
+    235:            ** First, test getSci, getErr, and getDQ.
+    236:            */
+    237:            printf(&quot;\n======= Science data: read =========\n&quot;);
+    238:            getSci(argv[1],B,&amp;scihdrdata);
+    239:            show_iodesc(scihdrdata.iodesc);
+    240:            showHdr(&amp;scihdrdata.hdr,&quot;Science Header Keywords&quot;);
+    241:            showFloatData(&amp;scihdrdata.data,&quot;Science Data&quot;);
+    242:            printf(&quot;======= Science data: read complete =========\n&quot;);
+    243:    #ifdef EX3
+    244:            putSci(argv[2],B,&amp;scihdrdata,0);
+    245:    #endif
+    246:            freeFloatHdrData(&amp;scihdrdata);
+    247:    
+    248:            printf(&quot;\n======= Error data: read =========\n&quot;);
+    249:            getErr(argv[1],B,&amp;errhdrdata);
+    250:            show_iodesc(errhdrdata.iodesc);
+    251:            showHdr(&amp;errhdrdata.hdr,&quot;Error Header Keywords&quot;);
+    252:            showFloatData(&amp;errhdrdata.data,&quot;Error Data&quot;);
+    253:            printf(&quot;======= Error data: read complete =========\n&quot;);
+    254:    #ifdef EX3
+    255:            putErr(argv[2],B,&amp;errhdrdata,0);
+    256:    #endif
+    257:            freeFloatHdrData(&amp;errhdrdata);
+    258:    
+    259:            printf(&quot;\n======= Data Quality data: read =========\n&quot;);
+    260:            getDQ(argv[1],B,&amp;dqhdrdata);
+    261:            show_iodesc(dqhdrdata.iodesc);
+    262:            showHdr(&amp;dqhdrdata.hdr,&quot;DQ Header Keywords&quot;);
+    263:            showShortData(&amp;dqhdrdata.data,&quot;Data Quality Data&quot;);
+    264:            printf(&quot;======= Data Quality data: read complete =========\n&quot;);
+    265:    #ifdef EX3
+    266:            putDQ(argv[2],B,&amp;dqhdrdata,0);
+    267:    #endif
+    268:            freeShortHdrData(&amp;dqhdrdata);
+    269:    
+    270:            /*
+    271:            ** Now, test getSingleGroup.
+    272:            */
+    273:            printf(&quot;\n======= Single group data: read =========\n&quot;);
+    274:            getSingleGroup(argv[1],C,&amp;sg);
+    275:            printf(&quot;Filename: %s group %d\n&quot;,sg.filename,sg.group_num);
+    276:            showHdr(sg.globalhdr,&quot;Global header&quot;);
+    277:            showHdr(&amp;sg.sci.hdr,&quot;Science Header Keywords&quot;);
+    278:            showFloatData(&amp;sg.sci.data,&quot;Science Data&quot;);
+    279:            showHdr(&amp;sg.err.hdr,&quot;Error Header Keywords&quot;);
+    280:            showFloatData(&amp;sg.err.data, &quot;Error Data&quot;);
+    281:            showHdr(&amp;sg.dq.hdr,&quot;DQ Header Keywords&quot;);
+    282:            showShortData(&amp;sg.dq.data, &quot;Data Quality Data&quot;);
+    283:            printf(&quot;======= Single group data: read complete =========\n&quot;);
+    284:    #ifdef EX3
+    285:            putSingleGroup(argv[2],C,&amp;sg,0);
+    286:    #endif
+    287:            freeSingleGroup(&amp;sg);
+    288:    
+    289:            /*
+    290:            ** Finally, test getMultiGroup.
+    291:            */
+    292:            printf(&quot;\n======= Multiple group data: read =========\n&quot;);
+    293:            allocMultiGroup(&amp;mg,4);
+    294:            getMultiGroupHdr(argv[1],&amp;mg);
+    295:            for (i = 0; i &lt; 2; ++i)
+    296:                { getMultiGroup(&amp;mg,i,(i + D)); }
+    297:            printf(&quot;Filename: %s\n&quot;,mg.group[0].filename);
+    298:            showHdr(mg.group[0].globalhdr,&quot;Global header&quot;);
+    299:            for (i = 0; i &lt; 2; ++i) {
+    300:                showHdr(&amp;mg.group[i].sci.hdr,&quot;Science Header Keywords&quot;);
+    301:                showFloatData(&amp;mg.group[i].sci.data,&quot;Science Data&quot;);
+    302:                showHdr(&amp;mg.group[i].err.hdr,&quot;Error Header Keywords&quot;);
+    303:                showFloatData(&amp;mg.group[i].err.data,&quot;Error Data&quot;);
+    304:                showHdr(&amp;mg.group[i].dq.hdr,&quot;DQ Header Keywords&quot;);
+    305:                showShortData(&amp;mg.group[i].dq.data,&quot;Data Quality Data&quot;);
+    306:            }
+    307:            printf(&quot;======= Multi group data: read complete =========\n&quot;);
+    308:    #ifdef EX3
+    309:            for (i = 0; i &lt; 2; ++i)
+    310:                putMultiGroup(argv[2],(i + D),&amp;mg,i,0);
+    311:    #endif
+    312:            freeMultiGroup(&amp;mg);
+    313:    
+    314:            return 0;
+    315:    }
+    316:</PRE>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

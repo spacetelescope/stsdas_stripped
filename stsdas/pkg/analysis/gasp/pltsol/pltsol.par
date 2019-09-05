@@ -1,0 +1,40 @@
+iminfo,b,a,,,,Is there an input image
+infile,s,a,,,,Input image
+tinput,s,a,,,,Input table
+nskip,i,a,0,,,Number of lines to skip
+xcolnum,i,a,,0,,X column number
+ycolnum,i,a,,0,,Y column number
+racolnum,i,a,,,,RA column number
+decolnum,i,a,,0,,DEC column number
+magcolnum,i,a,0,0,,MAG column number
+colcolnum,i,a,0,0,,COL column number
+crpix1,r,a,,,,X reference pixel position
+crpix2,r,a,,,,Y reference pixel position
+crval1,r,a,,,,RA of reference position [degrees]
+crval2,r,a,,,,DEC of reference position [degrees]
+xpixelsz,r,a,,,,Pixel size in X (microns)
+ypixelsz,r,a,,,,Pixel size in Y (microns)
+pltscale,r,a,,,,Plate scale in arcs/mm
+pmod1,i,h,1,0,1,X term
+pmod2,i,h,1,0,1,Y term
+pmod3,i,h,1,0,1,Constant term
+pmod4,i,h,0,0,1,X**2 term
+pmod5,i,h,0,0,1,X*Y term
+pmod6,i,h,0,0,1,Y**2 term
+pmod7,i,h,0,0,1,X**2 + Y**2 term
+pmod8,i,h,0,0,1,X**3 term
+pmod9,i,h,0,0,1,X*X*Y term
+pmod10,i,h,0,0,1,X*Y*Y term
+pmod11,i,h,0,0,1,X**3 term
+pmod12,i,h,0,0,1,X*(X**2 + Y**2) term
+pmod13,i,h,0,0,1,X*(X**2 + Y**2)**2 term
+pmod14,i,h,0,0,1,MAG term
+pmod15,i,h,0,0,1,MAG**2 term
+pmod16,i,h,0,0,1,MAG**3 term
+pmod17,i,h,0,0,1,MAG*X term
+pmod18,i,h,0,0,1,MAG*(X**2 + Y**2) term
+pmod19,i,h,0,0,1,MAG*X*(X**2 + Y**2) term
+pmod20,i,h,0,0,1,COLOR term
+graphics,s,h,"stdgraph",,,Graphics output device
+cursor,*gcur,h,"",,,Graphics cursor input
+mode,s,l,ql

@@ -1,0 +1,10 @@
+$checkout headers.a ../
+$update   headers.a
+$checkin  headers.a ../
+$exit
+
+headers.a:
+        t_groupmod.x    "groupmod.h"
+        grmkep.x        "groupmod.h"
+        grmopw.x        <error.h> <tbset.h> "groupmod.h"
+	;

@@ -1,0 +1,180 @@
+.help polplot Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+polplot -- Plot FOS polarimetry spectra as a stacked plot.
+.ih
+USAGE
+polplot image
+.ih
+DESCRIPTION  
+This routine reads spectra from an FOS polarimetry ('c3h') image and produces
+a stacked plot containing Stokes I (total flux) and either Stokes QUV or
+linear, circular, and position angle polarization spectra.
+Any one of the four sets of spectra contained within the 'c3h' file may be 
+plotted, where the first set corresponds to pass direction 1, the second to 
+pass direction 2, the third to the combined data from both pass directions, and 
+the fourth to the combined and instrumentally-corrected data.
+
+The Stokes I (flux) spectrum is always plotted as a continuous line, while
+the user has the option of plotting the remaining Stokes or polarization
+spectra in one of three modes (set by the parameter 'ptype'): individual
+points, continuous line, or histogram. Error bars for the Stokes QUV or
+polarization spectra may also be overplotted. Individual data points with
+error values equal to zero will not be plotted when using either the point
+or continuous line plotting modes (i.e. the "continuous" line mode will not
+be truely continuous, but will have gaps at the locations of bad points).
+
+The user chooses whether to plot Stokes QUV or polarization spectra by setting 
+the parameter 'spectra'. If 'spectra = stokes', the Stokes QUV spectra will
+be plotted along with Stokes I; if 'spectra = polar', linear (PL) and circular
+(PC) polarization and polarization position angle (THETA) spectra will be
+plotted with Stokes I. Linear and circular polarization spectra are plotted
+in units of percent polarization and polarization position angle is plotted
+in units of degrees. The user also has control over whether or not to 
+include Stokes V or circular polarization in the plot by setting the parameter
+'circpol' to "yes" or "no".
+
+The x-axis of the plot may be displayed in units of either increasing 
+wavelength (Angstroms) or decreasing inverse wavelength (10**4/Angstroms).  
+A null value for the wavelength image name will cause the routine to search 
+for a wavelength image with the same root name as the spectral data
+image, but with an image name extension of 'c0h'. The spectral and wavelength
+images must have the same number of pixels per spectrum. The wavelength vector
+contained in data group 1 will be used for plotting spectral sets 1, 3,
+and 4, while wavelength image group 2 will be used when plotting spectral
+set number 2.
+.ih
+PARAMETERS 
+.ls image [file name]
+Polarization ('c3h') image name. The image must be in FOS 'c3h' file format.
+If no image name extension is given, an extension of 'c3h' is assumed.
+.le
+.ls (set = 4) [integer, min=1, max=4]
+Index of the spectral data set to plot:
+.nf
+1 = Pass direction 1                           (c3h groups  1-14)
+2 = Pass direction 2                           (c3h groups 15-28)
+3 = Pass directions 1+2 combined               (c3h groups 29-42)
+4 = Pass directions 1+2 combined and corrected (c3h groups 43-56)
+.fi
+.le
+.ls (spectra = "polar") [string, allowed values: polar | stokes]
+Plot polarimetry spectra (linear, circular, and position angle) or Stokes QUV
+parameter spectra?
+.le
+.ls (wave = "") [file name]
+Wavelength image name. If null, the task will search for an image with the
+same root file name as the polarization ('c3h') image, but with an extension
+of 'c0h'. If the image name extension is not given, an extension of 'c0h'
+is assumed.
+.le
+.ls (invlam = no) [boolean]
+X-axis plotting units. If "no", then plot increasing wavelength; if "yes",
+plot decreasing 1/wavelength.
+.le
+.ls (errors = yes) [boolean]
+Overplot error bars on Stokes QUV or polarization spectra?
+.le
+.ls (ptype = "c") [string, allowed values: c | h | p]
+Type of plotting mode to use when plotting Stokes QUV or polarization
+spectra: c[ontinuous] line mode, h[istogram] mode, or p[oint] mode.
+.le
+.ls (circpol = no) [boolean]
+Include Stokes V (if 'spectra = stokes') or circular polarization (if
+'spectra = polar') in plot?
+.le
+.ls (wmin = 0) [real]
+Left limit for plot x-axis (wavelength or 1/wavelength).  If 'wmin = 0', start
+at first pixel.
+.le
+.ls (wmax = 0) [real]
+Right limit for plot x-axis (wavelength or 1/wavelength).  If 'wmin = wmax',
+the entire wavelength range of the data will be plotted.
+.le
+.ls (imin = 0) [real]
+Lower limit for Stokes I (total flux) plot.
+.le
+.ls (imax = 0) [real]
+Upper limit for Stokes I (total flux) plot.  Autoscale if imin = imax.
+.le
+.ls (cmin = 0) [real]
+Lower limit for circular polarization plot (in percent). If plotting
+Stokes spectra this corresponds to the Stokes V parameter plot.
+.le
+.ls (cmax = 0) [real]
+Upper limit for circular polarization (or Stokes V) plot (in percent).  
+Autoscale if cmin = cmax.
+.le
+.ls (lmin = 0) [real]
+Lower limit for linear polarization plot (in percent). If plotting Stokes
+spectra this corresponds to the Stokes Q parameter plot.
+.le
+.ls (lmax = 0) [real]
+Upper limit for linear polarization (or Stokes Q) plot (in percent).  
+Autoscale if lmin = lmax.
+.le
+.ls (pamin = 0) [real]
+Lower limit for polarization position angle plot (in degrees). If plotting
+Stokes spectra this corresponds to the Stokes U parameter plot.
+.le
+.ls (pamax = 0) [real]
+Upper limit for polarization position angle (or Stokes U) plot (in degrees).  
+Autoscale if pamin = pamax.
+.le
+.ls (title = "imtitle") [string]
+Title to be centered above the plot.  The user can specify a title string;
+the default string is the image name and title.
+.le
+.ls (device = "stdgraph") [string]
+Plot device.
+.le
+.ih
+EXAMPLES
+1. Plot the total flux (Stokes I), the linear polarization, and the polarization
+position angle spectra, along with their errors, from the 4th set of
+spectra in file 'y15v0403t.c3h', with wavelengths from file 'y15v0403t.c0h'.
+Only plot points between 2600 and 3000 Angstroms and allow autoscaling of all 
+spectra.
+.nf
+
+   sp> polplot y15v0403t.c3h 4 wmin=2600 wmax=3000
+
+.fi
+2. Plot the same data as above, but limit the x-axis of the plot to 
+inverse wavelengths between 4.0 and 3.5 inverse microns.  Set the
+scaling for the flux plot from 3.e-14 to 5.e-14 (ergs/sec/cm**2/A),
+the linear polarization plot from -0.1 to 2.3 percent, and the polarization
+position angle plot from -45 to +75 degrees.  Include a title and send
+to a hardcopy device.
+.nf
+
+   sp> polplot y15v0403t.c3h 4 invlam+ wmin=4.0 wmax=3.5 \
+       >>> imin=3.e-14 imax=5.e-14 lmin=-0.1 lmax=2.3 pamin=-45 \
+       >>> pamax=75 title="Mrk 421" device=stdplot
+
+.fi
+3. Plot rebinned Stokes IQUV spectra from image 'mrk421_rebin.c3h', taking
+the wavelength array from 'mrk421_rebin.c0h'. Plot the data from set number 2
+(corresponding to pass direction 2) of the 'c3h' image, with the QUV spectra
+plotted in histogram mode with no error bars.
+.nf
+
+   sp> polplot mrk421_rebin.c3h 2 spectra=stokes err- ptype=h circ+
+
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+polbin, grspec
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

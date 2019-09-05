@@ -1,0 +1,11 @@
+input,f,a,,,,"Input image name"
+output,f,a,,,,"Output image name"
+left,i,h,3,,,"Number of columns to trim from left side \n\
+     of individual frame"
+right,i,h,3,,,"Number of columns to trim from right side \n\
+     of individual frame"
+bottom,i,h,3,,,"Number of rows to trim from bottom \n\
+     of individual frame"
+top,i,h,3,,,"Number of rows to trim from top \n\
+     of individual frame"
+overlap,i,h,2,,,"Number of pixels of overlap adjacent frames"

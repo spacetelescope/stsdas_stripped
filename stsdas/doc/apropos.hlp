@@ -1,0 +1,57 @@
+.help apropos Dec92 stsdas
+.ih
+NAME
+apropos -- List all the tasks related with a given subject.
+.ih
+USAGE
+apropos subject
+.ih
+DESCRIPTION
+This task will list all IRAF tasks that have the subject
+string in their name, description, or the name of the package where
+they belong.
+Only the tasks that are mentioned in a package menu file will be listed.
+
+Databases should be created by using the 'mkapropos' task in the STSDAS
+'playpen' package.
+
+The output will contain the task name followed by the task description
+and the name of the package where the task can be found.
+.ih
+PARAMETERS
+.ls subject [string]
+Subject about which you want information. 
+This string should be enclosed in double quotes
+if the string contains any character that have special meaning for the CL.
+.le
+.ls aproposdb = "aproposdb" [file name]
+It can be either the names of database files build by 'mkapropos', or
+the name of the environment variable 'aproposdb', which in turn contains
+the names of the database files to use.
+.le
+.ih
+EXAMPLE
+1. List all the tasks that are related to directories:
+.nf
+
+cl> apropos directory
+back          - Return to the previous directory (after a chdir) (language)
+cd            - Change directory (language)
+chdir         - Change directory (language)
+directory     - List the files in a directory (system)
+gkidir        - Directory listing of metacode file (plot)
+mkdir         - Create a new directory (system)
+movefiles     - Move files to a directory (system)
+.fi
+.ih
+BUGS
+The task does not restict a search to complete words.
+For some terminal types the longer descriptions are truncated if the terminal
+is set incorrectly.
+
+The metacharacter used to find matches only at the beginning
+of a line does not work if you set 'ignore_case=yes'.
+.ih
+SEE ALSO
+help, match, mkapropos
+.endhelp

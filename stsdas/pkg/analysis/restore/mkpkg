@@ -1,0 +1,43 @@
+# Make the restore package
+# Author: R. Williamson 15-Aug-1991
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	restore.a
+	$call	restore
+	;
+
+install:
+	$move	xx_restore.e stsdasbin$x_restore.e
+	;
+
+restore:
+linkonly:
+	$omake	x_restore.x
+        $set    LIBS = "-lxtools -lapplib -liraf77"
+	$link	x_restore.o restore.a $(LIBS) -o xx_restore.e
+	;
+
+restore.a:
+	@adaptive
+	@hfilter
+	@jansson
+	@lucy
+	@mem
+	@sclean
+	@wiener
+        ;

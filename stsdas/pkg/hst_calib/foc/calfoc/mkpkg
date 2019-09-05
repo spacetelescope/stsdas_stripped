@@ -1,0 +1,26 @@
+# Update the calfoc application code.
+
+$checkout calfoc.a ../
+$update   calfoc.a
+$checkin  calfoc.a ../
+$exit
+
+calfoc.a:
+	calfoc.x	<imhdr.h> <imio.h> <ctype.h> "calfoc.h"
+	calphot.x	<tbset.h>
+	newgeom.x	<imhdr.h>
+	interpb.x
+	negint.x
+	sortcorn.x
+	geocoord.x	<imhdr.h> <math.h>
+	geoscale.x	<imhdr.h> <math.h>
+	geofindcrpix.x	<imhdr.h> <math/gsurfit.h>
+	geoder.x	<imhdr.h> <math/gsurfit.h>
+	section.x	"calfoc.h"
+	xcalimg.x	<imhdr.h> "calfoc.h"
+	xhistory.x	<imhdr.h> "calfoc.h"
+	xcgroup.x	<imhdr.h> "calfoc.h"
+	fmessg.x
+	logmsg.x
+	boxer.f
+	;

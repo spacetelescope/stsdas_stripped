@@ -1,0 +1,8 @@
+input, f, a, "", , , 		Input root name
+igi_output, f, a, "", , ,	Output igi file name
+
+tmproot, f, a, "", , ,		temporary file root name
+timetag, s, h, "", , ,		Time tag
+page, i, h, 0, , ,		Page number
+
+mode, s, h, "al"

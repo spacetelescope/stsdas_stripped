@@ -1,0 +1,15 @@
+:
+# 
+
+# make sure we are invoked correctly
+
+if [ "$0" != release_tools/svn_notes ]
+then
+	echo 'not invoked correctly - see release_tools/README'
+	exit 1
+fi
+
+( cd stsdas ; svn info > stsci_remember_svn_info )
+( cd tables ; svn info > stsci_remember_svn_info )
+( cd stecf ; svn info > stsci_remember_svn_info )
+

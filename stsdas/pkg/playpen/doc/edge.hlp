@@ -1,0 +1,80 @@
+.help edge Sep93 stsdas.playpen
+.ih
+NAME
+edge -- 2-D image edge massaging.
+.ih
+USAGE
+edge input output
+.ih
+DESCRIPTION
+Several image restoration methods rely on an underlying assumption of
+circular convolution. However, actual convolutions that take place in an
+imaging system are linear instead. This difference results in artifacts
+associated with the image edges. These artifacts may be overcome by
+properly processing the image edges before submitting the image to the 
+restoration procedure. 
+
+This task modifies image edges by applying either of two techniques:
+.nf
+
+(i)  Windowing.
+(ii) Overlapped edge extension.
+
+.fi
+Windowing is the multiplication of the data frame by a tapering function.
+This function has value 1 over all the image except at a region near the
+edges, where it smoothly decays to zero. The resulting image will be closer
+to the one produced by circular convolution. The procedure is quite fast,
+but has the drawback of reducing the image's information content.
+The task includes Parzen (linear), Welch (quadratic) and Hanning
+(cosine-bell) functional forms.
+
+A better approach is to perform an overlapped edge extension. The data
+frame edges are extended beyond the data limits, generating a larger pixel 
+array than the input one. The extended region is filled up with interpolated 
+values from the image itself, in such a way as to make the resulting image
+approximately circulant for the specific convolution at hand. The size of
+the extended region must be equal to half the PSF support size.
+The details are explained in Bates & McDonnell ("Image Restoration and 
+Reconstruction", 1986, Claredon Press, p.~63, see also Image Restoration
+Newslleter, Space Telescope Science Institute, Summer 1993, p. 38).
+
+Images of different sizes can be input simultaneously to the task.
+.ih
+PARAMETERS
+.ls input [file name template]
+Input 2-dimensional image(s) section(s) to be edge-processed.
+.le
+.ls output [file name/directory]
+File name for the output image(s). This parameter will also 
+take the name of a directory. 
+Output images are always of type real, regardless of input image type.
+.le
+.ls (type = "extension") [string, allowed values: extension | window]
+Type of operation, either windowing or edge extension.
+.le
+.ls (function = "Hanning") [string, allowed values: Welch | Parzen | Hanning]
+Type of windowing function.
+.le
+.ls (esize = 20) [int, min=0]
+Size of region along image edges to be affected (window mode) or size of 
+edge region to be augmented (extension).
+.le
+.ls (background = INDEF) [real]
+Background to be used as stabilizing value at (extended) image rim. If not
+defined, the task will compute it automatically as the pixel average
+at the 5 bottomest input image lines.
+.le
+.ls (verbose = no) [boolean]
+Print file names ?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+.endhelp

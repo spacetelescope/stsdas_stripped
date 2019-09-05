@@ -1,0 +1,17 @@
+.help stpoa Jul00 stpoa
+
+The Space Telescope Post Operational Archive (STPOA) package 
+is a reworking of some tools from The Space Telescope Science 
+Data Analysis System (STSDAS).  Tools under the STPOA package
+contain software updates to the previous calibration tools of
+the HST instruments.
+
+Using the data archive of the entire lifespan of the Faint 
+Object Camera (FOS) as well as the knowledge of known problems
+in the calibration scheme, new calibration tools are now
+available in the poa_fos package.
+
+Other improvements for HST instrument calibration tasks are
+soon to follow.
+
+.endhelp

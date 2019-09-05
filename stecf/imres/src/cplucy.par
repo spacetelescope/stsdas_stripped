@@ -1,0 +1,17 @@
+data,f,a,,,,Input data image
+psf,f,a,,,,Input Point-Spread-Function image
+fracent,f,a,0.1,,,Fractional strength of entropy term
+niter,i,a,5,,,Number of iterations
+starlist,f,a,,,,File containing list of star positions
+back,f,h,,,,Smooth background output image
+starim,f,h,,,,Point source output image     
+outtab,f,h,,,,Output text list file
+verbose,b,h,yes,,,Display details of what is being performed?
+prf,b,h,no,,,Apply HST/WFPC2 pixel-response function kernel?
+interpol,s,h,"linear",,,Interpolant used for small PSFs
+psfsnx,i,h,21,,,Size of small PSFs (X)
+psfsny,i,h,21,,,Size of small PSFs (Y)
+psfxb,i,h,1,,,Subsampling of input PSF image (X)
+psfyb,i,h,1,,,Subsampling of input PSF image (Y)
+magzero,f,h,20.0,,,Magnitude zero point
+skernel,f,h,10.0,,,Width of smoothing kernel

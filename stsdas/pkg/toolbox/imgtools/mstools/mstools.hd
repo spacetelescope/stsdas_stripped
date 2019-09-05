@@ -1,0 +1,27 @@
+# Help directory for the mstools package
+
+$doc		= "stsdas$pkg/toolbox/imgtools/mstools/doc/"
+$mstools	= "stsdas$pkg/toolbox/imgtools/mstools/"
+
+ecdel           hlp=doc$ecdel.hlp,
+	        src=mstools$ecdel.cl
+ecextract       hlp=doc$ecextract.hlp,
+		src=mstools$ecextract.cl
+extdel          hlp=doc$extdel.hlp,
+		src=mstools$extdel.cl
+msarith		hlp=doc$msarith.hlp,
+		src=mstools$msarith/n_nimarith.c
+mscombine	hlp=doc$mscombine.hlp,
+		src=mstools$mscombine.cl
+mscopy		hlp=doc$mscopy.hlp,
+		src=mstools$mscopy/mscopy.c
+msdel           hlp=doc$msdel.hlp,
+		src=mstools$msdel.cl
+msjoin  	hlp=doc$msjoin.hlp,
+		src=mstools$msjoin.cl
+mssort          hlp=doc$mssort.hlp,
+		src=mstools$mssort.cl
+mssplit 	hlp=doc$mssplit.hlp,
+		src=mstools$mssplit.cl
+msstatistics	hlp=doc$msstatistics.hlp,
+		src=mstools$msstatistics/e_gstat.c

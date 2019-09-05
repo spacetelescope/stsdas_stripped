@@ -1,0 +1,9 @@
+input,s,a,"",,,"Name of input corrtag file"
+outroot,s,a,"",,,"Root name for output files"
+starttime,r,a,INDEF,,,"Time of first event to extract"
+increment,r,a,INDEF,,,"Time interval"
+endtime,r,a,INDEF,,,"Time of last event to extract"
+time_list,s,a,"",,,"List of times"
+verbosity,i,h,1,0,2,"Set more or fewer messages"
+version,s,h,"",,,"Date of Installation"
+mode,s,h,"al",,,

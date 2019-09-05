@@ -1,0 +1,4 @@
+$doc	= "doc/"
+
+slitless	hlp=doc$slitless.hlp
+

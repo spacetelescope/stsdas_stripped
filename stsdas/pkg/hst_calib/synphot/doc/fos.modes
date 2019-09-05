@@ -1,0 +1,32 @@
+FOS
+
+The FOS keywords consist of a list of detectors, apertures, gratings, and 
+polarimeter waveplates and waveplate position angles. The waveplate keywords
+indicate whether waveplate A or B is being used and the angle of the waveplate.
+An example of an FOS observation mode string would be "FOS,BLUE,G160L".
+
+Detectors: blue red
+
+Apertures: 0.3 0.5 1.0 4.3 0.1-pair 0.25-pair 0.5-pair 1.0-pair upper lower
+           0.25x2.0 0.7x2.0-bar 2.0-bar blank failsafe
+
+Gratings: g130h g190h g270h g400h g570h g780h g160l g650l mirror prism order0
+
+Waveplates: pol0-a   pol0-b   pol22.5-a  pol22.5-b 
+            pol45-a  pol45-b  pol67.5-a  pol67.5-b 
+            pol90-a  pol90-b  pol112.5-a pol112.5-b 
+            pol135-a pol135-b pol157.5-a pol157.5-b 
+            pol180-a pol180-b pol202.5-a pol202.5-b 
+            pol235-a pol235-b pol257.5-a pol257.5-b 
+            pol270-a pol270-b pol292.5-a pol292.5-b 
+            pol315-a pol315-b pol337.5-a pol337.5-b
+
+COSTAR: costar nocostar
+
+The upper and lower aperture keywords are only recognized when used in
+conjunction with one of the paired apertures, e.g.,
+"FOS,BLUE,G130H,UPPER,1.0-PAIR". The order0 keyword is only available in
+conjunction with the g160l grating and the blue detector. The waveplate
+keyword syntax is POLpa-wp, where pa is the position angle in degrees, and
+wp is the A or B waveplate.
+

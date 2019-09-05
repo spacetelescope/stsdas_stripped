@@ -1,0 +1,95 @@
+.help plbias Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+plbias -- Correct linear polarization (PL) for bias in Q and U.
+.ih
+USAGE
+plbias input output
+.ih
+DESCRIPTION  
+The 'plbias' task takes an FOS polarization ('c3h') file and corrects the
+linear polarization spectrum (PL) in each of the 4 sets of polarization
+data (pass direction 1, pass direction 2, 1+2 combined, 1+2 combined and
+corrected) for bias introduced by the fact that the values of Q**2 and
+U**2 are always positive when used to compute PL. The output file is a
+copy of the input 'c3h' file, with only the four data groups containing
+PL spectra (9, 23, 37, 51) replaced by the corrected PL spectra.
+
+Linear polarization is calculated by the 
+'calfos', 'calpolar', 'polave', 'polcalc', and 'polbin' tasks as follows:
+.nf
+
+      PL = sqrt { (Q/I)**2 + (U/I)**2 }.
+
+.fi
+The bias-corrected value of PL is calculated as:
+.nf
+
+      PL_corr = sqrt { (Q/I)**2 + (U/I)**2 - PL_err**2 }
+
+              = sqrt { PL**2 - PL_err**2 }
+
+.fi
+where PL_err is the linear polarization error from the 'c3h' data
+groups 12, 26, 40, and 54.
+
+In the event that the quantity (PL**2 - PL_err**2) for a given pixel is
+less than zero, the user has several options available as to how to
+compute the resulting value of PL_corr, using different settings of the
+parameter 'wrap'. If 'wrap = zero', the value of PL_corr is set to zero.
+If 'wrap = positive', PL_corr is calculated from the absolute value of 
+(PL**2 - PL_err**2), thus resulting in a positive value for PL_corr. 
+If 'wrap = negative', PL_corr is again calculated from the absolute value of
+(PL**2 - PL_err**2), but the resulting value is assigned a negative sign.
+.ih
+PARAMETERS 
+.ls input [file name]
+Input image(s).  May be a list or a file name template.  If the input image 
+name extension is not given, an extension of 'c3h' is assumed.
+.le
+.ls output [file name]
+Output image(s).  May be a list, but must contain the same number of elements
+as the input image list.  If the output image name extension is not given, 
+an extension of 'c3h' is assumed.
+.le
+.ls (wrap = "zero") [string, allowed values: negative | zero | positive]
+Controls the handling of output PL values when the quantity
+(PL**2 - PL_err**2) is negative (see the description above).
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Correct for the bias in linear polarization in the data files 'y0nb0203t.c3h'
+and 'y0nb0205t.c3h'. Set output values of PL to zero in cases where the corrected
+value would go negative. Store the results in 'y0nb0203c.c3h' and 
+'y0nb0205c.c3h'.
+.nf
+
+   sp> plbias y0nb0203t,y0nb0205t y0nb0203c,y0nb0205c
+
+.fi
+2. Correct for bias in PL in the dataset 'y15v0403t'. Let negative values of 
+PL wrap around to equivalent positive values. Store the result in 
+'y15v0403t_corr.c3h'.
+.nf
+
+   sp> plbias y15v0403t.c3h y15v0403t_corr.c3h wrap=positive
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+polcalc, polbin 
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

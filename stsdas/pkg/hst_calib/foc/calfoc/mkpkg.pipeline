@@ -1,0 +1,46 @@
+# Update the calfoc application code.
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update calfoc.a
+	$call	linkonly
+	;
+
+install:
+	$move	xx_calfoc.e stsdasbin$x_calfoc.e
+	;
+
+linkonly:
+	$omake	x_calfoc.x
+
+	$link	x_calfoc.o calfoc.a \
+		-lsynphot -liraf77 -lapplib -luttables -ltbtables \
+		-lgsurfit \
+		-o xx_calfoc.e
+	;
+
+calfoc.a:
+	calfoc.x	<imhdr.h> <imio.h> <ctype.h> "calfoc.h"
+	calphot.x	<tbset.h>
+	newgeom.x	<imhdr.h>
+	interpb.x
+	negint.x
+	sortcorn.x
+	geocoord.x	<imhdr.h>
+	geofindcrpix.x	<imhdr.h> <math/gsurfit.h>
+	geoder.x	<imhdr.h> <math/gsurfit.h>
+	section.x	"calfoc.h"
+	xcalimg.x	<imhdr.h> "calfoc.h"
+	xcgroup.x	<imhdr.h> "calfoc.h"
+	xhistory.x	<imhdr.h> "calfoc.h"
+	fmessg.x
+	logmsg.x
+	boxer.f
+	;

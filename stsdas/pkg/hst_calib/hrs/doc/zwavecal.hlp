@@ -1,0 +1,627 @@
+.help zwavecal Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+zwavecal -- Calibrate GHRS wavelength observations.
+.ih
+USAGE
+zwavecal input output
+.ih
+DESCRIPTION
+'zwavecal' locates lines in GHRS wavelength observations and fits the
+GHRS wavelength solution equation, producing a table of coefficients
+for the solution.  This table is suitable as input back into 'calhrs'
+for recalibration of GHRS observations that may depend on a particular
+wavelength range.
+
+.ls COOKBOOK
+IF YOU REQUESTED A SPECTRUM OF THE CAL LAMP AND YOUR OBSERVATION
+IS NOT AN FP-SPLIT:
+
+In this case the cal lamp spectrum and the object spectrum should have
+been obtained at the same carrousel position.  These cal lamp spectra
+can be identified by examining the header keyword "TARGNAME" of the
+C1H files for the value "WAVE" and/or the keyword "APERTURE" for the
+value of "SC1" or "SC2".  Confirm that the observations are at the
+same carrousel position using the 'hedit' task to examine the header
+keyword, "CARPOS".
+
+For echelle observations, one should examine the cal lamp observation.
+Due to the high dispersion, echelle cal lamp observations may have
+only a couple features, typically grouped at one end of the spectrum.
+If so, the solution derived by 'zwavecal' may actually be worse than the
+one produced by 'calhrs'.  If this is the case, use the method below to
+improve the science observation's wavelengths.
+
+If all the above conditions are satisfied, run 'zwavecal' on the C1H
+file of the cal lamp observation.  The default values for all the
+parameters have been set appropriately for the GHRS.  The resulting
+output table will be in a suitable format to be used with 'calhrs'.
+Edit the header of the science observation(s) to be recalibrated with
+the new solution using 'hedit' or 'chcalpar'.  Modify the value of the
+keyword "CCR6" to the pathname of the newly created output file, and
+re-run 'calhrs' on the science observation(s).
+
+OTHERWISE:
+
+The simplest way to improve the wavelengths of a particular science
+observation is to find a calibration lamp observation near to the time
+the science observation was taken.  Such observations can be
+identified by examining the header keyword "TARGNAME" of the C1H files
+for the value "WAVE".  These can either be GO-requested wavelength
+calibration observations (described above), or automatically generated
+SPYBAL observations. (NOTE: the SPYBAL observations are used to center
+the spectrum on the diode array. These observation are automatically
+made about once an orbit and immediately before the first use of a
+particular grating.)  Use this observation and its corresponding
+wavelength solution as input to the 'waveoff' task.  'Waveoff' will
+calculate the offset between the wavelength solution provided by
+'calhrs' and the actual cal lamp observation.  This offset can then be
+applied to the science calibration wavelength solutions.  To apply the
+offset, add the value of the "woffset" column from the output of
+waveoff to the contents of the C0H images for the science
+observations, using the 'imcalc' task.
+ 
+FPSPLIT observations are made at a series of carrousel positions.  It
+is recommended that one apply the wavelength offset as described above
+to this type of observation.
+.le
+
+.ls ALGORITHM
+'zwavecal' requires as input observations of one of the spectral
+calibration lamps and the wavelength solution for the observations.
+In general, this will be the C1H and C0H files as output by the
+'calhrs' task.  These files are specified by, respectively, the
+'input' and 'wave' parameters.
+
+Additionally, 'wavecal' requires two tables.  One is a list of
+wavelengths of emission lines of the Platinum-Neon (PtNe) hollow
+cathode lamps.  The second is a table containing the conversion
+coefficients to convert the dispersion solution determined by 'wavecal'
+to be relative to the Small Science Aperture (SSA) as opposed to
+either of the calibration apertures, SC1 or SC2.  These tables are
+distributed with STSDAS; see below for more information.
+
+Using the input wavelength solution and the line list table,
+approximate positions are determined for emission features in the
+observation spectrum.  The positions are determined using the IRAF
+'center1d' algorithm.  The parameters for controlling the algorithm
+are found in the 'fitpars' pset.  See the help for the task 'zwaveid'
+for a more detailed description.
+
+To determine a new dispersion solution, the following iterative
+process occurs.  A least squares fit of the function
+
+.nf
+	s = a0 + a1mw + a2(mw)**2 + a3m + a4w +
+		 a5wm**2 + a6mw**2 + a7(mw)**3
+
+	where m - order (for non-echelle data, this is 1)
+	      w - wavelength
+.fi
+
+is applied to the data.  The sigma of each line is then determined,
+and, if it is greater than the value specified in the parameter
+'nsigma', the line is flagged as bad and will not be included in the
+next iteration.  This process is repeated until either no lines are
+flagged as bad, or the maximum number of iterations specified in the
+parameter 'maxtry' is reached.  If the maximum number of iterations is
+reached, and there are still lines flagged as bad, a warning message
+is issued.  The warning is just that; the dispersion solution is still
+written out to the output table.
+.le
+.ls INPUT IMAGES AND WAVELENGTH SOLUTIONS
+The input should be the calibrated C1H images of GHRS observations of
+the internal calibration lamps.  The observations can be identified
+when the keyword TARGNAME has a value of "WAVE" and/or the keyword
+APERTURE has the value "SC1" or "SC2".
+
+The input wavelength solutions will the C0H images of the observations.
+.le
+.ls OUTPUT
+A table, in the form of the GHRS CCR6 reference table, will be
+generated.  The columns of the table are as follows:
+.ls GRATING
+The grating used.
+.le
+.ls CARPOS
+The carrousel position that the dispersion is calculated for.
+.le
+.ls A0, A1, A2, A3, A4, A5, A6, A7
+The dispersion coefficients.
+.le
+.ls Z*
+There are twenty-two columns which specify the temperatures of various
+parts of the instrument at the time the observation was taken which
+was used to determine the dispersion coefficients.  This is used by
+'calhrs' to correct for thermal motion.
+.le
+.le
+.ls FITTAB
+For each unique carrousel position, an optional table is created which
+contains the evaluation of the fit coefficients with the data used to find
+the fit coefficients.  The header parameters found in these
+tables are:
+.ls carpos
+The carrousel position used by the input observations.
+.le
+.ls grating
+The dispersing element, or grating, used by the input observations.
+.le
+.ls aperture
+The aperture used by the input observations.
+.le
+
+The columns of the fit tables are as follows:
+.ls sporder
+The spectral order of the observations used to produce the line
+positions.  For single order gratings, the value is "1".
+.le
+.ls wave
+The known wavelength of the identified feature.
+.le
+.ls sample(obs)
+The sample position of the identified feature.
+.le
+.ls sample(calc)
+The sample position of the feature's wavelength as calculated by the
+equation using the determined set of coefficients.
+.le
+.ls residual
+The difference between the observed sample position and the
+calculated sample position.
+.le
+.le
+.ls LINE WAVELENGTH TABLE
+This input table specifies the known wavelengths of features that may
+appear in the input calibration observation images.  This table may
+have one or two columns.  The column names are specified by the
+parameters "lines_col" and "strength_col".  The columns are defined as
+follows:
+.ls lines_col
+This column should contain the known wavelengths of features that may
+be found in the input calibration observations.  This column must be
+present.
+.le
+.ls strength_col [optional]
+This column contains the "strengths" of the features.  If blank, no
+line strength information will be read.  This information is used by
+'zwavecal' only to decide which line identification should be assigned to
+an observed feature, where stronger lines take precedence over weaker
+lines.  If no strength information is provided, 'zwavecal' will not delete
+duplicate line identifications.
+.le
+.le
+.ls INTERACTIVE MODE
+In graphics interaction mode, 'zwavecal' provides graphs showing the
+observational spectrum, an artificial spectrum created with the
+located lines, and optionally, an artificial spectrum of the line list
+before the lines have been located in the observation.  Below are the
+keystrokes and "colon" commands available to the user while in
+interactive mode.
+.ls '?'
+Shows the available cursor commands.
+.le
+.ls ' ' <space>
+Hitting the <space> key will return the location of the cursor in both
+wavelength and pixel space.  The form of the output is:
+
+.nf
+	wave=XXXXX pixel=XXXXX
+.fi
+.le
+.ls ':'
+Start a colon command.  See below for list of colon commands.
+.le
+.ls 'a'
+Plot all the spectra.  The observational spectrum, the predicted
+artificial spectrum, and the located artificial spectrum are all
+plotted.  A key on the right of the graph indicate what type of line
+corresponds to each spectrum.
+.le
+.ls 'b'
+Plot both artificial spectra.  Both the predicted and located
+artificial spectra are plotted, omitting the observational spectrum.
+A key on the right of the graph indicates what type of line
+corresponds to each spectrum.
+.le
+.ls 'g'
+Get information on the line whose located position is nearest the
+graphics cursor.  The following message is returned:
+
+.nf
+
+	line xxxx located at pixel xxx wavelength xxxx
+
+	where
+           'line xxxx' is the line's known wavelength
+           'pixel xxx' is the pixel position of the line
+           'wavelength xxx' is the wavelength of that pixel 
+           as determined by the provided wavelength solution
+.fi
+.le
+.ls 'i'
+Identify a line.  The use of the 'i' key is a three step process.  It
+is best to use the 'i' key when the observed spectrum and predicted
+line spectrum are plotting simultaneously, (see the 'p' key).
+
+The first time the 'i' key is hit, instructions on the use of the 'i'
+key are printed:
+
+.nf
+	Select observed feature to identify
+.fi
+
+Place the graphics cursor on a feature in the observed spectrum that
+will be identified, then hit the 'i' key again.  The following
+instruction is printed:
+
+.nf
+	Select line associated with feature
+.fi
+
+Place the graphics cursor on the feature in the predicted spectrum and
+hit the 'i' key again.  The selected feature will be associated with
+the selected line, determining a new zero-point offset.  The locating
+phase will then re-execute, determining new locations for lines.  The
+zero-point offset calculated can be queried using the "offset" colon
+command.
+.le
+.ls 'l'
+Plot the observational spectrum and the located artificial spectrum.
+A key to the right of the plot indicates which plot refers to which
+spectrum.
+.le
+.ls 'n'
+Next spectrum.  The accept the line locations found for the current
+spectrum and start processing the next.  This is the same
+functionality as the 'q' and EOF keys.
+.le
+.ls 'p'
+Plot predicted and observed spectra.  A key to the right of the graph
+indicates which line type corresponds to which spectrum.
+.le
+.ls 'q'
+Next spectrum.  The accept the line locations found for the current
+spectrum and start processing the next.  This is the same
+functionality as the 'n' and EOF keys.
+.le
+.ls 'r'
+Redraw.  Simply redraw the graphs.
+.le
+.ls 's'
+Silent.  Accept the line locations of the current spectrum and end
+interactive mode.  If there are more spectra to be processed, they
+will be done without graphics interaction.
+.le
+.ls 'w'
+Execute the gtools windowing options.  Refer to the help for 'gtools'
+for more information.  The next key may be one of the following:
+.ls 'a'
+Autoscale x and y axes.
+.le
+.ls 'b'
+Set bottom edge of window.
+.le
+.ls 'c'
+Center window at cursor position.
+.le
+.ls 'd'
+Shift window down.
+.le
+.ls 'e'
+Expand window (mark lower left and upper right of new window)
+.le
+.ls 'f'
+Flip x axis.
+.le
+.ls 'g'
+Flip y axis.
+.le
+.ls 'j'
+Set left edge of window.
+.le
+.ls 'k'
+Set right edge of window.
+.le
+.ls 'l'
+Shift window left.
+.le
+.ls 'm'
+Autoscale x axis.
+.le
+.ls 'n'
+Autoscale y axis.
+.le
+.ls 'p'
+Pan x and y axis about cursor.
+.le
+.ls 'r'
+Shift window right.
+.le
+.ls 't'
+Set top edge of window.
+.le
+.ls 'u'
+Shift window up.
+.le
+.ls 'x'
+Zoom x axis about cursor.
+.le
+.ls 'y'
+Zoom y axis about cursor.
+.le
+.ls 'z'
+Zoom x and y axes about cursor.
+.le
+.le
+.ls 'x'
+Recalculate zero-point offset with cross correlation.
+.le
+.ls EOF
+Next spectrum.  The accept the line locations found for the current
+spectrum and start processing the next.  This is the same
+functionality as the 'n' and 'q' keys.
+.le
+
+Below is the list of colon commands available.
+.ls no_dups [yes/no]
+Show/change state of no_dups.  If "yes", only the "brightest" lines,
+as determined by the line list table, will be allowed at the same
+pixel location.  If "no", all lines located are allowed, despite the
+fact that some may be assigned to the same observed feature.  With no
+argument, the current state is reported.
+.le
+.ls offset [value]
+Show/set value of the zero-point offset.  The units of the offset
+should first be set using the "units" colon command (see below).  With
+no argument, the current offset is displayed.
+.le
+.ls radius [value]
+Show/set number of pixels to search around the predicted pixel
+position for a feature.  With no argument, the current value is displayed.
+.le
+.ls sigma [value]
+Show/set value of sigma for artificially generated spectra.  If an
+argument is provided, it is taken as the sigma of the gaussian used to
+create the artificial spectra based on the predicted/located positions
+of lines.  With no argument, the current value is displayed.
+.le
+.ls thresh [value]
+Show/set threshold for true observed features.  If an observed
+emission has peak flux less than this value, it will not be used.
+With no argument, the current value is displayed.
+.le
+.ls units [wavelength,pixel,sample]
+Show/set the units of the zero-point offset.  The units should be set
+before the offset is specified with the "offset" colon command.  With
+no argument, the current units are displayed.
+.le
+.ls width [value]
+Show/set feature width size.  With argument, reset feature width size.
+With no argument, report on current size.
+.le
+.ls xcor [yes/no]
+Show/set whether cross-correlation should be used to find the initial
+zero-point offset.  "yes" will recalculate the zero-point offset
+before the lines are located.  "no" will use the offset specified by
+the "offset" command or the value specified initially in the "offset"
+task parameter.  This command has no effect on the current spectrum;
+it will only effect subsequent spectra.  With no argument, the current
+state will be displayed.
+.le
+.le
+.ih
+PARAMETERS
+.ls input [file name template]
+The input list of image header file names.  A single file, a
+wildcard-specified template, or an "@" followed by a file name
+containing the list of observations to process may be specified.
+.le
+.ls output [table name]
+Name of the table containing the fitted coefficients.
+.le
+.ls (wave = "") [file name template]
+The input list of image header file names which contain the wavelength
+solutions for the input list of observation images.  A single file, a
+wildcard-specified template, or an "@" followed by a file name
+containing the list of wavelength solution images may be specified.
+If an image name does not have an extension, the extension specified
+in the 'defwavext' parameter will be used.  If blank, the rootnames of
+the input observations and the extension in 'defwavext' will be
+appended to determine the name of the wavelength solution images.
+.le
+.ls (defwavext = "c0h") [string]
+Extension appended to the wavelength image header file names if no
+extensions are specified.  Or, if no wavelength images are specified,
+the extension appended to the input image header file names to find
+wavelength solution image names.
+.le
+.ls (fittab = "") [table name]
+Rootname of the tables containing the evaluation of the equation using the
+final coefficients.  If blank, no tables are produced.  The form of
+the tables names is the value of 'fittab' appended with the string
+"_XXXXX" where XXXXX is the carrousel position at which the fit was
+produced.
+.le
+.ls (interactive = no) [yes,no]
+Enter graphics interaction mode.
+.le
+.ls (dvpar = "") [pset]
+The pset containing the graphics device parameters.  If blank, the
+pset 'dvpar' is used.  The only pertinent parameter in this pset is
+the 'device' parameter specifying which graphics device should be used.
+.le
+.ls (findpars = "") [pset]
+Name of the parameter set specifying the initial parameters for the
+line finding algorithm.  If blank, the pset 'findpars' will be used.
+The parameters in this pset are as follows:
+.ls (lines = "scidata$czptnelinec") [table name]
+Name of the table containing the line list to search for in the input
+observations. 
+.le
+.ls (lines_col = "wavelength") [column name]
+The name of the column in the "lines" table which contains the
+known wavelengths of features that may appear in the input
+observations.  This column is required to exist and be properly populated.
+.le
+.ls (strength_col = "intensity") [column name]
+The name of the column in the "lines" table which contains the
+intensities of the features listed.  This column is optional; if
+blank, this information will not be accessed/used by 'zwaveid'.  The
+effect is that 'zwaveid' will not be able to delete multiple
+identifications for a feature in an observation.
+.le
+.ls (cross_corr = yes) [yes/no]
+When reading each input observation/wavelength solution, perform
+cross correlation with an artificially generated spectrum based on the
+provided wavelength solution an information in the "lines" table.  The
+result of the cross correlation is used to determine an initial zero
+point offset in the wavelength scale.  If "no", the initial cross
+correlation is not done and the initial zero-point offset is that
+specified by the parameter "offset".
+.le
+.ls (max_shift = 20) [integer]
+If doing cross correlation, this is the maximum shift the correlation
+process will examine for shifts between an observation and its
+corresponding wavelength solution.
+.le
+.ls (offset = 0.) [real]
+If cross correlation is not used, this is the zero-point offset that
+should be applied to the provided wavelength solution before lines are
+located in the observation.  The offset is calculated as follows,
+depending on what units are of interest:
+
+.nf
+	pixel(obs) = pixel(predicted) + offset
+	wavelength(known) = wavelength(predicted) + offset
+	sample(obs) = sample(predicted) + offset
+.fi
+
+where all the "predicted" quantities are determine using the
+wavelength solution, while the "obs" and "known" quantities are
+determined from the observation and input line list.
+.le
+.ls (units = "pixel") [pixel,sample,wavelength]
+The units of the specified offset.
+.le
+.ls (width = 5.) [real]
+Width of the observed features in pixels.  This corresponds directly
+to the 'width' argument for the center1d algorithm (see SEE ALSO).
+.le
+.ls (radius = 5.) [real]
+Number of pixels on each side an initial guess of the feature location
+to search for an observed feature.  This corresponds directly to the
+'radius' argument for the center1d algorithm (see SEE ALSO).
+.le
+.ls (threshold = 20.) [real]
+The minimum flux required for an observed feature to be considered a
+valid feature.  The units need only be the same as the flux units of
+the input observations.
+.le
+.ls (no_dups = yes) [yes,no]
+If "yes" and line strengths were specified in the input line list
+table, 'zwaveid' will look for observed features assigned to two or
+more lines.  The feature will be identified with the line having the
+numerically larger strength while the other identifications will be
+deleted.
+.le
+.le
+.ls (fitpars = "") [pset]
+Parameter set containing the fitting parameters.  The parameters are
+as follows:
+.ls (offlib = "scidata$czscoffc") [table name]
+Name of the table containing the SC1/SC2 to SSA offset coefficients to
+convert the calculated equation solution to the SSA aperture.  If not
+specified, the conversion will not occur.  If the wavelength solution
+is not converted, and one will use the results in calhrs, the
+calibration flag, "IAC_CORR" must be set to "OMIT".
+.le
+.ls (maxtry = 3) [integer, minimum=0]
+The number of regression tries to improve the fit to the equation by
+throwing out lines.  If the number of tries exceeds this value, a
+warning message will be posted, and the coefficients for the last
+attempt will be written to the output table.
+.le
+.ls (nsigma = 2.5) [real, minimum=0.]
+The number of sigma away from the fit a point needs to be in order to
+be removed from the list of valid points to fit in the next attempt.
+.le
+.ls (defcoef = yes) [yes/no]
+Find the "default" coefficients in the equation.  For the GHRS, each
+grating mode need only solve for some of the coefficients in the
+equation; the other coefficients are set to zero.  If "yes", 'zwavefit'
+will find these coefficients (see table below).  If "no", 'zwavefit' will
+determine which coefficients to solve for from the parameters "a0"
+through "a7" (see below).
+
+The default coefficients for the GHRS gratings are as follows:
+
+.nf
+	GRATING			COEFFICIENTS
+
+	G140M			a0, a1, a2
+	G160M			a0, a1, a2
+	G200M			a0, a1, a2
+	G270M			a0, a1, a2
+	G140L			a0, a1, a2
+	ECH-A			a1, a1, a2, a4
+	ECH-B			a0, a1, a2, a4
+.fi
+.le
+.ls (a0, a1, a2, a3, a4, a5, a6, a7) [real]
+If 'defcoef' is "no", these parameters will determine whether 'zwavefit'
+will fit for the coefficient or not.  If the value of a parameter is
+'INDEF', 'zwavefit' will fit for its value.  If the parameter has any
+other value, 'zwavefit' will set the coefficient to that value and hold
+it  constant during the fitting process.
+.le
+.le
+.ls (verbose = no) [yes/no]
+Print detailed messages about the progress of 'zwavecal'.  If "no", only
+the current carrousel position being analyzed is shown, along with the
+fit information.  If "yes", each step in 'zwavecal' prints a message.
+.le
+.ls (aper_list = "", cpos_list = "")
+These are non-user parameters used internally by 'zwavecal'.
+.le
+.ih
+EXAMPLES
+1. An observer has received two observations.  One, 'z0x10101', is a
+SPYBAL automatically taken just before the science observation,
+'z0x10102'.  Since the science and the cal lamp observations are at
+different carrousel positions, waveoff will be used to determine a
+linear offset, which will then be applied to the science observation.
+
+.nf
+	cl> waveoff z0x10101
+	#    file                      woffset poffset soffset correlation
+	z0x10101.c1h[1/1]              -0.0188 -0.8046 -0.2015  0.4463
+	cl> imcalc z0x10102.c0h z0x10102_fixed.c0h "im1-0.0188"
+.fi
+
+2. A GO has two observations.  The first, 'z0x10101t', is a cal-lamp
+observation requested by the GO at the same carrousel position as the
+science observation, 'z0x10102t'.  The science observation is not an
+FP-SPLIT, so a new dispersion can be used in calhrs to improve the
+wavelength solution.  The new calibrated files will have the rootname
+"new_102_calibrated".
+
+.nf
+	cl> zwavecal z0x10101t new_disp
+	cl> hedit z0x10102t.d0h ccr6 new_disp.tab
+	cl> calhrs z0x10102t new_102_calibrated
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to the references in the package level help.  Type "help hrs
+option=sys".
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+waveoff, zwaveid, zwavefit, zavgtemp
+.endhelp

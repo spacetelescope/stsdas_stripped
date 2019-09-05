@@ -1,0 +1,15 @@
+# Update factor in the fourier package library
+# Author:  Phil Hodge, 28-Jan-1989
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	cprimes.x		
+	factor.x       		
+	getwks.x       		
+	listprimes.x   		
+	pfactor.x 		
+	;

@@ -1,0 +1,19 @@
+HRS
+
+The HRS keywords consist of a list of detectors, apertures, gratings or 
+mirrors, and Echelle mode orders. The Echelle mode orders are used with the
+keywords ECHA and ECHB. Orders 18 to 33 are valid with Echelle mode B, while
+orders 33 to 53 are valid with Echelle mode A. An example of a typical HRS
+obervation mode string would be "HRS,LSA,G160M". 
+
+Apertures: lsa ssa
+
+Gratings: echa echb g140l g140m g160m g200m g270m
+
+Mirrors: a1 a2 n1 n2
+
+Echelle Orders: 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
+                37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 all
+
+COSTAR: costar nocostar
+

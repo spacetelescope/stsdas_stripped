@@ -1,0 +1,6 @@
+# Root entry for the axe help tree
+axe          men = axe$axe.men,
+	         hlp = axe$axe.men,
+             pkg = axe$axe.hd,
+             sys = axe$axe.hlp,
+             src = axe$axe.cl

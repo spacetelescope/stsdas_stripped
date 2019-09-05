@@ -1,0 +1,7 @@
+# Help directory for the STECF specres package (Jeremy Walsh)
+
+$doc = "stecf$specres/doc/"
+
+specholucy   hlp=doc$specholucy.hlp
+specpsf      hlp=doc$specpsf.hlp
+specinholucy hlp=doc$specinholucy.hlp

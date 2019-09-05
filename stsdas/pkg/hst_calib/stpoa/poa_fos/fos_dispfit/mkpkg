@@ -1,0 +1,65 @@
+# Make the fos_dispfit package
+#	to include fos_dispfit
+#
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+
+$call	relink
+$exit
+
+debug:
+        $set XFLAGS = "-fgq $(XFLAGS)"
+        $set LFLAGS = "-xz $(LFLAGS)"
+        $call update
+        $exit
+        ;
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout fos_dispfit.a ../
+	$update   fos_dispfit.a
+	$checkin  fos_dispfit.a ../
+	$call	fos_dispfit
+	;
+
+install:
+	$move xx_fos_dispfit.e ../../bin/$x_fos_dispfit.e
+	;
+
+fos_dispfit:
+linkonly:
+        $omake  x_fos_dispfit.x
+	
+        $link   x_fos_dispfit.o ../fos_dispfit.a ../poa_fos.a \
+                -liraf77 -lf77util -luttables -lstxtools -ltbtables \
+                -o xx_fos_dispfit.e
+	;
+
+fos_dispfit.a:
+	fos_dispfit.x
+	ycldsp.f
+        yerror.x
+        ymsput.f
+        varinit.f
+        yclmain.f
+        yclopninput.f
+        yclopnfit.f
+        fttntr.f
+        dmatin.f
+        chorec.f
+        fit_wave2x.f
+        dcprin.f
+        yclwrtout.f
+        fit_x2wave.f
+        yclnewcol.f
+	;

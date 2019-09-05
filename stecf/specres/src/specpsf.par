@@ -1,0 +1,11 @@
+refima,f,a,,,,Name of input reference file
+psfwavs,f,a,,,,Name of table of wavelengths of the PSF's to be interpolated
+psfims,f,a,,,,List of names of the PSF images for interpolation
+sliwid,r,a,,,,Width of slit (arcsec)
+pixwid,r,a,,,,Width of pixels (arcsec)
+subsam,r,a,,,,Number of (subsampled) pixels in PSF image per reference image pixel
+cenoff,r,a,,,,Offset of centre of slit from X peak of PSF (arcsec)
+psfpos,r,a,,,,Required Y value for PSF centre
+outpsf,f,a,,,,Name of output PSF image
+
+

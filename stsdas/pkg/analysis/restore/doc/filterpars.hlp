@@ -1,0 +1,37 @@
+.help filterpars Aug93 stsdas.analysis.restore
+.ih
+NAME
+filterpars -- 
+Set the filter parameters for the wiener task.
+.ih
+USAGE
+filterpars
+.ih
+DESCRIPTION
+This pset sets the values of the filter parameters for the wiener task.
+The filter form may be chosen among inverse, 
+Wiener, geometric mean and parametric types. Type "help wiener opt=sys" 
+to see a
+more detailed explanation of filter characteristics, limitations, and
+usage. 
+.ih
+PARAMETERS
+.le
+.ls (ftype = Wiener) [string, allowed values: Wiener | inverse | 
+parametric | geometric]
+
+Filter type to be used.
+.le
+.ls (gamma = 1.) [real, min=0.]
+When using parametric filter form, this is the constant value.
+Not used in other filter forms.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help wiener" and "help wiener opt=sys" for more information about 
+the wiener task.
+.endhelp

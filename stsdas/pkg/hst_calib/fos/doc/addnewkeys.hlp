@@ -1,0 +1,119 @@
+.help addnewkeys Nov97 stsdas.hst_calib.fos
+.ih
+NAME
+addnewkeys -- Add new keywords to FOS data header files.
+.ih
+USAGE
+addnewkeys images
+.ih
+DESCRIPTION
+The 'addnewkeys' task is a script that adds new header keywords and
+group parameters to FOS data files.
+The keywords and group parameters that are added are those that are
+required by the CALFOS scattered light correction step, as well as
+new flux calibration steps.
+CALFOS versions 1.3.1 and later contain a scattered light correction
+step that was not available in earlier versions.
+Furthermore, CALFOS versions 2.0 and later contain new flux calibration
+steps involving corrections for changes in aperture throughput as
+a function of OTA focus and corrections for changes in instrumental
+sensitivity over time.  It should be noted the new flux calibration is not 
+applicable to spectropolarimetry data.
+
+The scattered light correction requires the "SCT_CORR" calibration switch 
+and the "CCS9" reference table name to be in the raw ('.d0h') data file.
+Furthermore, values of the scattered light (and its estimated error)
+computed by CALFOS are written to the group parameters "SCT_VAL" and
+"SCT_ERR".
+These four header keywords and group parameters do not appear in FOS
+data files produced before April 1994, and therefore, must be added
+in order to take advantage of the scattered light correction step
+when reprocessing old data sets.
+
+The new flux calibration steps require the calibration switches
+"APR_CORR", "AIS_CORR", and "TIM_CORR".
+These steps also require the new "CCSA", "CCSB", "CCSC", and "CCSD"
+reference table names and the "AISHFILE" reference file name.
+When the new calibration switches are added to existing headers using
+this task, the old flux calibration switch "FLX_CORR" is set to "OMIT".
+Since the new flux calibration is not applicable to spectropolarimetry
+data, only "FLX_CORR" should be set to "PERFORM" for spectropolarimetry 
+observations.
+
+.ih
+PARAMETERS
+.ls images [string]
+List of image headers to which the new keywords will be added. Should be
+'.d0h' files since it is these files that CALFOS searches for keyword values.
+.le
+.ls ccs9 [file name]
+Name of the "CCS9" reference table. This name will be used to populate
+the "CCS9" header keyword when it is added.
+.le
+.ls ccsa [file name]
+Name of the "CCSA" reference table. This name will be used to populate
+the "CCSA" header keyword when it is added.
+.le
+.ls ccsb [file name]
+Name of the "CCSB" reference table. This name will be used to populate
+the "CCSB" header keyword when it is added.
+.le
+.ls ccsc [file name]
+Name of the "CCSC" reference table. This name will be used to populate
+the "CCSC" header keyword when it is added.
+.le
+.ls ccsd [file name]
+Name of the "CCSD" reference table. This name will be used to populate
+the "CCSD" header keyword when it is added.
+.le
+.ls ais [file name]
+Name of the "AISHFILE" reference file. This name will be used to populate
+the "AISHFILE" header keyword when it is added.
+.le
+.ls (scatter = yes) [boolean]
+Switch to control whether or not the new keywords and group parameters
+associated with the scattered light correction are to be added to the header.
+.le
+.ls (calib = yes) [boolean]
+Switch to control whether or not the new keywords associated with the
+enhanced flux calibration steps are to be added to the header.  This is
+appropriate only for non-polarimetric data.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Add all of the new keywords to the image 'y15i0206t.d0h'.
+
+.nf
+  fo> addnewkeys y15i0206t.d0h
+.fi
+
+2. Add only the keywords associated with the new flux calibration steps to
+all raw data ('.d0h') files in the current directory.
+
+.nf
+  fo> addnewkeys *.d0h scatter=no
+.fi
+.ih
+NOTES
+It is the responsibility of the user to insert the appropriate filenames 
+for the CCS9, CCSA, CCSB, CCSC, CCSD, and AIS parameters.  The filenames and
+the actual files are available through the HST Archive using the StarView
+facility.  Once in StarView, the user should utilize the 
+"HST INSTRUMENT/FOS Reference Files" search screen to determine the 
+best calibration files that apply to any specific dataset.
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+calfos
+.endhelp

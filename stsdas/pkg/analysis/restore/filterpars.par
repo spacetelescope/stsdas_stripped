@@ -1,0 +1,5 @@
+# Wiener filter control parameters.
+#
+ftype,s,h,"Wiener","|Wiener|inverse|parametric|geometric",,">filter type"
+gamma,r,h,1.,0.,,">parametric filter constant"
+mode,s,h,al

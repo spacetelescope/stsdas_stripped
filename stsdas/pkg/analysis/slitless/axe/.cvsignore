@@ -1,0 +1,4 @@
+.cvsignore
+.pydevproject
+.project
+bin

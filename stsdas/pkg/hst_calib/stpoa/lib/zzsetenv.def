@@ -1,0 +1,7 @@
+# Global environment definitions for the STPOA package.
+
+set	stpoalib	= "stpoa$lib/"
+set     stpoabin	= "stpoa$bin/"
+set     poa_spec	= "stpoa$poa_fos/data/"
+
+keep

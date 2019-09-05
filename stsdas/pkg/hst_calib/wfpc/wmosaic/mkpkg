@@ -1,0 +1,17 @@
+# Update the wmosaic application code in the wfpc package library
+# Author: HSU, 03-MAR-1993
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_wmosaic.x 	<imhdr.h>	"wmosaic.h"
+	mosaic_in.x	
+	mosaic_check.x	<imhdr.h>	"wmosaic.h"
+	mosaic_do.x	<math.h>	"wmosaic.h"
+	get_edge.x
+	get_edge2.x
+	inshadow.x
+	;

@@ -1,0 +1,134 @@
+.help yd2p Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+yd2p -- Convert from FOS diode to pixel number.
+.ih
+USAGE
+yd2p diode
+.ih
+DESCRIPTION
+'yd2p' is a script to help determine which pixels a diode contributes to.
+The pattern information can either be obtained from
+an observation or from the task parameters.
+
+Either a single diode can be converted, or a file containing a list of
+diodes can be converted.  The range of pixels affected are written to
+the task parameters 'pbeg' and 'pend'.  In case of a list, only the
+last diode in the list will be reflected in the parameters.
+
+'yd2p' can also produce text output to standard output.  The form of the
+text output is suitable for other tasks that use tables as input.
+
+If a file is specified, it is expected to contain one column of diode
+numbers.  Comment lines are allowed.
+.ih
+PARAMETERS
+.ls diode [int]
+The diode number to convert.  If a file is specified in the parameter
+'dlist', the value in this parameter will not be used.
+.le
+.ls (obs = "") [file]
+The name of an FOS observation to retrieve the pattern information
+from.  If blank, the pattern information is taken from the parameters
+'nxsteps', 'overscan', 'fcnhl', and 'nchnls'.
+.le 
+.ls (dlist = "") [file]
+The name of a text file containing a list of diodes to convert.  The
+file should contain one column of diode numbers.  Lines beginning with
+"#" are considered comment lines and ignored.
+.le
+.ls (ystep = 1) [int]
+Which 'ystep' should be referred to.  Since the FOS observation files
+concatentate the pixel arrays for each YSTEP into a single array, this
+can be used to modify the pixel numbers to reflect where in the image
+array the pixels actually are located.
+.le
+.ls (nxsteps = 4) [int]
+If no observation is specified, the NXSTEPS desired is retrieved from
+this parameter.
+.le
+.ls (overscan = 5) [int]
+If no observation is specified, the OVERSCAN desired is retrieved from
+this parameter.
+.le
+.ls (fchnl = 1) [int]
+If no observation is specified, the first channel, or diode, that is
+read.  This is necessary to modify if the wavelength range is meant to
+be restricted.  This is used in conjunction with the 'nchnls' parameter.
+.le
+.ls (nchnls = 512) [int]
+If no observation is specified, the number of channels, or diodes, to
+be read.  This is necessary to modify if the wavelength range is meant
+to be restricted.  This is used in conjunction with the 'fcnhl'
+parameter.
+.le
+.ls (pbeg) [int]
+An output parameter.  On task completion, this will be the first pixel
+which the specified diode contributes to.  If a diode list was given,
+this will contain the first pixel for the last diode in the list.
+.le
+.ls (pend) [int]
+An output parameter.  On task completion, this will be the last pixel
+which the specified diode contributes to.  If a diode list was given,
+this will contain the last pixel for the last diode in the list.
+.le
+.ls (verbose = yes) [bool]
+Tells whether the results of the conversion should be written to
+standard output in table form.
+.le
+.ih
+EXAMPLES
+1. Determine which pixels diode 364 contributes to.
+
+.nf
+	cl> yd2p 364
+	# yd2p: nxsteps = 4 overscan = 5 ystep = 1 fchnl = 1 nchnls = 512
+	# diode  pbeg  pend
+	   364   1453  1472
+	cl> lpar yd2p
+	        diode = 364   Input diode number to find which
+	         (obs = "")   Observation to get step pattern 
+	       (dlist = "")   List of diodes to convert
+	       (ystep = 1)    Which ystep should be referred to
+	     (nxsteps = 4)    NX steps if no obs specified
+	    (overscan = 5)    OVERSCAN if no obs specified
+	       (fchnl = 1)    First channel (diode) to be read
+	      (nchnls = 512)  Number of channels (diodes) to be
+	        (pbeg = 1453) Output: First pixel specified diode
+	        (pend = 1472) Output: Last pixel specified diode
+	     (verbose = yes)  Write results to standard output
+.fi
+
+2. Determine pixels for a list of diodes.
+
+.nf
+	cl> for (i=200; i < 250; i=i+1) print (i, >> "dlist.txt")
+	cl> yd2p dlist=dlist.txt
+	# yd2p: nxsteps = 4 overscan = 5 ystep = 1 fchnl = 1 nchnls = 512
+	# diode  pbeg  pend
+	   200    797   816
+	   201    801   820
+	   202    805   824
+	...
+.fi
+
+3. Get the pattern information from an observation.
+
+.nf
+	cl> yd2p 364 obs=y2observ.c1h
+.fi
+.ih
+BUGS
+This task is implemented as a cl script and hence is not very fast or
+robust.
+.ih
+REFERENCES
+Jonathan Eisenhamer
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+yp2d, yddintplot
+.endhelp

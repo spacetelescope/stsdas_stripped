@@ -1,0 +1,182 @@
+.help treqxy Oct2004 stis
+.nj
+.ih
+NAME
+treqxy -- Translate right ascension and declination to
+distorted 2-D image pixel coordinates.
+.ih
+USAGE	
+.nf
+treqxy input "ra dec"
+treqxy input coords.txt
+.fi
+.ih
+DESCRIPTION
+This task converts one or more points on the celestial sphere
+(specified by right ascension and declination)
+into pixel locations in an image.
+The 'coords' parameter value may be the right ascension and declination,
+or it may be the name of a text file containing ra and dec
+for one or more objects.
+
+The equatorial coordinates will first be converted to pixel coordinates
+using the FITS keywords (e.g. CTYPEi, CRVALi, CRPIXi, CDi_j)
+in the image header.
+Then the geometric distortion will normally be applied to
+the pixel coordinates, as defined by an IDC table,
+so the resulting values will be the coordinates in the image
+(i.e. the flt or crj image)
+that has not been resampled to correct for the distortion.
+Applying the distortion can be disabled by the user
+by setting the 'idctab' parameter to "none".
+It will be disabled by the task
+if the primary header of the image file
+contains a GEOCORR keyword and its value is "COMPLETE",
+or if there is no IDCTAB header keyword (and 'idctab' is null).
+In these cases,
+the task will print "# Note:  no geometric correction"
+(possibly followed by further explantion)
+before printing the results.
+
+Four numbers will be printed to the standard output
+for each pixel location:  the input equatorial coordinates
+(as specified by the user)
+and the geometrically distorted pixel coordinates.
+.ih
+PARAMETERS
+.ls input [string]
+Input image name.
+Wildcards are not supported;
+the task reads just one image at a time.
+
+For a FITS file, the extension must be specified explicitly,
+unless the image is in the primary header/data unit
+and there are no extensions.
+.le
+.ls coords [string]
+This may be either a pair of numbers or the name of a text file.
+If it is a pair of numbers (separated by one or more blanks),
+they will be interpreted as the right ascension and declination.
+If it is a text file,
+it should contain two columns separated by whitespace;
+the first column should be the right ascension,
+and the second column should be the declination.
+(Comma and semicolon are also allowed as separators.)
+
+The right ascension may be given either in hours, minutes and seconds
+or in decimal degrees (not decimal hours).
+These two cases are distinguished by the presence or absence
+of a colon in the right ascension.
+For example, if the right ascension were given as 18:43:11.807
+it would be interpreted to be hours, minutes, and seconds,
+while 280.79919583333 would be read as decimal degrees
+(and 18:43.1967833 would be hours and minutes).
+The declination may be given either in degrees, minutes and seconds
+or in decimal degrees.
+.le
+.ls (idctab = "") [string]
+The name of a table of image distortion coefficients.
+
+If 'idctab' is null (the default),
+the task will read the IDCTAB keyword in the primary header
+and use that table for the distortion coefficients.
+If there is no IDCTAB keyword in the primary header,
+no correction for geometric distortion will be applied.
+'idctab' may be used to override the value in the header
+or to specify a table for an image that lacks this keyword.
+A pixel offset will be added so that
+when the 'idctab' distortion correction is applied,
+the distortion will be zero at the reference pixel (CRPIX1,CRPIX2).
+See the description of 'select' for the row selection criteria.
+See ISR ACS 2001-08 for a description of the format
+of this reference table.
+
+If idctab = "none", no IDC table will be used,
+and no geometric distortion will be applied to the pixel coordinates.
+.le
+.ls (select = "filter") [string]
+Row selection column.
+
+The IDC table may contain more than one row.
+The row to use will be selected by the value in the DIRECTION column;
+DIRECTION must be "INVERSE".
+A second column, as given by the 'select' parameter,
+can be used as an additional selection criterion.
+If 'select' is not null,
+both an image header keyword and an IDC table column with that name must exist;
+the header and column values will be compared (case insensitive)
+and used in addition to DIRECTION to select the table row.
+The header and column values of 'select' are expected to be strings.
+.le
+.ls (decimals = 4) [int]
+This parameter gives the number of decimal places to be printed
+for the pixel coordinates, if verbose = yes.
+.le
+.ls (verbose = yes) [boolean]
+Print output?  If verbose = no, the task runs silently;
+this option may be useful in scripts
+when processing one point per call to 'treqxy'.
+Note that the task parameters 'x' and 'y'
+will be updated with the X and Y pixel coordinates respectively,
+regardless of the value of 'verbose'.
+.le
+.ls (x) [string]
+The output X pixel coordinate.
+If 'coords' is a file name
+and the file contains more than one pair of pixel coordinates,
+'x' and 'y' will be assigned the pixel coordinates
+corresponding to the last location read from 'coords'.
+.le
+.ls (y) [string]
+The output Y pixel coordinate.
+.le
+.ih
+EXAMPLES
+1. Calculate equatorial coordinates of a pixel in the first extension:
+
+.nf
+  st> # hh:mm:ss.d dd:mm:ss.d format
+  st> treqxy o5ja06010_crj.fits[1] "18:43:11.42528 -32:17:40.5448"
+      18:43:11.42528       -32:17:40.5448   755.0012  863.9987
+
+  st> # decimal degrees
+  st> treqxy o5ja06010_crj.fits[1] "280.79760533333 -32.294595777778"
+     280.79760533333     -32.294595777778   755.0012  863.9987
+
+  xs> trxyeq o5ja06010_crj.fits[1] "755 864"
+  755.000   864.000    754.7548   864.1740  18:43:11.42528 -32:17:40.5448
+.fi
+
+2. As in example 1, but omit the geometric correction:
+
+.nf
+  xs> treqxy o5ja06010_crj.fits[1] "18:43:11.42528 -32:17:40.5448" idctab=none
+# Note:  no geometric correction
+      18:43:11.42528       -32:17:40.5448   754.7548  864.1729
+.fi
+
+3. Calculate equatorial coordinates at the corner pixels of the image,
+with equatorial coordinates specified in the file "coo.lis"
+(obtained by running 'trxyeq'):
+
+.nf
+  xs> treqxy o5ja06010_crj.fits[1] coo.lis
+      18:43:14.45129       -32:16:56.8438     1.0002    1.0020
+      18:43:10.39901       -32:17:03.6795     1.0006 1023.9973
+      18:43:14.99293       -32:17:48.2482  1023.9981    1.0004
+      18:43:10.93125       -32:17:55.0981  1024.0001 1024.0015
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+ISR ACS 2001-08, W. Hack and C. Cox,
+"Revised IDCTAB Definition:  Application to HST Data."
+
+The 'treqxy' task was written by Phil Hodge.
+.ih
+SEE ALSO
+The 'trxyeq' task is the inverse of 'treqxy'.
+The 'ucrpix' task can be used to adjust the CRPIX1 and CRPIX2 keywords
+to improve the accuracy of the coordinate conversion.
+.endhelp

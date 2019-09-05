@@ -1,0 +1,41 @@
+xgflib
+# Library /usr/ra/tables/lib/gflib
+# M. De La Pena, 07 January 1999 - Rebuilt definition file of XGFLIB due to
+#  updates in the library.
+
+/h/# include <c_iraf.h>
+/h/# define SZ_KEYWORD  8
+/h/# define SZ_SHORTSTR 32
+/h/# define TYPE_LIST   "|stf|fxf|oif|plf|qpf|"
+
+/h/# define UNKNOWN_FMT 0
+/h/# define GEIS_FMT    1
+/h/# define FITS_FMT    2
+/h/# define IRAF_FMT    3
+/h/# define PIXLIST_FMT 4
+/h/# define QPOE_FMT    5
+
+/h/# define KEYSTRING   "|gcount|psize|pcount|group|bitpix|szgroup|"
+
+/h/# define GCOUNT_KEY  1
+/h/# define PSIZE_KEY   2
+/h/# define PCOUNT_KEY  3
+/h/# define GROUP_KEY   4
+/h/# define BITPIX_KEY  5
+/h/# define SZGROUP_KEY 6
+/h/
+
+/c/# include <xgflib.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+gf_addpar.x:procedure gf_addpar (im:i, pname:i, dtype:i, plen:i, pval:i, pcomm:i)
+gf_delpar.x:procedure gf_delpar (im:i, pname:i)
+gf_gcount.x:int procedure gf_gcount (im:i)
+gf_geis.x:bool procedure gf_geis (im:i)
+gf_gfind.x:int procedure gf_gfind (im:i, keyword:i)
+gf_gstfval.x:int procedure gf_gstfval (im:i, keyword:i)
+gf_map.x:pointer procedure gf_map (image:i, acmode:i, oldim:i)
+gf_opengr.x:procedure gf_opengr (im, gn:i, datamin, datamax, imt:i)
+gf_pstfval.x:procedure gf_pstfval (im:i, keyword:i, value:i)

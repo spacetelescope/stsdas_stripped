@@ -1,0 +1,210 @@
+.help calfoc Aug94 stsdas.hst_calib.foc
+.nj
+.ih
+NAME
+calfoc -- Perform pipeline calibrations on FOC data files.
+.ih
+USAGE
+calfoc input output
+.ih
+DESCRIPTION
+This task performs routine calibrations of FOC data files based
+on parameters defined in image header keywords.
+This task assumes that the parameters are already stored in the header,
+either those assigned during generic conversion,
+or user-assigned values set by the 'chcalpar' task.
+
+The steps that are to be performed are specified by setting header keywords to 
+"PERFORM" (to include the step in the calibration) or
+"OMIT" (to prevent the step from being performed).
+The order in which the process is performed cannot be changed,
+except by repeatedly setting switches and running 'calfoc'.  
+
+The order of processing is:
+
+.ls BACCORR - Subtract dark counts.
+.le
+.ls ITFCORR - Supply format-dependent photometric correction (pseudo-ITF).
+.le
+.ls PXLCORR - Split "zoomed" pixels.
+.le
+.ls WAVCORR - Compute absolute sensitivity.
+.le
+.ls GEOCORR - Perform geometric correction.
+.le
+.ls UNICORR - Correct relative detector efficiency.
+.le
+
+The output files created by 'calfoc' will by default have
+the same root name as the input image,
+but will have extensions of ".c?h" and ".c?d".
+These extensions identify the processing that has been done, as defined below:
+
+.ls c0h - Geometrically corrected image.
+.le
+.ls c1h - Photometrically and geometrically corrected image.
+.le
+
+After processing, the output images will have their calibration switches set 
+to "COMPLETE". 
+
+'calfoc' determines whether it is running in the pipeline 
+by looking for an environment variable with the name PODPS_CLD
+(yes, upper case).
+In the PODPS environment the VMS logical name PODPS_CLD is always defined,
+and this shows up in IRAF as an environment variable.
+(The value is a VMS file name.)
+PODPS_CLD is presumed to be not set for ordinary IRAF use outside the pipeline.
+When running within the pipeline,
+'calfoc' writes the values of the five group parameters
+DATAMIN, DATAMAX, CRVAL1, CRVAL2, and ORIENTAT
+to an ASCII file with extension ".cgr".
+This makes it easier for DADS to get those group parameters,
+and this file is not needed outside the pipeline.
+Another difference is that when running outside the pipeline,
+if one or more processing steps are skipped,
+the extensions of the output images may be given special values
+to indicate that the complete processing was not done.
+The algorithms and order of processing are absolutely identical, however.
+If both geometric correction and flat-field correction (UNI or SDE) are done,
+then the extensions will be ".c0h" and ".c1h" as usual. Otherwise, the
+files will have the following extensions:
+.nf
+
+cbh - Output from first set of processing steps (background,
+      ITF, pixel splitting, and absolute DE) when no subsequent
+      processing is done.
+cgh - Geometrically corrected image if no flat-field correction
+      is done.
+cuh - Flat-fielded image if no geometric correction is done.
+.fi
+
+If you want to simulate pipeline processing exactly,
+just set the environment variable PODPS_CLD to any non-null string.
+
+.ih
+VERSIONS
+The 'calfoc' task has changed significantly since the launch of HST.
+The following list shows when different versions of 'calfoc' were used.
+For each version of 'calfoc', the range of effective dates is given,
+followed by the 'calfoc' version number and the PODPS build numbers.
+The same version of 'calfoc' may have been used during several PODPS builds.
+Following that is a brief description of what was new with that version.
+The 'calfoc' version number is printed by 'calfoc' when it begins running,
+and it is included in the trailer file for images calibrated by the pipeline.
+
+.nf
+ 8/05/94 -  present   CALFOC 1.3.2.0, PODPS 34.3
+The aperture name (e.g. X96N512) is included in the PHOTMODE string.
+This is so the synphot subroutines will take the aperture into
+consideration when computing PHOTFLAM, because the sensitivity differs
+from one aperture to another.  The correction factor is defined to be
+one for the 512x512 normal format; other formats differ by some tens
+of percent.  Note that as a result of this change, CALFOC versions
+1.3.2.0 and later will compute different values for PHOTFLAM than
+will earlier versions, except for the 512x512 normal format.
+
+ 4/19/94 -  8/04/94   CALFOC 1.3.1.1, PODPS 33.3 - 34.3
+For normal image mode, instead of just copying the input CD matrix
+values to the output image, if geometric correction is performed,
+the output CD matrix elements are set to values depending on the
+image orientation from the ORIENTAT keyword and the pixel spacing
+from the IMSCALE keyword in the GEO file.  Add COSTAR to PHOTMODE
+if KXDEPLOY is true.
+
+Read the PEDIGREE and DESCRIP keywords, if present, from calibration
+file headers.  If the PEDIGREE value begins with "DUMMY", the
+corresponding calibration step is skipped, and the flag in the
+header is set to "SKIPPED" rather than "COMPLETE".  The values of
+PEDIGREE and DESCRIP are copied to the output image header and to
+the trailer file.
+
+ 7/28/92 -  4/18/94   CALFOC 1.2.6.0, PODPS 29.0 - 33.2
+Also write minimum and maximum data values to the ".cgr" file.
+The coordinate parameters CRPIX1, CRPIX2, the CD matrix and
+ORIENTAT are no longer modified due to the geometric correction,
+so (except for spectrographic mode) the coordinate parameters
+in the raw and calibrated images should be the same.
+
+11/12/91 -  7/27/92   CALFOC 1.1.5.0, PODPS 28.0 - 28.2
+Do geometric correction before UNI; The "c0h" file is geometrically
+corrected and c1h is fully corrected, both for normal and spectro-
+graphic images.  Update ORIENTAT because of geometric correction.
+When running in the pipeline, write ".cgr" file.  When running outside
+the pipeline, use non-standard extensions if processing steps are
+skipped.  The headers created by generic conversion are substantially
+modified from previous headers.  On 5/27/92 generic conversion was
+changed so the orientation is computed correctly; this affects the
+CD matrix and ORIENTAT.
+
+5/15/91 - 11/11/91   CALFOC 1.1.3.0, PODPS 27.0
+SAMPOFF is original (unflipped) value.  The SAMPBEG and LINEBEG
+header parameters are ignored.
+
+3/20/91 -  5/14/91   CALFOC 1.1.2.1, PODPS 26.3
+Fix bug that caused the pipeline to run out of memory:  close p_im.
+
+1/25/91 -  3/20/91   CALFOC 1.1.2.0, PODPS 26.1 - 26.2
+Use 'newgeom' instead of 'geomcorr'; the coordinate parameters CRPIX1,
+CRPIX2 and the CD matrix are modified in accordance with the geometric
+correction.  The pipeline "flips" the image by taking the mirror
+image around the vertical axis; SAMPOFF is also modified so it refers
+to the flipped image.
+
+1/4/91 -   2/6/91   CALFOC 1.1, PODPS 26.0
+Minor changes.
+
+7/30/90 -  1/3/91   CALFOC 1.0, PODPS 25
+Original version.
+.fi
+.ih
+PARAMETERS
+.ls input [file name]
+This is the uncalibrated input image produced by RSDP.
+In contrast to most IRAF and STSDAS tasks,
+an extension of ".d0h" will be assumed if none is specified.
+An image section may not be given.
+.le
+.ls output [file name]
+This is the root name of the output image(s).
+No extension may be specified;
+if one is given the name will be truncated at that point.
+.le
+.ih
+EXAMPLES
+1.  Process the image "scr$focim6.hhh",
+producing the calibrated images "scr$focim6.c0h" and "scr$focim6.c1h", 
+depending on the processing requested.
+
+.nf
+  fo> calfoc scr$focim6.hhh ""
+.fi
+
+2.  Calibrate "x0dw0503t.d0h",
+writing the output to "x503_gcf.c0h" and "x503_gcf.c1h".
+
+.nf
+  fo> calfoc x0dw0503t x503_gcf
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+SOGS Requirements Document (SE-06-01), section 10.2.3.
+
+This task was originally written by David Giaretta.
+The geometric correction routine was written by Robert Jedrzejewski,
+with a subroutine by Bill Sparks.
+Other modifications were made by Phil Hodge.
+.ih
+SEE ALSO
+The 'chcalpar' task in the 'tools' package
+is handy for changing calibration switches in an image header.
+Two of the calibration steps of 'calfoc' can be performed independently.
+The 'dezoomx' task in the 'focphot' package dezooms an image,
+and the 'newgeom' task in the 'focutility' package
+applies the geometric correction.
+
+Type "help focutility option=sys" for a higher-level description of
+the 'focutility' package.
+.endhelp

@@ -1,0 +1,286 @@
+.help biaseq May2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+biaseq -- adjust inter-readout bias levels for NICMOS MultiAccum images
+.ih
+USAGE
+biaseq input output skysamps
+.ih
+DESCRIPTION
+NICMOS bias levels can drift in an unpredictable way during the course
+of a MultiAccum exposure, producing undesirable residual bias offsets.
+Within a given readout quadrant of the NICMOS array, the bias level can
+change from sample to sample of a MultiAccum sequence, sometimes drifting
+slowly, and sometimes jumping suddenly.
+The result is that the net counts accumulated in a given pixel
+as a function of time can increase in a non-linear fashion.
+This can cause a variety of data processing problems, especially
+when the pipeline calnica task evaluates the count rate for each
+pixel by fitting a slope to the counts vs. time data, and attempts
+to reject deviant pixels as outliers in the CRIDCALC step.
+
+The biaseq task adjusts the DC bias levels in each quadrant of each
+readout so that the net counts in that quadrant increase linearly with time.
+Note that this "bias equalization" is not sufficient to completely 
+remove a constant bias offset in NICMOS data.  Rather, it removes any 
+non-linear components of the bias offset, but leaves an unknown linear 
+DC bias which must be removed by some other method.  The nicmos package task
+"pedsky" is one procedure for doing this, applicable to images which
+are only sparsely filled with astronomical sources.  The biaseq task,
+in principle, will work on any NICMOS MultiAccum image, however,
+regardless of the nature of the astronomical sources present,
+provided that there are enough MultiAccum samples available.
+Caveats for using biaseq are discussed below.
+
+The biaseq task should be run on an intermediate MultiAccum image file 
+(*_ima.fits) which is produced by partially processing a raw NICMOS 
+data set through only the first few processing steps of calnica.
+The pipeline processing steps ZSIGCORR, ZOFFCORR, MASKCORR, BIASCORR,
+NOISCALC, DARKCORR, and NLINCORR should be performed before running biaseq,
+but not FLATCORR, UNITCORR or CRIDCALC.
+In other words, the image should not be flatfielded and should be in units
+of counts (not counts per second).  The nicmos task nicpipe
+provides a convenient way to carry out the partial calnica 
+processing needed as preparation for biaseq.
+
+The task works by assuming that the astronomical signal in each pixel
+(sources plus background) increases linearly with time, and that 
+(modulo intra-quadrant bias jumps - see below) the bias offsets
+are uniform across each readout quadrant of the array.  A model
+for the linearly increasing component (sources plus sky plus a linear
+bias term) is created and subtracted from each readout, and the
+bias offsets for each readout are measured and subtracted away
+to produce a corrected image.  Here we describe the process in
+somewhat greater detail with attention given to the various
+parameters which the user may set.
+
+The task first converts the MultiAccum data set to first differences,
+meaning that for each sample the preceeding sample is subtracted from it.  
+This creates a set of short, independent exposures of the field, each
+with their own potentially different bias levels.  For each readout
+quadrant, these first differences are then combined, after first applying
+a multiplicative scaling by DELTATIME exposure interval, and
+an additive zeropoint offset which accounts for the potentially 
+drifting bias levels.  The image combination is done with minmax rejection
+(set via the "nlow" and "nhigh" task parameters) to eliminate cosmic rays and
+other transient defects.  This combined image provides a cosmetically clean
+"model" for the astronomical sources and background in the data, plus an
+average bias offset level.
+
+The "skysamps" task parameter is used to specify which samples 
+(IMSETs) of the MultiAccum image to combine to produce the 
+model sky image.  Although in principle all IMSETs may be used, in 
+practise there may be some advantage to using only a subset.  For example, 
+the first few readouts of most MultiAccum sequences, and the last few 
+for the MIF sequences, are very short and do not contribute much signal 
+to the total image.  Therefore it may be advantageous to exclude these 
+readouts.  The last readout (IMSET number 1 in the MultiAccum file)
+often contains intra-quadrant bias jumps (see below) and it may be 
+a good idea to exclude it (although any such problems should also be
+handled by the minmax rejection during the combine process used to create
+the sky image).
+Finally, most MultiAccum sequences have readouts which are non-linearly 
+spaced in time.  The NICMOS detector signal phenomenon known as "shading"
+(see the NICMOS WWW pages and/or the Data Handbook) depends on the readout
+interval DELTATIME, 
+and is not always perfectly removed by subtraction of standard dark frames
+in the pipeline process.  However, 
+first differences created from readout samples which are linearly spaced
+in time should exactly remove all shading, which is an advantage for 
+the biaseq procedure.  Therefore, if the readout sequence of the data set 
+being processed has some number of readouts which are linearly spaced 
+in time, then it may be best to specify the use of only those readouts 
+with the "skysamps" parameter.  The readout times of any MultiAccum
+sequence are listed in the NICMOS Instrument Handbook.  The nicmos
+task "sampinfo" can also be used to conveniently list the relevant exposure
+time information, including DELTATIME, for all IMSETs of a MultiAccum image.
+
+This combined sky image is then scaled to the DELTATIME interval for
+each first difference sample and subtracted from it.  This effectively
+subtracts away all the constant astronomical signal and the mean bias level
+from each readout, leaving only the bias offset (the difference 
+between the bias for that sample and the mean bias present in the 
+combined sky image) plus any cosmic rays, etc., that are present in that 
+particular readout.
+
+The task then loops through the readout residual images, quadrant by 
+quadrant, and determines the median level, which it uses as the bias offset.
+It subtracts this median level from each quadrant of the first difference
+images, and finally reaccumulates the first differences to produce a new,
+"bias equalized" MultiAccum image.  This image is now suitable for continued
+pipeline processing.  Most commonly, the user will want to use 
+the nicpipe task again to apply the remaining calnica processing, including
+FLATCORR, UNITCORR, and CRIDCALC steps, in preparation for removal of the
+residual constant bias with pedsky or other algorithms.
+
+Another disruptive phenomenon in NICMOS data is the occasional presence
+of intra-quadrant bias jumps or "bands."  Occasionally the bias level
+within a quadrant will have one or more discontinuities along one direction,
+rather than being uniform.  This often occurs during the final readout
+of a MultiAccum sequence, but can also happen during intermediate
+samples as well.  The biaseq task includes an option ("fitjumps") to search for 
+these jumps within quadrants and remove them as well during the course of the
+bias fitting procedure.  This option should be regarded as experimental for
+the time being: the jump finding algorithm is quite crude and can no doubt be
+improved.  Occasionally the jump finder can cause more harm than good
+and in these cases should be turned off ("fitjumps=no").  This may happen if,
+for example, the data has substantial unremoved shading signal, which may then
+trigger the jump finder in undesired ways.
+
+.ih
+PARAMETERS
+.ls input [file]
+Input image name(s).  This will be a MultiAccum image (_ima type) which has
+been partially processed through calnica, through the stages ZSIGCORR, ZOFFCORR,
+MASKCORR, BIASCORR, NOISCALC, DARKCORR and NLINCORR, but not through
+FLATCORR, UNITCORR or CRIDCALC.  The full file name must be given.
+.le
+.ls output [file]
+Output image name(s).  The name of the "bias equalized" image to be created.
+Must be a full file name specification and the numbers of input and output
+images must be equal.
+.le
+.ls skysamps [string]
+The range of MultiAccum samples or IMSETs to be used for creating the
+model sky image (see description above).  The syntax of this list follows
+that of standard IRAF range specifications, which may include a combination
+of comma-separated IMSET values as well as hyphen-separated range limits
+(type "help ranges" for more details).
+Remember that NICMOS samples are stored in reverse time order in the 
+multiextension FITS files, i.e. IMSET number 1 contains the last readout,
+IMSET 2 the second to last, etc.
+.le
+.ls (nlow = INDEF) [integer]
+The number of low values to be discarded by the minmax rejection when
+samples are combined to produce the model sky image.
+If INDEF, the routine will reject approximately the lowest quartile,
+i.e. if there are NSAMP samples then nlow = (nint)NSAMP/4.
+.le
+.ls (nhigh = INDEF) [integer]
+The number of high values to be discarded by the minmax rejection when
+samples are combined to produce the model sky image.
+If INDEF, the routine will reject approximately the highest quartile,
+i.e. if there are NSAMP samples then nhigh = (nint)NSAMP/4.
+.le
+.ls (dqon = yes) [boolean]
+Use data quality flags to discard pixels? If set to yes, the
+task will reject from all statistical computations any pixels that have DQ
+flag bits corresponding to those set in the dqpar pset (see below).
+.le
+.ls (dqpar = "") [pset]
+Parameter set (pset) with data quality flags to be used to discard pixels
+from statistical computations. 
+.le
+.ls (fitjumps = no) [boolean]
+Find and correct intra-quadrant bias jumps?  This option is somewhat
+experimental and under development, and therefore should be used with caution.
+.le
+.ls (filtsiz = 15) [integer, min=3, max=127]
+Median filter size used in the jump finding algorithm if fitjumps=yes.
+The procedure filters the bias data along the axis in which jumps occur
+with a median filter whose size is specified here.  Smaller filters will
+increase sensitivity to more closely spaced jumps, but may reduce the
+overall sensitivity to distinguishing jumps from noise.
+.le
+.ls (thresh = 5.0) [real, min=0]
+Theshold level for identifying intra-quadrant bias jumps, in units of the
+standard deviation of the filtered bias data. Only used if fitjumps=yes.
+.le
+.ls (keepsky = no) [boolean]
+Keep a copy of the model sky image produced by combining the 
+sample first differences?  If yes, the sky image will have the name of the 
+input image with the string "_sky" appended as a suffix.  This is mainly
+useful for testing/debugging purposes.
+.le
+.ls (keepbias = no) [boolean]
+Keep an image with the sample first differences after the model
+sky image has been subtracted?  This is the image from which the bias offsets
+(and jumps, if fitjumps=yes) are subsequently measured, and visually inspecting
+this bias image may be handy when testing the routine on a new data set.
+The bias image is given the name of the input image with 
+the string "_bias" appended as a suffix.  
+.le
+.ls (keepjump = no) [boolean]
+Keep a file with a list of intra-quadrant bias jump regions? If yes, a text
+file will be created that contains a listing of the beginning and ending
+pixel limits for each bias region in each readout (IMSET). For camera 1 images,
+this will correspond to beginning and ending ROW limits, while for cameras 2
+and 3 it will be COLUMN limits. Also, only the limits for quadrant 1 are saved,
+as the regions are identical in all 4 quadrants (modulo a 128 pixel offset).
+The jump file is given the name of the input image with the suffix and
+extension "_jump.log."
+.le
+.ls (verbose = yes) [boolean]
+Verbose output?
+.le
+.ih
+EXAMPLES
+1. Equalize the bias for the image n3z324g9m_ima.fits, which is a NICMOS 
+MultiAccum exposure taken using the readout sequence SPARS64 with NREAD=18 
+(1023.964 seconds total exposure).   The FITS file has 19 IMSETs including
+the "zeroth" readout, and has been partially processed through calnica
+using the nicpipe script.  Consulting the NICMOS Instrument Handbook
+or the nicmos task "sampinfo,"  we find that the 4th through 18th
+readouts are linearly spaced in time with equal DELTATIMEs of 63.998 seconds,
+and that these correspond to IMSETs 1 through 15 of the image.  We 
+decide to exclude the last readout (IMSET 1) from the sky image computation,
+because it may have bias jumps.  We do not fit for intra-quadrant jumps or
+keep any intermediate products.  
+Default minmax rejection settings are used.
+
+.nf
+cl> biaseq n3z324g9m_ima.fits n3z324g9m_beq.fits 2-15
+.fi
+
+2. Do the same, but also correct for intra-quadrant bias jumps and keep a
+log of the jump regions. The jump log file will be named
+"n3z324g9m_ima_jump.log."
+
+.nf
+cl> biaseq n3z324g9m_ima.fits n3z324g9m_beq.fits 2-15 fitjumps+ \
+>>> keepjump+
+.fi
+
+3. Equalize bias levels for n4ls01i1q_ima.fits, a MIF512 MultiAccum image,
+keeping the various possible intermediate data products for later 
+inspection.  Consulting the Instrument Handbook, or the "sampinfo" task,
+we see that IMSETs 9 through 16 have equal DELTATIMEs.  We explicitly 
+set nlow=nhigh=3 in order to reject all but the middlemost readouts when 
+constructing the model sky image.
+
+.nf
+cl> biaseq n4ls01i1q_ima.fits n4ls01i1q_beq.fits 9-16 nlow=3 \
+>>> nhigh=3 keepsky+ keepbias+
+.fi
+
+4. Process several MIF512 images which are listed in the file "ima.lis",
+creating the corrected images with names listed in "beq.lis". Use IMSETs 9
+through 16 to produce the sky image for all datasets, and use default
+settings for all other parameters.
+
+.nf
+cl> biaseq @ima.lis @beq.lis 9-16
+.fi
+.ih
+REVISIONS
+.ls Version 02-May-2000 (STSDAS v2.2)
+CL script version of task replaced with ANSI-C IRAF native task. Changes in
+functionality include: skysamps parameter value syntax changed from 
+starting/ending imset value only to use of full IRAF range specification;
+nreject parameter replaced by nlow and nhigh parameters, and jumplog
+parameter replaced by keepjump; dqon, dqpar, and thresh parameters added;
+fitbias and keepfit parameters eliminated.
+.le
+.ls Version 11-Jun-1999 (STSDAS v2.1)
+First release of original CL script version of task.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: H. Bushouse, M. Dickinson, STScI
+.ih
+SEE ALSO
+calnica, nicpipe, pedsky, pedsub, sampinfo
+.endhelp
+

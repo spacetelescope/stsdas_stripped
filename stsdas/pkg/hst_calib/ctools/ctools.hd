@@ -1,0 +1,63 @@
+# CTOOLS.HD -- help directory info for STSDAS CTOOLS package
+
+$ctools		= "stsdas$pkg/hst_calib/ctools/"
+$doc		= "stsdas$pkg/hst_calib/ctools/doc/"
+
+$calpar		= "stsdas$pkg/hst_calib/ctools/calpar/"
+$eng2tab	= "stsdas$pkg/hst_calib/ctools/eng2tab/"
+$groupmod	= "stsdas$pkg/hst_calib/ctools/groupmod/"
+$hstephem	= "stsdas$pkg/hst_calib/ctools/hstephem/"
+$mkmultispec	= "stsdas$pkg/hst_calib/ctools/mkmultispec/"
+$mkweight	= "stsdas$pkg/hst_calib/ctools/mkweight/"
+#$msbadpix	= "stsdas$pkg/hst_calib/ctools/msbadpix/"
+#$msreadnoise	= "stsdas$pkg/hst_calib/ctools/msreadnoise/"
+$msstreakflat	= "stsdas$pkg/hst_calib/ctools/msstreakflat/"
+$north		= "stsdas$pkg/hst_calib/ctools/north/"
+$poffsets	= "stsdas$pkg/hst_calib/ctools/poffsets/"
+$pprofile	= "stsdas$pkg/hst_calib/ctools/pprofile/"
+$rcombine	= "stsdas$pkg/hst_calib/ctools/rcombine/"
+$rdsaa		= "stsdas$pkg/hst_calib/ctools/rdsaa/"
+$resample	= "stsdas$pkg/hst_calib/ctools/resample/"
+$specalign	= "stsdas$pkg/hst_calib/ctools/specalign/"
+$splice		= "stsdas$pkg/hst_calib/ctools/splice/"
+$vac2air	= "stsdas$pkg/hst_calib/ctools/vac2air/"
+
+chcalpar	hlp=doc$chcalpar.hlp,	src=ctools$chcalpar.cl
+ckwfoc		hlp=doc$ckwxxx.hlp,	src=ctools$ckwfoc.par
+ckwfos		hlp=doc$ckwxxx.hlp,	src=ctools$ckwfos.par
+ckwhrs		hlp=doc$ckwxxx.hlp,	src=ctools$ckwhrs.par
+ckwhsp		hlp=doc$ckwxxx.hlp,	src=ctools$ckwhsp.par
+ckwwfp2		hlp=doc$ckwxxx.hlp,	src=ctools$ckwwfp2.par
+ckwwfpc		hlp=doc$ckwxxx.hlp,	src=ctools$ckwwfpc.par
+ckwnicmos	hlp=doc$ckwxxx.hlp,	src=ctools$ckwnicmos.par
+ckwstis1	hlp=doc$ckwxxx.hlp,	src=ctools$ckwstis1.par
+ckwstis2	hlp=doc$ckwxxx.hlp,	src=ctools$ckwstis2.par
+ckwstis3	hlp=doc$ckwxxx.hlp,	src=ctools$ckwstis3.par
+ckwstis4	hlp=doc$ckwxxx.hlp,	src=ctools$ckwstis4.par
+ckwxxx		hlp=doc$ckwxxx.hlp,	src=ctools$ckwhrs.par
+eng2tab		hlp=doc$eng2tab.hlp,	src=eng2tab$t_eng2tab.x
+fweight		hlp=doc$fweight.hlp,	src=splice$fweight.c
+fwplot		hlp=doc$fwplot.hlp,	src=ctools$fwplot.cl
+getcal		hlp=doc$getcal.hlp,	src=calpar$t_getcal.x
+groupmod	hlp=doc$groupmod.hlp,	src=groupmod$t_groupmod.x
+hstephem	hlp=doc$hstephem.hlp,	src=hstephem$t_hstephem.x
+mkmultispec	hlp=doc$mkmultispec.hlp,src=mkmultispec$t_mkms.x
+mkweight	hlp=doc$mkweight.hlp,	src=mkweight$t_mkweight.x
+modcal		hlp=doc$modcal.hlp,	src=calpar$t_modcal.x
+#msbadpix	hlp=doc$msbadpix.hlp,	src=msbadpix$b_nbadpix.c
+#msreadnoise	hlp=doc$msreadnoise.hlp,src=msreadnoise$rn_readnoise.c
+msstreakflat	hlp=doc$msstreakflat.hlp,src=msstreakflat$g_streak.c
+north		hlp=doc$north.hlp,	src=north$north.x
+poffsets	hlp=doc$poffsets.hlp,	src=poffsets$t_poffsets.x
+pprofile	hlp=doc$pprofile.hlp,	src=pprofile$pprofile.x
+putcal		hlp=doc$putcal.hlp,	src=calpar$t_putcal.x
+pweight		hlp=doc$pweight.hlp,	src=splice$pweight.c
+rapidlook	hlp=doc$rapidlook.hlp,	src=ctools$rapidlook.cl
+rcombine	hlp=doc$rcombine.hlp,	src=rcombine$rcombine.x
+rdsaa		hlp=doc$rdsaa.hlp,	src=rdsaa$t_rdsaa.x
+resample	hlp=doc$resample.hlp,	src=resample$resample.x
+sflux		hlp=doc$sflux.hlp,	src=splice$sflux.cl
+specalign	hlp=doc$specalign.hlp,	src=specalign$t_specalign.x
+splice		hlp=doc$splice.hlp,	src=splice$splice.c
+tomultispec     hlp=doc$tomultispec.hlp,src=ctools$tomultispec.cl
+vac2air		hlp=doc$vac2air.hlp,	src=vac2air$vac2air.x

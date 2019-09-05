@@ -1,0 +1,98 @@
+.help pstats Aug10 stsdas.hst_calib.nicmos
+.ih
+NAME
+pstats -- plot a stack of NICMOS or WFC3/IR MultiAccum image statistics
+.ih
+USAGE
+pstats input
+.ih
+DESCRIPTION
+Plot statistics for a specified image section up the stack of a NICMOS
+or WFC3/IR MultiAccum image.
+Sections from any of the SCI, ERR, DQ, SAMP, or TIME image extensions
+can be plotted.
+A choice of mean, median, mode, standard deviation, minimum and maximum
+statistics is available.
+The total number of samples is determined from the primary header keyword
+NSAMP and all samples (excluding the zeroth-read) are plotted.
+The SCI, ERR, DQ, or SAMP statistics are plotted as a function of sample time,
+while TIME statistics are plotted as a function of sample number.
+The sample times are read from the SAMPTIME keyword in the SCI header for each
+readout.
+If any of the ERR, DQ, SAMP, or TIME extensions have null data arrays, the
+value of the PIXVALUE extension header keyword is substituted for the
+statistics values.
+The plotted data can be saved to an output text table or printed to the
+terminal.
+.ih
+PARAMETERS
+.ls input [file]
+Input MultiAccum image name with optional image section specification.
+If no image section is specified, the entire image is used.
+This should be either a _raw or _ima file, containing all the data
+from multiple readouts.
+You must specify just the file name and image section, with no extname
+designation.
+.le
+.ls (extname = "sci") [string, allowed values: sci | err | dq | samp | time]
+Extension name (EXTNAME keyword value) of data to plot.
+.le
+.ls (units = "counts") [string, allowed values: counts | rate]
+Plot "sci" or "err" data in units of counts or countrate ("rate").
+Input data can be in either unit; conversion will be performed automatically.
+Ignored when plotting "dq", "samp", or "time" data.
+.le
+.ls (stat = "midpt") [string, allowed values: mean|midpt|mode|stddev|min|max]
+Type of statistic to compute.
+.le
+.ls (logfile = "") [string]
+Name of optional output text table in which data are saved. If blank, no file
+is produced. If set to "STDOUT", data are printed to the terminal.
+.le
+.ls (title = "") [string]
+Title for the plot.  If left blank, the name of the input image, appended with
+the extname and image section, is used.
+.le
+.ls (xlabel = "") [string]
+Label for the X-axis of the plot.
+If left blank, a suitable default is generated.
+.le
+.ls (ylabel = "") [string]
+Label for the Y-axis of the plot. If left blank, a suitable default based on
+the plot units and the extname of the data is generated.
+.le
+.ls (device="stdgraph") [string]
+Output device.
+.le
+.ih
+EXAMPLES
+1. Plot the median of the SCI image section [100:120,50:75] of image 
+n3t502cur_ima.fits, in units of counts:
+
+.nf
+ cl> pstats n3t502cur_ima.fits[100:120,50:75]
+.fi
+
+2. Plot the mean of the entire ERR images in the same file, in units of
+countrates:
+
+.nf
+ cl> pstats n3t502cur_ima.fits ext=err units=rate
+.fi
+
+3. Plot the median of SCI image quadrant 1 ([1:128,1:128]) in image
+n3uw01a6r_ima.fits, saving the data in a text file "stats.log", and make a
+postscript file of the plot:
+
+.nf
+ cl> pstats n3uw01a6r_ima.fits[1:128,1:128] log=stats.log dev=psi_land
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, SSB
+.ih
+SEE ALSO
+pstack, prow, pcol
+.endhelp

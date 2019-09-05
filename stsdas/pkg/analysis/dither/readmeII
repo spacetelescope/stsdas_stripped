@@ -1,0 +1,61 @@
+The DitherII Package
+
+Andy Fruchter, 30 June 1998
+
+DitherII is an IRAF package for the removal of cosmic rays from
+dithered, undersampled images.  It is to be used in conjunction
+with the Dither package which has already been distributed as
+a fully supported part of the STSDAS IRAF system.  For more
+information on the original Dither package see http://ra.stsci.edu/STSDAS.html .
+
+DitherII is a being distributed on a "shared risk" basis.  It should
+be regarded as "beta" test software.  DitherII has already been
+tried by a number of expert users; however, it has not yet been
+widely tested, and the programs are not optimized.  They are scripts
+written to test concepts.  If they prove successful, then faster, sleeker
+versions will be installed in the official Dither package.
+
+In the DitherII tar file you should find the following files:
+
+README		-- this file	
+deriv.cl	-- A cl script for taking the absolute derivative of an image
+deriv.hlp	-- An IRAF help file for deriv.cl
+ditherII.cl	-- The package cl file
+driz_cr.cl	-- A cl script for finding blemishes in dithered images
+driz_cr.hlp	-- An IRAF help file for driz_cr.cl
+filename.cl	-- An ancillary task used by some of the tasks in this package
+fileroot.cl	-- Another ancillary task used by some of the tasks in DitherII.
+mask_head.cl	-- A cl script for preparing image masks for imcombine
+mask_head.hlp	-- An IRAF help file for mask_head.cl
+ditherII.ps	-- A paper describing the use of the tasks in this package.  
+	
+
+Installation:
+
+uncompress ditherII.tar.Z
+tar -xvf ditherII.tar .
+
+will create a subdirectory called ditherII and will place the files
+listed above in it.  
+
+To run DitherII from IRAF place the following two lines in your login.cl:
+
+set ditherII = /PATH/ditherII/
+task ditherII=ditherII$ditherII.cl
+
+where /PATH is the path to the ditherII directory.
+
+Providing direct access to the help files requires an update to the
+IRAF help database.  As this is just a beta release, we are avoiding
+direct installation into IRAF.  Therefore, to access a help file
+use the form
+
+dI> help ditherII$driz_cr.hlp fi+
+
+driz_cr.hlp is naturally the help file for the task driz_cr, and fi+ tells
+help to read directly from this file rather than looking in the IRAF help
+database.
+
+If you really want ditherII to be fully installed as a package, speak
+to your local IRAF guru.  They can install it as part of the local
+package.

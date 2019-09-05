@@ -1,0 +1,119 @@
+include	"../gcombine.h"
+
+$for (sird)
+# GC_MM --  Reject a specified number of high and low pixels
+#
+# CYZhang 12 April 1994, based on images.imcombine
+
+procedure g_mm$t (data, id, nimages, n, npts)
+
+pointer	data[nimages]		# Data pointers
+pointer	id[nimages]		# Image ID pointers
+int	nimages			# Number of images
+int	n[npts]			# Number of good pixels
+int	npts			# Number of output points per line
+
+int	n1, npairs, nlow, nhigh, np
+int	i, i1, j, jmax, jmin
+pointer	k, kmax, kmin
+PIXEL	d1, d2, dmin, dmax
+
+include	"../gcombine.com"
+
+begin
+	do i = 1, npts {
+	    i1 = i - 1
+	    n1 = n[i]
+	    nlow = FLOW * n1 + 0.001
+	    nhigh = FHIGH * n1 + 0.001
+	    npairs = min (nlow, nhigh)
+	    nlow = nlow - npairs
+	    nhigh = nhigh - npairs
+
+	    # Reject the npairs low and high points.
+	    do np = 1, npairs {
+		k = data[1] + i1
+		d1 = Mem$t[k]
+		# Find min and max
+		dmax = d1; dmin = d1; jmax = 1; jmin = 1; kmax = k; kmin = k
+		do j = 2, n1 {
+		    d2 = d1
+		    k = data[j] + i1
+		    d1 = Mem$t[k]
+		    if (d1 > dmax) {
+			dmax = d1; jmax = j; kmax = k
+		    } else if (d1 < dmin) {
+			dmin = d1; jmin = j; kmin = k
+		    }
+		}
+
+		# if the n1'th and (n1-1)'th elements of data array 
+		# are good, they should replace the min and max elements 
+		# found; The top two elements in the array can then be
+		# ignored in the next iteration
+		j = n1 - 1
+		if (jmax < j) {
+		    if (jmin != j) {
+			Mem$t[kmax] = d2
+			Memi[id[jmax]+i1] = Memi[id[j]+i1]
+		    } else {
+			Mem$t[kmax] = d1
+			Memi[id[jmax]+i1] = Memi[id[n1]+i1]
+		    }
+		}
+		if (jmin < j) {
+		    if (jmax != n1) {
+			Mem$t[kmin] = d1
+			Memi[id[jmin]+i1] = Memi[id[n1]+i1]
+		    } else {
+			Mem$t[kmin] = d2
+			Memi[id[jmin]+i1] = Memi[id[j]+i1]
+		    }
+		}
+		# The top two are ignored now
+		n1 = n1 - 2
+	   }
+
+	    # Reject the excess low points.
+	    do np = 1, nlow {
+		k = data[1] + i1
+		d1 = Mem$t[k]
+		dmin = d1; jmin = 1; kmin = k
+		do j = 2, n1 {
+		    k = data[j] + i1
+		    d1 = Mem$t[k]
+		    if (d1 < dmin) {
+			dmin = d1; jmin = j; kmin = k
+		    }
+		}
+
+		if (jmin < n1) {
+		    Mem$t[kmin] = d1
+		    Memi[id[jmin]+i1] = Memi[id[n1]+i1]
+		}
+		n1 = n1 - 1 
+	    }
+
+	    # Reject the excess high points.
+	    do np = 1, nhigh {
+		k = data[1] + i1
+		d1 = Mem$t[k]
+		dmax = d1; jmax = 1; kmax = k
+		do j = 2, n1 {
+		    k = data[j] + i1
+		    d1 = Mem$t[k]
+		    if (d1 > dmax) {
+			dmax = d1; jmax = j; kmax = k
+		    }
+		}
+		if (jmax < n1) {
+		    Mem$t[kmax] = d1
+		    Memi[id[jmax]+i1] = Memi[id[n1]+i1]
+		}
+		n1 = n1 - 1 
+	    }
+	    n[i] = n1
+	}
+
+end
+$endfor

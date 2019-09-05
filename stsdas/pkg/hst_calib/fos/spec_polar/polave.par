@@ -1,0 +1,7 @@
+# parameter file for polave
+input,f,a,,,,Input image list
+output,f,a,,,,Output image name
+weight,s,h,uniform,uniform|variance,,Weighting method for averaging
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"02Dec93",,,Date of installation
+mode,s,h,"ql",,,

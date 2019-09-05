@@ -1,0 +1,96 @@
+.help mka2d Oct91 stsdas.hst_calib.wfpc.w_calib
+.ih
+NAME
+mka2d -- Create or modify an A-to-D correction reference file for WF/PC.
+.ih
+USAGE
+mka2d infile outfile option errtable bay3temp
+.ih
+DESCRIPTION
+This task creates or updates an A-to-D error correction reference file.  
+Each A-to-D error correction reference file has four groups, each group 
+corresponds to one detector.  Each group has 4096 points which is the 
+possible digital number (DN) can be registered by 12 bits.  When constructing
+a new set of A-to-D corrections at certain Bay 3 temperature, a set of 48
+(12 x 4) bit-errors are required in the form of an STSDAS table.
+The first row in the A-to-D reference file contains the temperature information,
+i.e. the second pixel in this row is the bay 3 temperature corresponding to the
+A-to-D corrections contained in the second row of this file.  The following 
+operation options are provided in this task:
+
+(1) new - Use this option if you are constructing your very 
+first A-to-D reference file.  You need a template as input file to copy all
+necessary header information.  The output will just have one row of A-to-D 
+corrections.
+
+(2) add - Use this option when you want to add a new set of A-to-D corrections 
+corresponding to a different bay 3 temperature.  This operation will increase
+the second dimension of the reference file by one and put the new bay 3 
+temperature at the corresponding pixel in the first row of the file.  The input
+and the output file can be same.  If the value of outfile is null, blank 
+or ".", it is regarded as being the same as the input file.
+
+(3) delete - Use this option when you want to delete a set of A-to-D 
+corrections from an existing A-to-D reference file.  The row which has a bay 3
+temperature most close to the specified temperature will be deleted.
+This operation will decrease the second dimension of the reference file by 
+one and remove the bay 3 temperature at the corresponding pixel in the first 
+row of the file.  The input and the output file can be same.  If the value 
+of outfile is null, blank or ".", it is regarded as being the same as the 
+input file.  No error table is needed for this option.
+
+(4) list - Use this option to print a listing of bay 3 temperatures already in
+a given A-to-D reference file.  No error table or bay 3 temperature or output
+file are needed for this option.
+
+A warning will be issued if any of the bit-errors is too large.  For example,
+if the bit 4 error is 4.2 and will therefore overtake the bit 8 registration,
+a warning message will be sent and the result will not be reliable.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input A-to-D reference file.  
+.le
+.ls outfile = "" [string]
+Name of the output A-to-D reference file. 
+.le
+.ls option = "add" [string, allowed values = "add | new | list | delete"]
+Operation options.  
+.le
+.ls errtable = "" [string]
+Name of the STSDAS table containing bits errors.  It has the following columns:
+.nf
+DETECTOR	Detector number can only be either from 
+		1 to 4 (WF) or from 5 to 8 (PC). (int)
+BIT		Bit ID, must be a power of 2 
+		(1, 2, 4, 8, ..., 2048).  (int)
+ERROR		The bit errors of the A-to-D convertor. (real)
+.fi
+.le
+.ls bay3temp = 300 [real, min = 0]
+Bay 3 temperature corresponding to the errors in 'errtable', in degrees Kelvin.
+.le
+.ih
+EXAMPLES
+1. Create a new A-to-D reference file atod.r1h.
+Use the file wref$jchsu.r1h as a template.  Use bit errors from the table 
+file 'err.tab' and a Bay 3 temperature of 200 degrees Kelvin.
+
+.nf
+w_> mka2d wref$jchsu.r1h atod.r1h option=new errtable=err.tab bay3temp=200.
+.fi
+
+2. Add a new line to the A-to-D reference file atod.r1h.  Use bit errors 
+from the table file 'err.tab' and a Bay 3 temperature of 250 degrees Kelvin.
+You must have write privilege to atod.r1h.
+
+.nf
+w_> mka2d atod.r1h atod.r1h option=add errtable=err.tab bay3temp=250.
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

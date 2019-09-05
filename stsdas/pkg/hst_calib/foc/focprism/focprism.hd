@@ -1,0 +1,10 @@
+# Help directory for the FOCPRISM package
+
+$focprism	= "stsdas$pkg/hst_calib/foc/focprism/"
+$doc		= "stsdas$pkg/hst_calib/foc/focprism/doc/"
+
+$objcalib	= "focprism$objcalib/"
+
+dispfiles	hlp="doc$dispfiles.hlp"
+objcalib	hlp="doc$objcalib.hlp",   src="objcalib$t_objcalib.x"
+simprism	hlp="doc$simprism.hlp",   src="focprism$simprism.cl"

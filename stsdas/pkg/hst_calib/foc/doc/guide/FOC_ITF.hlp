@@ -1,0 +1,58 @@
+.help FOC_ITF Apr88 "FOC 5.6.1"
+.ih
+CHAPTER
+FOC_ITF -- FOC ITF correction reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_ITF
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of ITF reference files for RSDP
+and may also be used by Guest Observers to generate calibrations files
+for recalibration. As is discussed in FOC_PHOTOMETRY the file does
+not contain ITF information, but rather calibrates the format dependent
+large scale patterning of the detector.
+
+.ih
+FREQUENCY
+
+The ITF calibration will be required rather infrequently since the format
+effects are thought to be stable on the smoothed length scales we use.
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxitfr1
+generate a ITF file from a pairs of flat field (LED) exposures, one
+of full format and the other of the format to be calibrated.
+.le
+
+.ls cxitfrop2
+low level task called by cxitfr1x. This script actually does the processing
+and may be called by a GO who must supply the additional file names.
+.le
+
+.ih 
+SEE ALSO
+From FOC_ITF see also:
+
+.nf
+ITF file creation		...... cxitfr1
+                                ...... cxitfrop2
+ITF verification                ...... FOC_ITF_VER
+.fi
+
+
+.endhelp

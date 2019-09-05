@@ -1,0 +1,4 @@
+infile, f, a, "", , , 	Input file
+outfile, f, a, "", , , 	Output file
+
+mode, s, h, "al"

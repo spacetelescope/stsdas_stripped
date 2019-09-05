@@ -1,0 +1,21 @@
+input, f, a, "", , , 		Input image name
+
+pipeline1, s, h, , , ,		Output pipeline processing summary
+pipeline2, s, h, , , ,		Output pipeline processing summary
+pipeline3, s, h, , , ,		Output pipeline processing summary
+pipeline4, s, h, , , ,		Output pipeline processing summary
+pipeline5, s, h, , , ,		Output pipeline processing summary
+pipeline6, s, h, , , ,		Output pipeline processing summary
+pipeline7, s, h, , , ,		Output pipeline processing summary
+pipeline8, s, h, , , ,		Output pipeline processing summary
+
+caldq1, s, h, , , ,		Output calibration data quality summary
+caldq2, s, h, , , ,		Output calibration data quality summary
+caldq3, s, h, , , ,		Output calibration data quality summary
+caldq4, s, h, , , ,		Output calibration data quality summary
+caldq5, s, h, , , ,		Output calibration data quality summary
+caldq6, s, h, , , ,		Output calibration data quality summary
+caldq7, s, h, , , ,		Output calibration data quality summary
+caldq8, s, h, , , ,		Output calibration data quality summary
+
+mode, s, h, "al"

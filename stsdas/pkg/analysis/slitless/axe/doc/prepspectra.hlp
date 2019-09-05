@@ -1,0 +1,81 @@
+.help prepspectra Nov2007 axesim
+.ih
+NAME
+prepspectra -- generate a Model Spectra file
+.ih
+USAGE
+.nf
+prepspectra inlist incat tpass_flux [model_spectra]
+.fi
+.ih
+PARAMETERS
+.ls inlist
+Name of the Spectrum Template list
+.le
+.ls incat
+Name of the Model Object Table
+.le
+.ls tpass_flux
+Total passband file or passband expression
+.le
+.ls (model_spectra)
+Filename of the model spectra file
+.le
+.ih
+DESCRIPTION
+This task generates template spectra for the objects listed in the Model Object
+Table (MOT) "incat". For each object, the template specified in the MOT column
+"SPECTEMP" with its index in the Spectrum Template List "inlist" is read in,
+shifted to the redshift given in the column "Z" and normalized in flux using
+the information given in "tpass_flux". Then the shifted, flux normalized
+spectra are written to a (multi-extension fits) Model Spectra file that can be
+read by the aXeSIM executables to simulate slitless images and
+direct images. The filename of the Model Spectra file is either given in
+"model_spectra" or derived from "inlist".
+
+An entry "0" in the column "SPECTEMP" marks objects with a broad band energy
+distribution given by AB-magnitude columns. No spectral template will be generated
+for these objects.
+
+Each line in the "inlist" contains the filename of a template
+spectrum, which is located in the directory indicated by "$AXE_SIMDATA_PATH".
+
+The passband used for the flux normalization is either a file with its name
+given in "tpass_flux" and located in "$AXE_SIMDATA_PATH" or an expression
+of the form "lambda_1,lambda_2". In the latter case the passband has
+a boxcar shape with the boundaries "lambda_1" and 'lambda_2" in [nm].
+.ih
+FILE NAMING CONVENTION
+.nf
+The Model Spectra file is named either "model_spectra" or:
+<inlist_trunc>.fits
+with <inlist_trunc>  the parameter "inlist", truncated after the last ".".
+The Model Spectra file is written to "$AXE_IMAGE_PATH" and "$AXE_OUTSIM_PATH".
+.fi
+.ih
+EXAMPLES
+1) Generate model spectra for all objects listed in "sim_stars.lis", using
+spectral templates in "star_templates.lis" and the wavelength interval
+[800,900]nm for normalization. The name of the Model Spectra file is
+"sim_stars.fits".
+.nf
+    --> prepspectra sim_stars.lis star_templates.lis tpass_flux="800,900"
+.fi
+
+2) As in the previous example however the passband file "WFC3_F606W.lis" is used
+for flux normalization, and the Model Spectra file is named "halo_stars.fits".
+.nf
+    --> prepspectra sim_stars.lis star_templates.lis tpass_flux="WFC3_F606W.lis"
+                    model_spectra="halo_stars.fits"
+.fi
+.ih
+BUGS
+No known bugs.
+.ih
+REFERENCES
+For further information on this task and aXeSIM, please consult 
+the aXeSIM manual at "http://www.stecf.org/software/slitless_software/aXeSIM".
+.ih
+SEE ALSO
+simdata, simdispim, simdirim
+.endhelp

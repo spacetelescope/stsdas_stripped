@@ -1,0 +1,25 @@
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+relink:
+	$call linkonly
+	;
+
+linkonly:
+	$set XFLAGS = "-DNATIVE_IRAF -Inolibc \
+		'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake ovac2air.c  <c_iraf.h> <c_iraf_priv.h> <xclio.h> <xtables.h>
+
+	$set LFLAGS = "-H -z $(LFLAGS)"
+	$link ovac2air.o \
+		-lhstio -lcvos -lc -ltbtables \
+		-o xx_ovac2air.e
+	;
+
+install:
+	$move xx_ovac2air.e stsdasbin$x_ovac2air.e
+	;

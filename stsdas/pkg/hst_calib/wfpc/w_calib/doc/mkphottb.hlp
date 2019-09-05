@@ -1,0 +1,79 @@
+.help mkphottb Nov92 stsdas.hst_calib.wfpc
+.ih
+NAME
+mkphottb -- Create a synthetic photometry lookup table for WF/PC
+.ih
+USAGE
+mkphottb infile outtable
+.ih
+DESCRIPTION
+This task creates an STSDAS table which contains the synthetic photometry
+quantities to be used in the WF/PC pipeline calibration software, the
+'calwfp' task.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input text file.  This file contains the photometry modes and  
+must have the following syntax:
+camera,detector,data mode,unit,filter name 1, filter name 2,flatfield
+
+Each mode should take one line and if either of the filter slots is not used, 
+the word OPEN should be in its place.  There is no limit on the number of 
+lines in the input file.
+.le
+.ls outtable = "" [string]
+Name of the output table. 
+The output table has the following columns:
+
+.nf
+PHOTMODE	Photometric mode. (ch*30)
+PHOTFLAM	Inverse sensitivity. (real)
+PHOTZPT		Photometry zero point in magnitude. (real)
+PHOTPLAM	Pivot wavelength in Angstrom. (real)
+PHOTBW		RMS bandwidth of the filter used in Angstrom. 
+		(real)
+CAMERA		Camera in use. (ch*2)
+DETECTOR	Detector ID. (int)
+FILTNAM1	Name of the first filter. (ch*6)
+FILTNAM2	Name of the second filter. (ch*6)
+FLATFIELD	Flat field calibration flag. (ch*3)
+.fi
+.le
+.ls graphtab = "crcomp$hstgraph_*.tab" [string]
+Names of the synthetic photometry graph tables.
+.le
+.ls comptab = "crcomp$hstcomp_*.tab" [string]
+Names of the synthetic photometry component tables.
+.le
+.ih
+EXAMPLES
+1. Create a synthetic photometry lookup table phot.tab, using an input text 
+file test.lis.
+.nf
+w_> mkphottb test.lis phot.tab
+
+where test.lis is a text file containing the following lines:
+
+wf,1,a,dn,f439w,open,cal
+wf,2,a,dn,f439w,open
+wf,3,a,dn,f439w,open
+wf,4,a,dn,f439w,open
+pc,5,a,dn,f702w,open
+pc,6,a,dn,f702w,open
+pc,7,a,dn,f702w,open
+pc,8,a,dn,f702w,open
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+If the input string contains items not been parsed by the synthetic photometry
+routines, it will issue a harmless message, e. g.
+.nf
+
+Input keyword a not used in graph search
+Input keyword open not used in graph search
+.fi
+.ih
+SEE ALSO
+.endhelp

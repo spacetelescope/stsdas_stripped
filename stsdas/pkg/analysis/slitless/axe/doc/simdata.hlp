@@ -1,0 +1,195 @@
+.help simdata Nov2007 axesim
+.ih
+NAME
+simdata -- generate a simulated dispersed and direct image
+.ih
+USAGE
+.nf
+simdata incat config
+.fi
+.ih
+PARAMETERS
+.ls incat [string]
+The name of the model object table
+.le
+.ls config [string]
+Name of the aXe configuration file
+.le
+.ls (output_root) [string]
+Root name for all output files
+.le
+.ls (silent='yes') [boolean]
+Suppress low level standard output
+.le
+
+PREPSPECTRA parameters:
+.le
+.ls (inlist_spec) [string]
+The spectrum template list
+.le
+.ls (tpass_flux) [string]
+Passband for flux scaling
+.le
+
+PREPIMAGES parameters:
+.le
+.ls (inlist_ima) [string]
+The spectrum image list
+.le
+
+SIMDISPIM parameters:
+.le
+.ls (lambda_psf) [float]
+Wavelength the object shapes were determined at [nm]
+.le
+.ls (nx_disp) [int]
+Dimension of the simulated direct image in x
+.le
+.ls (ny_disp) [int]
+Dimension of the simulated direct image in y
+.le
+.ls (exptime_disp) [float]
+Exposure time for simulated dispersed image
+.le
+.ls (bck_flux_disp) [float] or [string]
+Dispersed image background flux rate or background image (both in [e/s])
+.le
+.ls (extraction = yes) [boolean]
+Do a default spectral extraction on the simulated image.
+.le
+.ls extrfwhm [float]
+Factor to set the extraction width.
+.le
+.ls (orient = yes) [boolean]
+Whether to use tilted extracted. This is the default. When set to "no"
+only vertical extraction (along columns) is performed.
+.le
+.ls (slitless_geom = yes) [boolean]
+Whether to use an extraction orientation which is optimized for
+slitless spectroscopy. Default is "yes".
+.le
+.ls (adj_sens = yes) [yes|no]
+Adjust sensitivity for extended objects.
+.le
+
+SIMDIRIM parameters:
+.le
+.ls (tpass_direct) [string]
+Total passband for the direct image
+.le
+.ls (nx_dir) [int]
+Dimension of the simulated direct image in x
+.le
+.ls (ny_dir) [int]
+Dimension of the simulated direct image in y
+.le
+.ls (exptime_dir) [float]
+Exposure time for simulated direct image
+.le
+.ls (bck_flux_dir=0.0) [float] or [string]
+Direct image background flux rate or background image (both in [e/s])
+.le
+.ih
+DESCRIPTION
+The task "simdata" generates a dispersed image containing all objects
+defined in the Model Object Table (MOT) "incat" (located in "$AXE_IMAGE_PATH").
+The objects are positioned at the values given in the MOT columns "X_IMAGE" and
+"Y_IMAGE".
+
+For the trace and dispersion definition the aXe configuration file "config",
+located in "$AXE_CONFIG_PATH", is used.
+
+In case that the MOT contains the column "SPECTEMP", and the Spectrum Template list
+"inlist_spec" and passband parameter "tpass_flux" are specified, a Model Spectra
+file is created, using the information (redshift in column "Z" and one AB-magnitude
+column) given in the MOT. The passband used for the flux normalization is either
+a file with its name given in "tpass_flux" and located in "$AXE_SIMDATA_PATH"
+or an expression of the form "lambda_1,lambda_2". In the latter case the passband has
+a boxcar shape with the boundaries "lambda_1" and 'lambda_2" in [nm].
+Objects with a "0" in the column "MODSPEC" are simulated with a spectral
+energy distribution defined in the AB-magnitude columns.
+
+In case that the MOT contains the column "MODIMAGE" and the Image Template list
+"inlist_images" is specified, a Model Images file is generated.
+Objects with a "0" in the column "MODIMAGE" get a Gaussian
+shape defined in the column entries "A_IMAGE", "B_IMAGE" and "THETA_IMAGE".
+
+If available, the Model Spectra file and the Model Images file are used to define
+for the simulated objects the spectrum and the shape, respectively. Otherwise
+the AB-magnitude columns and a Gaussian (defined in  the MOT columns
+"A_IMAGE", "B_IMAGE" and "THETA_IMAGE") is used for spectral energy distribution
+and shape.
+
+In case that a total passband file is given in "tpass_direct", a direct image is
+generated, using the identical spectral and shape information as for the dispersed
+image.
+
+A dispersed and direct image size different than the one deduced from the
+configuration file can be given. Also if "exptime_disp" or "exptime_disp"is set,
+noise is added to the output dispersed or direct image using a simple model with
+Poisson noise (sources and background) and readout noise.
+The background can be given as flux rate or as a background image. Also an extraction
+can be performed on the simulated slitless images, and the properties of the
+extraction are controlled by parameters ('extrfwhm', 'orient', slitless_geom',
+'adj_sens').
+
+The task "simdata" is a High Level Task and uses the other Low Level Tasks in the
+aXeSIM package to generate all output.
+.ih
+FILE NAMING CONVENTION
+The names of all output files contain a prefix <prefix> that is either
+"output_root" or the Model Object Table filename "incat", truncated after
+the last ".".  UIsing this prefix, the names of all possible output files
+is:
+.nf
+
+dispersed image:   <prefix>_slitless.fits
+direct image:        <prefix>_direct.fits
+model spectra:       <prefix>_spectra.fits
+model images:        <prefix>_images.fits
+extracted spectra: <prefix>_slitless_2.SPC.fits
+stamp images:       <prefix>_slitless_2.STP.fits
+
+.fi
+All files are written to "$AXE_OUTSIM_PATH".
+.ih
+EXAMPLES
+1) Simulate a dispersed images with the objects defined in "sim_stars.lis" and
+a slitless instruments defined in "WFC3_G280.conf"
+.nf
+    --> simdata sim_stars.lis WFC3_G280.conf
+.fi
+
+2) As in the previous example, however use model spectra and templates images.
+Also add noise to the dispersed image, according to an exposure time of 2000s.
+.nf
+    --> simdata sim_stars.lis  WFC3_G280.conf output_root="halo",
+                inlist_spec="star_templates.lis" tpass_flux="WFC3_G280.dat"
+                inlist_ima="psfs_WFC3.lis" exptime_disp=2000.0
+.fi
+3) As in the previous example, however do not add noise, but produce a direct
+image using the total passband ""WFC3_F606W.lis""
+.nf
+    --> simdata sim_stars.lis  WFC3_G280.conf output_root="halo",
+                inlist_spec="star_templates.lis" tpass_flux="WFC3_G280.dat"
+                inlist_ima="psfs_WFC3.lis" tpass_dir="WFC3_F606W.lis"
+.fi
+.ih
+TIME REQUIREMENTS
+Depending on the configuration file and object models, the computation time
+for the simulation of a dispersed image varies from several seconds to
+several minutes per object listed. The additional time required for a direct
+image or to generate the Model Spectra file and  Model Images file is
+rather small.
+in the MOT.
+.ih
+BUGS
+No known bugs.
+.ih
+REFERENCES
+For further information on this task and aXeSIM, please consult
+the aXeSIM manual at "http://www.stecf.org/software/slitless_software/aXeSIM".
+.ih
+SEE ALSO
+simdispim, simdirim
+.endhelp

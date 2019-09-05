@@ -1,0 +1,22 @@
+# parameter file for polplot
+image,f,a,,,,Name of input data (.c3h) file
+set,i,h,4,1,4,Dataset to plot
+spectra,s,h,"polar",polar|stokes,,Plot polarimetry or Stokes spectra?
+wave,f,h,,,,Name of wavelength (.c0h) file
+invlam,b,h,no,,,Plot x-axis as 1/lambda (micron)
+errors,b,h,yes,,,Overplot error bars
+ptype,s,h,"c",c|h|p,,Plot type: c[ontinuous] h[istogram] p[oint]
+circpol,b,h,no,,,Include circular polarization in plot
+wmin,r,h,0,,,Left wavelength limit for plot
+wmax,r,h,0,,,Right wavelength limit for plot
+imin,r,h,0,,,Lower limit for flux (Stokes I) plot
+imax,r,h,0,,,Upper limit for flux (Stokes I) plot
+cmin,r,h,0,,,Lower limit for circular pol. (or Stokes V) plot (%)
+cmax,r,h,0,,,Upper limit for circular pol. (or Stokes V) plot (%)
+lmin,r,h,0,,,Lower limit for linear pol. (or Stokes Q) plot (%)
+lmax,r,h,0,,,Upper limit for linear pol. (or Stokes Q) plot (%)
+pamin,r,h,0,,,Lower limit for PA (or Stokes U) plot (degrees)
+pamax,r,h,0,,,Upper limit for PA (or Stokes U) plot (degrees)
+title,s,h,"imtitle",,,Optional plot title
+device,s,h,stdgraph,,,Plot device
+Version,s,h,"21Jun94",,,Date of installation

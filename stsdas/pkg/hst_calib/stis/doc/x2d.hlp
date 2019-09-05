@@ -1,0 +1,343 @@
+.help x2d Feb2006 stis
+.nj
+.ih
+NAME
+x2d -- Perform 2-D rectification of calibrated STIS images.
+.ih
+USAGE
+.nf
+x2d input output
+.fi
+.ih
+PARAMETERS
+.ls input [file name]
+Input calibrated image to be processed through x2d.
+.le
+.ls output [file name]
+Name of output rectified image.
+.le
+.ls (helcorr = "perform") [string, allowed values: perform | omit]
+Compute heliocentric correction factor.
+.le
+.ls (fluxcorr = "perform") [string, allowed values: perform | omit]
+Convert output image to absolute flux units.
+The units for the output image will be
+ergs / (sec * cm**2 * Angstrom * arcsec**2).
+Note that these units are for extended targets, not point sources.
+See example 2 for a description of how to extract a 1-D spectrum
+if the target is a point source.
+.le
+.ls (statflag = yes) [boolean]
+Compute statistics on the image and update keywords in the extension headers?
+.le
+.ls (center = no) [boolean]
+For FUV G140L and G140M spectra,
+the target has at different times been
+offset to a location either above or below the middle of the detector,
+to avoid the repeller wire.
+Normally, the A2CENTER and CRPIX2 values in the SDC table
+result in the middle line of the input image being copied to
+the middle line of the 2-D rectified output image.
+Setting center = yes will result in CRPIX2 being modified
+so that the image will be shifted vertically
+as it is copied into the output,
+so that the target ends up in the middle of the output image.
+This may be desirable because the target would then be at the same location
+in the rectified image regardless of when the data were taken.
+For an extended target or a wavecal, however, some of the data could be
+shifted off the rectified image and be lost.
+
+Regardless of how 'center' is set,
+the location in the cross-dispersion direction
+of the target in the output, 2-D rectified image
+is given by the CRPIX2 keyword in the extension headers.
+The exception to this rule is that POSTARG is not taken into account,
+so if POSTARG2 is non-zero, the target will be offset from CRPIX2.
+.le
+.ls (blazeshift = INDEF) [real]
+Blaze shift, in pixels. INDEF instructs the task to get the value from
+the photometry reference table.
+.le
+.ls (err_alg = "default") [string, allowed values: default | wgt_err]
+This specifies which method should be used for
+interpolating the error estimate array (the ERR extension).
+
+.nf
+  default (weight the variance):
+      sqrt (sum ( w[i] * err[i]^2 ))
+  wgt_err (weight the error):
+      sqrt (sum ( (w[i] * err[i])^2 ))
+.fi
+.le
+.ls (verbose = yes) [boolean]
+Print verbose time stamps.
+.le
+.ih
+DESCRIPTION
+The task 'x2d' performs the 2-D rectification of calibrated observations
+(imaging or spectroscopic) taken with the CCD or MAMA detectors.
+For imaging data the task performs geometric correction.
+For spectrosocpic data,
+the task extracts a 2-D spectrum that is
+linear in both the wavelength and the spatial direction.
+Only the steps specified as "perform" in the input parameters
+are performed along with the 2-D rectification.
+If 'fluxcorr' and 'helcorr' are both set to "omit"
+then 2-D rectification will still be done,
+but 'fluxcorr' and 'helcorr' will be omitted;
+this would be appropriate for a wavecal, for example.
+
+The input file may contain echelle data.
+In this case, the output file will have
+one image set (imset) for each spectral order in the input.
+The entire input image cannot be 2-D rectified at once
+because the dispersion relation is different for each spectral order,
+so each order is corrected and written separately.
+Currently there are two problems with 'x2d' for echelle data, however.
+If the data were taken with a long slit
+(specifically the 6X0.2 aperture),
+the slit is tilted on the input image
+by an angle that can be from one to six degrees.
+This angle is much larger than the physical tilt
+as given in the aperture description table ("_apd.fits"),
+and it depends strongly on the particular echelle grating in use.
+The 2-D rectification only takes into account the angle
+as given in the aperture description table,
+which is the physical tilt,
+so the spectral lines in the output images will still be tilted.
+The second problem is that the 6X0.2 slit
+is so long that it overlaps several spectral orders,
+while the height of the output images is
+small enough that they cover only one spectral order per image.
+A workaround for the first problem
+is to edit ('tedit') the aperture description table
+and change the value in the ANGLE column for the aperture in use
+to a value that agrees with the angle as seen in the input image.
+This is only a partial solution, however,
+because the angle varies by up to two degrees across the image.
+A workaround for the second problem
+is to edit ('tedit' again) the SDCTAB
+and change the values in the NPIX2 and CRPIX2 columns
+for the OPT_ELEM and CENWAVE that were used for the observation.
+More than one row may need to be changed,
+depending on which spectral orders (SPORDER) contain data
+for which a full slit width should be corrected.
+Set NPIX2 to a large enough value to cover
+as much of the slit as you need,
+and set CRPIX2 to (NPIX2 + 1) / 2 to center the spectrum.
+
+INPUT AND OUTPUT IMAGES
+
+The input files to this task should be fully calibrated files,
+i.e. flatfielded and cosmic-ray rejected if applicable.
+The pipeline files that would be suitable as input to 'x2d'
+have suffix "_flt" for MAMA data or "_crj" for CCD data.
+
+For accurate wavelength calibration,
+it is important that wavecal processing be done prior to running 'x2d'.
+This is normally done in the pipeline,
+but it can be done independently by running the 'wavecal' task.
+You can check that it was done successfully
+by examining the SHIFTA1 and SHIFTA2 keywords
+in the SCI extension header(s);
+if they are exactly zero then
+wavecal processing was not done (or was not successful)
+and you should run 'wavecal' to update them.
+
+REFERENCE FILES and PROCESSING STEPS
+
+The names of the reference files (images and tables) to be used by 'x2d'
+have to be specified in the primary header of the input file,
+under the section CALIBRATION REFRENCE FILES.
+
+When an environment variable is used as part of a reference file name
+(e.g. "oref" in PFLTFILE = "oref$h230851ao_pfl.fits"),
+the variable must have been set (in Unix)
+before logging into IRAF,
+and the directory name must include the trailing "/".
+Setting an IRAF environment variable will not work,
+nor will using ! to escape from the cl.
+For example,
+
+.nf
+    % setenv oref /data/reffiles/stdata/
+
+    # If the reference files are in the default directory, use:
+    % setenv oref ./
+.fi
+
+The following files are needed to perform 2-D rectification:
+.ls Aperture Description Table (APD)
+Contains the geometric description of the apertures
+and their offsets (in arcseconds) from a reference aperture.
+The name of the aperture description table
+must be provided in the keyword APDESTAB.
+.le
+.ls Aperture Throughput Table (APT)
+Consists of wavelength dependent transmissions
+for each aperture with respect to a reference aperture.
+This table is used in conjunction with PHOTTAB to
+convert observed counts to absolute flux.
+The name of the aperture throughput table
+must be provided in the keyword APERTAB.
+.le
+.ls Photometric Correction Table (PCT)
+This is used to correct the DIFF2PT keyword for the finite extraction height,
+when extracting a 1-D spectrum of a point source
+by summing over the spectrum in the cross-dispersion direction.
+The default extraction height for CCD data is 7 pixels,
+and for MAMA data it's 11 pixels.
+The PHOTTAB throughput tables are normalized for an
+"infinite" extraction height,
+and the PCTAB contains the correction to the throughput
+for various extraction heights.
+.le
+.ls Spectrum Distortion Correction Table (SDC)
+Consists of a set of world coordinate information
+used to construct rectified, linearized 2-D spectra.
+One corrected image is produced per spectral order.
+The name of the spectrum distortion table
+must be provided in the keyword SDCTAB.
+.le
+.ls One-D Spectrum Trace Table (1DT)
+Consists of displacements of spectra along Axis 2.
+This is used for correcting the distortion
+in the cross-dispersion direction.
+The name of the 1-D spectrum trace table
+must be provided in the keyword SPTRCTAB.
+.le
+.ls Incidence Angle Correction Table (IAC)
+Contains coefficients of the change in dispersion coefficients
+as a function of angular offset from the reference position.
+These corrections are applied to the default dispersion coefficients.
+The name of the incidence angle table
+must be provided in the keyword INANGTAB.
+.le
+.ls MAMA Offset Correction Table (MOC)
+Contains coefficients of the change in the dispersion coefficients
+as a function of commanded offset (MOFFSET1 & MOFFSET2)
+from the nominal position.
+These corrections are applied to the dispersion coefficients
+after applying the incidence angle correction.
+This is valid for MAMA observations only.
+Note:  This is currently not applied;
+the zero point offset is accounted for by the SHIFTA1 and SHIFTA2 keywords.
+.le
+
+'x2d' reads the aperture description table (APD),
+the aperture throughput table (APT),
+and the spectroscopic distortion table (SDC).
+When reading the SDC table,
+'x2d' reads into memory all rows that match the optical element
+(i.e. grating) and central wavelength of the input image
+(all spectral orders -- just one for long slit, but many for echelle).
+The range of spectral orders is used
+to set the limits on the loop over spectral order.
+A2CENTER is one of the columns to be read.
+In this table, A2CENTER is the line number on the detector
+corresponding to CRPIX2 of the output image.
+
+The heliocentric correction factor is computed from
+the time of the observation and the direction toward the target.
+
+Within the loop over spectral orders:
+
+Extracts the information for the current order
+from the list read from the SDC table.
+The size for the output image and the coordinate parameters CRPIXi and
+CDELTi are then scaled depending on the binning of the input image,
+as specified by LTM1_1 and LTM2_2 for the input image.
+
+Reads the dispersion coefficients table (DSP) to find the set of rows
+corresponding to the current spectral order
+(and optical element and central wavelength).
+For echelle, there may be just one matching row,
+but for first order there should be many rows,
+each for a different location A2CENTER on the detector
+in the cross-dispersion direction.
+
+Reads the spectrum trace table (1DT) to find the set of rows with matching
+optical element, central wavelength, and spectral order.
+As with the DSP table,
+there can be many rows that match, each with a different A2CENTER.
+
+Reads the incidence angle correction (IAC) table for the current grating,
+central wavelength, and spectral order to get terms used to correct the
+dispersion coefficients.
+For MAMA observations,
+read the similarly structured MAMA offset correction table.
+
+Reads the wavecal offsets (SHIFTA1 and SHIFTA2) from the SCI extension header.
+These offsets are in reference pixel units,
+i.e. unbinned CCD pixels or low-res MAMA pixels.
+
+Finally, reads the aperture description table to get the offset of the slit
+from the position reference slit,
+and also from the slit used to determine the dispersion relation.
+
+.ih
+EXAMPLES
+
+1. To rectify a CCD observation in the data set with rootname "o3s4060do" that
+has been previously cosmic-ray rejected.
+Apply heliocentric correction and display the spectrum in flux units.
+The reference files are in the directory "/data/reffiles/stdata/".
+Note that we must have assigned oref as an environment variable in Unix
+before starting the cl, and the value must include the trailing "/".
+.nf
+
+    cl> show oref
+    /data/reffiles/stdata/
+    cl> lpar x2d
+        input = "o3s4060do_crj.fits" input FITS file
+       output = "o3s4060do_x2d.fits" output FITS file
+     (helcorr = "perform")     Convert to heliocentric wavelengths?
+    (fluxcorr = "perform")     Convert to absolute flux units?
+    (statflag = yes)           Compute statistics, update extension headers?
+      (center = no)            Center target in output?
+     (verbose = yes)           Print verbose time stamps?
+     (Version = "5Apr2000")    calstis version
+        (mode = "al")
+
+.fi
+
+2. Suppose o3s4060do from the above example
+was an observation of a point source.
+The best way to extact a 1-D spectrum
+is to go back to "o3s4060do_crj.fits" and run 'x1d'.
+However, for the purposes of an example,
+the following procedure can be used on the output from 'x2d'.
+
+Get the values of the CRPIX2 and DIFF2PT keywords;
+sum the image over 7 pixels (CCD) or 11 pixels (MAMA);
+and multiply the result by the value of the DIFF2PT keyword.
+In this example, CRPIX2 was 601, and DIFF2PT was 0.10308649.
+"oned.hhh" is the extracted 1-D spectrum.
+.nf
+
+    cl> hedit o3s4060do_x2d.fits[1] crpix2,diff2pt .
+    cl> blkavg o3s4060do_x2d.fits[1][*,598:604] sum.hhh 1 7 option="sum"
+    cl> imarith sum.hhh[*,1] * 0.10308649 oned.hhh
+.fi
+.ih
+BUGS
+As described above in the DESCRIPTION section,
+when an echelle observation was taken with a long slit,
+the angle of the slit is not accounted for properly,
+and the height of the extracted image (for each spectral order)
+does not cover the full length of the slit.
+.ih
+REFERENCES
+.nf
+P. Hodge, et al., STIS ISR 98-13.
+ICD47, R. Shaw, April 1997.
+Iraf task written by R. Katsanis.
+X2D routine written by P.Hodge.
+.fi
+.ih
+SEE ALSO
+.nf
+calstis
+wavecal
+.fi
+.endhelp

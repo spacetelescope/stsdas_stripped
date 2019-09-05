@@ -1,0 +1,14 @@
+# Update the nfit1d application code in the fitting package.
+# Author: I.Busko, 12-FEB-1990
+
+$checkout fitting.a ../
+$update   fitting.a
+$checkin  fitting.a ../
+$exit
+
+fitting.a:
+	nfit1d.x	../nlfit/nlfit.h  \
+			../ncfit/names.h  \
+			<pkg/gtools.h> <error.h> <mach.h> <ctype.h> \
+			<fset.h> <gset.h> <tbset.h> 
+	;

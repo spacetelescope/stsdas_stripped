@@ -1,0 +1,153 @@
+.help ymkmu Jun97 stsdas.hst_calib.fos
+.ih
+NAME 
+ymkmu -- Create a MULTISPEC WCS based on wavelength tables for FOS.
+.ih
+USAGE
+ymkmu input output 
+.ih
+DESCRIPTION
+This task takes input spectra and wavelength tables, uses the IRAF 'curfit'
+routines to fit the wavelength table, creates a MULTISPEC world
+coordinate system (WCS) description of the fit, and creates a new copy
+of the input spectrum with the new WCS.
+
+This task is intended to be used with the Hubble Space Telescope (HST)
+spectrographic data from Faint Object Spectrograph (FOS) 
+to merge the wavelengths that
+result from the calibration into the data itself so that other IRAF
+tasks, such as 'splot', may be used.  
+
+This particular task is a cl script design specifically for FOS data
+to be used with the 'mkmultispec' task.  To get more information about
+'mkmultispec', see the help for that task.
+
+What the script does is use the "weight" option of 'mkmultispec' to mask
+out those regions of FOS data that contain no wavelength information.
+This allows FOS PRISM mode spectra and other gratings which do not
+illuminate the entire diode array to be used with 'mkmultispec'.
+
+.ih
+PARAMETERS
+.ls input [file name template]
+Input files that are to have the new MULTISPEC WCS applied.
+
+These should be FOS ACCUM or RAPID mode data.
+.le
+.ls output [file name template]
+The names of the output spectra.  
+
+If this parameter is blank, the spectra will be
+modified in-place.  If file names are specified, there must be the same 
+number of output spectra as input spectra.
+.le
+.ls (wave = "") [file name template]
+List of wavelength images or tables to use in determining the function
+pixel-to-wavelength transformation.  
+
+If no wavelength images/tables are specified, it is assumed that the
+wavelength images can be found by taking the rootname of the input
+images and appending the extension '.c0h' to the name.
+
+If only one wavelength table is
+specified, the resulting MULTISPEC WCS will be applied to all input
+spectra.  If more than one input wavelength is specified, there must
+be the same number of wavelength specifications as input spectra.  The
+files may either be a tables or images.  If a file is a table, the
+columns to use are specified as follows:
+tablename[columnname1,columnname2,...].  If no columns are specified,
+'mkmultispec' assumes all columns contain wavelength information.
+.le
+.ls (function = "legendre") [string, Allowed values: legendre | chebyshev |
+spline3 | spline1 | table]
+
+The type of function to fit to the wavelength tables.  If "table" is
+specified, the wavelength data are written directly into the input
+file headers.  If the input is multigroup and "table" is specified,
+only one table will be applied to all the groups of the input.
+If interactive mode were chosen, the parameter will be set to the last
+function specified by the ":function" command.
+.le
+.ls (nterms = 4) [integer]
+The number of terms or spline pieces to fit.  For legendre and
+chebyshev, this is 
+the number of coefficients the fit will have.  For spline3, the number
+of coefficients will be nterms + 3.  For spline1, the number of
+coefficients will be nterms + 1.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":order" command.
+.le
+.ls (label = "Wavelength") [string]
+The label to use for the wavelength axis in plots generated using the
+MULTISPEC information, such as those produced by the task 'splot'.
+.le
+.ls (units = "Angstroms") [string]
+The units the wavelength solution is in.  This will be displayed by
+tasks which use the MULTISPEC information, such as 'splot'.
+.le
+.ls (low_reject = 2., high_reject = 4.) [real, min = 0.]
+Rejection limits below and above the fit in units of the residual sigma.
+Unequal limits are used to reject spectral lines on one side of the continuum
+during continuum fitting.
+If interactive mode were chosen, the parameters will be set to the last
+values specified by the ":low_reject" and ":high_reject" commands.
+.le
+.ls (niterate = 0) [integer]
+Number of rejection iterations.  If set to "0", then no rejection is done while
+fitting.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":niterate" command.
+.le
+.ls (grow = 1.) [real]
+When a pixel is rejected, pixels within this distance of the rejected pixel
+are also rejected.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":grow" command.
+.le
+.ls (format = "%g") [string]
+The format to use to write the coefficients to the image header.  The
+main use is when the table function has been specified and the user
+wants to conserve header space by specifying a more restrictive
+format.
+.le
+.ls (interactive = no) [boolean]
+Use the 'icfit' task to interactively fit the wavelengths?
+
+The following parameters apply only for interactive
+fitting.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device to use for the interactive curve fitting.
+.le
+.ls (markrej = yes) [boolean]
+Mark rejected points?  
+
+If you are rejecting many points, you might not want to mark
+rejected points.
+If interactive mode were chosen, this parameter will be set to the last
+value specified by the ":markrej" command.
+.le
+.ls (verbose = yes) [boolean]
+Display names of input and output files while operating on files?
+.le
+.ih
+EXAMPLES
+1. Convert a series of FOS observations.  The wavelengths will be
+found in the corresponding '.c0h' images for the input list of
+images.  The output images will have a "_ymkmu" appended to the
+rootname.
+
+.nf
+	cl> ymkmu y*.c1h y*%.c1h%_ymkmu.c1h%
+.fi
+.ih
+REFERENCES
+Jonathan Eisenhamer
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+mkmultispec, curfit, icfit, splot, onedspec
+.endhelp

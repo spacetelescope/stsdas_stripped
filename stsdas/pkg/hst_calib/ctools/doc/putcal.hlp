@@ -1,0 +1,116 @@
+.help putcal Dec92 stsdas.hst_calib.ctools
+.ih 
+NAME
+putcal -- Place parameters values from a calibration pset into the specified 
+data files.
+.ih 
+USAGE
+putcal output keywords
+.ih 
+DESCRIPTION
+`putcal' is a utility task used by the `chcalpar' task, although
+the task can also be used directly by users. (Type "help chcalpar"
+for more information.) 
+
+'putcal' takes the values stored in the specified calibration pset
+(the 'ckwxxx' psets)
+and modifies the appropriate header keywords in the specified output
+files.  Those parameters that are blank mean that the header keywords
+of the output files will not be modified.
+.ih
+PARAMETERS
+.ls output [file name]
+List of data files to apply the values in the calibration pset,
+specified by the parameter 'keywords'.  Note that the instrument used to
+acquire the data in the specified data files must match the instrument
+represented by the specified calibration pset.  
+.le
+.ls keywords [pset]
+Name of the instrument-specific pset that contains the calibration
+parameters to modify in the specified output data.  Note that the
+instrument used to acquire the data in the specified data files must
+match the instrument represented by the specified calibration pset.
+Besides the standard instrument calibration psets, the user may
+specified a user-defined pset.  See the help file for 'chcalpar' for more information.
+.le
+.ls (add = yes) [boolean]
+Add keywords if they are not present in the header?  If "yes" add
+modified keywords to the headers of the images if the keywords are not
+already present.  If "no", generate an error message.
+.le
+.ls (verbose = yes) [boolean]
+Display names of modified files as task progresses?
+.ih
+EXAMPLES
+1. Retrieve the calibration parameters from the GHRS image 'z06i5601m.d0h'.
+Examine the "keywords" parameter of `getcal' to see the name of the
+pset.  Edit the pset with `modcal', and then apply the modifications
+to all "*.d0h" files using putcal.  NOTE: All the steps in this
+example could be handled by the single task `chcalpar'.
+
+.nf
+        cl> getcal z06i5601m.d0h
+        cl> lpar getcal
+                input = "z06i5601m.d0h" Input science data header file name
+            (keywords = "ckwhrs")       Pset for calibration parameters
+             (Version = "9Nov92")       Date of Installation
+                (mode = "ql")           
+        cl> modcal ckwhrs
+.fi
+
+`eparam' then appears with the calibration parameters and their
+values.  Modify the parameters PHCFILE to 'zref$abc0123dz.r1h' and
+PHC_CORR to PERFORM.  Exit `eparam' as you would normally (usually
+by pressing Control-Z or `:q').  `eparam' then reappears with all the parameters
+blanked out except PHCFILE and PHC_CORR.  Confirm that these were set
+correctly; you can make additional changes now if you want, and exit
+'eparam' again.  Then you will be presented with the following prompt:
+
+.nf
+        Accept the current parameters? (|no|yes|abort) (yes): yes
+.fi
+
+If you answered "yes", then the `ckwhrs' pset will be modified.  If
+you answered "no", the editing process will start over with the original
+set of calibration values.  If you answered "abort", then the process is
+aborted.  For this example, the answer will be "yes".
+
+.nf
+        cl> putcal *.d0h ckwhrs
+.fi
+
+2. It is also possible to modify the instrument pset directly, and then 
+use `putcal' to implement those changes on a list of files.  Note that 
+you must first unlearn the previous instrument pset values to avoid 
+unintentionally changing keyword values.  You will also not see what 
+the previous parameter settings were before modifying them, but sometimes 
+that is not important.  To set the WF/PC calibration keyword DOHISTOS 
+to "NO" and PHOTTAB to "myfile.tab" in the files 'w0bs8101t.d0h', 
+'w0bs8102t.d0h', and 'w0bs8103t.d0h', using the first file as a template:
+
+.nf
+        cl> unlearn ckwwfpc
+        cl> epar ckwwfpc
+.fi
+
+'eparam' then appears.  Modify the parameters DOHISTOS to "no" 
+and PHOTTAB to "myfile.tab".  Exit `eparam' as you would normally 
+(e.g., Cntrl-Z or `:q').  Then type: 
+
+.nf
+        cl> putcal w0bs810*.d0h ckwwfpc verb+
+.fi
+
+The output will be:
+
+.nf
+        putcal: Modifying w0bs8101t.d0h
+        putcal: Modifying w0bs8102t.d0h
+        putcal: Modifying w0bs8103t.d0h
+
+.fi
+
+.ih
+SEE ALSO
+chcalpar, eparam, getcal, lparam, modcal, parameters, unlearn, ckwxxx
+.endhelp

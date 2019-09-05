@@ -1,0 +1,13 @@
+#  gstpar parameters
+#
+image,s,h,,,,Image name
+npix,i,h,,,,Number of non-rejected pixels 
+min,r,h,,,,Minimum
+max,r,h,,,,Maximum
+sum,r,h,,,,Sum
+mean,r,h,,,,Mean
+stddev,r,h,,,,Standard deviation
+midpt,r,h,,,,Median
+mode,r,h,,,,Mode
+skew,r,h,,,,Skewness
+kurt,r,h,,,,Kurtosis

@@ -1,0 +1,59 @@
+.help sampdiff May2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+sampdiff -- compute first differences of samples in a NICMOS MultiAccum image.
+.ih
+USAGE
+sampdiff image1 outimage
+.ih
+DESCRIPTION
+Sampdiff is a CL script that takes the difference between consecutive samples
+in a NICMOS MultiAccum image. Alternatively, the sample differences between
+two different images may be computed. The STSDAS task "msarith" is used to
+compute the sample differences. Output file IMSET 1 will contain the
+difference between input file IMSETs 1 and 2, output IMSET 2 will contain the
+difference between input IMSETs 2 and 3, etc.
+
+Each IMSET (or "readout", or "sample") of a NICMOS MultiAccum image is normally
+the cumulative sum of the total exposure time prior to that readout. As such,
+the SCI image extensions are not independent. When analyzing NICMOS images,
+it is sometimes helpful to look at the data collected during each readout
+interval, independent of any previous accumulations. To do this, the SCI image
+for each readout must have the SCI image of the previous readout subtracted
+from it. The sampdiff task automates this process, producing a new MultiAccum
+format file where the SCI images are "first differences".
+
+The corresponding task "sampcum" can be used to invert this process.
+.ih
+PARAMETERS
+.ls image1 [file]
+Input image 1.
+The full file name must be given. Normally this is a NICMOS _ima.fits file.
+.le
+.ls outimage [file]
+Output image name. The full file name must be given. This file will have the
+same structure and number of IMSETs as the input file.
+.le
+.ls (image2 = "") [file]
+Second input image. If left blank, first differences of IMSETs in image1 will
+be computed. If a second input image is given, first differences between image1
+and image2 will be computed.
+.le
+.ih
+EXAMPLES
+1. Compute first differences for the MultiAccum file "n4xj13jwq_ima.fits",
+storing the results in file "n4xj13jqd_fdiff.fits":
+
+.nf
+ cl> sampdiff n4xj13jwq_ima.fits n4xj13jwq_fdiff.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: M. Dickinson, H. Bushouse, STScI
+.ih
+SEE ALSO
+sampcum, msarith
+.endhelp
+

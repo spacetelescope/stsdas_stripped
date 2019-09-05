@@ -1,0 +1,318 @@
+include	<imhdr.h>
+include	<mach.h>
+include	"../gcombine.h"
+
+# G_GETDATA -- Get line of image and DQF, then apply threshold and scaling.
+# NB Error data are also scaled as the image data
+#
+# C.Y. Zhang, 16 Mar 94 
+#
+# removed the memory allocation for the id array from these routines and
+# placed it in the calling routine. the calling routine was freeing the
+# allocated array only once, but it was being allocated for every line
+# resulting in a memory leak.
+#
+# P. Greenfield, 12 April 95
+#
+# Added auxiliary storage to keep track of rejected image IDs. Code was
+# failing when both external masks and rejection were applied simultaneously.
+#
+# I. Busko, 15 May 98
+#
+# The auxiliary storage described above wasn't being properly de-allocated,
+# which created a memory leak that caused "Out of memory" errors. 
+#
+# I. Busko, 29 Jun 98
+#
+# There was a serious bug in the way sorting was being performed in the
+# data, error and ID vectors. The errors were being sorted independenntly
+# of the data and ID, thus scrambling the error information. This caused
+# the "pixelwise" error weighting to fail.
+#
+# I. Busko, 28 Sep 98
+
+
+$for (sird)
+procedure g_getdata$t (in, msk, err, data, mskdata, errdata, n,
+	id, nimages, npts, szuw, v1, v2)
+
+# Calling arguments
+pointer	in[nimages]		# Pointer to input images
+pointer	msk[nimages]		# Pointer to input DQF files
+pointer	err[nimages]		# Pointer to input ERROR files
+pointer	data[nimages]		# Pointers to data buffers for images
+pointer	mskdata[nimages]	# Pointers to input DQF buffers
+pointer	errdata[nimages]	# Pointers to input ERROR buffers
+pointer	id[nimages]		# Pointers to IDs
+int	n[npts]			# Number of good pixels
+int	nimages			# Number of input images
+int	npts			# Number of output points per line
+pointer szuw			# Pointer to scaling structure
+long    v1[IM_MAXDIM]           # Index of previous line
+long    v2[IM_MAXDIM]           # Index of current line
+ 
+# Local variables
+pointer	lflag, nd
+int	i, j, k
+real	a, b
+pointer	sp, mbuf, idr, n_rej
+pointer	dp, dpe, ep, mp, ip, imgnl$t()
+
+include	"../gcombine.com"
+
+begin
+	call smark (sp)
+	call salloc (mbuf, nimages, TY_POINTER)
+	call salloc (lflag, nimages, TY_INT)
+	call salloc (nd, nimages, TY_INT)
+ 
+	do i = 1, nimages {
+	    call malloc (Memi[mbuf+i-1], npts, TY_INT)	
+	    mskdata[i] = NULL
+	    errdata[i] = NULL
+	}
+
+        # Get data and masks
+        do i =  1, nimages {
+            call amovl (v1, v2, IM_MAXDIM)
+            j = imgnl$t (in[i], data[i], v2)
+            if (msk[1] != NULL) {
+                call amovl (v1, v2, IM_MAXDIM)
+		call g_mask (msk[i], mskdata[i], v2)
+                call amovi (Memi[mskdata[i]], Memi[Memi[mbuf+i-1]], npts)
+            } else {
+                call aclri (Memi[Memi[mbuf+i-1]], npts)
+            }
+            if (err[1] != NULL) {
+                call amovl (v1, v2, IM_MAXDIM)
+                j = imgnl$t (err[i], errdata[i], v2)
+            }
+	}
+	
+	do i = 1, nimages {
+	    mp = Memi[mbuf+i-1]
+	    Memi[nd+i-1] = 0
+	    do j = 1, npts {
+		if (Memi[mp] == 0)
+		    Memi[nd+i-1] = Memi[nd+i-1] + 1
+		mp = mp + 1
+	    }
+	    if (Memi[nd+i-1] == npts)
+		Memi[lflag+i-1] = D_ALL
+	    else if (Memi[nd+i-1] == 0)
+		Memi[lflag+i-1] = D_NONE
+	    else
+		Memi[lflag+i-1] = D_MIX
+	}
+	# Apply thresholding rejection if needed
+	if (DOTHRESH) {
+	    do i = 1, nimages {
+		if (Memi[lflag+i-1] == D_NONE)
+		    next
+		dp = data[i]
+		mp = Memi[mbuf+i-1]
+		do j = 1, npts {
+		    if (Memi[mp] == 0) {
+			a = Mem$t[dp]
+			if (a < LTHRESH || a > HTHRESH) {
+			    Memi[mp] = Memi[mp] + MVALUE
+			    Memi[nd+i-1] = Memi[nd+i-1] - 1
+			}
+		    }
+		    dp = dp + 1
+		    mp = mp + 1
+		}
+	    }
+	    if (Memi[nd+i-1] == npts)
+		Memi[lflag+i-1] = D_ALL
+	    else if (Memi[nd+i-1] == 0)
+		Memi[lflag+i-1] = D_NONE
+	    else
+		Memi[lflag+i-1] = D_MIX
+	}
+	# Apply scaling (avoiding masked pixels which might overflow?)
+	if ( DOSCALE ) {
+	    do i = 1, nimages {
+		if (Memi[lflag+i-1] == D_NONE)
+		    next
+		if (Memi[lflag+i-1] == D_MIX) {
+		    dp = data[i]
+		    if (err[i] != NULL)
+		    	ep = errdata[i]
+		    else
+		    	ep = NULL
+		    a = Memr[SCALES(szuw)+i-1]
+		    b = Memr[ZEROS(szuw)+i-1]
+		    mp = Memi[mbuf+i-1]
+		    do j = 1, npts {
+		    	if (Memi[mp] == 0) {
+			    Mem$t[dp] = Mem$t[dp] / a - b
+			# Error is scaled, assuming no error in b
+			    if (ep != NULL)
+			    	Mem$t[ep] = Mem$t[ep] / a
+#		    } else {
+#			Mem$t[dp] = INDEF
+#			if (ep != NULL)
+#			    Mem$t[ep] = INDEF
+		    	}
+		    	dp = dp + 1
+		    	if (ep != NULL)
+			    ep = ep + 1
+		    	mp = mp + 1
+		    }
+	    	} else if (Memi[lflag+i-1] == D_ALL) {
+		    dp = data[i]
+		    if (err[i] != NULL)
+		    	ep = errdata[i]
+		    else
+		    	ep = NULL
+		    a = Memr[SCALES(szuw)+i-1]
+		    b = Memr[ZEROS(szuw)+i-1]
+		    do j = 1, npts {
+		    	Mem$t[dp] = Mem$t[dp] / a - b
+		    	if (ep != NULL)
+			     Mem$t[ep] = Mem$t[ep] / a
+			dp = dp + 1
+			if (ep != NULL)
+			    ep = ep + 1
+		    }
+		}
+	    }
+	}
+
+	# Compact array to keep good ones at the bottom along with their IDs.
+        # This was modified in order to keep information of which
+        # images were rejected. This information is needed later in order
+        # to generate the rejection maps. Instead of compacting the array,
+        # the topmost nimages-n positions are used to store the rejected
+        # images' IDs. But first, the rejecting code stores the rejected
+        # IDs into an auxiliary vector that later gets copied into the 
+        # original ID vector (IB, 15-May-98).
+	do i = 1, nimages 
+	    call amovki (i, Memi[id[i]], npts)
+	call aclri (n, npts)
+
+	# Alloc auxiliary vectors for storing rejected images' IDs.
+	call salloc (n_rej, npts, TY_INT)
+	call aclri (Memi[n_rej], npts)
+	call malloc (idr, npts, TY_POINTER)
+ 	do j = 1, npts
+	    call malloc (Memi[idr+j-1], nimages, TY_POINTER)
+
+	do i = 1, nimages {
+	    # All pixels are rejected; store everything in rejected vector.
+	    if (Memi[lflag+i-1] == D_NONE) {
+	        do j = 1, npts {
+	            Memi[Memi[idr+j-1]+Memi[n_rej+j-1]] = Memi[id[i]]
+	            Memi[n_rej+j-1] = Memi[n_rej+j-1] + 1
+	        }
+		next
+	    }
+	    dp = data[i]
+	    if (err[i] != NULL)
+		ep = errdata[i]
+	    else
+		ep = NULL
+	    ip = id[i]
+	    mp = Memi[mbuf+i-1]
+	    do j = 1, npts {
+		if (Memi[mp] == 0) {
+		    n[j] = n[j] + 1
+		    k = n[j]
+		    if (k < i) {
+			Mem$t[data[k]+j-1] = Mem$t[dp]
+			if (ep != NULL)
+			    Mem$t[errdata[k]+j-1] = Mem$t[ep]
+			Memi[id[k]+j-1] = i
+		    } else
+			Memi[ip] = i
+		} else {
+	            # Store the rejected image's IDs in auxiliary vector. 
+	            Memi[Memi[idr+j-1]+Memi[n_rej+j-1]] = Memi[ip]
+	            Memi[n_rej+j-1] = Memi[n_rej+j-1] + 1
+	        }
+		dp = dp + 1
+		if (ep != NULL)
+		    ep = ep + 1
+		mp = mp + 1
+ 		ip = ip + 1
+	    }
+	}
+
+	# Copy auxiliary vectors into topmost positions of ID vectors.
+	do j = 1, npts {
+	    if (Memi[n_rej+j-1] > 0) {
+	        do i = 1, Memi[n_rej+j-1]
+                    Memi[id[nimages-i+1]+j-1] = Memi[Memi[idr+j-1]+i-1]
+	    }
+	}
+
+# for debugging:
+#	call printf ("Begin 2")
+# 	do j = 1, npts {
+# 	    call printf ("\npix: %d  n: %d  n_rej: %d  id: ")
+# 	    call pargi (j)
+# 	    call pargi (n[j])
+#	    call pargi (Memi[n_rej+j-1])
+#	    call flush (STDOUT)
+# 	    do i = 1, nimages {
+# 	        call printf ("%d  ")
+# 	        call pargi (Memi[id[i]+j-1])
+#	        call flush (STDOUT)
+# 	    }
+# 	    call printf ("  idr: ")
+# 	    do i = 1, Memi[n_rej+j-1] {
+# 	        call printf ("%d  ")
+# 	        call pargi (Memi[Memi[idr+j-1]+i-1])
+#	        call flush (STDOUT)
+# 	    }
+# 	}
+#	call printf ("\nEnd\n\n")
+#
+
+	# Free auxiliary vectors.
+ 	do j = 1, npts
+	    call mfree (Memi[idr+j-1], TY_POINTER)
+	call mfree (idr, TY_POINTER)
+
+	# Sort the data, id, and errdata
+	if (mclip) {
+
+	    # Sorting the error vector cannot be performed in a separate
+	    # call to gc_sort as below. This causes the error values to get
+            # scrambled in relation to their data values. The data values
+            # should carry along their associated error values when sorted.
+
+#	    call malloc (dp, nimages, TY_PIXEL)
+#	    call malloc (ip, nimages, TY_INT)
+#	    call gc_2sort$t (data, Mem$t[dp], id, Memi[ip], n, npts)
+#	    if (err[1] != NULL && G_WEIGHT == W_PIXWISE)
+#		call gc_sort$t (errdata, Mem$t[dp], n, npts)
+#	    call mfree (ip, TY_INT)
+#	    call mfree (dp, TY_PIXEL)
+
+	    # The correct code is this. Note that we need a new routine,
+            # gc_3sort, that sorts the data carrying along both the error
+            # and the ID pointer. 
+
+	    call malloc (dp,  nimages, TY_PIXEL)
+	    call malloc (dpe, nimages, TY_PIXEL)
+	    call malloc (ip,  nimages, TY_INT)
+	    if (err[1] != NULL && G_WEIGHT == W_PIXWISE)
+	        call gc_3sort$t (data, Mem$t[dp], errdata, Mem$t[dpe], id, 
+                                Memi[ip], n, npts)
+	    else
+	        call gc_2sort$t (data, Mem$t[dp], id, Memi[ip], n, npts)
+	    call mfree (ip,  TY_INT)
+	    call mfree (dpe, TY_PIXEL)
+	    call mfree (dp,  TY_PIXEL)
+ 	}
+
+	DOCOMBINE = true
+	do i = 1, nimages 
+	    call mfree (Memi[mbuf+i-1], TY_INT)	
+	# The ID pointers will be freed at the end of gcombine!!
+
+	call sfree (sp)
+end
+$endfor

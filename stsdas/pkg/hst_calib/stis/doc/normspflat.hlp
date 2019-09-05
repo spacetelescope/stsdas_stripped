@@ -1,0 +1,142 @@
+.help normspflat Jan2013 stis
+.ih
+NAME
+normspflat -- Normalize STIS CCD fringe flat 
+.ih
+USAGE
+normspflat inflat outflat 
+.ih
+PARAMETERS
+.ls inflat
+Input flat field image to be normalized
+.le
+.ls outflat
+Output, normalized flat field image
+.le
+.ls (do_cal = yes)
+Perform bias and dark subtraction and cosmic ray rejection prior to 
+normalization? 
+.le
+.ls (darkfile = "")
+Name of (reference) superdark image to be used for dark subtraction.  
+If this value is null (the default), the DARKFILE keyword in the main
+header of inflat will be used (in that case, make sure it is
+correctly populated) 
+.le
+.ls (pixelflat = "")
+Name of reference flat field image to perform pixel-to-pixel correction
+.le
+.ls (wavecal = "")
+Name of wavecal file [ONLY USED IN CASE OF G750M SPECTRA]
+.le
+.ih
+DESCRIPTION
+This task provides the first step towards the creation of a "fringe flat"
+image that can be used to eliminate the fringes that are present in STIS
+first-order CCD spectra at wavelengths longer than about 700 nm. This task is
+suitable for both contemporaneous flat field images and library flat field
+images. 
+
+The input flat field image inflat is first run through the STIS
+pipeline calstis in order to perform bias subtraction, cosmic
+ray rejection, dark subtraction, and division by a pixel-to-pixel flat
+field. In case of G750M data, wavelength calibration and S-distortion
+correction is performed as well, so that a wavelength calibration
+image (wavecal) can be provided for G750M spectra as well (parameter
+wavecal). An appropriate superdark file name can be provided as
+parameter darkfile, as can a pixel-to-pixel flat field.  If
+these reference files are not specified, the ones listed in the image
+header will be used. The log file of the calstis reduction steps
+is written to output file calstis.logfile.
+
+The task allows the user to bypass the whole calstis reduction step
+described in the previous paragraph through boolean parameter do_cal. 
+In case do_cal is set to "no", make sure that inflat has been 
+corrected for pixel-to-pixel sensitivity variations with the proper flat 
+field. 
+
+The input flat field image inflat is then normalized to unity in the
+illuminated part of the image by an appropriate spline fit to the lamp
+function. The illuminated part of the image is derived from the value of
+the "aperture" keyword in the main header of inflat. 
+This normalization is done on a line-by-line basis. 
+
+The output image outflat should be further processed by task
+mkfringeflat which matches the fringes in the flat field to those in
+the science spectra. The actual fringe correction is subsequently performed
+through task defringe. 
+
+INPUT AND OUTPUT IMAGES
+    
+The input STIS images are contained in extensions in FITS files, with three 
+extensions in a set: science (EXTNAME=SCI), error (ERR), and data quality 
+(DQ). If do_cal is set to "yes", there may be multiple sets (or groups)
+in the input file, and if so NORMSPFLAT will read each group, calibrate it,
+and normalize the combined single three-extension group to produce the output
+FITS file. 
+
+.ih
+EXAMPLES
+
+1. Normalize a contemporaneous STIS G750L flat field image. Use superdark file
+"mysuperdark.fits" to provide the most up-to-date correction of hot pixels in
+the input image.
+.nf
+
+    cl> normspflat o3st20gda_raw.fits normff.fits \
+    >>> darkfile="mysuperdark.fits"
+.fi
+
+2. Same as 1, but for a G750M flat field image. 
+.nf
+
+    cl> normspflat o3st20gdr_raw.fits normff.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gdu_wav.fits" 
+.fi
+
+3. Normalize a previously reduced G750M flat field image. 
+.nf
+
+    cl> normspflat o3st20gdr_sx2.fits normff.fits do_cal-
+.fi
+
+4. Example of all steps involved in fringe correction for a G750M
+spectrum o3st20gdr_raw.fits and its associated contemporaneous fringe
+flat o3st20gds_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gds_raw.fits normff750M.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gdr_wav.fits"
+    cl> prepspec o3st20gdr_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gdr_sx2.fits normff750M.fits normff750M_fin.fits
+    cl> defringe o3st20gdr_sx2.fits normff750M_fin.fits \
+    >>> outspec="o3st20gdr_final.fits" do_cal-
+.fi
+
+5. Same as 4, but for a G750L spectrum o3st20gda_raw.fits,
+wavecal o3st20gda_wav.fits and contemporaneous fringe flat
+o3st20gdb_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gdb_raw.fits normff750L.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gda_wav.fits"
+    cl> prepspec o3st20gda_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gda_crj.fits normff750L.fits normff750L_fin.fits
+    cl> defringe o3st20gda_crj.fits normff750L_fin.fits \
+    >>> outspec="o3st20gda_defr.fits" do_cal-
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on April 2, 1998.
+Task modified by Paul Barrett on October 21, 2004.
+.fi 
+.ih
+BUGS
+.ih
+SEE ALSO
+calstis, mkfringeflat, prepspec, defringe
+.endhelp
+

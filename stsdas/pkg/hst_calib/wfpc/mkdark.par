@@ -1,0 +1,15 @@
+infile, f, a, "", , , 		Input images
+outfile, f, a, "", , ,		Output image name
+outfile2, f, a, "", , ,		Output (number of good points) image name (optional)
+sigmas, s, a, "4,4,3,2", , ,	Rejections levels in each iteration
+radius, r, a, 0., 0., ,		CR expansion radius in pixels
+pfactor, r, a, 0., 0., ,	CR expansion discriminator reduction factor
+hotthresh, r, a, 4096., , ,	Hot pixel threshold in DN
+minval, r, a, -99., , ,		Minimum allowed DN value
+initial, s, a, "min", , ,	"Initial value estimate scheme (min, med, or file name)"
+noisepar,pset,h, , , ,		Noise model parameters (pset)
+
+fillval, r, h, INDEF, , ,	Fill value for pixels having CR in all input images
+verbose, b, h, yes, , ,		Print out verbose messages?
+
+mode, s, h, "al"

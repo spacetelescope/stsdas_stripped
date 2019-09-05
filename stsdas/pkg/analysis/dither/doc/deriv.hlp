@@ -1,0 +1,38 @@
+.help deriv Jun98 stsdas.analysis.dither
+.ih
+NAME
+deriv -- Take the absolute derivative of an image
+.ih
+USAGE
+deriv images
+.ih
+PARAMETERS
+.ls images = "" [file name]
+The names of the images whose derivative is desired.  
+.le
+.ls (verbose = "yes" ) [boolean]
+This parameter determines the detail of the output to the users terminal.
+.ih
+DESCRIPTION
+When comparing an image to a model created by the "blot" task, two primary
+errors may be expected:  the model may be a smeared version of the true
+image and/or it may be slightly shifted from the true position of the
+image.  The significance of either of these errors depends on the derivative
+of the image at the point in question (a bright but flat image would be
+relatively unaffected by either of these two errors).
+
+This task takes the difference of a pixel with each of the four neighbors
+with which it shares a side and saves the largest absolute value among
+these differences.   The output image is used by the task "driz_cr" to
+determine the significance of possible blemishes in a data image.
+
+The output image of absolute differences is given the name FILE_deriv, where
+FILE is the name of the input image.
+
+For an example of the use of this task in reducing dithered WFPC2
+observations, see the paper by Fruchter and Mutchler at
+.nf
+http://www.stsci.edu/~fruchter/dither/ditherII.ps
+.fi
+
+.endhelp

@@ -1,0 +1,4 @@
+input,s,a,"",,,"> name of image"
+verbose,b,h,yes,,,"> print result?"
+mean,r,h,,,,"> mean of image"
+mode,s,h,"al"

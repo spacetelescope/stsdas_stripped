@@ -1,0 +1,100 @@
+.help autocorr Jul93 stsdas.analysis.fourier
+.ih
+NAME
+autocorr -- Compute the autocorrelation of a 1- or 
+2-dimensional image.
+.ih
+USAGE
+autocorr input output
+.ih
+DESCRIPTION
+This task computes the autocorrelation of a 1- or 
+2-dimensional image; the autocorrelation is similar to 
+cross-correlation, except that it correlates an image 
+with itself instead of with a second image.
+
+For 2-D transforms,
+this task has the option of using scratch images for intermediate results.
+Using scratch images may take longer,
+but it allows the task to function even with limited memory.
+
+In contrast to cross-correlation, the coordinate 
+information in the input image is not used to adjust the 
+phase of the Fourier transform because phase information 
+is lost when computing the amplitude.
+.ih
+PARAMETERS
+.ls input = "" [file name]
+The input 1- or 2-dimensional image file.
+
+If both real and imaginary parts are to be read,
+the letters "r" and "i" will be appended to 'input'
+to form the names of the images for real and imaginary parts respectively.
+.le
+.ls output = "" [file name]
+Output image created by 'autocorr'.
+
+The "r" character is not appended to this output image 
+because 'autocorr' produces no imaginary part.
+.le
+.ls (inreal = yes) [boolean]
+Use the real part of the input data file?
+.le
+.ls (inimag = no) [boolean]
+Use the imaginary part of the input data file?
+.le
+.ls (center = yes) [boolean]
+Shift the coordinate origin to the middle of the output image?
+.le
+.ls (inmemory = yes) [boolean]
+For a two-dimensional input image,
+if 'inmemory = yes' the image will be read into a complex array,
+the computations will be performed on that array in-memory,
+and the array will be written to the output image.
+This requires one complex word for each pixel.
+The complex array must fit entirely in memory (i.e. no paging)
+because when performing the Fourier transforms
+the array is accessed both by rows and by columns.
+If 'inmemory = no', see the description of 'len_blk'.
+
+For 1-D images, 'inmemory' is ignored.
+.le
+.ls (len_blk = 256) [integer]
+Size of a block to be transposed.
+
+For 2-dimensional input images, if 'inmemory = no'
+this task transposes each image into scratch images
+before computing the forward and inverse
+Fourier transforms of the second axis.
+This parameter is the length of the side of a square region that is
+transposed in one step.
+If you get out-of-memory errors,
+you should flush the process cache ('flprcache'),
+reduce the size of 'len_blk' and try again.
+
+This parameter is ignored for 1-D images or if 'inmemory = yes'.
+.le
+.ls (verbose = yes) [boolean]
+Print input and output image names?
+
+Setting 'verbose=yes' shows you the actual names of the image headers,
+including the "r" and "i" suffixes for real and imaginary parts.
+.le
+.ih
+EXAMPLES
+1. Compute the autocorrelation of images "civr" and 
+"civi" (these are real and imaginary parts respectively).
+The output autocorrelation will be stored in an image called "p".
+
+.nf
+	fo> autocorr civ p inimag=yes
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+powerspec, crosscor
+
+Type "help fourier option=sys" for a higher-level 
+description of the 'fourier' package.
+.endhelp

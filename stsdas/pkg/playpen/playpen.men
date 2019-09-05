@@ -1,0 +1,15 @@
+Menu for the package stsdas.playpen 
+
+      bwfilter - 1-D Fourier filtering.
+	  edge - 2-D image edge massaging.
+          fill - Baade-Lucy background "filling" algorithm.
+        hstpos - Plot the position of HST on a map of the world
+     hsubtract - Baade-Lucy background subtraction algorithm.
+           ils - Iterative Least Squares image restoration.
+        immean - Compute mean of an image and save value as task parameter.
+        jimage - Create a jitter image from U2,U3 coordinates in a table.
+       lgrlist - Expand a list of images and group numbers
+        saolpr - Print an image from an SAOImage display.
+
+(Type "help playpen opt=sys" for more information about the playpen package)
+

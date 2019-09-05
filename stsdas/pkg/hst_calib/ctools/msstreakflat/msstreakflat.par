@@ -1,0 +1,8 @@
+input,f,a,"",,,>Template/list with Earth flats 
+output,f,a,"",,,>Output flat-field image name
+nstreakpar,pset,h,"",,,>NICMOS parameters (pset)
+wstreakpar,pset,h,"",,,>WFPC parameters (pset)
+ngood,i,h,2,1,,>Min. good points needed to calculate flatfield 
+memory,i,h,20,1,,>Available memory (Mb)
+verbose,b,h,yes,,,>Verbose ?
+version,s,h,"12May98",,,>date of installation

@@ -1,0 +1,179 @@
+.help FOC_OPGUIDE Mar88 "FOC 7"
+.ih
+CHAPTER
+FOC_OPGUIDE -- operators guide
+.ih
+SUMMARY
+Sumary of FOC_OPGUIDE
+
+.ls Sections:
+.nf
+	Introduction
+	RSDP_overview
+	BAC files
+	ITF files
+	UNI files
+	ABS scaling factors
+	GEO files
+	SDE files
+	RES files
+	MOD files
+	QIN files
+	Verification
+	Delivery to RSDP
+	Other calibrations
+	Reference data needed
+.fi
+.le
+
+.ih
+INTRODUCTION
+
+The purpose of the CDBS-FOC software is to supply data reduction 
+algorithms and other utility tools to generate calibration quantities required
+by the pipeline processing (RSDP).  In addition, the FOC package also provides
+calibrations not used by RSDP; for example interactive analysis and 
+operations planning.
+The interactive data reduction in IRAF/STSDAS, such as analysis of 
+prism data, may need the use of many other IRAF packages.
+Operational planning requires data such as aperture locations.  
+The package also contains software to monitor
+the health of FOC, such as electronic focus, optimum discriminator threshold 
+setting, and warm up time of detectors. It is also possible to rerun the
+pipeline processing, and other variations of the
+correction process, within the FOC packages.
+
+.ih
+RSDP_OVERVIEW
+
+The following relations are required by the pipeline processing as
+defined in the documentation ICD-47:
+
+.nf
+CCAB_FOC_REF  names of reference files and their selection flags and indicators
+CGCR_WAV_DE   scaling factors used to convert image counts to energy units
+.fi
+
+CCAB_FOC_REF points to many calibration images, each file type has its
+own CDBS relation CX---R, such as CXBACR.
+
+
+
+The relation CGCR_WAV_DE has a corresponding relation CXCGCRR in the CDBS 
+database
+
+.ih
+ABS SCALING FACTORS
+This table contains the scaling factors which convert pixel counts to energy
+units. For a particular optical chain and filter combination the number is
+essentially the inverse of the integrated product of ST and FOC detective
+efficiencies and the transmission of the filters selected.
+
+It is expected that these numbers will remain fairly stable, but new 
+measurements of the FOC or ST will cause them to change, in which case
+task CXWAVE will generate the required table.
+
+.ih
+BAC FILES
+Point to other help files, after giving a brief overview. 
+The opt=sys should be more discussion, the .hlp more details
+about a particular script.
+
+The dark count image in units of counts per second. 
+
+.ih
+GEO FILES 
+This image contains data used to geometrically correct an image
+
+One should expect this parameter to be generated once a day, from internal LED
+flat field images.
+See the help foc FOC_GEO for the standard tasks for processing these flat
+fields.
+
+.ih
+ITF FILES
+Currently a fake ITF file which is used to remove format dependent features
+from an image
+
+.ih 
+MOD FILES
+Small multigroup images which contain models to fit to reseau marks in
+an FOC image.
+
+.ih
+QIN FILES
+Data quality initialization images used by RDSP to create 
+output data quality image.
+
+
+.ih
+RES FILES
+This file contains the approximate locations of reseau marks in an image
+
+.ih
+SDE FILES 
+Spectrograph DE images, one for each order ( selected by F/48 filters)
+
+.ih
+UNI FILES
+The uniform Detective Efficiency image
+.sp
+Since each UNI file will be used by a large number of instrument configurations
+the CDBS relation has been split into two:
+.br
+.ls CXUNIR
+containing the name of the UNI files, together with a reference to a version
+in the CXINSTCONF relation
+.le
+.ls CXINSTRCONF
+The expansion table for CXUNIR, one version of which lists all the instrument
+configurations which use the same UNI file. One expects this to change rarely.
+.le
+
+
+
+.ih
+OTHER CALIBRATIONS:
+
+The following relations are generated for non-RSDP calibrations, as
+defined in the Calibration Data Base Data Design documentation:
+
+.nf
+(TBD):		
+.fi
+
+.ih
+REFERENCE DATA NEEDED FOR RUNNING FOC CALIBRATIONS:
+
+The following tables, as defined in the Calibration Data Base Data 
+Design documentation, are required for running FOC calibrations.  They are
+supplied by the instrument team or standard target working group.
+
+.nf
+(TBD):		
+.fi
+
+.ih 
+SEE ALSO
+From FOC_OPGUIDE see also:
+
+.nf
+Absolute DE  calibration (ABS)  	......  FOC_ABS
+Dark count   calibration (BAC) 		......  FOC_BAC
+Geometric    calibration (GEO)		......  FOC_GEO
+ITF          calibration (ITF) 		......  FOC_ITF
+Models for reseau fitting(MOD)		......  FOC_MOD
+Data quality images      (QIN)		......  FOC_QIN
+Approx reseau locations  (RES)		......  FOC_RES
+Spectrograph calibration (SDE) 		......  FOC_SDE
+Relative DE  calibration (UNI) 		......  FOC_UNI
+Verification of calibration parameters	......  FOC_VERIFY
+Delivery of cal. parameters to RSDP	......  FOC_DELIVERY_RSDP
+Image correction 			......  FOC_CORRECTION
+Image correction in RSDP		......  FOC_CORRECTION_RSDP
+Reference data				......  FOC_REF_DATA
+.fi
+
+
+
+.endhelp

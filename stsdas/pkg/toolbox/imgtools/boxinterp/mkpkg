@@ -1,0 +1,11 @@
+# Update the boxinterp application code in the tools package library
+# Author: GIARETTA, 18-DEC-1987
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	boxinterp.x      		<foc.h> <tbset.h> <imhdr.h> 
+	;

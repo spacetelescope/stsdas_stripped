@@ -1,0 +1,35 @@
+.help fitsdiff Sep03 pyraf
+.ih
+NAME
+fistdiff -- Compare FITS files
+.ih
+USAGE
+![path]fitsdiff.py file1 file2
+.ih
+DESCRIPTION
+This Python task compare two FITS files.
+Since this is a Python task, to run it stand-alone, it must be invoked by 
+an escape(!).  It can also be used in the Python environment as a module.
+
+To find out the path of this task inside pyraf, first you need to:
+
+import fistdiff
+
+then type:
+
+fitsdiff
+
+it will show the path of the task, e.g. /usr/python/pyraf/lib/, you 
+can now run the task stand-alone:
+
+!/usr/python/pyraf/lib/fitsdiff.py file1 file2
+
+or 
+
+!/usr/python/pyraf/lib/fitsdiff.py -h 
+
+to get detailed help.
+
+.ih
+SEE ALSO
+.endhelp

@@ -1,0 +1,19 @@
+# Help directory for the HEADERS package
+
+$headers	= "stsdas$pkg/toolbox/headers/"
+$doc		= "stsdas$pkg/toolbox/headers/doc/"
+$eheader	= "headers$eheader/"
+$groupmod       = "headers$groupmod/"
+$hcheck		= "headers$hcheck/"
+$hdiff		= "headers$hdiff/"
+$iminfo         = "headers$iminfo/"
+$stfhistory	= "headers$stfhistory/"
+$upreffile	= "headers$upreffile/"
+
+eheader		hlp=doc$eheader.hlp,	src=eheader$eheader.x
+groupmod        hlp=doc$groupmod.hlp,   src=groupmod$t_groupmod.x
+hcheck		hlp=doc$hcheck.hlp,	src=hcheck$hcheck.x
+hdiff		hlp=doc$hdiff.hlp,	src=hdiff$hdiff.x
+iminfo          hlp=doc$iminfo.hlp,     src=iminfo$iminfo.x
+stfhistory	hlp=doc$stfhistory.hlp,	src=stfhistory$stfhistory.x
+upreffile	hlp=doc$upreffile.hlp,	src=upreffile$upreffile.x

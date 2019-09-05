@@ -1,0 +1,238 @@
+.help smooth Apr91 stsdas.contrib.vla
+.ih
+NAME 
+smooth - Smooths a data cube along the third dimension (velocity) 
+and/or spatially on each X-Y plane.
+
+.ih
+USAGE
+smooth image (smoothv) (smooths) (vsmooth) (kernel) (norm) (fwhmi)
+(fwhmo) (smmap) (logfile)
+.ih
+DESCRIPTION
+This script smooths data "cubes", I(x,y,z), in space (x,y) and/or
+in velocity (z).  Spatial smoothing is done with a  gaussian to a final
+specified FWHM (denoted `fwhmo').  Velocity smoothing is done with a
+numerically-specified kernel (which may also be gaussian).  The output
+data cube is not decimated.  The input data cube is not modified.
+
+Velocity smoothing is done first, though order of operation is not
+important. The user supplies a kernel file of equally-spaced points
+which can be a Gaussian function (the default), a Hanning function, or
+whatever the user desires.  The value of `norm' is used to normalize
+the smoothed output; this would usually be the sum of the weights used
+for the velocity smoothing function (default is 1.0).
+
+Each plane is then spatially smoothed using a circular Gaussian.
+A kernel 4 `sigmasm' wide is used in the spatial smooth, where
+`sigmasm' is the sigma of the Gaussian in pixels which the program
+calculates for a given output FWHM (or `fwhmo').  The intensity of
+the spatially-smoothed image is normalized to preserve the peak
+intensity value of a point source.  This is the usual convention for
+radio images.
+.ih
+PARAMETERS
+.ls image [file name]
+Input data cube to be smoothed.
+.le
+.ls (smoothv = no) [boolean]
+Smooth velocity?
+.le
+.ls (smooths = no) [boolean]
+Do spatial smoothing?
+
+A value of `yes' indicates that spatial Gaussian smoothing is
+desired.
+.le
+.ls (vsmooth = "") [file name]
+Name of output velocity-smoothed image cube.  This parameter is
+needed if 'smoothv=yes'.
+.le
+.ls (kernel = "gauss.kern") [file name]
+Name of ASCII file containing the values of the smoothing
+weights for the velocity smooth.  These values may be from
+a Hanning function, a Gaussian function (suggested), or any
+other function which the user desires.  This parameter is needed
+if 'smoothv=yes'.  The number of rows and columns must be the
+same.  An example of what the file 'gauss.kern' would look like 
+for a seven-point gaussian of 'fwhm = 2' channels is:
+
+.nf
+		0.0  0.0  0.0  0.01957  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.09132  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.23012  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.31315  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.23012  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.09132  0.0  0.0  0.0;
+		0.0  0.0  0.0  0.01957  0.0  0.0  0.0;
+		
+.fi
+.le
+.ls (norm  = 1.0) [real]
+Divisor to be used for the normalization of the 
+velocity-smoothed image intensities.  Generally this is the sum of the
+weights of the velocity-smoothing function used in the kernel.
+This parameter is needed if 'smoothv=yes'.
+.le
+.ls (fwhmi) [real]
+The value of the full width at half maximum in
+arcseconds of the input data cube.  This is needed if 'smooths=yes'.
+.le
+.ls (fwhmo) [real]
+The value of the full width at half maximum in
+arcseconds of the output spatially smoothed data cube.  This is
+needed if 'smooths=yes'.
+.le
+.ls (smmap = "") [file name]
+Filename of the output image cube which has been spatially
+smoothed (and velocity smoothed, if 'smoothv=yes').
+.le
+.ls (logfile = "") [file name]
+Filename for the output messages and error messages.
+.le
+.ih
+NOTES
+
+.ls * 
+To run this script, the following packages must be loaded:
+
+.nf
+	images
+	noao.proto	
+	stsdas.toolbox.tools
+.fi
+.le
+.ls * 
+The user must specify full file names (i.e., including the extension).
+.le
+.ls * 
+To run in batch, specify all script parameters, especially the
+logfile parameter.  Specify the mode as "h" for hidden.  On a UNIX
+station, the job may then be executed in batch by typing:
+
+.nf
+	       smooth & batch
+.fi
+     
+or in the background by typing:
+
+.nf
+	       smooth &
+.fi
+.le
+.ls * 
+Certain header parameters are required in the input image.  They
+are: NAXIS,CDELT1, and CDELT2.  They are the dimensions of the input
+image, the pixel spacing in X and in Y, respectively.  CDELT1 
+and CDELT2 are assumed to be in units of angular degrees. The user
+may put them into the header using the "hedit" task.
+.le
+.ls * 
+As this task will not attempt to overwrite existing files, the
+user should either rename the output files on each successive run,
+or delete them before re-running the task.  Setting 'clobber=yes'
+will overwrite any existing ASCII files.
+.le
+.ls * 
+Timing tests on this script have shown that it takes 80 minutes
+to run on a 256x256x31 image cube on an uninterupted Sparc station.
+In the test, both velocity and spatial smoothing were done.
+.le
+.ih 
+EXAMPLES
+1. Velocity smooth the data cube 'image.hhh' with a 40 km/sec FWHM
+Gaussian kernel:
+
+.nf     
+st> smooth image.hhh smoothv+ smooths- vsmooth="vsm.hhh" \
+>>>  kernel="gauss40.kern" norm=1.
+.fi
+
+In this example, the hidden parameters were explicitly specified.
+
+2. Spatially smooth the data cube 'image.hhh' from 12 arcseconds per 
+pixel to 20 arcseconds per pixel:
+
+.nf
+st> smooth image.hhh smoothv- smooths+ fwhmi=12.0 fwhmo=20.0 \
+>>>  smmap="smmap.hhh"
+.fi
+
+3. Smooth an image cube both in velocity (with a Hanning function) 
+and in space (with a 2-dimensional Gaussian) from 12 as/pix to 
+30 as/pix.  For this example, 'smmap.hhh' is the fully-smoothed
+output image cube.
+
+.nf
+st> smooth image.hhh smoothv+ smooths+ vsmooth="vsm.hhh" \
+>>>  kernel="hanning.kern" 1. fwhmi=12. fwhmo=30. smmap="smmap.hhh"
+.fi
+
+.ih
+LOGIC FLOWCHART
+.nf
+
+		 SMOOTH.cl Procedure Logic Flowchart
+	 	 ===================================
+
+1) Parameters to iraf tasks/scripts:  `parameter'
+2) 3D data cube: CUBE
+3) 2D data image: PLANE
+
+		      START
+			|
+			|				       IMAGE CUBE
+			|				     original input
+			|  	        `kernel'               image cube
+			|		      \	     	        /
+			| 		       \	       /
+			|		        \  	      /
+			              	         \	     /
+		    velocity  ----- YES ------  "convolve" one
+		     smooth ?		           x-v plane at 
+					              a time
+			|				  \
+			| 		        	|  \
+			| 		        	|   \
+			N 		                |    VSMOOTH CUBE
+			O 		        	|     current
+			| 		        	|     velocity-
+			| 		        	|     smoothed 
+			| 		        	|     image cube
+			| 		       		|
+			*-------------------------------
+			|
+			|
+			|				      IMAGE CUBE
+			|					or
+			|				      VSMOOTH CUBE
+			|	  `fwhmo'    	              current 
+			|    final desired fwhm 	      image cube
+			|		      \		       /
+			|		       \	      /	
+			|			\ 	     /
+				                 \          /
+		    spatial -------- YES -------- "gauss" smooth
+		    smooth ?		           one x-y plane 
+						    at a time
+			| 		        	   \
+			| 		        	|   \
+			| 		        	|    \
+			N 		        	|     \
+			O 		        	|     SMOOTH CUBE
+			| 		        	|     spatial and/or
+			| 		        	|     velocity - 
+			| 		        	|     smoothed cube
+			* ------------------------------
+			|
+			|
+  			
+		      FINISH
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+intensity, velocity
+.endhelp

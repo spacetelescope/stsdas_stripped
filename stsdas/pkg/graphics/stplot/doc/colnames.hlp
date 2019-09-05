@@ -1,0 +1,63 @@
+.help colnames Jul93 stsdas.graphics.stplot
+.ih
+NAME
+colnames -- Edit the parameter set containing column names to be read
+from a skymap catalog table.
+.ih
+USAGE
+colnames
+.ih
+DESCRIPTION
+The 'colnames' parameters specify the names of columns in a catalog
+table that will be read and used as input for another task, such as
+'skymap'.  Allowing variable column names makes the catalog table
+format more flexible.
+
+Note that this is a pset---not an executable task; it defines a set of
+parameters used by other tasks.  Invoking the pset by name runs
+'eparam' for the parameter set, allowing the user to modify the
+parameters.  Otherwise, the parameters may be modified on the command
+line by specifying the pset name and parameter name, for example,
+"colnames.racol=RAHRS".  Parameters may also be edited by using
+'eparam' on the calling task, in which case, the 'colnames' pset task
+name will appear as one of the task parameters; the 'colnames'
+parameters may be edited by positioning the cursor on the line
+containing the pset name and then typing ":e".  After editing the pset
+parameters, type Control-Z to return to the main task parameter menu.
+.ih
+PARAMETERS
+.ls (racol = "ra") [string]
+The name of the table column containing right ascension coordinates.
+The 'units' field in the table determines whether coordinates are
+interpreted as hours or as degrees.  If the 'units' field contains the
+character "h"---in upper or lower case---the values in the table column
+are assumed to be in hours of right ascension; otherwise, they are
+assumed to be in degrees.
+.le
+.ls (deccol = "dec") [string]
+The name of the table column containing declination values for the
+coordinates.  The units are assumed to be in degrees.  The numbers
+displayed in the table may be in "sexagesimal", i.e., degrees, minutes,
+and seconds, separated by colons, or in decimal degrees.  For example,
+declination +30 degrees, 15 minutes may be specified as +15.25 or as
++15:15.
+.le
+.ls (magcol = "mag") [string]
+The name of the table column containing brightness values for each
+catalog object that 'skymap' will plot.  The units are assumed to be in
+magnitudes.
+.le
+.ls (namecol = "name") [string]
+The name of the table column specifying the name of each catalog object
+that 'skymap' is to plot.  If this string is null or the named column
+is not found in the table, it is ignored.
+.le
+.ls (classcol = "class") [string]
+Table column name to use for specifying object class.  This parameters
+is not used at present.
+.ih
+EXAMPLES
+.ih
+SEE ALSO
+skymap, catlim
+.endhelp

@@ -1,0 +1,9 @@
+infile, f, a, "", , , 			">input file template"
+outfile, f, a, "", , ,			">output file name"
+iterations, i, a, 8, , ,		">number of iterations"
+widths, s, a, "800,600,400,250,150,90,50,30", , ,">half widths of the 1-D smoothing"
+good_points, i, a, 1, 1, ,		">min good points needed to calculate flat field for each pixel"
+
+verbose, b, h, yes, , ,			">print out verbose messages?"
+
+mode, s, h, "al"

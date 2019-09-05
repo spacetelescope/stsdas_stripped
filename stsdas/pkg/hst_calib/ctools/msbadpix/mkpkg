@@ -1,0 +1,45 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-c -DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_nbadpix.c nbadpix.h
+	$update	libnbadpix.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_nbadpix.o libnbadpix.a \
+		-lhstio -lcvos -lc -lxtools \
+		-o xx_msbadpix.e
+		;
+
+install:
+	$move xx_msbadpix.e stsdasbin$x_msbadpix.e
+	;
+
+libnbadpix.a:
+	b_analyze.c
+	b_buildnames.c
+	b_checkfiles.c
+	b_checkname.c   	"nbadpix.h"
+	b_checkoname.c		"nbadpix.h"
+	b_compute.c		"nbadpix.h"
+	b_extract.c		"nbadpix.h"
+	b_immap.c		"nbadpix.h"
+	b_inputpar.c		"nbadpix.h"
+	b_instrument.c		"nbadpix.h"
+	b_lib.c			"nbadpix.h"
+	b_nbadpix.c		"nbadpix.h"
+	b_output.c		"nbadpix.h"
+	b_singlegr.c		"nbadpix.h"
+	b_singleim.c		"nbadpix.h"
+	b_stat.c		"nbadpix.h"
+	;

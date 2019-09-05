@@ -1,0 +1,88 @@
+.help mklut Dec92 stsdas.graphics.sdisplay
+.ih
+NAME
+mklut -- Generate a lookup table for image display.
+.ih
+USAGE
+mklut infile 
+.ih
+DESCRIPTION
+This  task  creates  a  text  lookup  table  (LUT)  which contains a
+translation between the flux and the display brightness level.
+This text file can then be used to display an image such that the brightness 
+and contrast levels of the displayed image are similar to that obtained from 
+a hardcopy device such as the CELCO.  
+The output  of this task is  sent  to the screen.  You can redirect it to a 
+file, see the example below.
+
+The LUT is constructed as follows.  Let the cumulative histogram
+(that is, the integral of the histogram) of the input DN be called
+T(x), for data number x.  T is monotonic nondecreasing.  (Use of T as
+the LUT is the histogram equalization method.)  Let the desired output
+histogram of gray levels be g(x) which is a Gaussian function with the width of
+sigma.  Multiplying the contrast parameter (see below) with sigma gives the 
+range from either end of the data range to the midlle point (the gray level).
+The cumulative histogram (integral) of g will be called G(x).
+
+Construct the inverse of G and call it Ginv(y).  Then the desired LUT to 
+transform input DN to output gray level is
+.nf
+                                
+                         LUT = Ginv(T(x)).
+
+.fi
+The result has many gray levels near middle gray, but significant numbers
+at saturated black and white.  Moreover, the result has less contrast
+than that given by histogram equalization; but like histogram
+equalization, all values of DN are represented in the output.  The
+steep sides of the Gaussian function help reduce the contrast in the
+output, while the finite value of the Gaussian at the ends of the total
+range in DN ensures that pixels with those DN are also represented in
+the output image.  For instance, this allows faint nebulosity in a
+wispy region of the Orion nebula to be seen as well as bright stars,
+whose images are not bloomed but rather are fairly point-like.  As
+another example, histogram specification as the Gaussian described
+above allows moons in the vicinity of Saturn to show clearly as well as
+features on the chip (noise) and details of the planet and rings.
+
+Extremely high and low counts in the original data are excluded from the 
+cumulative histogram by setting an upper and lower limit of the data set.
+These are specified in the parameters upper and lower (see below). For example,
+if 'upper = 0.99' and 'lower = 0.01', then the top and bottom 1% data points are 
+rejected.
+
+To apply the newly created lookup table to display an image, do the
+following:
+.nf
+
+	display image_name ztrans="user" lutfile=lookup_table_name
+
+.fi
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input image.
+.le
+.ls lower = "0.01" [real]
+Lower limit of the usable histogram.
+.le
+.ls upper = "0.99" [real]
+Upper limit of the usable histogram.
+.le
+.ls contrast = "3.0" [real]
+Contrast measure.  Smaller number has higher contrast.  Experience shows that 
+the default number of 3 should be suitable for most applications.
+.le
+.ih
+EXAMPLES
+1. Make a lookup table called 'lut' for the standard IRAF image, 'dev$pix'.
+.nf
+
+wf> mklut dev$pix > lut
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+display
+.endhelp

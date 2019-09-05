@@ -1,0 +1,7 @@
+# colnames pset parameters specific to the HST Guide Star Catalog
+racol,s,h,"RA_HRS",,,"Column name for R. A."
+deccol,s,h,"DEC_DEG",,,"Column name for Dec."
+magcol,s,h,"MAG",,,"Column name for brightness"
+namecol,s,h,"name",,,"Column name for object name"
+classcol,s,h,"class",,,"Object class"
+mode,s,h,"al",,,

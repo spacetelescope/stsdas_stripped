@@ -1,0 +1,81 @@
+# Make the STSDAS syslib libraries
+# Author: D.L.Ball, 2-DEC-1987
+# Modified: C.D.Biemesderfer, 4 Dec 87
+# Modified: C.D.Biemesderfer, 4 Feb 87 - add applib
+# Modified: B.Simon, 3 May 89 - add display
+# Modified: B.Simon, 11 Aug 89 - add synphot
+# Modified: L. Richmind, 26 Jan 90 - add stieee
+# Modified: R. Williamson, 17 Jan 91 - change stieee to gflib
+# Modified: R. Williamson, 12 Jul 93 - package restructure 
+# Modified: M. De La Pena, 27 Jan 98 - accommodate the CVOS and HSTIO C source.
+# Modified: M. De La Pena, 10 Apr 2001 - Removed all VMS dependence from CVOS.
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+relink:
+update:
+
+$ifeq (hostid, unix)  !(date)  $endif
+$ifeq (hostid, vms)   !(show time)  $endif
+
+$echo "------------------------  APPLIB  ---------------------------"
+$update libapplib.a
+$echo "------------------------  CVOS  ---------------------------"
+$update libcvos.a
+$echo "------------------------  F77UTIL  --------------------------"
+$update libf77util.a
+$echo "------------------------  HSTIO  ---------------------------"
+$update libhstio.a
+$echo "------------------------  IRAF77 ----------------------------"
+$update libiraf77.a
+$echo "------------------------  SYNPHOT  --------------------------"
+$update libsynphot.a
+
+$ifeq (hostid, unix)  !(date)  $endif
+$ifeq (hostid, vms)   !(show time)  $endif
+$exit
+
+libapplib.a:
+	@applib
+	;
+
+libcvos.a:
+
+	@cvos
+	;
+
+libf77util.a:
+	@f77util
+	;
+
+libhstio.a:
+
+$set XFLAGS = "$(XFLAGS) -Inolibc -DIRAF"
+$ifeq (hostid, vms)
+        $set XFLAGS = "$(XFLAGS) -I[] -I$(stsdaslib) -/PREFIX=ALL_ENTRIES \
+                       -D__VMS -DD_FLOAT"
+$else
+        $set XFLAGS = "$(XFLAGS) -I. "
+$endif
+
+$ifeq (MACH, alpha)
+        $set XFLAGS = "$(XFLAGS) -D__DU"
+$endif
+
+	@hstio
+	;
+
+libiraf77.a:
+	@iraf77
+	;
+
+libsynphot.a:
+	@synphot
+	;
+
+

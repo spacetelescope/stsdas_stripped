@@ -1,0 +1,14 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	jpp_assoc.x	        <tbset.h>
+	jpp_calib.x	        "jpp.h"
+	jpp_obsum.x	        "jpp.h"
+	jpp_pedigree.x	    "jpp.h"
+	jpp_thumbs.x	    "jpp.h" <imhdr.h>
+	t_jpedigree.x	    "jpp.h"
+    t_jpp_thumbs.x     
+	;

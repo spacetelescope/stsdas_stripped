@@ -1,0 +1,18 @@
+t_1,r,h,44.026,,,Angular position of WFPC2 chip 1 relative to WF3
+t_2,r,h,90.422,,,Angular position of WFPC2 chip 2 relative to WF3
+t_4,r,h,0.0570,,,Angular position of WFPC2 chip 4 relative to WF3
+
+rad_1,r,h,736.572,,,Radial distance of WFPC2 chip 1 relative to WF3
+rad_2,r,h,704.971,,,Radial distance of WFPC2 chip 2 relative to WF3
+rad_3,r,h,0.0,,,Radial distance of WFPC2 chip 3 relative to WF3
+rad_4,r,h,723.072,,,Radial distance of WFPC2 chip 4 relative to WF3
+
+r_1,r,h,-179.79,,,Rotation angle of WFPC2 chip 1 relative to WF3
+r_2,r,h,-90.310,,,Rotation angle of WFPC2 chip 2 relative to WF3
+r_3,r,h,0.0,,,Rotation angle of WFPC2 chip 3 relative to WF3
+r_4,r,h,90.550,,,Rotation angle of WFPC2 chip 4 relative to WF3
+
+s_1,r,h,0.04557,,,Pixel scale of WFPC2 chip 1 (arcseconds)
+s_2,r,h,0.09961,,,Pixel scale of WFPC2 chip 2 (arcseconds)
+s_3,r,h,0.09958,,,Pixel scale of WFPC2 chip 3 (arcseconds)
+s_4,r,h,0.09965,,,Pixel scale of WFPC2 chip 4 (arcseconds)

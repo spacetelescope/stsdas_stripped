@@ -1,0 +1,14 @@
+
+      +------------------------------------------------------------+
+      |           DITHER Version 2.3 (13 Nov 2009)                 |
+      |                                                            |
+      |  Deprecated tasks MultiDrizzle, PyDrizzle, xytosky,        |
+      |  and tweakshifts have been removed from this package.      |
+      |  Ureka 1.5.1 contains these deprecated tasks; found at     |
+      |      http://ssb.stsci.edu/ureka/1.5.1/                     |
+      |  The DrizzlePac Python package replaces those tasks.       |
+      |  Use 'import drizzlepac'                                   |
+      |  to load the new tasks under Python or pyraf.              |
+      |  See http://drizzlepac.stsci.edu for details.              |
+      |  No changes have been made to any IRAF-based tasks.        |
+      +------------------------------------------------------------+

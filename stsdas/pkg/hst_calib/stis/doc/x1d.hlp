@@ -1,0 +1,453 @@
+.help x1d Sep2005 stis
+.ih
+NAME
+x1d -- Extract one or more 1-D spectra from flt or crj images.
+.ih
+USAGE
+.nf
+x1d input output
+.fi
+.ih
+PARAMETERS
+.ls input [file name]
+Name of the calibrated FITS file from which
+the spectrum or spectra are to be extracted.
+This may be a file name template or "@"list.
+The input file should be a flat-fielded (flt)
+and/or cosmic-ray rejected image (crj);
+it must not be 2-D rectified (x2d or sx2).
+.le
+.ls (output = "") [file name]
+Name of output FITS file to contain binary table with extracted spectra.
+If omitted, the name is constructed by replacing an existing suffix by,
+or appending, the suffix "_x1d" to the input file name.
+If a list is supplied for the 'input' parameter,
+'output' can be a empty string (""),
+a matching "@"list or an IRAF file name template
+that uses string substitution.
+.le
+.ls (backcorr = "perform") [string, allowed values: perform|omit]
+Subtract background from the extracted spectrum?  This parameter is
+ignored if optimal extraction or scattered light correction are used.
+.le
+.ls (dispcorr = "perform") [string, allowed values: perform|omit]
+Assign wavelengths using dispersion coefficients from reference table?
+.le
+.ls (helcorr = "perform") [string, allowed values: perform|omit]
+Correct wavelengths to a heliocentric reference frame?  If set to "perform",
+then 'dispcorr' should be set to "perform" too in order for the correction to
+take effect.
+.le
+.ls (fluxcorr = "perform") [string, allowed values: perform|omit]
+Convert raw counts to absolute flux units (erg /(cm^2 s A))?
+.le
+.ls (sporder = INDEF) [int]
+Spectral order number to extract.
+INDEF instructs the task to get the
+value from the 1-D extraction reference table.
+.le
+.ls (a2center = INDEF) [real]
+'a2center' is the center of the search range for finding the spectrum.
+This parameter is expressed in (one-indexed) image coordinates.
+See also 'maxsrch'.
+Note that the spectrum will be extracted along a curve
+specified by the spectral trace table (*1dt.fits),
+rather than along a strictly horizontal line.
+'a2center' refers to the location of the trace
+where it crosses the middle of the image in the dispersion direction
+(this can be either column 511 or 512).
+In order for the spectrum to be extracted exactly at 'a2center'
+(but still following the trace),
+'maxsrch' must be set to zero
+in order to disable searching for the spectrum.
+If a2center = INDEF, the value will be taken from
+the first matching row in the spectral trace table.
+.le
+.ls (maxsrch = INDEF) [int]
+Cross correlation range (in reference pixels), when searching in the
+cross dispersion direction for the actual location of the spectrum.
+If set to zero, the cross correlation search is turned off,
+and the spectrum is extracted at the position specified by
+the 'a2center' task parameter,
+which should therefore be set to a definite value.
+INDEF instructs the task to get the value from
+the 1-D extraction reference table,
+and this value is typically the entire height of the image.
+.le
+.ls (globalx = no) [boolean]
+Use global crosscor offset in all orders?
+.le
+.ls (extrsize = INDEF) [real]
+Size of extraction box, in reference pixels.
+INDEF instructs the task to
+get the value from the 1-D extraction reference table.
+This parameter is ignored if optimal extraction is used.
+.le
+.ls (bk1size = INDEF) [real]
+Size of first background region, in reference pixels.
+INDEF instructs the
+task to get the value from the 1-D extraction reference table.
+This parameter is ignored in case of Howk & Sembach scattered light correction.
+Set this to zero to ignore the contribution from this region.
+.le
+.ls (bk2size = INDEF) [real]
+Size of second background region, in reference pixels.
+INDEF instructs the task to get the value from the
+1-D extraction reference table.
+This parameter is ignored in case of Howk & Sembach scattered light correction.
+Set this to zero to ignore the contrinbution from this region.
+.le
+.ls (bk1offst = INDEF) [real]
+Offset (center to center) of first background region, in reference pixels.
+INDEF instructs the task to get the value from the 1-D extraction reference
+table.
+This parameter is ignored in case of Howk & Sembach scattered light correction.
+.le
+.ls (bk2offst = INDEF) [real]
+Offset (center to center) of second background region, in reference pixels.
+INDEF instructs the task to get the value from the 1-D extraction reference
+table.
+This parameter is ignored in case of Howk & Sembach scattered light correction.
+.le
+.ls (bktilt = INDEF) [real]
+Background tilt, in degrees.
+INDEF instructs the task to get the value from
+the 1-D extraction reference table.
+.le
+.ls (backord = INDEF) [int, min=0, max=1]
+Background order.
+INDEF instructs the task to get the value from the
+1-D extraction reference table.
+This parameter is ignored in case of Howk & Sembach scattered light correction.
+.le
+.ls (bksmode = "median") [string, allowed values: "off" | "median" | "average"]
+Background smoothing mode.
+If set to "off", no smoothing takes place.
+If set to either "median" or "average",
+then background smoothing will be done.
+For MAMA data, 'bksmode' is just an on/off switch;
+both "median" and "average" are interpreted as "on".
+For CCD data, 'bksmode' also specifies whether the boxcar smoothing
+will use a median within the box or an average within the box.
+Here is a more detailed description of background smoothing:
+.ls o
+For CCD data, the raw background, after 1-D extraction, is smoothed by
+a running window low-pass filter (i.e. boxcar smoothing)
+with a 9 pixel window, then fitted by an n-th degree polynomial.
+The value of the 'bksmode' parameter defines the boxcar smoothing
+function to be either a median or average within the running window.
+The polynomial degree is defined by the 'bksorder' task parameter.
+.le
+.ls o
+For MAMA first order data, the 1-D extracted background
+is fitted by an n-th degree polynomial,
+and the background is replaced by the fitted curve.
+The polynomial degree is defined by the 'bksorder' task parameter.
+For the G140 grating in first order,
+the regions around Lyman alpha and the 1300 A line are not smoothed.
+.le
+.ls o
+For MAMA echelle, the 1-D extracted background is smoothed twice
+by a running average with a 31 pixel window;
+this is equivalent to smoothing with a triangular filter.
+.le
+
+If the 'algorithm' parameter (see below) is set to "sc2d", background
+smoothing is turned off.
+.le
+.ls (bksorder = 3), [int, min = 0]
+Background smoothing polynomial order.
+.le
+.ls (blazeshift = INDEF) [real]
+Blaze shift, in pixels.
+INDEF instructs the task to get the value from
+the photometry reference table.
+.le
+.ls (algorithm = "unweighted") [string, allowed values: "unweighted" | "sc2d"]
+Extraction algorithm.
+Setting 'algorithm' to "sc2d" turns on the IDT's deconvolution algorithm
+for scattered light subtraction for echelle data.
+.le
+.ls (xoffset = INDEF) [real]
+Offset of a target in the dispersion direction,
+expressed in reference (low-res) pixels.
+This is intended for correcting the wavelengths of slitless data.
+An offset may be required due to imperfect target acquision,
+or to select a point in the field
+other than the target used for acquisition.
+Note that this offset is independent of the one (SHIFTA1)
+determined by wavecal processing.
+.le
+.ls (verbose = no) [boolean]
+Print additional verbose messages and time stamps?
+.le
+.ih
+DESCRIPTION
+Task 'x1d' performs 1-D spectral extraction on ACCUM spectroscopic
+calibrated data.
+The task is most appropriate for an observation of a point source.
+A spectrum is extracted along a narrow band,
+summing in the cross-dispersion direction and subtracting
+background values to produce a 1-D array of fluxes for each spectral order.
+The data are not resampled in the dispersion direction; instead, an array of
+wavelengths is generated.
+Each output spectrum is written to a separate row of
+a FITS binary table, together with the wavelength and background arrays.
+The task supports both unweighted and optimal extractions, as well as two
+different scattered light correction algorithms.
+
+INPUT IMAGES AND OUTPUT TABLES/IMAGES
+
+The input to this task should be a fully calibrated spectroscopic image
+(i.e. flatfielded and cosmic-ray rejected if applicable) that has been
+processed through 'basic2d' and/or 'ocrreject'.
+The input must not be 2-D rectified, however.
+The input file should consist of one or more STIS IMSETs.
+Each IMSET is comprised of:  science (EXTNAME=SCI), error (ERR),
+and data quality (DQ) FITS extensions.
+
+The main output file is a FITS binary table, with a primary header
+(with no data) and one FITS table extension for each IMSET in the input file.
+
+The output table format consists of 18 columns.
+Ten store information for a complete extracted spectral order at each row,
+and eight additional columns give
+detailed extraction and background information.
+Some columns store a single scalar quantity at each row,
+other columns store an entire 1-dimensional array at each row.
+The columns of the output table are:
+.ls SPORDER
+Spectral order for the spectrum in the current row.
+.le
+.ls NELEM
+Number of array elements for the array columns in the table.
+Each array column stores at each row an array of size NELEM.
+.le
+.ls WAVELENGTH
+Array with wavelength values corresponding to each pixel position
+along the dispersion axis, if 'dispcorr' is set to "perform".
+If 'helcorr' is set to "perform",
+then these wavelengths will be heliocentric corrected.
+.le
+.ls GROSS
+Array with gross count rate at each pixel position along the dispersion axis.
+This array will be empty in the case of optimal extraction.
+.le
+.ls BACKGROUND
+Array with background count rate at each pixel position along the
+dispersion axis.
+.le
+.ls NET
+Array with net count rate at each pixel position along the dispersion axis.
+.le
+.ls FLUX
+Array with absolute fluxes at each pixel position along the dispersion axis,
+if 'fluxcorr' was set to "perform".
+.le
+.ls ERROR
+Array with errors associated with the absolute flux values.
+If 'fluxcorr' was set to "omit",
+the errors will be associated with the NET or GROSS count rates instead,
+depending on whether background subtraction was performed or not.
+.le
+.ls DQ
+Array with data quality flags.
+The data quality value for any pixel in an
+extracted 1-D spectrum is the "or-ed" value of all data quality values
+that were used to produce the given pixel.
+.le
+.ls OFFSET
+Offset (in the cross-dispersion direction) from the nominal extraction
+position, where the extraction actually took place.
+This is reported in image (not reference) pixel units.
+.le
+
+These columns store information on extraction parameters.
+All values are expressed in image pixels.
+.ls A2CENTER
+Default or user specified Y extraction location.
+.le
+.ls EXTRSIZE
+Size of extraction aperture,
+i.e. number of pixels in cross dispersion direction
+that are to be added together to extract the spectrum.
+.le
+.ls MAXSRCH
+Search range for cross correlation location of extracted spectrum.
+.le
+.ls BK1SIZE
+Size of background box 1.
+.le
+.ls BK2SIZE
+Size of background box 2.
+.le
+.ls BK1OFFST
+Offset of background box 1 (center to center).
+.le
+.ls BK2OFFST
+Offset of background box 2 (center to center).
+.le
+
+SCATTERED LIGHT CORRECTION
+
+The deconvolution-based algorithm for scattered light correction
+developed by the STIS IDT is available.
+To run this algorithm a set of special reference files is required;
+the file names should be provided as header keywords in
+the primary header of the input file.
+The algorithm is iterative and very time and memory consuming.
+
+REFERENCE FILES and PROCESSING STEPS
+
+The names of the reference files (images and tables) to be used by 'x1d'
+have to be specified in the primary header of the input image,
+typically in the section CALIBRATION REFERENCE FILES.
+
+When an environment variable is used as part of a reference file name
+(e.g. "oref" in PFLTFILE = "oref$h230851ao_pfl.fits"), the variable must
+be set at the Unix level, before logging into IRAF, and the directory name
+must include the trailing "/".
+Setting an IRAF environment variable will not work,
+nor will using ! to escape from the cl.
+For example,
+
+.nf
+    setenv oref /data/reffiles/stdata/
+
+    # if the reference files are in the default directory, use
+    setenv oref ./
+.fi
+
+The following files are needed to perform 1-D spectral extraction:
+.ls One-D Spectrum Trace Table (1DT)
+Consists of displacements of spectra along Axis 2 for determining the location
+of a spectrum prior to extracting the 1-D spectrum.
+The name of the 1-D
+spectrum table file must be provided in the keyword SPTRCTAB.
+.le
+.ls One-D Extraction Parameter Table (1DX)
+Describes the extraction apertures (or `boxes') and methods used in the
+extraction of 1-D spectra.
+The name of the 1-D extraction table must be
+provided in the keyword XTRACTAB.
+.le
+.ls Dispersion Coefficients Table (DSP)
+Gives the coefficients of the dispersion solution to be applied
+to extracted 1-D spectra.
+The name of the dispersion table must be provided
+in the keyword DISPTAB.
+.le
+.ls Incidence Angle Correction Table (IAC)
+Gives coefficients for the change in two dispersion coefficients
+(the zero-point and the first-order terms) as a function of angular offset
+of the aperture from the nominal position.
+These corrections are applied to the default dispersion coefficients.
+The name of the incidence angle table file must be
+provided in the keyword INANGTAB.
+.le
+.ls Aperture Description Table (APD)
+Contains the geometric description of the apertures, and their offsets (in
+arcseconds) from a reference aperture.
+The name of the aperture description
+table file must be provided in the keyword APDESTAB.
+.le
+.ls Aperture Throughput Table (APT)
+Consists of wavelength dependent transmissions for each aperture.
+This table is used in conjunction with PHOTTAB to
+convert observed counts to absolute flux.
+The name of the aperture throughput
+table file must be provided in the keyword APERTAB.
+.le
+.ls Photometric Conversion Table (PHT)
+Contains the throughput of the instrument configuration as a function of
+wavelength assuming an infinite aperture centered on the detector.
+The table contains the photometric correction for a point source.
+Effects such as vignetting and echelle blaze function
+are folded into this table.
+The name of the photometric table must be provided in the keyword PHOTTAB.
+.le
+
+If all the input parameters are set to OMIT, then only a spectral extraction
+will be performed without any of the corrections/conversions that apply to
+each input parameter.
+For an explanation of the algorithm behind 'x1d' refer to STIS ISR 99-03,
+"Calstis6:  Extraction of 1-d Spectra in the STIS Calibration Pipeline",
+by M. McGrath et al., March 1999.
+Note that since this ISR document was written,
+significant modifications have been made to 'x1d'.
+However, the algorithm and the input parameter descriptions are still valid.
+
+If the sc2d scattered light correction algorithm is activated,
+the following additional reference files must be provided:
+.ls Cross-Disperser Scattering Table (CDSTAB)
+Contains area-normalized scattering profiles for STIS cross-dispersers,
+as a function of offset measured in low-resolution MAMA pixels.
+.le
+.ls Echelle Scattering Table (ECHSCTAB)
+Contains area-normalized scattering profiles for STIS echelle gratings,
+as a function of offset measured in low-resolution MAMA pixels.
+.le
+.ls Echelle Cross-Dispersion Scattering Table (EXSTAB)
+Contains area-normalized profiles describing smearing of echelle scattered
+light in the cross-dispersion direction.
+This is distinct from scattering by the cross-dispersing grating itself,
+which precedes the echelle grating
+in the optical path and is described in the CDS reference file.
+.le
+.ls Detector Halo Table (HALOTAB)
+Contains volume-normalized detector halo images at one or more reference
+wavelengths for each echelle grating.
+.le
+.ls Echelle Ripple Table (RIPTAB)
+Contains peak-normalized ripple (or blaze) functions for STIS echelle
+gratings, as a function of wavelength, for each allowed echelle tilt
+(CENWAVE) and order (SPORDER).
+.le
+.ls Scattering Reference Wavelengths Table (SRWTAB)
+Contains list of halo reference wavelengths and PSF reference wavelengths
+to use when correcting for the two-dimensional effects of scattered light.
+.le
+.ls Telescope Point Spread Function Table (TELTAB)
+Contains volume-normalized telescope PSF images at several reference
+wavelengths.
+.le
+
+.ih
+EXAMPLES
+
+1. To extract the spectra on an echelle FUV MAMA observation in the data set
+with rootname "o3s41301o" that has been previously 2-D calibrated.
+Apply all the corrections/conversions available.
+The reference files are in the directory "/data/reffiles/stdata/".
+Note that we must have assigned oref as an environment variable in Unix
+before starting the cl, and the value must include the trailing "/".
+.nf
+
+      cl> show oref
+      /data/reffiles/stdata/
+      cl> x1d o3s41301o_flt.fits o3s41301o_x1d.fits backcorr="perform" \
+	  dispcorr="perform" helcorr="perform" fluxcorr="perform" \
+	  algorithm="sc2d"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.ls STIS ISR 99-03,
+Calstis6:  Extraction of 1-d Spectra in the STIS Calibration Pipeline,
+McGrath, Busko, Hodge, March 1999
+.le
+.ls ICD47, R. Shaw, April 1997.
+.le
+.ls Background and Scattered Light Subtraction in the High-Resolution Echelle
+Modes of the Space Telescope Imaging Spectrograph, Howk, J.C. &
+Sembach, K.R., Astron. J., submitted, 1999.
+.le
+.ls x1d CL wrapper task written by R. Katsanis.
+.le
+.ls Underlying C code written by I. Busko.
+.le
+.ih
+SEE ALSO
+calstis
+.endhelp

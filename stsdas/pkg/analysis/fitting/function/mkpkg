@@ -1,0 +1,15 @@
+# Update the function application code in the fitting package library
+# Author: I.Busko, 21-JUN-1988
+#
+
+$checkout fitting.a ../
+$update   fitting.a
+$checkin  fitting.a ../
+$exit
+
+fitting.a:
+	function.x    		<imhdr.h> <error.h> <math/curfit.h>   \
+				<tbset.h> <fset.h> <ctype.h> <time.h> \
+				../nlfit/nlfit.h  \
+				../lib/curfitdef.h
+	;

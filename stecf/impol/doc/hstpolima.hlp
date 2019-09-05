@@ -1,0 +1,290 @@
+.help hstpolima V2.00 February00 
+.ih
+NAME
+hstpolima  -- Reduce linear polarization data for HST instruments
+
+USAGE
+hstpolima  imalis errlis instpoltab xybin binrej errlim outroot
+.ih
+PARAMETERS
+.ls imalis = "" [list of file names]
+The list of input sky-subtracted images to be reduced. Upto
+64 images can be input. They must all be of the same dimensions
+and are assumed to be well aligned.
+.le
+.ls errlis = "" [list of file names]
+The list of input error files corresponding to the sky-subtracted images.
+They must be of the same dimensions and the same as the
+input sky-subtracted images. 
+.le
+.ls instpoltab = "" [table file name]
+Name of STSDAS table file giving the parameters for polarization 
+determination for the instrument corresponding to the input 
+images. The table lists the polarizer filter name, 
+the polarizer angle, the transmission for the
+components parallel and perpendicular to the polarizer axis,
+the transmission of the s and p rays (parallel and perpendicular
+to the pick-off mirror surface for the WFPC2 case) and the retardation 
+of the s ray relative to the p ray, the instrumental polarization and
+its instrumental position angle. 
+.le
+.ls xybin = "" [integer]
+Binning factor in x and y direction (same for both axes) for 
+output images.
+.le
+.ls binrej = "" [real]
+Factor times rms on mean for binned data above which to reject values
+for inclusion in the mean value for that bin.
+.le
+.ls errlim = "" [real]
+The upper limit on the polarization error (%) for data to be included in the
+output files. Pixels in output images with polarization error greater
+than errlim have the values set to zero in all the output images.
+.le
+.ls outroot = "" [name]
+The root name for all the output files. Ten output files are produced
+distinguished by differing postfixes:
+
+.nf
+outroot + int - Stokes I parameter (total signal)
+
+outroot + inter - error on Stokes I parameter 
+
+outroot + q - Stokes Q parameter
+
+outroot + qer - error on Stokes Q parameter 
+
+outroot + u - Stokes U parameter
+
+outroot + uer - error on Stokes U parameter 
+
+outroot + pol - linear polarization (%)
+
+outroot + poler - error on linear polarization (%)
+
+outroot + pa - position angle of linear polarization vector 
+(i.e. E-vector) in degrees
+
+outroot + paer - error on position angle of linear polarization 
+vector (degrees)
+.fi
+
+.le
+.ih
+DESCRIPTION
+This task is a comprehensive tool for producing reduced polarization images
+for the HST instruments with imaging polarizer facilities (currently FOC, 
+WFPC2, NICMOS and ACS). A non-HST instrument can also be 
+handled - called 'SPECIAL'. The error frames are required to produce output 
+error files and should contain all sources of error (photon noise, 
+systematics (e.g. flat fielding errors) and read-out noise). 
+
+All instrument specific parameters are picked up from the header and
+the telescope rotation angle is read from the PA_V3 or ORIENTAT 
+descriptor (see below for details and also examples).
+The polarizer and or colour filter name in the header is matched with
+values found in the instpoltab table file and these are used to
+set the instrument specific polarization parameters required to
+compute the Stokes parameter and linear polarization data.
+The correction for polarizer transmission and pick-off mirror
+induced polarization follows closely the treatment for WFPC2
+by Biretta and McMaster (WFPC2 ISR 97-11). The instrumental
+polarization is included for effects that are not
+collected by these physically based parameters. If the values 
+of the polarizer efficiences for calculating each Stokes parameter 
+are equal for all input images (such as by specifying the same 
+polarizer orientation and instrument position angle), then no 
+calculation of polarization is possible. The task exits 
+with an error in this case.
+
+All errors are computed by Gaussian error propagation. To correct
+for the bias in linear polarization values which occurs when
+the Stokes parameter errors are large and the determination
+of linear polarization is no longer Gaussian error dominated, 
+the method advocated by Wardle & Kronberg (ApJ, 194, 249, 
+1974) is employed, using the solution of the Rice 
+distribution (see also Simmons & Stewart, A&A, 142, 10, 1985 
+for a discussion). Tests with synthetic data show that this 
+correction does an adequate job to pol/sigma(pol) of about 2. Below 
+that value it is best to use Monte Carlo methods which are not 
+directly dealt with here. The method of computing the errors on 
+the polarization position angle depends on the polarization
+signal-to-noise (i.e. pol/sigma(pol)). If pol/sigma(pol) is
+greater than 8 then the simple method (sigma(theta) =
+28.65*sigma(pol)/pol) is employed (Serkowski, Adv. in Astron. & 
+Astrophys. 1, 289, 1962); if pol/sigma(pol) is
+less than 8 then the distribution function of the position angle
+errors is integrated to derive the 1 sigma error (see
+Naghizadeh-Khouei & Clarke, A&A, 274, 968, 1993). Of course if
+the input error frames are all zero, no correction for bias is 
+performed and all output errors frames are set to zero. 
+
+The output images can be rebinned in the two axis directions 
+by an integer number. This permits the error per bin to be
+reduced or the sampling to be matched to the 
+resolution of the polarization maps. Individual pixel values in 
+the input images can be rejected from inclusion in binned
+data by setting the sigma rejection 
+parameter to a low value. Some care should be exercised here
+else valid points will be deleted from inclusion in the sum of
+a binned region leading to a bias in Stokes parameter determination.
+Largish values are useful for rejecting obvious artefacts such
+as hot pixels or cosmic rays. For unbinned data this parameter
+is ignored.
+
+The bound to the maximum polarization error (%) in the output maps
+acts to supress points with low signal-to-noise which will
+produce wildly varying polarization values and position angles.
+Output points with polarization error greater than this bound
+have pixel values set to zero in all the output images.
+
+On completion of the task the number of output pixels with 
+small (less than 1.0E-10) or negative values which were
+set to zero are printed to the terminal. The number 
+of output pixels whose polarization error exceeded the maximum 
+polarization error bound is also printed to the terminal.
+
+The following header keywords are required in order that the 
+instrumental polarization parameters can be matched against the
+instrument table files:
+.nf
+for FOC - INSTRUME, FILTNAM1, FILTNAM2, ORIENTAT
+for NICMOS - INSTRUME, FILTER, ORIENTAT
+for WFPC2 - INSTRUME, FILTNAM1, FILTNAM2, DETECTOR, PA_V3
+for ACS - INSTRUME, FILTNAM1, FILTNAM2, ORIENTAT
+for SPECIAL - INSTRUME, FILTER, POLANG, ORIENTAT
+.fi
+
+.ih
+EXAMPLES
+.nf
+1. To reduce a set of FOC polarimetry images:
+
+cl> hstpolima imalis="@focim.lis" errlis="@focer.lis" 
+    instpoltab="foc-pol-filt-001.tab" xybin=1 binrej=10.
+    errlim=2.0 outroot="foc001"
+
+FOC polarization data usually consist of a set of three images 
+taken at the three rotation angles of the polarizer of 0, 60 and 
+120 degrees at approximately the same orientation (ORIENTAT). See 
+the HST Data Handbook, Section 8-7). 
+
+
+2. To reduce a set of NICMOS polarimetry images:
+
+cl> hstpolima imalis="@nicim.lis" errlis="@nicer.lis" 
+    instpoltab="nicmos-pol-filt-001.tab" xybin=2 binrej=5.
+    errlim=3.0 outroot="nic001"
+
+NICMOS polarization data usually consist of a set of three images
+taken at the three rotation angles of the polarizer which are close
+to 0, 120 and 240 degrees (depending on the polarizer used short 
+(S) or long wavelength (L)) at a similar ORIENTAT. See the HST Data 
+Handbook Section 18-12 and Hines, D. C., 1998, NICMOS and the VLT 
+Workshop proceedings, eds. Freduling, W. & Hook, R., p. 63.  
+
+
+3. To reduce a set of WFPC2 polarimetry images:
+
+cl> hstpolima imalis="@wfpcim.lis" errlis="@wfpcer.lis" 
+    instpoltab="wfpc2-pol-filt-001.tab" xybin=2 binrej=20.
+    errlim=5.0 outroot="wfpc001"
+
+WFPC2 polarization data can consist of three or four images taken 
+with three or four rotation angles of the polarizer quad filter at 
+a given PA_V3, or three or more images taken on the same chip at 
+differing values of PA_V3 and covering a range of rotation of at 
+least 90 degrees. See the HST Data Handbook Section 28-16 and 
+Biretta, J. & McMaster, M., WFPC2 Instrument Science Report 97-11. 
+The header parameters FILTNAM1 and FILTNAM2 are translated to 
+provide the polarizer position angle in conjunction with the chip 
+number (for POLQ only).
+
+
+4. To reduce a set of ACS polarimetry images:
+
+cl> hstpolima imalis="@acsim.lis" errlis="@acser.lis" 
+    instpoltab="acs-pol-wfc-uv-filt-001.dat" xybin=2 binrej=5.
+    errlim=3.0 outroot="acs001"
+
+ACS polarization data usually consist of a set of three images
+taken at the three rotation angles of the polarizer, which are
+0, 60 and 120 degrees, for a given camera (WFC or HRC), 
+polarizing filter (POLV or POLUV) and colour filter.
+See the ACS Instrument Handbook, Chapter 5 for details.
+
+5. To reduce a set of polarimetry images originating from a
+non-HST instrument:
+
+cl> hstpolima imalis="@specim.lis" errlis="@specer.lis" 
+    instpoltab="special-pol-001.tab" xybin=1 binrej=5.
+    errlim=0.5 outroot="spec001"
+
+If the parameter INSTRUME is set to SPECIAL then non-HST imaging 
+polarimetry data can be reduced. The filter name given by the 
+header parameter FILTER must match the name in the instrument 
+table file. The polarizer angle is indicated by the header 
+parameter POLANG. The instrument rotation is indicated by the 
+ORIENTAT parameter which may need to be translated into the 
+instrumental system. 
+.fi
+
+.ih
+Format of the Instrument specific table file
+.nf
+The STSDAS table file is a nine column file with the following
+columns:
+Name of colour/polarizing filter 
+Position angle of polarizer filter
+Normalised transmission parallel to polarizer axis 
+Normalised transmission perpendicular to polarizer axis 
+Reflectance of mirror E-vector parallel to surface (s wave)
+Reflectance of mirror E-vector normal to surface (p wave) 
+Retardance (deg.) of s wave relative to p wave  
+Instrumental polarization (%) 
+Position angle (deg.) of instrumental polarization (in 
+instrument frame)
+
+with the following column names and format:
+FILTER     CH*16 
+POLANG     R     F6.2
+TRANSPAR   R     E10.4
+TRANSPER   R     E10.4
+REFLECTRS  R     F6.4
+REFLECTRP  R     F6.4
+RETARDPHI  R     F8.4
+INSTPOL    R     F6.2
+INSTPA     R     F6.2
+
+Thus table files for different instruments can be produced for use 
+with this routine.
+.fi
+
+.le
+.ih
+TIMING
+The computing time requirements depend on the data values. Data with
+uniformly high signal-to-noise runs through quickly. However if the
+values of pol/sigma(pol) are low, then the computing time is
+substantially increased, since the Rice distribution must be solved 
+for the bias on the polarization values and, more specifically, the 
+distribution on the position angle errors must be numerically 
+integrated.
+.fi
+
+.ih
+BUGS
+.nf
+Some care should be taken if ORIENTAT is much different between 
+the input images and there is substantial instrumental polarization,
+since the position angle of instrumental polarization is (probably)
+fixed in the reference frame of the instrument. This situation is
+not correctly handled.
+
+.fi
+
+.ih
+SEE ALSO
+hstpolsim, polimplot, polimodel, hstpolpoints
+.fi
+.endhelp

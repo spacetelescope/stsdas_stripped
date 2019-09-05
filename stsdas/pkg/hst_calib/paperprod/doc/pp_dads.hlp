@@ -1,0 +1,66 @@
+.help pp_dads Nov97 stsdas.hst_calib.paperprod
+.ih
+NAME
+pp_dads -- Generate paper product for HST observations
+.ih
+USAGE
+pp_dads input device
+.ih
+DESCRIPTION
+The paper product of HST observations provides the user a quick look of data
+qualities and summaries.  They are automatically generated at the end of 
+the pipeline process and are distributed to the user.  The task PP_DADS is 
+the stand-alone version generating the same paper product.
+.ih
+PARAMETERS
+.ls input = "*" [string]
+Input files.  Wild cards can be used.  Input files can include more than 
+one instrument and/or more than one proposal.  Besides the raw/calibrated
+data file(s), each observation must have the SHP file (for older instruments) 
+or the SPT file (for new instruments) in order to be processed by this task.
+
+Input files can be either GEIS (applicable to older instruments only, i. e. 
+FOC, FOS, GHRS, and WFPC2) or FITS format.  You can even have both formats
+but for the same root name, there should be only one format for all the files.
+.le
+.ls device = "stdplot" [string]
+Name of the output graphics device.  It can be a printer (e.g. lp1), a 
+PostScript file (e.g. psi_land), or the terminal (e.g. stdgraph).  Since
+the default orientation is landscape, the use of psi_port is not recommended.
+
+If the output is a PostScript file, it is generated in the /tmp directory, and
+will have a name (or names if the output is large, and are broken into 
+several files) like psk1234a.
+.le
+.ls (output_select) = "all" [string]
+Select which parts of the paper product to be in the output.  Allowed 
+values are: "cover" for cover page (and explanatory page if any), "visit" 
+for the visit summary pages, "obs" for the data pages, or "all" for all of 
+above.  You can specify more than one choice, e.g. "cover,visit".
+.le
+.ls (print_dir) = no [bool]
+Print the data directory name at the lower left corner on the cover page.  This
+is useful for the STScI Archive to identify the paper product with the 
+corresponding data tapes.
+.le
+.ls (verbose) = no [bool]
+Print out detailed processing information.  This is useful for debugging if
+something goes wrong.  If set to yes, several temporary files will be left in
+the /tmp directory.  They all have file names started with PP.
+.le
+.ih
+EXAMPLES
+1. process all the STIS files in the local directory and produce the output
+as a PostScript file.
+
+.nf
+pa> pp_dads o* psi_land
+.fi
+.ih
+REFERENCE
+W. B. Sparks et.al.: "HST Paper Products" (STScI memo, December 12, 1995)
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

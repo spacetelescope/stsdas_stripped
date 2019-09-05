@@ -1,0 +1,47 @@
+################################################################################
+#   Make the w_calib package
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update w_calib.a
+	$call	linkonly
+	;
+
+install:
+	$move	xx_w_calib.e stsdasbin$x_w_calib.e
+	$call	install@sharp
+	;
+
+w_calib:
+linkonly:
+	$set    LIBS = "-lapplib -lgflib -lgilib -lsynphot -lstxtools \
+		-luttables -lxtools -ltbtables -liraf77" 
+	$omake	x_w_calib.x
+
+	$link	x_w_calib.o w_calib.a $(LIBS) -o xx_w_calib.e
+	$call	relink@sharp
+	;
+
+w_calib.a:
+	@flagflat
+        @mka2d
+	@mkphottb
+	@normclip
+	@psfextr
+        @streakflat
+	;
+

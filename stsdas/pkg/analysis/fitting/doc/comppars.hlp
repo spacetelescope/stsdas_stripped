@@ -1,0 +1,59 @@
+.help comppars Feb90 stsdas.analysis.fitting
+.ih
+NAME
+comppars -- Edit the parameters for fitting a composite function.
+.ih
+USAGE
+comppars
+.ih
+PARAMETERS
+.ls (index = INDEF) [real]
+Initial guess for the powerlaw component index. If INDEF, the task
+will set it to a pre-defined value.
+.le
+.ls (pampl = INDEF) [real]
+Initial guess for the powerlaw component amplitude at the reference 
+point. If INDEF, the task will set it to the maximum value in the
+dependent variable.
+.le
+.ls (pref = INDEF) [real]
+Reference point in the independent variable scale, for the powerlaw 
+component. If INDEF, the task will set it to the midpoint of the
+independent variable.
+.le
+.ls (temp = INDEF) [real]
+Initial guess for the temperature of the black-body component. If INDEF,
+the task will set it to a pre-defined value.
+.le
+.ls (bampl = INDEF) [real]
+Initial guess for the amplitude of the black-body component at reference 
+point. If INDEF, the task will set it to half the maximum value in the
+dependent variable.
+.le
+.ls (bref = INDEF) [real]
+Reference point in the independent variable scale, for the black-body 
+component. If INDEF, the task will set it to the midpoint of the
+independent variable.
+.le
+.ls (vindex = yes) [boolean]
+Vary the powerlaw index?
+.le
+.ls (vpamp = yes) [boolean]
+Vary the amplitude of the powerlaw component at reference point?
+.le
+.ls (vpref = no) [boolean]
+Vary the X axis reference point for the powerlaw component?
+.le
+.ls (vtemp = yes) [boolean]
+Vary the black-body temperature?
+.le
+.ls (vbamp = yes) [boolean]
+Vary the amplitude of the black-body component at reference point?
+.le
+.ls (vbref = no) [boolean]
+Vary the X axis reference point for black-body component?
+.le
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

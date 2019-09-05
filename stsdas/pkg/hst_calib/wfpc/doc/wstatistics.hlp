@@ -1,0 +1,182 @@
+.help wstatistics Jul93 stsdas.hst_calib.wfpc
+.ih
+NAME
+wstatistics -- Compute & print WFPC or WFPC-2 image pixel statistics.
+.ih
+USAGE	
+wstatistics images
+.ih
+DESCRIPTION
+
+This task computes and prints, in tabular form, several statistical 
+quantities for each image in the list specified by the `images' parameter.  The 
+quantities to be printed are selected with separate task parameters, 
+or they may all be selected by setting "doall+".  You can choose 
+any or all of the following options:  
+
+.nf
+       doall - computed all of the statistical quantities
+	npix - the number of pixels used to do the statistics
+	 min - the minimum pixel value
+	 max - the maximum pixel value
+        mean - the mean of the pixel distribution
+      stddev - the standard deviation of the pixel distribution
+       midpt - estimate of the median of the pixel distribution
+       mmode - estimate of the mode of the pixel distribution
+	skew - the skew of the pixel distribution
+    kurtosis - the kurtosis of the pixel distribution
+.fi
+
+Pixels that are flagged in the associated Data Quality File (DQF) may 
+be excluded by setting the `usedqf' parameter to "yes"; specifying 
+which pathologies are to be excluded is done by setting parameters in 
+the `dqfpar' pset.  For example, setting "usedqf=yes" and "satbit=yes" 
+will exclude saturated pixels from the calculations.  
+
+This task will compute separately all specified statistical quantities 
+for all groups of an image, or for a single group if it is explicitly 
+specified in the `images' list.  For example, typing "wstat flat.hhh 
+min+ max+" will compute the extreme values of all groups in the 
+image "flat.hhh", but typing "wstat flat.hhh[2] min+ max+" will only 
+print the extreme values of the second group of that image.  
+
+The image mean, standard deviation, skew, and kurtosis, are 
+computed using the expressions listed below.  
+
+.nf
+       mean = sum (x1,...,xN) / N
+     dev[i] = x[i] - mean
+   variance = sum {dev[i]**2} / (N-1)
+     stddev = sqrt (variance)
+       skew = sum {(dev[i] / stddev) ** 3} / N
+   kurtosis = [sum {(dev[i] / stddev) ** 4} / N] - 3
+.fi
+
+The midpoint and mode are computed in three passes through the image.  
+In the first pass the flagged data are excluded, and the mean and 
+extreme values are calculated.  In the second pass the standard 
+deviation, skew, and kurtosis of the pixels are calculated.  The 
+midpoint then is estimated by integrating the data histogram and 
+computing by interpolation the data value at which exactly half the 
+pixels are below that data value and half are above it.  The mode is 
+estimated by locating the maximum of the data histogram and fitting 
+the peak by parabolic interpolation.
+
+.ih
+PARAMETERS
+.ls images [string]
+List of images for which pixel statistics are to be computed.
+.le
+.ls (lower = INDEF)
+Use only pixels with values greater than or equal to this limit.
+All pixels are above the default value of INDEF.
+.le
+.ls (upper = INDEF)
+Use only pixels with values less than or equal to this limit.
+All pixels are below the default value of INDEF.
+.le
+.ls (doall = no) [boolean]
+Compute and print all statistical quantities listed below?  If 
+selected, this action supercedes all of the statistical settings 
+below. 
+.le
+.ls (npix = yes) [boolean]
+Print the total of the non-rejected pixels?  This setting is forced 
+to "yes" if the `usedqf' parameter is "yes". 
+.le
+.ls (minmax = yes) [boolean]
+Print the extreme values of the non-rejected pixels?  This setting is 
+forced to "yes" if either of the `median' or `mmode' parameters is 
+"yes". 
+.le
+.ls (mean = yes) [boolean]
+Print the mean of the non-rejected pixels?  
+.le
+.ls (midpt = yes) [boolean]
+Calculate and print an estimate of the median of the non-rejected 
+pixels?  Note that the midpt calculated here may be more accurate 
+than that from images.imstatistics, owing to the smaller histogram 
+bin size used.  
+.le
+.ls (mmode = yes) [boolean]
+Calculate and print an estimate of the mode of the non-rejected 
+pixels?  
+.le
+.ls (stddev = yes) [boolean]
+Calculate and print the standard deviation of the non-rejected 
+pixels?  
+.le
+.ls (skew = no) [boolean]
+Calculate and print the skew (third moment) of the non-rejected pixel 
+distribution?  
+.le
+.ls (kurt = no) [boolean]
+Calculate and print the kurtosis (fourth moment) of the non-rejected 
+pixel distribution?  
+.le
+.ls (usedqf = no) [boolean]
+Ignore DQF-flagged pixels when compiling statistics?
+.le (dqfpar = "") [pset]
+Parameter set containing parameters that describe the pathologies 
+associated with WFPC and WFPC-2 data.  Type "help dqfpar" for more 
+details.  
+.le
+.ih
+EXAMPLES
+1. Find the minimum, maximum, mean and standard deviation of the pixel 
+values in the region [1:20,*] for each group in the images 'flat1.c0h' 
+and 'flat2.c0h'.  
+
+.nf
+  cl> wstat flat*[1:20,*] midpt- mmode-
+
+  # Image statistics for flat1.c0h[1:20,*]
+  # GROUP      NPIX       MIN       MAX     MEAN   STDDEV 
+    [    1]   16000    -123.4    14009.    123.4     206.
+    [    2]   16000     567.8    13887.    567.8     415.
+
+  # Image statistics for flat2.c0h[1:20,*]
+  # GROUP      NPIX       MIN       MAX     MEAN   STDDEV 
+    [    1]   16000    -123.4    14009.    123.4     206.
+    [    2]   16000    -567.8    13887.    234.5     415.
+.fi
+
+The string "flat*" uses a wildcard to select all images beginning with 
+the word "flat".  The string "[*,1:20]" is an image section selecting 
+the first 20 columns of all rows.  The number of pixels, min, max, 
+mean, midpt, mode and standard deviation are printed by default; the 
+command above explicitly omits the midpt and mode.  
+
+2. Compute the mean, midpoint, and extreme values of the second 
+group of an image, excluding DQF-flagged pixels.
+
+.nf
+  cl> wstat ngc1850.c0h[2] mode- usedqf+
+
+  # Image statistics for ngc1850.c0h[2]
+  # GROUP      NPIX       MIN       MAX      MEAN     MIDPT   STDDEV 
+    [    2]  640000    -567.8     3887.     123.4     140.9     206.
+.fi
+
+.ih
+TIMING REQUIREMENTS
+This task generally compares well with 'images.imstatistics', and is 
+sometimes noticeably faster, depending on which quantities are being 
+computed, and the size of the specified image section.  On a 
+SPARCStation 1, it takes just under 5 CPU seconds, and 10 elapsed 
+seconds, to compute all statistical quantities for a full 800 x 800 
+WFPC group.  These times increase to 19 CPU sec and 55 elapsed 
+seconds for all groups, without excluding flagged pixels or imposing 
+a floor or ceiling on the data.  Excluding flagged pixels will 
+increase the relative times by a factor of about two.  Obviously, 
+these times will vary with the type of machine used, the amount of 
+memory available, and other factors.  
+.ih
+REFERENCES
+This task is based upon the 'images.imstatistics' task, written by 
+F. Valdes (NOAO).  It was optimized by R. Shaw (STScI) to handle 
+multi-group GEIS images and WFPC-style bad pixel masking. 
+.ih
+SEE ALSO
+dqfpar, gstatistics
+.endhelp

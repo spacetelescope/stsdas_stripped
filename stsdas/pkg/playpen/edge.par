@@ -1,0 +1,8 @@
+input,s,a,,,,>input image list
+output,s,a,,,,>output image/directory
+type,s,h,"window","|window|extension",,>type of opereation
+function,s,h,"Hanning","|Welch|Parzen|Hanning",,>window function
+esize,i,h,20,0,,>edge size to be modified
+background,r,h,INDEF,,,>background value
+verbose,b,h,no,,,>verbose ?
+mode,s,h,al

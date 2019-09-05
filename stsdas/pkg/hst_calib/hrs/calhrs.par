@@ -1,0 +1,3 @@
+rootname,s,a,,,,"Rootname of the HRS observation"
+output,s,a,,,,"Rootname of output files"
+Version,s,h,"1.3.14,Sep04",,,"Date of installation"

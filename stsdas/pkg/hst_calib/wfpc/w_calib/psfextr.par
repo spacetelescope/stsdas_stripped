@@ -1,0 +1,10 @@
+infile, s, a, "", , ,		">input file template name"
+outfile, s, a, "", , ,		">output file template name"
+xcenter, r, a, , 1, ,		">X coordinate of the PSF center"
+ycenter, r, a, , 1, ,		">Y coordinate of the PSF center"
+xsize, i, a, 256, 0, ,		">X dimension of the subsection"
+ysize, i, a, 256, 0, ,		">Y dimension of the subsection"
+origin, s, a, "", , , 		">origin of the input image"
+dummy, s, h, "wfpc$tmplpsf.hhh", , , 	">PSF file header template"
+
+mode, s, h, "al"

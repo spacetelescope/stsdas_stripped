@@ -1,0 +1,10 @@
+#  Control parameters for fitting algorithm
+#
+method,s,h,"amoeba","|amoeba|Levenberg-Marquardt",,>minimization method
+maxit,i,h,500,10,,>maximum number of amoeba/LM iterations
+restart,i,h,3,1,,>number of amoeba restarts
+alpha,r,h,1.0,,,>parameters for controlling simplex
+beta,r,h,0.5,,,>expansion/contraction
+gamma,r,h,2.0,,,
+version,s,h,"14Oct97",,,>date of installation
+mode,s,h,al

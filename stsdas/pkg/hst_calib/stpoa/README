@@ -1,0 +1,20 @@
+The "stpoa" IRAF Layered Package
+
+This directory tree contains Iraf tasks developed at the 
+Space Telescope European Coordinating Facility, by the Post
+Operational Archive Group. These tools are to help with the 
+re-calibration of the Post Operation instruments of Hubble 
+Space Telescope data archive.
+
+This code is stored here for archival purposes.  STScI is not actively
+maintaining this code.
+
+More details concerning the content of these packages can be found
+at:
+
+http://www.stecf.org/poa/software
+[ This link will no longer work after ECF shuts down. ]
+
+Instructions for installing the packages are given in the INSTALL file.
+
+Anastasia Alexov, STPOA, July 2000

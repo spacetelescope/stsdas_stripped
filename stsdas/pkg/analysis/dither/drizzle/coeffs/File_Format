@@ -1,0 +1,85 @@
+Drizzle Coefficients Files
+
+An explanation of their format and how they are applied.
+
+Introduction:
+
+The format of the distortion coefficients used by drizzle is simple 
+and this document briefly describes what needs to be put where so that
+user-determined distortions may easily be fed to drizzle.
+
+The files are ascii text with numbers in free-format. Lines starting
+"#" are assumed to be comments - recommended but ignored. Empty lines
+are also ignored.
+
+Once a file in the appropriate format has been created it can be fed
+to drizzle using the "coeffs" parameter. 
+
+The Transformation:
+
+The sequence of transformations done by drizzle is as follows:
+
+Starting from the pixel coordinate on the input image (xp,yp)
+we first derive the offset (xoff,yoff) from the "centre":
+
+(xoff,yoff) = (xp,yp) - (xcen,ycen)
+
+(xcen,ycen) is determined by the drizzle parameter "align",
+if align=center then xcen,ycen = nx/2+1, ny/2+1, where nx,ny
+are the input image dimensions. If align=corner then xcen,ycen=
+nx/2+0.5,ny/2+0.5. The FITS/IRAF convention is used in which the
+lower-left pixel is (1,1) and has center at (1.0,1.0). So, for
+a WFPC2 image (800,800), if align="center" then xcen,ycen = 401.0,401.0
+and if align="corner" then xcen,ycen=400.5,400.5. The latter is the
+physical center of the array. 
+
+The next step is the application of the distortion coefficients which
+provide an output offset relative to the center from the input offset:
+
+xdist = xpoly(xoff,yoff)
+ydist = ypoly(xoff,yoff)
+
+The polynomials define the output position relative to the center - not
+relative to the input positions. So, for example, for WFPC2 where the
+distortion is modest xdist,ydist is within a few pixels of xoff,yoff.
+
+The Coefficients:
+
+The polynomials are full two dimensional ones with cross terms. The
+order is defined in the coefficients file by a keyword on a line by itself
+before the coefficients. So, for a solution with third-order terms the
+file would have "cubic" at the start, 4th order "quartic", 5th order
+"quintic". For higher orders (from 2 to arbitrarily high values) the
+syntax "poly <n>" where <n> is an integer, two or larger.
+
+There are several possible orders for the terms in a 2d polynomial.
+The one used here is, for the cubic case (here x,y are used instead
+of xoff,yoff for conciseness):
+
+xdist = a1 + a2*x + a3*y + a4*x^2 + a5*x*y + a6*y^2 +
+        a7*x^3 + a8*x^2*y + a9*x*y^2 + a10*y^3
+
+ydist = b1 + b2*x + b3*y + b4*x^2 + b5*x*y + b6*y^2 +
+        b7*x^3 + b8*x^2*y + b9*x*y^2 + b10*y^3
+
+An Example:
+
+In the coefficients file the a values are listed first, followed by the
+b ones. So, a cubic coefficients file would look like:
+
+#----------------start
+# An example coefficients file for drizzle, this is a comment
+# The next line defines the order
+cubic
+
+# There are the ten x coefficients (free-format)
+  366.568760        1.00006    0.000867054    -1.0693e-06   -1.81899e-07 
+-9.11569e-07   -3.50145e-08              0   -3.50567e-08              0 
+
+# and these are the ten y coefficients
+  354.794350    0.000867054        1.00006   -9.11569e-07   -1.81899e-07 
+ -1.0693e-06              0   -3.50567e-08              0   -3.50145e-08 
+
+#-----end
+
+Richard Hook, September 2003

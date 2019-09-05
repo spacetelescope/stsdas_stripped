@@ -1,0 +1,28 @@
+.help stgindx Jul93 stsdas.analysis.gasp
+.ih
+NAME
+stgindx -- Create an index table.
+.ih
+USAGE
+stgindx 
+.ih
+DESCRIPTION
+This task will copy the guide star index table---in FITS format--from
+the CD-ROM to a magnetic disk.  The index table will be reformatted to
+a STSDAS table.  The index table is used by the 'sgscind' task to
+determine which GSC regions overlap the user's field.  This task is
+required since the index table on the GSC is in FITS format and
+'sgscind' requires the table to be in STSDAS (binary) format.
+.ih
+PARAMETERS
+.ls (index = scidata$index.tab) [file name]
+Output file name for the guide star catalog index table.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+strfits, sgscind
+.endhelp

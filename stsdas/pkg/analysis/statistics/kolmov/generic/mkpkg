@@ -1,0 +1,15 @@
+# Update the generic application code in the statistics package library
+# Author: C.D.Biemesderfer, 26-MAY-1988
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	asrt2d.x       		
+	asrt2i.x       		
+	asrt2l.x       		
+	asrt2r.x       		
+	asrt2s.x       		
+	;

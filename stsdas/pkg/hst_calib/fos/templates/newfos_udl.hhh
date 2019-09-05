@@ -1,0 +1,73 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'INTEGER*4'          /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           / number of segments containing errors           
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           / time from the packet ancillary data            
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / FOS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'UDL               ' / file type                                      
+CTYPE1  = 'n/a               ' / units of first data axis                       
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+                                                                                
+                 / CDBS KEYWORDS                                                
+Y1STCHNL=                 -999 / first channel to be processed                  
+YAPERPO1=                 -999 / same as first YAPERHOE|LOE                     
+YAQMD   =                 -999 / acquisition mode                               
+YDATALIM=                 -999 / high byte of acquisition limit                 
+YDEAD   =                 -999 / accum close time                               
+YFFCPWR =                 -999 / flat field cal lamp power                      
+YFGWAPO1=                 -999 / same as first YFGWAPOS                         
+YINTEG  =                 -999 / number of integrations/X-step                  
+YLINSFRM=                 -999 / lines per frame                                
+YLIVE   =                 -999 / accum open time                                
+YMCLEARS=                 -999 / memory clears/data acquisition                 
+YMSLICES=                 -999 / number of memory slices                        
+YNOISELM=                 -999 / burst noise rejection limit                    
+YNUMCHNL=                 -999 / number of channels to be processed             
+YOVRSCAN=                 -999 / X-deflection overscan                          
+YPLRZPO1=                 -999 / same as first YPLZRHOE|LOE                     
+YPTRNS  =                 -999 / patterns per readout                           
+YRANGE  =                 -999 / Y range                                        
+YREADCYC=                 -999 / readouts/memory clear                          
+YWRDSLIN=                 -999 / words per line                                 
+YXBASE  =                 -999 / X-deflection base                              
+YXPITCH =                 -999 / X-deflection pitch between diode               
+YXSTEPS =                 -999 / X-deflection sub-steps                         
+YYBASE  =                -9999 / Y-deflection base                              
+YYINDFHY=                 -999 / do deflection hyst. at begin. of data acqn.    
+YYPATH  =                 -999 / path identification                            
+YYPITCH =                -9999 / Y-deflection pitch                             
+YYSTEPS =                 -999 / Y-deflection sub-steps                         
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = `n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

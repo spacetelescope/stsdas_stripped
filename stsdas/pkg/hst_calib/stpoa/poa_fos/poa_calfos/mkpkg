@@ -1,0 +1,173 @@
+# Make the poa_calfos package
+#	to include poa_calfos
+#
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+
+$call	relink
+$exit
+
+debug:
+        $set XFLAGS = "-fgq $(XFLAGS)"
+        $set LFLAGS = "-xz $(LFLAGS)"
+        $call update
+        $exit
+        ;
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout poa_calfos.a ../
+	$update   poa_calfos.a
+	$checkin  poa_calfos.a ../
+	$call	poa_calfos
+	;
+
+install:
+	$move xx_poa_calfos.e ../../bin/$x_poa_calfos.e
+	;
+
+poa_calfos:
+linkonly:
+        $omake  x_poa_calfos.x
+	
+        $link   x_poa_calfos.o ../poa_calfos.a ../poa_fos.a \
+                -liraf77 -lf77util -luttables -lstxtools -ltbtables \
+                -o xx_poa_calfos.e
+	;
+
+poa_calfos.a:
+	bfield.f
+	poa_calfos.x
+	cdsort.f
+	geopos.f
+	hstpos.f
+	rotate.f
+        yclacc.f
+	yclais.f
+	yclapr.f
+	yclbck.f
+        yclcpl.f
+        yclcrt.f
+        yclcst.f
+	ycldqi.f
+	yclerr.f
+	yclexp.f
+	yclfcs.f
+	yclflt.f
+	yclfos.f
+        yclinq.f
+	yclivs.f
+        yclmcr.f
+	yclmod.f
+        yclnrm.f
+	ycloff.f
+	yclopn.f
+        yclpcc.f
+	yclpol.f
+	yclppc.f
+	yclprc.f
+	yclrd.f
+	yclrep.f
+        yclrot.f
+	yclrr.f
+	yclsct.f
+	yclsky.f
+	ycltim.f
+	ycltr.f
+        yclucr.f
+	yclwav.f
+	yclwrt.f
+	yconfg.f
+	yerror.x
+	yfname.f
+	ygimp.f
+	ygtorb.f
+	ygtref.f
+	ymagfd.f
+	ymean.f
+	ymedn.f
+	ymissd.f
+	ymnmxr.f
+	ymsput.f
+	yogpar.f
+	yopd0h.f
+	yosize.f
+	ypflag.f
+	ypolar.f
+	ypol2.f
+	ypol3.f
+	yrccg2.f
+	yrccs0.f
+	yrccs1.f
+	yrccs2.f
+	yrccs3.f
+	yrccs4.f
+	yrccs5.f
+	yrccs6.f
+	yrccs7.f
+	yrccs8.f
+	yrccs9.f
+	yrccsa.f
+	yrccsb.f
+	yrccsc.f
+	yrccsd.f
+	yrdais.f
+	yrdbac.f
+	yrdddt.f
+	yrddqi.f
+	yrdflt.f
+	yrdivs.f
+	yrdoff.f
+        yrdpcp.f
+	yrdret.f
+	ysclbk.f
+	ysolve.f
+	yuhead.f
+	ywmnmx.f
+	ywrped.f
+	ywshft.f
+        actan.f
+        add_poakeys.f
+        alt2cgm.f
+        cartrotx.f
+        cartroty.f
+        cartrotz.f
+        cgm2alt.f
+        cgm_sph_harm_coefficients.f
+        conv_geo_crd.f
+        digicon.f
+        extrashc.f
+        feldg.f
+        feldcof.f
+        fmod2p.f
+        getshc.f
+        initize.f
+        intershc.f
+        mjdtodate.f
+        norad.f
+        norad_tles.f
+        poagimp.f
+        poaoffx.f
+        poarotfos.f
+        rylm.f
+        sgp4_driver.f
+        sgp4.f
+        sgp8.f
+        snewbilcal.f
+        shellg.f
+        stoer.f
+        thetag.f
+	poacomply.f
+        ymoddisp.f
+        ymodprsm.f
+	;

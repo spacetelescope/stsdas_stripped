@@ -1,0 +1,50 @@
+#   Make the focprism package
+#   Author: bazell Apr-92
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to bin$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+install:
+	$move	xx_focprism.e stsdasbin$x_focprism.e
+	;
+
+debug:
+	$set XFLAGS = "-fgq $(XFLAGS)"
+	$set LFLAGS = "-xz $(LFLAGS)"
+	$call relink
+	$exit
+	;
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	focprism.a
+	$call	focprism
+	;
+
+focprism:
+linkonly:
+	$omake	x_focprism.x
+
+	$link	x_focprism.o focprism.a \
+		-lsynphot \
+		-lstxtools \
+		-ltbtables \
+		-o xx_focprism.e
+	;
+
+focprism.a:
+	@lib
+	@objcalib
+	@prismsim
+	;

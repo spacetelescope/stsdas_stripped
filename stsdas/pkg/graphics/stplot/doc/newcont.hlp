@@ -1,0 +1,336 @@
+.help newcont Dec92 stsdas.graphics.stplot
+.ih
+NAME
+newcont -- Draw a contour plot of an image.
+.ih
+USAGE
+newcont image
+.ih
+DESCRIPTION
+This task will draw, trace, and smooth contours using bicubic polynomials, 
+and is based on the FARBE package developed by Albrecht Preusser as 
+published in
+the ACM Transactions on Mathematical Software, Vol. 15, No. 1,
+March 1989.  
+
+Contour "colors" can be arbitrarily set by specifying a
+list of contours.  Logarithmic functions can be used to
+specify varying-spaced contour levels.  The major advantage this
+routine has over 'plot.contour' is that the contours are better
+smoothed and never cross themselves, producing a higher quality contour.  
+This quality is gained, however, at the expense of 
+speed. 
+
+The speed can be increased by decreasing the image resolution; this is
+done using the 'xres' and 'yres' parameters.  When 'preserve = yes',
+the task automatically reduces the image in both directions by the
+same factor, which is the larger of (ncolumns / xres) or (nlines /
+yres). If the aspect ratio is not being preserved, the X and Y
+dimensions are independently reduced to the specified resolution.  No
+reduction is done if both 'xres' and 'yres' are set to 0, if the input
+image is an image section, or if the image is smaller than 'xres' by
+'yres'.
+
+If the device viewport (i.e., the plotting area) is not set, a
+viewport will be automatically set and centered on the output device.
+When the 'fill' parameter is set to "no" (the default), the viewport
+will be adjusted so that equal numbers of image pixels in X and Y will
+occupy equal lengths when plotted.  That is, when 'fill = no', a unity
+aspect ratio is enforced, and square images are represented as square
+plots regardless of the device aspect ratio.  On devices without
+square viewports (e.g., the vt640), a square image will appear
+extended when 'fill = yes'.  To completely fill the device viewport
+with contour lines, disable perimeter drawing and enable fill, and
+nothing but the contour map will be drawn.
+
+Contour plots may be overlaid on a displayed image by setting the output
+device to "imd" for image display and the contouring parameters
+'fill' and 'perimeter' to "yes" and "no" respectively. By default,
+green contours will be drawn on the image display. Other choices for
+'device' are "imdr", "imb", "imdy", "imdw" and "imdg" for red, blue,
+yellow, white and green output contours, respectively.
+
+.ls Colors
+There are three ways to specify a "color": 
+.nf
+1) You can change the way negative contours are produced using 
+   the 'negative_color' parameter.
+2) You can emphasize contours at specified intervals with the
+  'major_contour' and 'major_color' parameters.  
+3) You can specify colors for arbitrary contours using the 
+   contour list facility provided by the the 'list' parameter.
+.fi
+
+At the moment, the only IRAF graphics devices that can handle color
+are those that use the PostScript kernel, 'psikern'.  Consult the STSDAS
+installation guide about installing and using psikern.  For more
+information about psikern, type "help psikern".
+
+.ls Contour Lists
+Using the parameter list, a list of contour levels may be
+specified or a file containing a list of contour levels may be given.
+The list is composed of a comma or white-space separated list of
+numbers or color specifications.  If a number is encountered, it is
+assumed to be a value to contour.  Line colors are set by using the word 
+"color", for example, "color=5" (see the Color description above). 
+
+An ASCII text file can be used to contain contour and color values. This file 
+is then passed to the task by passing its name, preceded by the "@" 
+character. For example, "@filename".
+
+The only requirement is that the contour values should be specified in
+consistently increasing order.
+.le
+.ls Percent Levels
+The parameter 'plev' allows you to specify a fraction of the
+range of the image to use as the contour interval.  For example, if
+'plev = 0.1', there would be ten contour levels, each separated by
+10% of the dynamic range of the image.
+
+'plev' also interacts with the contour list (see above).  If both
+'plev' and 'list' are specified, then each value specified in
+the list is multiplied by 'plev' and the dynamic range of the
+image to determine the contour levels.
+.le
+.ih
+PARAMETERS
+.ls image [file name]
+Two-dimensional image or image section to be contoured.
+.le
+.ls (floor = INDEF) [real]
+Minimum value to be contoured.  If 'floor' is undefined, a value
+rounded up from the image minimum will be used.
+.le
+.ls (ceiling = INDEF) [real]
+Maximum value to be contoured.  If 'ceiling' is undefined, a value
+rounded down from the image maximum will be used.
+.le
+.ls (zero = INDEF) [real]
+Greyscale value of the zero contour, i.e., the value of a zero point shift
+to be applied to the image data before plotting.  This does not affect the 
+values
+of 'floor' and 'ceiling'.  If 'zero=INDEF', no shift is performed.
+.le
+.ls (ncontours = INDEF) [integer]
+Number of contours to be drawn.  If 'ncontours=INDEF', the contour 
+interval
+may be specified, otherwise 20-30 nicely-spaced contours are drawn.  A
+maximum of 100 contours can be drawn.
+.le
+.ls (interval = INDEF) [integer]
+Contour interval.  If 'interval' is left as "INDEF", a contour
+interval is chosen that places 20 to 30 contours spanning the
+intensity range of the image. 
+.le
+.ls (plev = INDEF) [real]
+Percent level specification for contour levels.  If 'plev' is set, it is
+multiplied by the range to contour and the resulting interval is used for
+the contour levels.  If a contour list is defined, then each value in
+the contour list is multiplied by 'plev' and the image range to
+determine the contour levels.
+.le
+.ls (list = "") [string]
+A list of values or a file specification containing a list of values
+to use as the contour levels.
+.le
+.ls (dvpar = "") [pset]
+The pset 'dvpar' contains the generic parameters specifying the output
+plot device, the location of the plot, etc.  The parameters used by
+'newcont' in 'dvpar' are as follows:
+.ls (device = "stdgraph") [string]
+Output device (this can be either "stdgraph", "stdplot", or the name of a 
+physical device). 
+.le
+.ls (left = INDEF), (right = INDEF), (bottom = INDEF), (top = INDEF) [real]
+The device viewport, in normalized device coordinates (from 0.0 to 1.0
+inclusive).  If these parameters are not specified,
+'newcont' automatically centers the plot on the device viewport.
+.le
+.ls (append = no) [boolean]
+Append to an existing plot?
+.le
+.le
+.ls (xres = 64) [integer]
+The 'xres' and 'yres' parameters together represent the resolution to with 
+the input image will be block averaged or subsampled.
+.le
+.ls (yres = 64) [integer]
+Resolution along Y. See the 'xres' description above.
+.le
+.ls (preserve = yes) [boolean]
+Preserve the aspect ratio when subsampling or block averaging?
+.le
+.ls (perimeter = yes) [boolean]
+Draw the standar contour border with tickmarks and informational titles?
+.le
+.ls (wcslab = no) [boolean]
+Use the 'wcslab' labelling routines rather than standard pixel labelling?
+
+If 'wcslab = yes', then instead of using standard pixel labelling
+around the contour edges, the 'wcslab' routines are
+called and will use information stored in the
+image's MWCS (usually, Right Ascension and
+Declination).  Type "help wcslab" for more information. 
+.le
+.ls (wlpars = "") [pset]
+Name of the parameter set (pset) containing the labelling parameters when 
+'wcslab = yes'.  By default, this will call the pset used by 'wcslab'. 
+.le
+.ls (usewcs = no) [boolean]
+Use the world coordinate system (WCS) defined in the 'wcspar'
+parameter set?
+
+If 'usewcs = no', then the WCS is derived from an image or some
+other source. (See 'wcspar' below).
+.le
+.ls (wcspars = "") [pset]
+Parameter set (pset) for specifying a different WCS if the image is
+not specified or does not contain any WCS information.  Type "help
+wcspars" for more information.
+.le
+.ls (title = "imtitle") [string]
+Title to be centered above the plot.  If the value of title is "imtitle",
+a default string made up of the image title will be used.  If no title
+is desired, them set title to the empty string, "".
+.le
+.ls (subsample = no) [boolean]
+Use subsampling to achieve the resolution specified by 'xres' and 'yres'?
+
+Setting 'subsample=no', uses block averaging to achieve the target 
+resolution.
+.le
+.ls (major_contours = INDEF) [integer]
+Contour interval to be emphasized. 
+For example, if 'major_contours = 5', then every fifth contour
+will be emphasized.
+.le
+.ls (major_color = 9) [integer]
+Define the "color" that will be used to emphasize major contours as
+defined by 'major_contour'.  See the explanation of Color in the Description 
+section above  for the meaning of colors. 
+.le
+.ls (scale_box = no) [boolean]
+Draw a scale box defining the relative spacing of contour intervals? 
+
+If this 
+is used (i.e., set to "yes"), then the scale box will 
+be drawn to the right of the contour plot. 
+.le
+.ls (function = "linear") [string, allowed values: linear | log | rlog]
+Defines how contour levels are calculated if 'interval' or
+'plev' are left undefined.   The "rlog" method is the inverse of
+the log.
+.le
+.ls (negative_color = 7) [integer]
+The "color" of contour levels below 'zero', if 'zero' is defined.
+.le
+.ls (nhi = no) [boolean]
+Mark high and low regions with an "h" or "l" and their values?
+.le
+.ls (rain = no) [boolean]
+Use a rainbow of colors?
+
+When 'rain = yes', the task will use a rainbow of colors for
+contrours, going from blue for low-valued contours to red for
+high-valued contrours. NOTE that colors are device-dependent.
+.le
+.ls (cont_mode = "line") [string, allowed values: line | fill ]
+Method of delineating contours.
+
+If 'cont_mode = "line"', then lines will be used to delimit contours.
+
+If set to "fill", then 'newcont' will produce a plot of filled regions,
+each region representing a different level.  This only makes sense
+when each contour level is in a different color, as specified by
+either "rain = yes", or a color is defined for each level in a contour
+definition list (see the description of the 'list' parameter above).
+.le
+.ih
+EXAMPLES
+1. Draw a contour plot of a 512 square image on the graphics terminal.
+With the default values for 'xres' and 'yres', the image
+would automatically be block averaged by a factor of 8 in X and Y.
+
+.nf
+   st> newcont crab.5009
+.fi
+
+2. Repeat the previous example, but print the plot on a plotter as a 
+background job: 
+
+.nf
+   st> newcont crab.5009 device=stdplot &
+.fi
+
+3. Place a ceiling at an intensity value of 500 to cut out a noise spike.
+Move the plot to the lower left corner of the display.
+
+.nf
+   st> cont crab.5009 ceil=500 left=.1 right=.6 bottom=.1 top=.6
+.fi
+
+4. Overlay a contour plot of an image on the image that is currently 
+displayed on the  output device. Note that the contour parameters 'fill' and 
+'perimeter'
+must be on and off respectively.
+
+.nf
+    st> display m51 1
+    st> cont m51 fill+ per- device=imd
+.fi
+
+5. Specify a list to be used as contour levels:
+
+.nf
+    st> newcont m51 list="100,200,400,800,1600"
+.fi
+
+6. Specify a file containing a list of contour levels:
+
+.nf
+    st> newcont m51 list="@contour.list"
+.fi
+
+7. Draw contours of every possible color at intervals of 10% of the
+dynamic range image:
+
+.nf
+    st> newcont m51 plev=0.1 list="@contour.list"
+.fi
+
+where the 'contour.list' file contains:
+
+.nf
+    color=1, 1
+    color=2, 2
+    color=3, 3
+    color=4, 4
+    color=5, 5
+    color=6, 6
+    color=7, 7
+    color=8, 8
+    color=1, 9, 10
+.fi
+
+This file says that the first contour at 10% the image's dynamic range
+drawn in color 1.  For the 20% level, the color will be drawn in color
+2, etc.
+
+8. Draw contours and label the edges of the graph with the image's
+MWCS information:
+
+.nf
+    st> contour m51 wcslab+
+.fi
+.ih
+BUGS
+If block averaging is used, the contour precision  
+will be no better than the blocking factor.  For example, if a contour
+map drawn with a block averaging factor of 8 is overlaid on an image of
+a starfield, contours drawn around stars in the field may not appear to
+be centered.  This problem can be solved by increasing the plot resolution 
+using the 'xres' and 'yres' parameters. 
+.ih
+SEE ALSO
+contour, surface, display, imdkern, imexamine, wcslab, disconlab, psikern
+.endhelp

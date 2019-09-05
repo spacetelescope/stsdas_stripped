@@ -1,0 +1,8 @@
+arrays,s,h,"science,error,time,sample",,,>Arrays to be processed
+clarray,s,h,"science",,,>Array whose stats are written into parameters
+acsdqpar,pset,h,"",,,>Active ACS data quality bits (pset)
+stisdqpar,pset,h,"",,,>Active STIS data quality bits (pset)
+nicdqpar,pset,h,"",,,>Active NICMOS data quality bits (pset)
+cosdqpar,pset,h,"",,,>Active COS data quality bits (pset)
+wfc3dqpar,pset,h,"",,,>Active WFC3 data quality bits (pset)
+mode,s,h,al

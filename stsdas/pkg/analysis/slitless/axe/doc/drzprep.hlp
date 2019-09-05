@@ -1,0 +1,120 @@
+.help drzprep Jul2005 axe
+.ih
+NAME
+drzprep -- generate DPP's for a list of images and object lists
+.ih
+USAGE
+.nf
+drzprep inlist configs
+.fi
+.ih
+PARAMETERS
+.ls inlist
+List to give input images and object lists.
+.le
+.ls configs
+Name of aXe configuration file(s) to be used.
+.le
+.ls (opt_extr = no) [yes|no]
+Also create extension for optimal extraction.
+.le
+.ls (back = no) [yes|no]
+Create also background DPP's?.
+.le
+.ih
+DESCRIPTION
+The task produces a set of Dirzzle PrePare (DPP) files for the grism images
+specified in "inlist". The PET's and the BAF's for those grism images
+must have been prepared, e.g. by a previous run of "axecore".
+
+A DPP is a multi extension fits file. For each first order beam in the
+corresponding PET the DPP has three extensions, [beam_??A], [err_??a]
+and [cont_??a]. The three extensions are the stamp images for
+the data values, the error values and the contamination values of the beam
+with the ID number "??". All extensions have important keywords which later
+are extracted and used in "axedrizzle". Among those keywords are the
+coefficients that allow "axedrizzle" to combine the stamp images with the
+same ID from different DPP's onto a deep 2D grism image with identical
+dispersion and pixel scale in cross dispersion direction.
+
+To do that "drzprep" defines a common frame for all identical objects
+in the all grism images given in "inlist". "axedrizzle" will give
+ONLY consistent results if its input DPP's were generated within the
+same "drzprep" run. It is also not possible to run "drzprep"
+separately on the two science extensions of the WFC images. The usual dithers
+done for ACS image sets let an object sometimes fall on chip 1 and in some
+instances on chip 2. To establish the common frame needed in "axedrizzle"
+requires also in this case that the DPP's were generated in only
+one "drzprep" run. For WFC images with its two chips you will specify two
+configuration files in a comma separated list. Of course the two PET's,
+one for each extension number, must both exist.
+
+With 'opt_extr="yes"' also two additional extensions necessary
+for optimal weighting are created and saved. Those extensions are named
+[mod_??A] and [var_??A] and contain the emission model as calculated
+in quantitative contamination and the theoretical inverse variance,
+respectively.
+
+Setting "back='yes'" also generates background
+DPP's, which are then based on the background PET's. With "axedrizzle"
+those background DPP's can be drizzled to deep 2D backgrounds for
+the individual object ID's.
+
+The format of the image list given as 'inlist' is:
+.nf
+grim_image1 object_cat11[,object_cat12] [direct_image1] [dmag1]
+grim_image2 object_cat21[,object_cat22] [direct_image2] [dmag2]
+grim_image3 object_cat31[,object_cat32] [direct_image3] [dmag3]
+.fi
+
+For the task "drzprep" only the first column with the name of the
+grism image is extracted and used. All further columns are neglected.
+It is possible to use the same 'inlist' as in "axeprep" and "axecore"
+(also later in axedrizzle).
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. If the input grism image would be called
+<grism-rootname>.fits, the task creates the file
+.nf
+<grism-rootname>_<science extension>.DPP.fits, and if "back='YES'"
+<grism-rootname>_<science extension>.BCK.DPP.fits
+.fi
+All files are stored in the directory pointed by $AXE_OUTPUT_ROOT.
+.ih
+EXAMPLES
+1) For ACS HRC images:
+.nf
+    ax> drzprep inlist="axeprep.lis" configs="HUDF.HRC.conf" back="YES"
+.fi
+
+Reduce both, object DPP's and background DPP's from the images and object
+lists given in "axeprep.lis".
+
+2) For ACS WFC images:
+.nf
+    ax> drzprep inlist="axeprep.lis" opt_extr="yes"
+                configs="ACS.WFC.CHIP1.conf,ACS.WFC.CHIP2.conf" back="NO"
+.fi
+
+Generate only the object DPP's for the grism images in "axeprep.lis".
+Work on the PET's specified by the extensions specified in
+ACS.WFC.CHIP1.conf and ACS.WFC.CHIP2.conf (usin the usual file naming
+convention. Create also the extensions for optimal weighting.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+axecore, axedrizzle
+.endhelp

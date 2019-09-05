@@ -1,0 +1,80 @@
+.help extdel May97 stsdas.toolbox.imgtools.mstools
+.ih
+NAME
+extdel -- Delete single extensions from a FITS file.
+.ih
+USAGE
+extdel filename 
+.ih
+
+.le
+.ih
+WARNING:
+This task can ONLY be used with a FITS image; (ie. no tables) they will cause
+this task to crash!
+
+.le
+.ih
+DESCRIPTION
+The 'extdel' task is for deleting individual FITS extensions, not entire
+imsets.  It is good for cleaning up any extraneous FITS extensions that 
+may have gotten into your FITS datafile.  It is completely interactive and
+simple to use as it lists all the extensions in a file and you can then input
+the FITS extension number (in the left-most column) that you would like to zap.
+
+.ih
+PARAMETERS
+.ls INPUT [string]
+A string listing the input FITS file from which you want to delete a single
+FITS extension.
+.le
+.ls DELNUM [integer]
+This is the number of the FITS extension you want to remove from the file.
+.le
+.ls OUTPUT [string]
+This is a required parameter which may be the same name as the input file,
+but need not be.
+
+.le
+.ih
+EXAMPLES
+1. The 'extdel' task is easy to use, and basically requires the input data
+(a FITS file) and the knowledge of what you want to do with them.
+
+ms> extdel IN=junk.fits OUT=test.fits
+
+You will notice a Warning message as the task tries to delete 'test.fits'
+before writing the new file there; from temporary files that are cleaned
+up before exiting.  Again, if you had chosen the same name as OUTPUT as
+you had for INPUT you would not see a Warning and have no chance to save
+the INPUT file from being changed.
+
+.nf
+2. The task is designed to prompt you for all the information that it needs
+so you can simply type
+
+ms> extdel test.fits
+
+ or
+
+ms> extdel
+
+And answer the following prompts.  A helpful listing of SCI extensions is
+provided to make answering the DELNUM prompt much easier and safer.
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+This script was written by E. W. Wyckoff, SSG.
+.le
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.le
+.ih
+SEE ALSO
+imsdel
+.endhelp

@@ -1,0 +1,44 @@
+.help unwrap Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+unwrap -- Remove the 'wrap' from FOS data that have exceeded the internal counter limit.
+.ih
+USAGE
+unwrap input output
+.ih
+DESCRIPTION
+'unwrap' removes the "wrap-around" from the FOS data which have exceeded 
+the internal counter ceiling of 65535 counts. Data with values greater 
+than this limit are assumed to have been previously corrected and are 
+not processed. 'unwrap' processes all groups in a multigroup file.
+.ih
+PARAMETERS
+.ls input [file name]
+Name of the input image.
+.le
+.ls output [file name]
+Name of the output image.
+.le
+.ls (thresh = 25000.) [real]
+Threshold value for determining the wrap.
+.le
+.ih
+EXAMPLES
+1. Unwrap the image 'y00vk10gr.d0h' using a threshold value of 20000 
+and creating an unwrapped image called 'uw10g.d0h'.
+
+.nf
+fo> unwrap y00vk10gr.d0h uw10g.d0h thresh=20000.
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+.endhelp

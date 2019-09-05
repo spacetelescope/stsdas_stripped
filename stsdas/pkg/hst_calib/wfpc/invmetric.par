@@ -1,0 +1,11 @@
+infile, s, a, "", , ,   			Input file name
+ra, s, a, "", , ,				RA
+dec, s, a, "", , ,				Dec
+
+ra_unit, s, h, "auto", "auto|hour|degree", ,	Unit of input RA
+
+x, s, h, , , ,					Output X pixel coordinate
+y, s, h, , , ,					Output Y pixel coordinate
+chip, s, h, , , ,				Chip number of the output pixel
+
+mode, s, h, "al"

@@ -1,0 +1,213 @@
+.help chcalpar Mar93 stsdas.hst_calib.ctools
+.ih
+NAME
+chcalpar -- Modify calibration parameters in HST instrument headers.
+.ih
+USAGE
+chcalpar images
+.ih
+DESCRIPTION
+The `chcalpar' (CHange CALibration PARameters) task provides a simple 
+and consistent way to modify calibration parameters for any Hubble Space 
+Telescope (HST) science data.
+
+The data produced by the science instruments on HST are stored in
+FITS data files.  The headers are populated with a large number 
+of keywords that describe the data and the state of the 
+instrument at the time of the observation.  A subset of these keywords, 
+called "calibration parameters", govern which calibration operations are
+performed during pipeline processing, and which reference files are
+used.  Because these calibration parameters are the only means of 
+selecting options during the pipeline calibration, and since editing FITS
+headers requires a certain amount of expertise, the `chcalpar' task 
+was created.
+
+The `chcalpar' family of tasks use what are known as "psets", or named 
+parameter sets.  These are very similar to IRAF task parameters, but are 
+often used by groups of tasks for passing information.  Any of the
+parameter-specific tasks, such as `eparam' or `lparam' can be used on
+a pset.  (Type "help eparam" for further information.)  In the context 
+of 'chcalpar', there is a pset defined for each of HST's science 
+instruments.  The names of the psets are of the form "ckwxxx", where 
+"xxx" is the instrument identification, e.g., "ckwhrs" for the Goddard 
+High Resolution Spectrograph, and "ckwwfpc" for the Wide Field/Planetary
+Camera.  
+
+This task may be used to modify a set of calibration parameters for
+several images at once.  Upon invoking `chcalpar' the current values
+of the calibration parameters are read from either the first image in
+the list of images specified in the "images" parameter, or the image
+specified in the `template' parameter, and `eparam' is invoked to
+modify those calibration parameters.  
+
+When you are done modifying
+parameters, you can exit
+`eparam' in the usual way (i.e., ":q" or Cntrl-Z). You will then
+see
+a list of parameters that were changed. You can either accept
+the changes and restart, or you can abort and change nothing.
+If you accept the changes, 'chcalpar' changes ONLY THOSE
+PARAMETERS THAT WERE MODIFIED. All of the image headers specified
+in the 'images' parameter will be affected.
+ 
+The `chcalpar' task uses the `getcal' task to load the instrument pset 
+with calibration parameters from the first image in the `images' list,
+`modcal' (a hidden task)
+to edit that pset, and `putcal' to apply those modifications to a list of 
+output images.  
+.ih
+PARAMETERS
+.ls images [image file list]
+The list of images whose headers will be modified.  
+
+Header values displayed by the task are taken from the first image
+in this list if the 'template' parameter is not used.
+.le
+.ls (template = "" [file]
+The image from which the initial value of calibration parameters will
+be taken.  If blank, the initial values will be retrieved from the
+first image in the image list specified in the `images' parameter.
+The image specified can also be in the `images' list.
+.le
+.ls (keywords = "") [string]
+The calibration keyword pset to use if no input image was specified to 
+select the correct pset.  These default pset names have the generic form: 
+"ckwxxx", where "xxx" is the instrument abbreviation.  The appropriate 
+pset is ordinarily determined within the task by examining the instrument 
+name in the header of the input data file, but users can override the 
+default by specifying a different pset name here.  
+.le
+.ls (add = yes) [boolean]
+Add keywords if they are not present in the header?  If "yes" add
+modified keywords to the headers of the images if the keywords are not
+already present.  If "no", generate an error message.
+.le
+.ls (verbose = yes) [boolean]
+Display the name of each file as it is updated?
+
+If this parameter is set to
+"no", then the task runs quietly, except for warning or error messages.
+.le
+.ih
+EXAMPLES
+
+1. Modify two calibration keywords in a list of ACS raw images: change 
+the reference filename BIASFILE to "jref$o9d1734jj_bia.fits", and set the 
+calibration switch DQICORR to "OMIT".  
+
+.nf
+        cl> chcalpar j*raw.fits
+.fi
+
+`eparam' starts with the current calibration parameter values.  Modify
+the parameters BIASFILE to "jref$o9d1734jj_bia.fits" 
+and DQICORR to "OMIT".  Exit `eparam' as one would normally (e.g. 
+Cntrl-Z or `:q').  `eparam' reappears with all the parameter values
+blanked out except those for BIASFILE and DQICORR.  Confirm that these 
+were set correctly; you can make additional changes now if you want, 
+and exit eparam again.  Then you will be presented with the question:
+
+.nf
+        Accept the current parameters? (|no|yes|abort) (yes):
+.fi
+
+Answering `yes' will cause all the `*_raw.fits' headers to be modified, and 
+you will see the following output:
+
+.nf
+        putcal: Modifying j8g99vr0q_raw.fits
+        putcal: Modifying j8g99vrpq_raw.fits
+                ......
+.fi
+
+2. Same as example 1, except that the initial set of parameters
+should come from the file  'j8g9afw6q_raw.fits':
+
+.nf
+        cl> chcalpar j*raw.fits  template=j8g9afw6q_raw.fits
+.fi
+
+3. It is sometimes useful to merely retrieve the calibration parameters 
+from a given image to examine them.  We first fetch the keywords from 
+the GHRS image 'z06i5601m.d0h', examine the `keywords' parameter of 'getcal' 
+to see the name of the pset, and then invoke the pset to examine the 
+values loaded by `getcal'.  
+
+.nf
+        cl> getcal z06i5601m.d0h ""
+        cl> lpar getcal
+                input = "z06i5601m.d0h" Input science data header file name
+            (keywords = "ckwhrs")       Pset for calibration parameters
+             (Version = "9Nov92")       Date of Installation
+                (mode = "ql")           
+        cl> ckwhrs
+                [...eparam appears with the pset ckwhrs]
+.fi
+
+4. It is also possible to modify the instrument pset directly, and then 
+use `putcal' to implement those changes on a list of files.  Note that 
+you must first unlearn the previous instrument pset values to avoid 
+unintentionally changing keyword values.  You will also not see what 
+the previous parameter settings were before modifying them, but sometimes 
+that is not important.  To set the WF/PC calibration keyword DOHISTOS 
+to "NO" and PHOTTAB to "myfile.tab" in the files 'w0bs8101t.d0h', 
+'w0bs8102t.d0h', and 'w0bs8103t.d0h', using the first file as a template:
+
+.nf
+        cl> unlearn ckwwfpc
+        cl> epar ckwwfpc
+.fi
+
+`eparam' then starts with all parameters blank.  Set the parameters
+DOHISTOS to "no" and PHOTTAB to "myfile.tab".  Exit `eparam' as you
+would normally (e.g., Cntrl-Z or `:q').  Then type: 
+
+.nf
+        cl> putcal w0bs810*.d0h ckwwfpc verb+
+
+The output will be:
+
+        putcal: Modifying w0bs8101t.d0h
+        putcal: Modifying w0bs8102t.d0h
+        putcal: Modifying w0bs8103t.d0h
+.fi
+
+5. Create your own pset.  Use one of the standard instrument psets
+as an example, preferably one that is close to what you want.  The
+standard psets reside in the "ctools$" directory in files named
+"ctools$ckwxxx.par".  In this example, the standard WF/PC pset is
+modified and used.  The modified pset will be called "newwfp".
+
+First copy the standard WF/PC pset:
+.nf
+
+        cl> tools
+        to> cd home$
+        to> copy tools$ckwwfpc.par newwfp.par
+.fi
+
+Now, using whatever text editor you are used to, modify the file
+'newwfp.par' to suit your needs.  After editing, make the following
+definition:
+
+.nf
+        cl> task newwfp = home$newwfp.par
+.fi
+
+Now, you can use the pset in with 'chcalpar':
+
+.nf
+        cl> chcalpar wfpc_image.c1h keywords=newwfp
+.fi
+
+NOTE:  For enumerated parameters, make sure that one of the allowable
+values is a space, " ". 
+
+.ih
+BUGS
+Do NOT attempt to exit the "eparam" portion of this task with ":g".  This
+will confuse the CL, and may not give you the desired result.  
+.ih
+SEE ALSO
+eparam, getcal, modcal, parameters, putcal, ckwxxx
+.endhelp

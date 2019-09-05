@@ -1,0 +1,11 @@
+input,s,a,,,,">input image"
+psf,s,a,,,,">psf image"
+output,s,a,,,,">output image"
+filter,s,h,"",,,">output filter image"
+psfpars,pset,h,,,,">PSF parameters pset"
+filterpars,pset,h,,,,">filter parameters pset"
+modelpars,pset,h,,,,">signal model parameters pset"
+noisepars,pset,h,,,,">noise parameters pset"
+lowpars,pset,h,,,,">low-pass filter parameters pset"
+verbose,b,h,no,,,">verbose ?"
+mode,s,h,al

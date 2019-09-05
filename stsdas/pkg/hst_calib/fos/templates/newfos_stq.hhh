@@ -1,0 +1,46 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'INTEGER*4'          /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    2 /                                                
+PSIZE   =                   64 /                                                
+PTYPE1  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           / number of segments containing errors           
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / FOS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'STQ               ' / file type                                      
+CTYPE1  = 'n/a               ' / units of first data axis                       
+                                                                                
+                 / CALIBRATION FLAGS AND INDICATORS                             
+GRNDMODE= 'n/a               ' / ground software mode                           
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+PODPSFF = 'n/a               ' / 0=(no podps fill), 1=(podps fill present)      
+STDCFFF = 'n/a               ' / 0=(no st dcf fill), 1=(st dcf fill present)    
+STDCFFP = 'n/a               ' / st dcf fill pattern (hex)                      
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name                         
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

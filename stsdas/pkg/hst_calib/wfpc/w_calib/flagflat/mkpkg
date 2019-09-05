@@ -1,0 +1,14 @@
+# Update the flagflat application code in the w_calib package library
+# Author: HSU, 29-Dec-1992
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_flagflat.x	
+	flagflat_in.x    	
+	flagflat_do.x
+	fflat_check.x	<imhdr.h>	
+	;

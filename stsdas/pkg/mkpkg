@@ -1,0 +1,43 @@
+# mkpkg for the STSDAS applications packages
+# Author: R. Williamson, 29=Jul=1993
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+relink:
+linkonly:
+update:
+install:
+
+$ifeq (hostid, unix)  !(date)  $endif
+$ifeq (hostid, vms)   !(show time)  $endif
+
+$echo "===================  ANALYSIS  ======================="
+$call @analysis
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$ifeq (USE_CONTRIB, yes)
+$echo "===================  CONTRIB  ========================"
+$call @contrib
+$endif
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$echo "===================  GRAPHICS  ======================="
+$call @graphics
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$echo "===================  HST_CALIB  ======================"
+$call @hst_calib
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$ifeq (USE_PLAYPEN, yes)
+$echo "===================  PLAYPEN  ========================"
+$call @playpen
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$endif
+$echo "===================  TOOLBOX   ======================="
+$call @toolbox
+	$ifeq (HOSTID, vms) $purge stsdasbin$  $endif
+$ifeq (hostid, unix)  !(date)  $endif
+$ifeq (hostid, vms)   !(show time)  $endif
+$exit

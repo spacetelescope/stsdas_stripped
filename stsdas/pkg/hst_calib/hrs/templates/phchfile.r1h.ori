@@ -1,0 +1,29 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    0 /                                                
+PSIZE   =                    0 /                                                
+                                                                                
+                               / HRS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'HRS     '           / instrument                                     
+FILETYPE= 'ABSOLUTE FLUX'      / photocathode response file set                 
+HEADNAME= 'ZABSFILE2.R3H'      / reference file set header filename             
+DATANAME= 'ZABSFILE2.R3D'      / reference file set data filename               
+DATE    = '        '           / date this file originated (yyyy-mm-dd)         
+PEDIGREE= 'INFLIGHT'                                                            
+DESCRIP = 'Description of where the reference data is from'                     
+                                                                                
+                               / HRS DATA REDUCTION KEYWORDS                    
+GRATING = 'G140M   '           / grating, echelle, or mirror in use
+NUMLINE =                   10 / number of response lines                       
+NUMSAMP =                   10 / number of response samples                     
+LINEBEG =                    1 / first response line number                     
+LINEOFF =                    1 / response line number offset                    
+SAMPBEG =                  100 / first response sample number                   
+SAMPOFF =                  100 / response sample number offset                  
+                                                                                
+END                                                                             

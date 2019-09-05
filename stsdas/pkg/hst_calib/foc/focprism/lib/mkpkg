@@ -1,0 +1,11 @@
+$checkout focprism.a ../
+$update   focprism.a
+$checkin  focprism.a ../
+$exit
+
+focprism.a:
+	fspecf.x	<synphot.h>
+	getdisp.x	<tbset.h>
+	whprism.x
+	routines.f
+	;

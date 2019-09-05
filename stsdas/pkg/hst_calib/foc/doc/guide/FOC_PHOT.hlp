@@ -1,0 +1,20 @@
+.help FOC_PHOT Apr88 "FOC 11.2"
+
+.ih
+SUMMARY
+
+tasks in the focphot package:
+
+.nf
+        darkx - create FOC dark count image
+      dezoomx - split FOC zoomed pixels into two
+     dqenormx - normalise FOC flat field image
+     fixnoise - create fixed pattern noise image
+   formatdepx - create FOC format dependent non-uniformity image
+       ratiox - take ratio of flat fields
+     rremovex - fill reseau marks with cosmetic data
+     wfactorx - calculate absolute sensitivity scaling factors for RSDP
+
+(Type help focphot opt=sys for more information about the focphot package)
+.fi
+.endhelp

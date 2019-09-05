@@ -1,0 +1,117 @@
+.help gprep Jul2000 stsdas.analysis.dither
+.ih
+NAME
+gprep -- transform shifts for one WFPC2 chip into parameters for mosaicing
+all four chips
+.ih
+USAGE
+gprep  image axsh aysh arot
+.ih
+PARAMETERS
+.ls image [image file name]
+The name of the input image file. Normally this comes from the output 
+of avshift.  This image name is just transferred to the output -- the image
+isn't accessed.
+.le
+.ls axsh = 0.0
+The X pixel shift from avshift. This is the shift which avshift derives
+in order to register the reference chip (chip 3).
+.le
+.ls aysh = 0.0
+The Y pixel shift from avshift. This is the shift which avshift derives
+in order to register the reference chip (chip 3).
+.le
+.ls arot = 0.0
+The rotation angle from avshift. This is the rotation which avshift derives
+in order to register the reference chip (chip 3).
+.le
+.ls (xsh = 0.0)
+An additional shift to be applied in X to the mosaic after the avshift ones
+have been applied. The units are output pixels.
+.le
+.ls (ysh = 0.0)
+An additional shift to be applied in Y to the mosaic after the avshift one
+has been applied. The units are output pixels.
+.le
+.ls (rot = 0.0)
+An additional rotation (degrees anticlockwise) to be applied to the 
+mosaic after the avshift one has been applied.
+.le
+.ls (scale = 1.0)
+An additional scale factor to be applied to the mosaic after the avshift one 
+has been applied.
+.le
+.ls (wfpc2_chips) [pset]
+Pset containing the WFPC2 chip offset parameters.
+.le
+.ih
+DESCRIPTION
+This task takes the output values from 'avshift' and outputs the drizzle
+parameters which can be used to mosaic all four WFPC2 chips. The 'avshift'
+values which are used as input are for the reference chip (WF3). The resultant
+mosaic may be shifted, scaled and rotated as desired using the hidden
+parameters (xsh, ysh, rot and scale).
+
+The reference chip is WF3 so the 'avshift' results appropriate to it should
+be used as input.
+
+The output parameters are those needed by 'drizzle' and must be applied
+with 'shft_fr=output' and 'shft_un=output'.
+
+Note that the default xsh=ysh=0 is not normally optimal as it will put WF3
+central in the output rather than the center of the overall mosaic.
+
+This script contains hard-coded values for the relative positions and
+orientations of the four chips. Although the angles and scales don't change
+significantly with time the shifts do - by amounts comparable to one WFC
+pixel (0".1). The numbers in this version were obtained at the time of the
+HDF-S observations in late 1998 and may well not be appropriate at other
+epochs.
+.ih
+EXAMPLE
+Let's say that we have a set of images which have been processed using
+the 'dither' package up to the 'avshift' stage. For one of them the output
+from 'avshift' looks as follows:
+.nf
+# Image Group xsh_in  ysh_in best_xsh  best_ysh tot_sh_in del_xsh  del_ysh  rot
+N1.hhh  1  117.264  193.413  130.043    9.062  130.359  -12.779   184.351  1.280
+N1.hhh  2   -7.082  -55.543   -7.209  -55.502   55.968    0.127    -0.042  1.280
+N1.hhh  3  -71.224    7.152  -71.224    7.204   71.587   -0.000    -0.051  1.280
+N1.hhh  4   -8.079   71.050   -8.282   71.095   71.576    0.203    -0.045  1.280
+
+We now want to mosaic this image, all four chips, so that it lines up with
+its related dithered images and with the output shifted by 800,800 and a 
+scale of 0.5. The parameters of 'gprep' could then be as follows - note that
+the input values are those of the reference chip - WF3:
+
+image   =               N1.hhh  Input image file name from avshift
+axsh    =              -71.224  Best chip 3 X shift from avshift
+aysh    =                7.204  Best chip 3 Y shift from avshift
+arot    =                 1.28  Rotation from avshift
+(xsh    =                 800.) X shift for reference chip 3
+(ysh    =                 800.) Y shift for reference chip 3
+(rot    =                   0.) Rotation angle (degrees anticlockwise)
+(scale  =                  0.5) Scale factor
+
+The result will be:
+
+Image Group  xsh      ysh       rot       scale
+N1.hhh 1  -378.826  -235.996  -178.510   1.0926
+N1.hhh 2   699.143  -598.098   -89.030   0.4998
+N1.hhh 3   657.266   811.222     1.280   0.5000
+N1.hhh 4  -788.485   777.480    91.830   0.4996
+
+These parameters can then be fed to 'drizzle' (with 'shft_fr=output' and
+'shft_un=output') to produce the mosaic.
+.fi
+.ih
+BUGS
+The chip-to-chip mappings are hard-coded. The reference chip is forced to
+be WF3.
+.ih
+REFERENCES
+This task was written by Richard Hook and Andrew Fruchter. It was
+incorporated into the 'dither' package by J.C. Hsu.
+.ih
+SET ALSO
+avshift, drizzle, offsets, shiftfind

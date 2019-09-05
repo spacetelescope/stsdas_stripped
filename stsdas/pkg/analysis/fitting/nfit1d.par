@@ -1,0 +1,26 @@
+# Parameter file for the nfit1d task.
+#
+input,s,a,,,,>data to be fit
+output,s,a,,,,>output table
+xunits,s,h,"*","Angstrom|meter|Hz|keV|*|linear|4th-root",,>x axis units
+function,s,h,"powerlaw","bbody|powerlaw|composite|twobbody|user|galprof",,>function type
+rt,b,h,no,,,>get initial guess from table ?
+tablein,s,h,"",,,>table with initial guess
+row,i,h,1,1,,>row from which to take initial guess
+powerpars,pset,h,,,,>pset for power law function
+bbodypars,pset,h,,,,>pset for black body function
+twobbpars,pset,h,,,,>pset for two black bodies function
+comppars,pset,h,,,,>pset for composite function
+galprofpars,pset,h,,,,>pset for galaxy profile function
+userpars,pset,h,,,,>pset for user function
+errorpars,pset,h,,,,pset for error-related parameters
+controlpars,pset,h,,,,pset for algorithm control parameters
+samplepars,pset,h,,,,pset for sampling parameters
+interactive,b,h,yes,,,>set fitting parameters interactively?
+verbose,b,h,no,,,>print iteration info ?
+pcomp,b,h,yes,,,>plot individual function components ?
+ltype,s,h,"continuous","continuous|boxes",,>plot line type
+device,s,h,"stdgraph",,,>graphics output device
+gcur,*gcur,h,"",,,>graphics cursor input
+version,s,h,"16Sep97",,,>date of installation
+mode,s,h,al

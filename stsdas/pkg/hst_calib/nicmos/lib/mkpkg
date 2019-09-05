@@ -1,0 +1,23 @@
+relink:
+update:
+	$set XFLAGS = "-DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$update libnicmos.a
+	;
+
+linkonly:
+install:
+	;
+
+libnicmos.a:
+	n_checkoname.c	"nicmos.h"
+	n_flattasks.c	"nicmos.h"
+	n_getpixmask.c	"nicmos.h"
+	n_imageio.c	"nicmos.h"
+	n_iterstat.c	"nicmos.h"
+	n_lib.c		"nicmos.h"
+	n_numrec.c	"nicmos.h"
+	n_rmedian.c	"nicmos.h"
+	n_sources.c	"nicmos.h"
+	n_stats.c	"nicmos.h"
+	;

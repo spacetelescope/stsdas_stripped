@@ -1,0 +1,8 @@
+input1,s,a," ",,,	">Input spectrum 1"
+wave1,s,a," ",,,	">Wavelengths for spectrum 1"
+input2,s,a," ",,,	">Input spectrum 2"
+table,s,h,"waveoffset",,,">Output offset table name"
+cross,s,h,"cross_corr.hhh",,,">Output cross correlation image name"
+nbins,i,h,5,1,100,	">Number of bins into which to divide the spectra"
+maxdist,i,h,10,1,100,	">Maximum distance (in data points) to correlate"
+mode,s,h,a

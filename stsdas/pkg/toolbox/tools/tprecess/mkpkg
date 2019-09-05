@@ -1,0 +1,16 @@
+# Update the tools library to include the precession task
+# Author: Andrew Cseko, Jr : May 1990
+
+$checkout tools.a ../
+$update tools.a
+$checkin tools.a ../
+$exit
+
+tools.a:
+	t_tprecess.x
+	adunits.x
+	pimage.x
+	precess.x
+        ptable.x
+	prgetfmt.x
+	;

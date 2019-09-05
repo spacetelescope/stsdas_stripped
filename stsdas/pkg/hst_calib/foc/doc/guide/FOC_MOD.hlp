@@ -1,0 +1,56 @@
+.help FOC_MOD Apr88 "FOC 4.2"
+.ih
+CHAPTER
+FOC_MOD -- FOC reseau model reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_MOD
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of the 
+reseau model reference files for RSDP
+and may also be used by Guest Observers to generate calibrations files
+for recalibration. It is discussed in FOC_PHOTOMETRY.
+
+.ih
+FREQUENCY
+
+The MOD calibration files should remain unchanged for the forseeable future,
+once we have a good set of models.
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxmodr1
+generate a mod file for an optical relay.
+.le
+
+.ls focutility.rsdpmodx
+low level task called by cxmodr1x. This task actually does the processing
+and may be called by a GO who must supply the additional file names.
+.le
+
+.ih 
+SEE ALSO
+From FOC_MOD see also:
+
+.nf
+mod file creation		...... cxmodr1
+                                ...... rsdpmodx
+mod verification                ...... FOC_MOD_VER
+.fi
+
+
+.endhelp

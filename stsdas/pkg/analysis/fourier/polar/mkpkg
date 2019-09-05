@@ -1,0 +1,11 @@
+# Update topolar & frompolar in the fourier package library
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	frompolar.x      	<imhdr.h>
+	topolar.x      		<imhdr.h>
+	;

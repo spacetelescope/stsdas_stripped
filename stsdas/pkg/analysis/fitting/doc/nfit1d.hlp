@@ -1,0 +1,256 @@
+.help nfit1d Sep97 stsdas.analysis.fitting
+.ih
+NAME
+nfit1d -- Fit 1-dimensional, non-linear functions to one or more lists, 
+image sections, or tables.
+.ih
+USAGE
+nfit1d input output
+.ih
+DESCRIPTION
+This task fits 1-dimensional non-linear functions to one or more
+lists, image sections, table columns, or table array cells ("3-D 
+tables"). Chi-square fitting is performed by either the downhill 
+simplex minimization algorithm ("amoeba") or the Levenberg-Marquardt
+algorithm.
+
+Lists and image sections may be mixed in the input list using wildcard
+characters in the file name template.  Fit results will be written to a
+STSDAS table.  See below for a description of the table format.  If the
+table does not exist, it will be created.  Otherwise, the fit results
+will be appended as the last row in the table. 
+
+There are currently five functions supported by 'nfit1d', these are:
+.nf
+
+    o power-law,
+    o black-body (i.e., the Planck function),
+    o sum of two black-body functions,
+    o composite (i.e., power-law plus black-body),
+    o galaxy brightness profile (bulge and disk), and
+    o user-specified function.
+
+.fi
+Type 'help funcform' to get more details on the functional forms. 
+
+If either the black-body, two black-bodies, or composite function is
+selected, the independent variable must be in units of wavelength,
+frequency, or energy.  Supported units are cm, meter, Angstrom, Hz or
+keV.  The user can either specify the units, or let the task decide
+which units to use based on the order of magnitude of the input data. 
+If the task cannot decide which units to use, or chooses the wrong one,
+set the units using parameter 'xunit'.
+
+If either the pure power-law or user-defined function is selected, the 
+independent variable can be provided in any unit. However, the 
+interpretation of the function coefficients will vary based on the unit. 
+The independent variable for the galaxy brightness profile can be either 
+linear distance or distance**1/4, and can be specified by either the 
+user or by the task itself (as in the Planck function). The independent
+variable must be in linear units in all cases.
+
+The task supports a special form of interpreted function, the "user"
+type, which allows the fit of almost any analytic function.
+See the 'userpars' and 'funcform' help pages for details.
+
+The fitting parameters may be set interactively using cursor commands. 
+Each data set may be fitted with different functions and parameters if
+the task is used interactively.  Type 'help ncfit' to get more details
+on the available interactive tools. 
+
+If the input data are in the form of image sections, then FITS header
+keywords are used to generate the X and Y scales.  If an image section
+operand has more than one dimension, the projection (i.e., average) onto
+a designated axis is computed as the independent variable vector (see 
+'samplepars' pset). The IRAF keywords 'W0' and 'WPC' are taken from the 
+image header; if these keywords are not located, then the keywords 'CRPIXn', 
+'CRVALn', and 'CDn_n' (where n is the axis) are checked.  If 'CDn_n' is 
+not found, then the task looks for 'CDELTn'.  The task also tries to get 
+the keyword 'DISPAXIS' and compares its value to that of the designated
+axis; a warning is issued if these values differ. Logarithmic X scale
+is generated correctly only if the IRAF keyword 'DC-FLAG' is set to 1. 
+The keywords 'BSCALE' and 'BZERO' (if they exist) are used to scale the
+independent fit variable from its raw pixel values. 
+
+List input may be taken from the standard input (STDIN) or from a file,
+and consists of a sequence of Y values, X and Y values, or X,Y and error
+values, one pair of coordinates per line in the list.  Blank lines,
+comment lines (beginning with a '#'), and extra columns are ignored.  The
+first element in the list determines whether the list is a Y list or an
+X,Y list; it is an error if an X,Y list has fewer than two coordinates
+in any element.  INDEF valued elements are ignored.  The list does not
+need to be ordered, nor equally spaced, in X.
+
+If the input file is an STSDAS table, then the input is specified as a 
+either: 1) a table name and column name, 2) a table and two column 
+names;, or 3) a pair of table and column names.  Table names can be file 
+name templates (i.e., wildcard characters are allowed). The table name 
+may have appended to it a row selector. If the specified column(s) store 
+arrays in each cell ("3-D table") the full array contents at each selected 
+row are read and used to build the 1-D data vectors. When reading from two 
+separate columns, both of them must store either scalars or arrays with 
+same size. See the "help selectors" help page in the 'tables' package.
+
+Error information, needed for properly computing chi-square, as well as
+for generating estimates for the function coefficient errors, can be
+input in a variety of ways. See help page for the 'errorpars' pset.
+
+The fitting algorithms need initial guesses for the function coefficients.
+Guesses can be specified through task parameters, from a previously generated 
+table, or can be entered interactively.  Parameter sets (psets) are used for 
+function coefficients at startup.  If an error occurs when reading first
+guesses from a table, then the task adopts the values from the appropriate 
+pset instead. Type 'help' followed by the appropriate pset name, to see
+more details about individual function parameters.
+  
+The task allows the user to specify at startup (through parameters) and 
+at any other time (interactively), which coefficients are to be varied 
+and which are to be held fixed during the fitting process. 
+
+The STSDAS output table contains the information described below. Each
+particular fit will result in a new line being appended to the table.
+.nf
+
+Column	
+Label           Contents
+======          ========
+
+file		Name of the file on which the fit was performed
+time		Date and time the fit was performed
+function	Fitted function
+ncoeff		Number of function coefficients
+unit		Physical units of independent variable
+npoints		Number of data points used in fit
+xmin, xmax	Not used
+chisq		Chi-square of fit
+rms		Root mean square of fit
+coeff1		First coefficient
+err1		First coefficient error
+coeff2		Second coefficient
+err2		Second coefficient error
+...
+...
+
+.fi
+New columns are created as needed to hold any number of
+coefficients.  The total number of columns will be dependent of the
+maximum number of coefficients used in a particular fit. 
+.ih
+PARAMETERS
+.ls input [file name template]
+List of files to be fitted.  May be STDIN, or one or more image 
+sections, tables and columns, or lists. 
+.le
+.ls output [file name]
+Name of the STSDAS table to which fitting information will be written.
+.le
+.ls (xunits = *) [string, allowed values: * | cm | meter | Angstrom |
+ Hz | keV]
+
+Units of the X axis (for Planck function evaluation only).  Passing a 
+value of "*" allows the task to select the unit based on the order of 
+magnitude of the X data. 
+.le
+.ls (function = "powerlaw") [string, allowed values: powerlaw | bbody | 
+composite | twobbody | galprof | user]
+
+Type of fitting function.
+.le
+.ls (rt = no) [boolean]
+Read the initial coefficient guesses from a table? 
+.le
+.ls (tablein = "") [string]
+File name of the table from which to read the initial coefficient 
+guesses. 
+.le
+.ls (row = 1) [integer, min=1]
+Table row from which to read initial coefficient 
+guesses.  If more than one data set is being fitted, the same values 
+will be used for all data sets.
+.le
+.ls (powerpars = "") [string]
+The name of the file containing the power law function dependent 
+parameters (pset).
+.le
+.ls (bbodypars = "") [string]
+The name of the file containing the black body function dependent 
+parameters (pset).
+.le
+.ls (twobbpars = "") [string]
+The name of the file containing the two black bodies function dependent  
+parameters (pset).
+.le
+.ls (comppars = "") [string]
+The name of the file containing the composite function dependent 
+parameters (pset).
+.le
+.ls (galprofpars = "") [string]
+Name of the file containing the galaxy profile function-dependent 
+parameters (pset).
+.le
+.ls (userpars = "") [string]
+The name of the file containing the user function dependent parameters 
+(pset).
+.le
+.ls (errorpars = "") [string]
+The name of the file containing the error-related parameters (pset).
+.le
+.ls (controlpars = "") [string]
+The name of the file containing the algorithm control parameters (pset).
+.le
+.ls (samplepars = "") [string]
+The name of the file containing the sampling parameters (pset).
+.le
+.ls (interactive = yes) [boolean] 
+Work in the interactive graphics mode?
+.le
+.ls (verbose = no) [boolean]
+Display messages about each fitting iteration?
+.le
+.ls (pcomp = yes) [boolean]
+Plot individual composite function components?
+.le
+.le
+.ls (ltype = "continuous") [string, allowed values: continuous | boxes ]
+
+Plot data points as continuous line or individual boxes ? In "boxes"
+mode, and if the error bars are not all equal, error bars are also plottted
+for each point.
+.le
+.ls (device = "stdgraph") [string]
+Graphics output device.
+.le
+.ls (gcur) [graphics cursor]
+Graphics cursor input.  (Type "help ncfit" for more 
+information about the cursor facility.)
+.le
+.ih
+EXAMPLES
+1. Fit a section of the image 'test' and store the fit results in the 
+table 'testfit.tab' in the user's home directory:
+
+.nf
+  fi> nfit1d test[100:500,256:300] home$testfit
+.fi
+
+2. The input table is xy.tab, using columns named 'wave' and 'flux' as
+input, the syntax is: 
+
+.nf
+  fi> nfit1d "xy.tab wave flux"  output
+.fi
+
+3. Fit spectral order 80 to 83 on an echelle STIS extracted spectrum:
+
+.nf
+  fi> nfit1d "file.fits[r:SPORDER=80:83] WAVELENGTH FLUX"  output
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+errorpars, controlpars, funcform, ncfit, selectors
+.endhelp

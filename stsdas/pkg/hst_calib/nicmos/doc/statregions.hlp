@@ -1,0 +1,60 @@
+.help statregions May99 stsdas.hst_calib.nicmos
+.ih
+NAME
+statregions -- Edit the parameter set to select image statistics regions.
+.ih
+USAGE
+statregions
+.ih
+DESCRIPTION
+The `statregions' parameters specify various image sections to be used
+when computing statistics in the `pedsky' task. The `quad1', `quad2', `quad3',
+and `quad4' parameters specify the image section to use when computing the
+clipped median (pedestal estimate) of each image quadrant.
+The `statsec' parameter specifies the image section to use when computing
+the rms of the pedestal and sky-subtracted image.
+
+These image section specifications can be used to avoid some portion of an
+image when measuring either the pedestal estimate or the resulting residuals.
+Examples might include the avoidance of a bright star near the edge of a
+quadrant, or if one wished to avoid measurement in the vignetted region of
+an image (especially for NICMOS camera 3). Note that the default quadrant
+specifications avoid column and row 128, which are often rather flaky.
+
+Note that this is a pset, not an executable task; it defines a set of 
+parameters used by other tasks.  Invoking the pset by name runs 
+`eparam' on the parameter set, allowing the user to modify the 
+parameters.  Alternatively, the parameters may be modified on the 
+command line by specifying the pset name and parameter name.  For 
+example, the user can type `statregions.quad1="[1:127,1:127]"' to set
+the image section to be used when computing statistics for quadrant 1.
+Parameters can also be edited by using `eparam' on the calling task
+(e.g., by typing "eparam pedsky"), in which case `statregions' will appear
+as one of the task parameters; the `statregions' parameters may then be
+edited by positioning the cursor on the line containing the pset name and
+typing ":e". After editing the pset parameters, type <Cntrl>-Z to return to
+the main task parameter menu.  
+
+.ih
+PARAMETERS
+.ls (quad1 = "[1:127,1:127]") [string]
+Image section for measuring pedestal level in quadrant 1.
+.le
+.ls (quad2 = "[129:256,1:127]") [string]
+Image section for measuring pedestal level in quadrant 2.
+.le
+.ls (quad3 = "[1:127,129:256]") [string]
+Image section for measuring pedestal level in quadrant 3.
+.le
+.ls (quad4 = "[129:256,129:256]") [string]
+Image section for measuring pedestal level in quadrant 4.
+.le
+.ls (statsec = "[1:256,1:256]") [string]
+Image section for measuring rms residuals in pedestal subtracted image.
+.le
+.ih
+BUGS
+.ih
+SEE ALSO
+pedsky
+.endhelp

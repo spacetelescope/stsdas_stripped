@@ -1,0 +1,7 @@
+asnroot,s,a,"",,,"Rootname for ASN table" 
+suffix,s,h,"crj.fits",,,"Input file specification for table members" 
+shiftfile,s,h,"",,,"Filename of optional additional shifts"
+product,s,h,"",,,"Filename of ASN table product (output)"
+verbose,b,h,no,,,"Print additional info when building table?"
+version,s,h,"0.9a (02-Aug-2004)",,,"Date of Installation"
+mode,s,h,"al",,,

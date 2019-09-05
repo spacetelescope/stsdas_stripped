@@ -1,0 +1,88 @@
+# Make the playpen package
+# Author: B. Simon 15-Sep-1988
+#	to include inspect application(s)
+# Move to stsdas$pkg, remove inspect, and include hltorgb and newredshift
+# 13 February 1990, Z.G. Levay, STScI
+# Add rastoim, Z. G. Levay, 24 Aug 1990
+# Add cmtoim and dstoim, Z. G. Levay, 19 Oct 1990
+# Add wiener (and fourt.f), I.Busko, 12 Dec 1990
+# Add lucy, E.Stobie, 3 Jan 1991
+# Add overlap, I.Busko, 12 Jan 1991
+# Add fill, I.Busko, 21 Jan 1991
+# Add hsubtract, I.Busko, 25 Jan 1991
+# Separated cmtoim amd dsttoim to separate executable due to Sun 
+#		specific calls, R. Williamson 29 Jan 1991
+# Add imdisp_pos, Jonathan D. Eisenhamer, 17Jun91
+# Add bessj1.f to lib for new wiener task 12 Aug 1991
+# Add lspect task, 13 August 1991, ZGL
+# Moved wiener and lucy to new restore package 15-Aug-1991
+# Moved cmtoim, cmtoim, and dstoim to sunview directory 30-Aug-1991 RLW
+# Add hstpos, S. Hulbert 21 Oct 91
+# Add adaptive, 2 Dec 1991; Phil Hodge.
+# Add immean, 17 Jan 1992; Phil Hodge.
+# Add dsimg, 24 Jan 1992, ZGL
+# Add jimage, 13 Feb 1992; Phil Hodge.
+# Add scmapc, saodump;  26 Feb 1992, ZGL
+# Add hfilter (by Ivo Busko), 28 Feb 1992; Phil Hodge.
+# Add sclean (by Ivo Busko), 21 Aug 1992; Ray Williamson.
+# Add lgrlist (enhancement to stplot.grlist).  17 September 1992  Z.G. Levay
+# Add fixicm (cludge image and colormap for celco) 6 Nov 92, Z.G. Levay
+# Add mkapropos 10 Nov 92, R.L. Williamson
+# Add mkms & tomo, 11Dec92, J.D. Eisenhamer
+# Add rashead (list rasterfile header)  30 Dec. 1992, Z.G.Levay
+# Add registration package, 19 Apr 1993, Ray Williamson.
+# Add nebular package, 11 Jan 1994, RAShaw
+# Add bwfilter task, 19 Aug 1994, Phil Hodge (added -lapplib to link)
+# Add tchtype task, 31 Aug 1994, Phil Hodge
+# Moved nebular package to analysis package, 8 Jul 1997, RAShaw
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	playpen.a
+	$call	playpen
+	;
+
+install:
+	$move	xx_playpen.e stsdasbin$x_playpen.e
+	;
+
+playpen:
+linkonly:
+	$omake	x_playpen.x
+        $set    LIBS = "-lstxtools -lapplib -lxtools -lcurfit\
+                        -lsurfit -lgflib -lgilib -ltbtables -liraf77"
+
+	$link	x_playpen.o playpen.a $(LIBS) -o xx_playpen.e
+	;
+
+debug:
+	$set XFLAGS = " -fgq -Inolibc $(XFLAGS) -/xO1"
+	$call	relink
+	;
+
+playpen.a:
+	@edge
+	@geo2mag
+	@hstpos
+	@ils
+	fill.x  	<imhdr.h> <imset.h>
+	hsubtract.x  	<imhdr.h> <imset.h>
+	t_bwfilter.x	<error.h> <gset.h> <imhdr.h> <tbset.h> <time.h>
+	t_immean.x
+	t_jimage.x	<imhdr.h> <math.h> <tbset.h>
+	t_lgrlist.x	<ctype.h>
+        ;

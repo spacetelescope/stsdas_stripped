@@ -1,0 +1,146 @@
+.help rcombine Jun1993  stsdas.hst_calib.ctools
+.ih
+NAME
+rcombine -- Combine HRS or FOS rapid-readout data with the option of propagating
+errors and data quality flags.
+.ih
+USAGE
+rcombine input output operation
+.ih
+DESCRIPTION
+The 'rcombine' task combines data groups within HRS or FOS rapid-readout
+images. It will sum or average the groups of a group format image into
+an image with one or more groups and will optionally propagate the maximum
+value of the associated data quality (cqh) image. For calibrated (c1h) images,
+the user also has the option to combine, in quadrature, the groups in the 
+associated error (c2h) image.
+The input can be a single file name or a file name template.  The output can
+be a file name root or a directory name.
+
+You must specify if the data are to be summed or averaged, and whether
+or not to also process the associated data quality and/or error images.
+Additionally, you may specify which groups to combine (the
+default is all groups in the image) and how to bin the input groups
+into the resulting output (the default is all input groups into one output
+group). 
+
+Each pixel in the input file is added to the same
+pixel in the other groups of the file.  If a subset of groups is
+specified then only those groups will be combined (e.g., setting the
+parameter 'groups = 1-x2' will use every other group, i.e., step by 2).
+If 'nbin' is set to a value less than the total number of groups in the
+input image, then 'nbin' input groups will form one output group.  
+If 'nbin' does not divide evenly into the total number of input groups,
+then the last output group will contain the remaining groups.
+
+If the data quality (cqh) image is included in the operation, then the maximum
+value of a given pixel amongst the groups being combined is propagated to the
+output data quality file.
+
+If the error (c2h) image is included in the operation,
+then each pixel in the error file is added in quadrature to the
+corresponding pixels in the other groups of the error file.  After nbin
+groups have been added, the square root of the summed errors is taken and,
+if operation=average, the result is divided by nbin.
+.ih 
+PARAMETERS 
+.ls input [file name]
+Name of the input image (this can be a file name template).
+The image extension, e.g., '.d0h', '.c1h', '.c4h', must be included in the name.
+.le 
+.ls output [file name]
+File name or directory in which the output image will be stored.
+It is not necessary to specify the image extension as the output image
+extension will be the same as the input image extension.
+
+If a single input file is used, then the output can be a single
+file name or directory name.  If an input image template is used, then
+the output must be a directory name.  When a directory name is
+specified, the output file names will be the same as the input file
+names but will be written to the specified directory.
+.le 
+.ls operation="average" [string, allowed values: average | sum] 
+Operation to be performed, either average or sum.
+
+If averaging and error propagation are chosen, groups from the "c2h" file are
+added in quadrature, the square root is taken, and then divided by the number 
+of groups processed.
+If sum is chosen, then there is no division by the number of groups.
+.le
+.ls (groups = "-") [string]
+Range or list of groups to be processed. Using a dash (the default) will process
+all groups in an image.
+
+You can specify that only a subset of groups be used,
+according to the syntax described in 'xtools.ranges' (type "help ranges").  For
+For example: 1-50 uses only the first fifty groups; 1-50x2 uses every
+other group of the first fifty groups.  You will probably want to use
+"-" most of the time.  Note the interaction between this parameter and
+the 'nbin' parameter.
+.le 
+.ls (nbin=INDEF) [integer]
+Number of input groups that will be binned into each output group.
+
+The default is to
+process all groups in the image into a single output group.  However,
+you might want to process every 10 groups into a single ouput group,
+then you would set 'nbin=10'.  If your input image has 123 groups then
+your output image will have 13 groups.  The first 12 groups will
+result from processing sets of 10 consecutive input groups while
+the 13th output group will result from processing the last three
+groups.  Note carefully the interaction between this parameter and the
+'groups' parameter.  If your input image has 123 groups and you specify
+'nbin=10', 'groups=x2', you will get 62 output groups (ceil(123/2)) and
+only every other input group will be processed.
+.le 
+.ls (dataqual=no) [boolean]
+Process data quality files along with input spectral files?
+
+The data quality file must have the same
+root file name as the input file and a file extension of ".cqh".
+.le
+.ls (errors=no) [boolean]
+Process error files along with input spectra files?
+
+The error file must have the same root file name
+as the input file and a file extension of ".c2h".  If the input spectral
+file is not type "c1h", this parameter is ignored.
+.le
+.ih
+EXAMPLES
+1. Suppose the files 'testim.c1h', 'testim.c2h', and 'testim.cqh' are all in your
+current directory and have 144 groups.  To average the groups, including
+error and data quality propagation, and
+produce an output file called 'newim' containing a single group you
+would type:
+
+.nf
+   fo> rcombine testim.c1h newim average dataq+ errors+
+.fi
+
+This would produce three files 'newim.c1h', 'newim.c2h' and 'newim.cqh'.
+
+2. Process the same images as above, but this time average every 10 groups
+into a single output group and put the output into a subdirectory called
+'new':
+
+.nf
+   fo> rcombine testim.c1h new/ average nbin=10 dataq+ errors+
+.fi
+
+The last group would be the average of the final four input groups.
+
+3. Average all groups of the count rate image 'y0nt0303t.c4h' into the image
+'newim.c4h' containing a single group:
+
+.nf
+   fo> rcombine y0nt0303t.c4h newim average
+.fi
+.ih
+BUGS
+None known.
+.ih
+SEE ALSO
+imsum, imcombine, scombine, ranges
+
+.endhelp

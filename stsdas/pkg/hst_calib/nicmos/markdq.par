@@ -1,0 +1,21 @@
+# NDISPLAY
+
+image,f,a,,,,Image to be displayed
+frame,i,a,1,1,4,Frame number for display
+pointsize,i,h,1,1,,Size of mark type point in display pixels
+col1,i,h,208,201,217,Color for bit1=1 flag
+col2,i,h,209,201,217,Color for bit2=2 flag
+col3,i,h,210,201,217,Color for bit3=4 flag
+col4,i,h,211,201,217,Color for bit4=8 flag
+col5,i,h,212,201,217,Color for bit5=16 flag
+col6,i,h,206,201,217,Color for bit6=32 flag
+col7,i,h,205,201,217,Color for bit7=64 flag
+col8,i,h,213,201,217,Color for bit8=128 flag
+col9,i,h,204,201,217,Color for bit9=256 flag
+col10,i,h,207,201,217,Color for bit10=512 flag
+col11,i,h,213,201,217,Color for bit11=1024 flag
+col12,i,h,214,201,217,Color for bit12=2048 flag
+col13,i,h,215,201,217,Color for bit13=4096 flag
+col14,i,h,216,201,217,Color for bit14=8192 flag
+col15,i,h,217,201,217,Color for bit15=16384 flag
+mode,s,h,'ql'

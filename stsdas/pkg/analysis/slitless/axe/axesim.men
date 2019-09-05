@@ -1,0 +1,7 @@
+Menu for the package axesim
+
+   prepimages  - prepare a model image file
+   prepspectra - prepare a model spectra file
+   simdirim    - simulate a direct image
+   simdispim   - simulate a dispersed image
+   simdata     - simulate a direct and a dispersed image

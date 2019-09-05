@@ -1,0 +1,15 @@
+#  dqfpar parameters
+#
+datextn,s,h,"c0h",,,Datafile extension
+dqfextn,s,h,"c1h",,,Data Quality File extension
+rsbit,b,h,yes,,,Reject Reed-Solomon errors (DQ = 1)?
+calbit,b,h,yes,,,Reject calibration file defects (DQ = 2)?
+defbit,b,h,yes,,,Reject permanent camera defects (DQ = 4)?
+satbit,b,h,yes,,,Reject saturated pixels (DQ = 8)?
+misbit,b,h,yes,,,Reject missing data (DQ = 16)?
+genbit,b,h,yes,,,Reject generic bad pixels (DQ = 32)?
+ovrlapbit,b,h,yes,,,Reject "image overlap" pixels (DQ = 64)? (WFPC2 only)
+crbit,b,h,yes,,,Reject cosmic ray hits (DQ = 128)?
+trapbit,b,h,yes,,,Reject trap column pixels (DQ = 256)? (WFPC2 only)
+hpbit,b,h,yes,,,Reject "unfixable" hot pixels (DQ = 512)? 
+fixhpbit,b,h,yes,,,Reject "fixed" hot pixels (DQ = 1024)? 

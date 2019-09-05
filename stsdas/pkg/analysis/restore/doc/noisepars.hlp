@@ -1,0 +1,30 @@
+.help noisepars Aug93 stsdas.analysis.restore
+.ih
+NAME
+noisepars -- Set the noise parameters for the wiener task.
+.ih
+USAGE
+noisepars
+.ih
+DESCRIPTION
+This pset is used to set the noise parameters for the wiener task.
+.ih
+PARAMETERS
+.ls (statistic = independent) [string, allowed values: independent|Poisson]
+
+Noise model.
+.le
+.ls (fnoise = INDEF) [real, min=1.]
+Frequency, in frequency domain pixels, where the task will measure the
+noise power spectral density. If INDEF, the highest available frequency
+is used (recomended).
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+Type "help wiener" and "help wiener opt=sys" for more information about 
+the wiener task.
+.endhelp

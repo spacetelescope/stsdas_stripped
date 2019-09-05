@@ -1,0 +1,17 @@
+# Help directory for the STSDAS.GRAPHICS.SDISPLAY package
+
+$sdisplay	= "stsdas$pkg/graphics/sdisplay/"
+$doc		= "stsdas$pkg/graphics/sdisplay/doc/"
+$compass	= "stsdas$pkg/graphics/sdisplay/compass/"
+$im2gki		= "stsdas$pkg/graphics/sdisplay/im2gki/"
+$mklut		= "stsdas$pkg/graphics/sdisplay/mklut/"
+
+compass		hlp=doc$compass.hlp,		src=compass$compass.x
+disconlab	hlp=doc$disconlab.hlp,		src=sdisplay$disconlab.cl
+hltorgb		hlp=doc$hltorgb.hlp,		src=sdisplay$t_hltorgb.x
+im2gki		hlp=doc$im2gki.hlp,		src=im2gki$t_im2gki.x
+imdisp_pos	hlp=doc$imdisp_pos.hlp,		src=sdisplay$t_imdisp_pos.x
+mklut		hlp=doc$mklut.hlp,		src=mklut$t_mklut.x
+mosaic_display	hlp=doc$mosaic_display.hlp,	src=sdisplay$mosaic_display.cl
+overlap		hlp=doc$overlap.hlp,		src=sdisplay$overlap.x
+pltcmap		hlp=doc$pltcmap.hlp,		src=sdisplay$pltcmap.cl

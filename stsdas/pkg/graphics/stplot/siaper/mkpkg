@@ -1,0 +1,23 @@
+# Make the siaper task
+
+$checkout stplot.a ../
+$update stplot.a
+$checkin stplot.a ../
+$exit
+
+stplot.a:
+	t_siaper.x	<gset.h> <imhdr.h> siaper.h
+	siarcm.x	<math.h>
+	sicirm.x	siaper.h
+	sifine.x	<ctype.h> <tbset.h> siaper.h
+	sigete.x	<mwset.h> siaper.h
+	sigetn.x	<math.h> siaper.h
+	siopef.x	siaper.h
+	sipicm.x	siaper.h
+	siploe.x	siaper.h
+	siquam.x	siaper.h
+	sirecm.x	siaper.h
+	sireve.x
+	sirot.x		<math.h>
+	sistrs.x	siaper.h
+

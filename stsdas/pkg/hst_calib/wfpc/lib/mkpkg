@@ -1,0 +1,28 @@
+#################################################################################
+#  Update the /lib subdirectory of the wfpc package				#
+#										#
+#	10/91	RAShaw	Initial implementation					#
+
+$checkout	wfpc.a ../
+$update		wfpc.a
+$checkin	wfpc.a ../
+$exit
+
+wfpc.a:
+	dqfinit.x
+	dqinit.x
+	dqval.x
+	splicstr.x
+	waddgrp.x
+	get_coeff.x
+	get_coeff2.x
+	get_trans.x	<math.h>
+	get_trans2.x	<math.h>
+	legendre.x
+	rcube.x
+	inter_chip.x
+	piksrt.x
+	strtor.x
+	;
+
+$exit

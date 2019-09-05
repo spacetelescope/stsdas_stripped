@@ -1,0 +1,7 @@
+# parameter file for plbias
+input,f,a,,,,Input image name or list
+output,f,a,,,,Output image name or list
+wrap,s,h,zero,zero|positive|negative,,Wrap option
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"02Dec93",,,Date of installation
+mode,s,h,"ql",,,

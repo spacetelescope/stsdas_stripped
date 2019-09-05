@@ -1,0 +1,47 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+#	$set XFLAGS="-c      -DNATIVE_IRAF -I. -Inolibc \
+	$set XFLAGS="-c -gqf -DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_msarith.c
+	$update	libmsarith.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_msarith.o libmsarith.a \
+		-lhstio -lcvos -lxtools -lc \
+		-o xx_msarith.e
+		;
+
+install:
+	$move xx_msarith.e stsdasbin$x_msarith.e
+	;
+
+libmsarith.a:
+	n_cbindings.c		
+	n_checkoname.c		msarith.h
+	n_checkptype.c		msarith.h
+	n_checksize.c		msarith.h
+	n_doarith.c		msarith.h n_math.h
+	n_dosinglef.c		msarith.h
+	n_err.c			msarith.h
+	n_fileinfo.c		msarith.h
+	n_getgrlist.c		msarith.h
+	n_getoper.c		msarith.h
+	n_history.c		msarith.h
+	n_imageio.c		msarith.h
+	n_math.c		msarith.h
+	n_mathnic.c		msarith.h
+	n_mathstis.c		msarith.h
+	n_nimarith.c		msarith.h
+	n_updatekws.c		msarith.h
+	;

@@ -1,0 +1,105 @@
+.help base2dec Jan2001 tools
+.ih
+NAME
+base2dec -- Convert number in a base to decimal (base 10)
+.ih
+USAGE
+base2dec input base
+.ih
+DESCRIPTION
+This script is a number base conversion routine to convert
+numbers represented in another base to decimal (base 10).  The
+exceptable digits are '0'-'9','a'-'z', and 'A'-'Z'.  Upper and lower
+case letters are can be mixed.
+
+Digits for values greater than 9 are assigned sequentially to the
+alphabet.  For example, the value 10 is mapped to an 'a', value 11 is
+mapped to 'b', etc.
+.ih
+PARAMETERS
+.ls input [string]
+String representation of the number to convert.
+.le
+.ls base [int, minimum=2, maximum=36]
+The base represented by the input number.
+.le
+.ls (output) [int]
+This parameter will be set to the decimal value which the input number
+represents.
+.le
+.ls (verbose = yes) [bool]
+If 'yes', the result of the conversion is printed to STDOUT.
+.le
+.ih
+EXAMPLES
+1. Convert the value 11111 in base 2 (binary) to its decimal equivalent.
+
+.nf
+    cl> base2dec 11111 2
+    31
+    cl> lpar base2dec
+        input = "11111"  Number to convert
+        base = 2         Base of the input number
+        (output = 31)    Output: Base 10 representation of input
+        (verbose = yes)  Print result to standard output?
+.fi
+
+2. Convert the value 11101111100 in base 2 to its decimal equivalent.
+
+.nf
+    cl> base2dec 10101111100 2
+    2204                        # this is wrong!
+
+    cl> base2dec "10101111100" 2
+    1404                        # this is correct
+
+    cl> =10101111100
+    1511176508                  # this shows the problem
+.fi
+
+The problem is that 10101111100 has too many digits (11) for an integer,
+and the cl interprets numerical values as they are entered.
+The first argument to 'base2dec' is declared as a string,
+and it should be quoted when values with many digits
+are to be entered on the command line;
+an alternative is to use 'eparam' to enter the value.
+
+3. Convert the value 37 in base 8 (octal) to its decimal equivalent.
+
+.nf
+    cl> base2dec 37 8
+    31
+.fi
+
+4. Convert the value 1F in base 16 (hexidecimal) to its decimal equivalent.
+
+.nf
+    cl> base2dec 1F 16
+    31
+.fi
+
+5. Convert the value 31 in base 10 (decimal) to decimal.
+
+.nf
+    cl> base2dec 31 10
+    31
+.fi
+.ih
+BUGS
+This script is dependent on the host operating system character set.
+The only requirement is that the alphabet be represented sequentially
+and in increasing number from 'A'/'a' to 'Z'/'z'.  ASCII satisfies
+this requirement.  If this requirement is not met, the results will
+be unpredictable.
+
+Since values greater than 9 are mapped into the alphabet, and there
+are only 26 letters in the alphabet, only numbers up to base 36 can be
+supported.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+dec2base, radix
+.endhelp

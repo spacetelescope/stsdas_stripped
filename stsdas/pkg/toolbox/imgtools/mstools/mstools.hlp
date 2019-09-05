@@ -1,0 +1,43 @@
+.help mstools Mar07 toolbox.imgtools
+
+The `mstools' package contains tasks for working with STIS, NICMOS,
+ACS, and WFC3 
+data. Some tasks are "extensions" of existing tasks in the STSDAS system, 
+and support other instruments/file formats as well.
+
+NICMOS, STIS, ACS, and WFC3 data are stored in multi-extension FITS files. 
+Each extension
+stores a Header-Data-Unit (HDU), which is nothing more than the familiar 
+"image" used by IRAF tasks: a pixel array and its associated header.
+The first HDU in any of these FITS files is a special one, because it carries 
+a null data array (thus it is made up of a solitary header), and is named
+Primary Header Unit (PHU). 
+
+HDUs can be addressed by their absolute offset in the file. Thus the
+PHU could be accessed by using the construct "filename.fits[0]", and the
+10th HDU in the file by "filename.fits[9]". Alternatively, an HDU can be
+accessed by the EXTNAME and EXTVER keywords found in their header.
+For instance, to access the HDU that has EXTNAME="SCI" and EXTVER=1
+in its header, use "filename.fits[SCI,1]".
+
+Since STIS, NICMOS, ACS and WFC3 exposures are always comprised of 3 or 5 
+associated HDUs, 
+these sets of 3 or 5 HDUs are conveniently named IMSETs, and are identified 
+by a common EXTVER number. The EXTNAMEs in each STIS, ACS, and WFC3/UVIS 
+IMSET are SCI, ERR
+and DQ, and the EXTNAMEs in NICMOS and WFC3/IR IMSETs are SCI, ERR, DQ, 
+SAMP and TIME. 
+As an example, the 20th IMSET in a NICMOS MULTIACCUM file is comprised of 
+5 HDUs that have the EXTNAMEs above and the common value of 20 in their 
+EXTVER keyword.
+
+Notice that IMSETs are abstract entities, in the sense that there is no 
+way for a generic IRAF task (such as imcopy or imstatistics) to access a
+given IMSET as a whole. This type of access is performed only by tasks in 
+this package and a few others. Notice also that the physical order in 
+which HDUs are stored in a file is not important, since IMSETS are defined 
+by keyword values in HDU headers, and not by the physical ordering of the 
+HDUs. Thus it is good practice to avoid using the absolute offset naming 
+when describing these files.
+
+.endhelp

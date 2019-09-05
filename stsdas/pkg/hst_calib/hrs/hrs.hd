@@ -1,0 +1,27 @@
+# Help file for the HRS directory
+
+$hrs		= "stsdas$pkg/hst_calib/hrs/"
+$doc		= "stsdas$pkg/hst_calib/hrs/doc/"
+$calhrs		= "stsdas$pkg/hst_calib/hrs/calhrs/"
+$dopoff		= "stsdas$pkg/hst_calib/hrs/dopoff/"
+$obsum		= "stsdas$pkg/hst_calib/hrs/obsum/"
+$reflux		= "stsdas$pkg/hst_calib/hrs/reflux/"
+$spiralmap	= "stsdas$pkg/hst_calib/hrs/spiralmap/"
+$tacount	= "stsdas$pkg/hst_calib/hrs/tacount/"
+$waveoff	= "stsdas$pkg/hst_calib/hrs/waveoff/"
+$zavgtemp	= "stsdas$pkg/hst_calib/hrs/zavgtemp/"
+$zwavefit	= "stsdas$pkg/hst_calib/hrs/zwavefit/"
+$zwaveid	= "stsdas$pkg/hst_calib/hrs/zwaveid/"
+
+calhrs		hlp=doc$calhrs.hlp,	src=calhrs$zclhrs.f
+dopoff		hlp=doc$dopoff.hlp,	src=dopdoff$t_dopoff.x
+obsum		hlp=doc$obsum.hlp,	src=obsum$t_obsum.x
+reflux		hlp=doc$reflux.hlp,	src=reflux$reflux.x
+showspiral	hlp=doc$showspiral.hlp,	src=spiralmap$showspiral.cl
+spiralmap	hlp=doc$spiralmap.hlp,	src=spiralmap$spiralmap.x
+tacount		hlp=doc$tacount.hlp,	src=tacount$x_tacount.x
+waveoff		hlp=doc$waveoff.hlp,	src=waveoff$t_waveoff.x
+zavgtemp	hlp=doc$zavgtemp.hlp,	src=zavgtemp$t_zavgtemp.x
+zwavefit	hlp=doc$zwavefit.hlp,	src=zwavefit$t_wavefit.x
+zwaveid		hlp=doc$zwaveid.hlp,	src=zwaveid$t_waveid.x
+zwavecal	hlp=doc$zwavecal.hlp,	src=hrs$zwavecal.cl

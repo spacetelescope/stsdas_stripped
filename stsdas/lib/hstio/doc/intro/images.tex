@@ -1,0 +1,44 @@
+\batchmode
+\documentstyle[times,12pt,psfig]{article}
+\makeatletter
+
+
+\makeatother
+\newenvironment{tex2html_wrap}{}{}
+\begin{document}
+\pagestyle{empty}
+\stepcounter{section}
+\stepcounter{section}
+\newpage
+
+{\samepage \clearpage \begin{tabbing}\={\bf STIS} \hspace{2.6in} \={\bf NICMOS} \\ 
+\> Primary Header Data Unit \> Primary Header Data Unit \\ 
+\> \hspace{0.5in} general keywords \> \hspace{0.5in} general keywords \\ 
+\> \hspace{0.5in} no data \> \hspace{0.5in} no data\\ 
+\> first Science HDU \>first Science HDU\\ 
+\>first Error HDU \>first Error HDU\\ 
+\>first Data Quality HDU \>first Data Quality HDU\\ 
+\>second Science HDU \>first Samples HDU\\ 
+\>second Error HDU \>first Integration Times HDU\\ 
+\>second Data Quality HDU\>second Science HDU\\ 
+\>etc.\>second Error HDU\\ 
+\>\>second Data Quality HDU\\ 
+\>\>second Samples HDU\\ 
+\>\>second Integration Times HDU\\ 
+\>\>etc.
+\end{tabbing}
+}
+
+
+\stepcounter{section}
+\stepcounter{section}
+\newpage
+
+{\samepage \clearpage \psfig{figure=farrisa1.eps,width=5.0in}
+}
+
+
+\stepcounter{section}
+\stepcounter{section}
+
+\end{document}

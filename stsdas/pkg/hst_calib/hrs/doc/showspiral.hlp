@@ -1,0 +1,56 @@
+.help showspiral Jun97 stsdas.hst_calib.hrs 
+.ih
+NAME
+showspiral --Construct and display an GHRS spiral-search map.
+.ih
+USAGE
+showspiral input output display_only
+.ih
+DESCRIPTION
+The 'showspiral' task is a cl script that runs the task 'spiralmap', which
+constructs and displays an GHRS spiral search map. This task accepts the 
+input and output image names for the 'spiralmap' task. If you need to change
+any other parameters affecting 'spiralmap', you should use 'epar' on the
+'spiralmap' pset (i.e., type "epar spiralmap"). The displayed map is 2/3
+the size of the display frame. If you need to adjust the 'display' parameters,
+use 'epar' on 'display'. The task 'tvmark' is used to add an X-Y
+coordinate axis to the frame.
+.ih
+PARAMETERS
+.ls input [file name]
+The image name of the GHRS observation. This will typically be a multigroup 
+file containing either 9 or 25 individual maps.
+.le
+.ls output [file name]
+The image name of the map built up from the individual maps.
+.le
+.ls disp_only [boolean]
+Display a previously-constructed map? The default value of "no" will both
+construct and display the map.
+.le
+.ih
+EXAMPLES
+1. Construct a spiral search map from observation 'z00xh903r' and display it.
+.nf
+
+  hr> showspiral z00xh903r.d0h map.hhh disp_only-
+.fi
+
+2. Display the previously constructed spiral search map, 'map.hhh'.
+.nf
+
+  hr> showspiral "" map.hhh disp_only+
+
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+spiralmap, display
+.endhelp

@@ -1,0 +1,109 @@
+.help bwfilter Aug94 playpen
+.nj
+.ih
+NAME
+bwfilter -- Fourier filter a 1-D image or table column.
+.ih
+USAGE
+bwfilter input output
+.ih
+DESCRIPTION
+This task filters a 1-D array in the following way.
+After subtracting a background from the input,
+the forward Fourier transform is taken.
+The data in the transform domain are multiplied by
+a filter of the form:  signal / (signal + noise).
+The inverse Fourier transform is then taken,
+the background is added back in,
+and the result is written to the output.
+
+The input and output may be either an image or a table column, or one of each.
+For either the 'input' or 'output' parameter,
+if the value is a single word it is assumed to be an image name,
+but if it is two words separated by one or more spaces
+it is assumed to be a table name and a column name.
+
+The background that is subtracted before taking the Fourier transform
+is obtained by fitting a straight line.
+The linear fit is done to the log of the data if all values are positive;
+otherwise, the fit is done to the data values directly.
+
+The signal and noise are estimated as follows.
+The task fits a constant (the noise level) to
+the higher frequencies, and it fits a quadratic (the signal) to the log
+power spectrum at the lower frequencies.  Then the filter in the Fourier
+domain is signal / (signal + noise).
+
+History records are added to the output header
+to give the date and the cutoff frequency,
+and for an output table, the column name of the filtered data.
+.ih
+PARAMETERS
+.ls input [string]
+The name of the input.
+This can be a single image name,
+or it can be a table name and column name separated by a space.
+.le
+.ls output [string]
+The name of the output.
+This can be a single image name,
+or it can be a table name and column name separated by a space.
+The input and output may not be the same image;
+they may be the same table, however.
+If the output table already exists it will be written to in-place;
+if the column exists it will be overwritten.
+.le
+.ls (interactive = yes) [boolean]
+The default 'interactive = yes' means that
+the cutoff frequency is gotten interactivly from a plot.
+In this case the task displays a plot of the log power spectrum,
+you position the cursor near the boundary between signal and noise
+and hit return (or space or any lower case letter).
+The X cursor position is taken as the cutoff frequency.
+Then the data are filtered,
+the log power spectrum of the filtered data is overplotted,
+and the filtered data are written to 'output'.
+
+If 'interactive = no',
+the task gets the cutoff frequency from the 'freq' parameter.
+.le
+.ls (freq) [real, min>0, max=0.5]
+This is the frequency where signal and noise are approximately equal.
+Higher frequencies will be filtered out.
+The frequency is specified in cycles per pixel;
+in these units the Nyquist frequency is 0.5.
+Note that this parameter is only gotten if 'interactive = no'.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device that is used if 'interactive = yes'.
+.le
+.ls (cursor) [graphics cursor]
+The graphics cursor that is gotten if 'interactive = yes'.
+.le
+.ls (Version = "19August1994") [string]
+This is the date of installation of the current version of the software.
+.le
+.ih
+EXAMPLES
+1.  Filter the image "fos.hhh" in the scidata directory,
+putting the output in column "flux" of table "fos.tab"
+
+.nf
+	pl> bwfilter scidata$fos.hhh "fos.tab flux"
+.fi
+
+2.  Filter column "flux" in table "fos.tab",
+putting the output in column "f_flux" of the same table.
+
+.nf
+	pl> bwfilter "fos flux" "fos f_flux"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge based on algorithms given by
+Brault and White, 1971, Astron. & Astrophys., 13, 169.
+.ih
+SEE ALSO
+.endhelp

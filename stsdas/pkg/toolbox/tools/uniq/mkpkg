@@ -1,0 +1,20 @@
+# Update the uniqfile and uniqid application code in the tools package library
+# Author: B.Simon, 25-NOV-1987
+
+$checkout tools.a ../
+$update   tools.a
+$checkin  tools.a ../
+$exit
+
+tools.a:
+	basechar.x     		<ctype.h> 
+	basedigit.x    		<mach.h> <ctype.h> 
+	instcode.x
+	isdatafile.x
+	isupcase.x		<ctype.h>
+	makeid.x       		<time.h> 
+	uniqfile.x
+	uniqid.x       		
+	uniqnam.x     		<ctype.h> 
+	uniqtab.x
+	;

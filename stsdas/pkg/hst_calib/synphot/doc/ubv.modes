@@ -1,0 +1,53 @@
+There are several different standard ground-based optical and near-IR filter
+sets available within Synphot. To use these filters, specify an obsmode
+consisting of the filter system name plus the passband name. An example of a
+obsmode string would be "COUSINS,I". If no filter system name is specified
+for any of the UBVRIJHK bands, the defaults are Johnson UBV, Cousins RI, and
+Bessell JHK. For example, an obsmode of "V - R" will result in Johnson V
+minus Cousins R. The "Landolt" system name is an alias for Johnson UBV and
+Cousins RI.
+
+The available filter systems are:
+
+Bessell:   J H K
+
+Cousins:   R I 
+
+Johnson:   U B V R I J K
+
+KPNO:      J H K
+
+Landolt:   U B V R I (= Johnson UBV + Cousins RI) 
+
+SDSS:      u g r i z
+
+Steward:   J H K
+
+Stromgren: u v b y 
+
+Walraven:  V B L U W 
+
+The throughput data for the Johnson UBV bands are the U3, B2, and V synthetic
+passband data of Buser and Kurucz (1978, A&A, 70, 555), while the Johnson RIJK
+throughputs are from Johnson (1965, ApJ, 141, 923), Table A1. The Cousins R and
+I throughputs are taken from Bessell (1983, PASP, 95, 480), Table AII.
+
+The Steward Observatory JHK filter curves are from data provided by M. Rieke
+(Steward Observatory). The KPNO JHK filter curves are taken from tracings of
+the Simultaneous Quad Infrared Image Device (SQIID) filter set, which were
+provided by R. Joyce (KPNO). The Bessell JHK filter curves are taken from data
+in Table IV of Bessell and Brett (1988, PASP, 100, 134). These curves include
+mean atmospheric transmission equivalent to 1.2 air masses of a standard KPNO
+atmosphere.
+
+The filter throughputs for the Sloan Digitized Sky Survey ugriz bands
+were provided by Sebastian Jester on behalf of the SDSS team. They are
+described in the Photometry White Paper by Gunn et al (2001,
+www.sdss.org/dr3/algorithms/sdssphot.ps ).
+
+The filter throughputs for the Stromgren system are taken from Matsushima
+(1969, ApJ, 158, 1137). 
+
+The throughput data for the Walraven bands are from Table 6 of Lub and Pel
+(1977, A&A, 54, 137).
+

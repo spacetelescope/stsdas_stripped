@@ -1,0 +1,237 @@
+.help zwavefit Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+zwavefit -- Fit the GHRS wavelength solution to line locations
+.ih
+USAGE
+zwavefit input output
+.ih
+DESCRIPTION
+'zwavefit' fits the GHRS wavelength solution equation to a table of
+line positions, producing a table of coefficients for the solution.
+
+Note: this task is not sufficient for producing a new CCR6 table for
+'calhrs'.  Refer to the 'zwavecal' task for creating such tables.
+
+The GHRS dispersion equation solved for is:
+
+.nf
+	s = a0 + a1 * ml + a2 * m**2 * l**2 + a3 * m + a4 * l +
+		a5 * m**2 * l + a6 * m * l**2 + a7 * m**3 * l**3
+
+	where	s = sample position
+		m = spectral order
+		l = wavelength
+		a0 - a7 = coefficients
+.fi
+.ls Input Line Location Table
+The line location table should contain a set of header parameters and
+three (optionally four) columns specifying line positions in a set of
+observations.  The header parameters are as follows:
+.ls carpos
+The carrousel position of the GHRS observations.
+.le
+.ls grating
+The dispersing element, or grating, used by the GHRS.
+.le
+.ls aperture
+The aperture used by the GHRS.
+.le
+
+The names of the columns in the table are specified in the parameters
+"order_col", "line_col", "sample_col", and "sig_col".  The columns are
+as follows:
+.ls order_col
+Column containing the spectral order of the dispersing element used.
+For single order gratings, this should be "1".
+.le
+.ls line_col
+Column containing the known wavelengths of the features.
+.le
+.ls sample_col
+Column containing the sample positions of the features identified.
+.le
+.ls sig_col [optional]
+If present, this column contains the errors in the sample positions.
+This is not necessary for the operation of 'zwavefit'.
+.le
+.le
+.ls OUTPUT TABLE
+There are no header parameters in the output table.  The columns in
+the output table are as follows:
+.ls carpos
+The carrousel position for which the coefficients have been calculated.
+.le
+.ls grating
+The grating for which the coefficients have been calculated.
+.le
+.ls a0 - a7
+Eight columns containing the coefficients for the equation that fit
+the provided data.
+.le
+.le
+.ls FITTAB TABLE
+This table contains the final evaluation of the equation using the
+input data and a comparison with the actual observed values.  
+
+The header parameters of the tables are as follows:
+.ls carpos
+The carrousel position used by the input observations.
+.le
+.ls grating
+The dispersing element, or grating, used by the input observations.
+.le
+.ls aperture
+The aperture used by the input observations.
+.le
+
+The columns are as follows:
+.ls sporder
+The spectral order of the observations used to produce the line
+positions.  For single order gratings, the value is "1".
+.le
+.ls wave
+The known wavelength of the identified feature.
+.le
+.ls sample(obs)
+The sample position of the identified feature.
+.le
+.ls sample(calc)
+The sample position of the feature's wavelength as calculated by the
+equation using the determined set of coefficients.
+.le
+.ls residual
+The difference between the observed sample position and the
+calculated sample position.
+.le
+.le
+.ls OFFLIB INPUT TABLE
+For GHRS observations, it is necessary to modify the equation's
+coefficient such that the solution is relative to the Small Science
+Aperture (SSA).  To convert the coefficients, values in the offlib
+table are necessary.  The necessary columns in the table are as follows:
+.ls grating
+The grating used by the set of observations for which the coefficients
+are being calculated.
+.le
+.ls aperture
+Aperture used by the set of observations for which the coefficients
+are being calculated.
+.le
+.ls min_carpos, max_carpos
+The minimum/maximum carrousel positions for which this row of
+conversion coefficients are valid.
+.le
+.ls min_sporder, max_sporder
+The range of spectral order for which this row of conversion
+coefficients are valid.
+.le
+.ls cs0, cs1, cs2, cs3, cs4, cs5
+The conversion coefficients to convert the a0-a7 coefficients to
+coefficients appropriate to calculate wavelengths for observations
+obtained through the SSA.
+.le
+.le
+.ih
+PARAMETERS
+.ls input [table name]
+Table containing the line wavelengths and sample positions necessary
+to fit the equation.
+.le
+.ls output [table name]
+Name of the table containing the fitted coefficients.
+.le
+.ls (fittab = "") [table name]
+Name of the table containing the evaluation of the equation using the
+final coefficients.  If blank, no table is produced.
+.le
+.ls (order_col = "sporder") [column name]
+Name of the column in the input table containing the spectral order.
+This column is required.
+.le
+.ls (line_col = "line") [column name]
+Name of the column in the input table containing the wavelengths of the
+features.  This column is required.
+.le
+.ls (sample_col = "sample(obs)") [column name]
+Name of the column in the input table containing the sample positions
+of the features.  This column is required.
+.le
+.ls (sig_col = "") [column name]
+Name of the column in the input table containing errors on the sample
+positions.  If not specified, no error is assumed in the samples.
+.le
+.ls (fitpars = "") [pset]
+Parameter set containing the fitting parameters.  The parameters are
+as follows:
+.ls (offlib = "scidata$czscoffc") [table name]
+Name of the table containing the SC1/SC2 to SSA offset coefficients to
+convert the calculated equation solution to the SSA aperture.  If not
+specified, the conversion will not occur.  If the wavelength solution
+is not converted, and one will use the results in 'calhrs', the
+calibration flag, "IAC_CORR" must be set to "OMIT".
+.le
+.ls (maxtry = 3) [integer, minimum=0]
+The number of regression tries to improve the fit to the equation by
+throwing out lines.  If the number of tries exceeds this value, a
+warning message will be posted, and the coefficients for the last
+attempt will be written to the output table.
+.le
+.ls (nsigma = 2.5) [real, minimum=0.]
+The number of sigma away from the fit a point needs to be in order to
+be removed from the list of valid points to fit in the next attempt.
+.le
+.ls (defcoef = yes) [yes/no]
+Find the "default" coefficients in the equation.  For the GHRS, each
+grating mode need only solve for some of the coefficients in the
+equation; the other coefficients are set to zero.  If "yes", 'zwavefit'
+will find these coefficients (see table below).  If "no", 'zwavefit' will
+determine which coefficients to solve for from the parameters "a0"
+through "a7" (see below).
+
+The default coefficients for the GHRS gratings are as follows:
+
+.nf
+	GRATING			COEFFICIENTS
+
+	G140M			a0, a1, a2
+	G160M			a0, a1, a2
+	G200M			a0, a1, a2
+	G270M			a0, a1, a2
+	G140L			a0, a1, a2
+	ECH-A			a1, a1, a2, a4
+	ECH-B			a0, a1, a2, a4
+.fi
+.le
+.ls (a0, a1, a2, a3, a4, a5, a6, a7) [real]
+If 'defcoef' is "no", these parameters will determine whether 'zwavefit'
+will fit for the coefficient or not.  If the value of a parameter is
+'INDEF', 'zwavefit' will fit for its value.  If the parameter has any
+other value, 'zwavefit' will set the coefficient to that value and hold
+it  constant during the fitting process.
+.le
+.le
+.ih
+EXAMPLES
+1. This task is used in conjunction with the task 'zwaveid' to produce a
+dispersion solution for a wavelength calibration image (or images).
+The example below identifies lines in the observation 'z0x20107m' and
+produces a dispersion solution, found in table "coef.tab".
+
+	 cl> zwaveid z0x20107m id
+	 cl> zwavefit id coef
+
+Note: If one wants to recalibrate an observation using 'calhrs', refer
+to the task 'zwavecal'.
+.ih
+REFERENCES
+Refer to the references in the package level help.  Type "help hrs
+option=sys".
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+zwavecal, zwaveid
+.endhelp

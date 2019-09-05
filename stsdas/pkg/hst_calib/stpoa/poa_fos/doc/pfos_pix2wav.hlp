@@ -1,0 +1,251 @@
+.help pfos_pix2wav Aug01 stpoa.poa_fos
+.ih
+NAME
+pfos_pix2wav -- Calculate wavelengths from pixels for a 
+table of POA-recalibrated Faint Object Spectrograph (FOS) 
+spectra.
+.ih
+USAGE
+pfos_pix2wav input pixtab wavtab
+.ih
+DESCRIPTION 
+The  'pfos_pix2wav' task takes a table of x pixel positions 
+(which refer to a particular FOS observation), optionally 
+applies the POA sub-pixel correction for these pixel values and 
+then calculates wavelengths using the POA-FOS dispersion   
+solution from the CCS6 reference table.  Pixel positions
+should naturally be in range with the data boundries (starting
+from pixel 1 to the maximum position for that dataset).
+The table of pixel positions is the input; these positions
+are adjusted by default using the POA sub-pixel correction;
+the output 'wavtab' table is a copy of the input 'pixtab' 
+positions table with new sub-pixel-corrected pixel positions
+along with calculated wavelength positions.  
+
+Also required as
+'input' is the FOS dataset root name for this pixel positions table.
+'pfos_pix2wav' actually requires the entire FOS data set (root.d0h, 
+root.shh, etc) to be present in the directory where one runs this task.  
+This requirement is due to the fact 
+that this task needs many FOS header keyword values to determine
+which wavelength scale is used to calculate the pixel to wavelength
+conversion.  
+The input pixel table must have at least one column, from which the 
+pixel positions will be read in; this
+table can have as many other columns as one likes, all the columns
+will be copied to the output wave table.  The pixel position 
+default column name is "PIXPOS", but can be changed using the
+'pixcol' parameter settings.
+
+Please note that 'pfos_pix2wav' requires that the FOS data be at least 
+POA pre-processed.  Running the re-processing adds header
+keywords to the FOS data and running the processing pipeline creates 
+the output '.poa' file.  We
+assume POA FOS pipeline processing has been performed on data
+for which one needs the POA sub-pixel correction applied using this
+tool.  If the FOS data have not been POA processed, the tool will exit.  
+For more information on the POA FOS pipeline, please see the help files
+for 'poa_preproc_fos' and 'poa_calfos'.
+An easy check to see if the data have already been POA pre-processed is
+to see if the root.d0h file has the "CYCCSFR" header keyword. A quick
+check can be made using the command "imheader root.d0h l+ | grep CYCCSFR", 
+replacing "root" with the appropriate file rootname.  If nothing is
+returned, then the data need to go through POA processing.
+
+By default the sub-pixel offset correction will be applied using an 
+average of the OFF_DIOD value(s) from the '.poa' file.  The user can
+specify the spectrum number to use as the offset, instead of taking
+the default average of all the spectra's OFF_DIOD values.
+The "PIXPOS" input pixel positions are assumed to have come from 
+data which have been POA corrected, and therefore have already
+had the integer value (OFF_PIX) of the POA offset applied.  The sub-pixel
+correction is simply an addition to this correction, the
+"leftover" non-integer value of the offset.  The user has the option
+to turn off this feature, by setting the parameter 'sub_pix=no'.  In
+either case, new pixel positions are calculated and placed into the
+wavelength output table under the column name "NEWPIX".  If 'sub-pix=no'
+then "NEWPIX" values are all equal to "PIXPOS" values. 
+
+An added benefit of this tool is that it will calculate wavelength results
+for FOS IMAGE mode data.  The FOS calibration pipeline does not 
+create a wavelength scale for IMAGE data, however, this tool will
+be able to calculate wavelength positions from pixel positions for
+all FOS data that fit the POA criteria, whether or not they are
+spectrum or image format  The 'poa_calfos' help file
+lists the POA FOS processing criteria.
+
+If one needs information on how to create an STSDAS table from an
+ascii list of pixel positions, the 'ttools' package will have all the
+necessary information.  The task 'tcreate' will create the table in
+the required format.
+
+Also, please see the 'poa_preproc_fos', 'poa_calfos' and 'processfos'
+help files for more details on the
+POA FOS re-calibration processing steps.
+
+.ih
+PARAMETERS
+.ls input [string]
+The rootname of the input FOS observation data set.  The ".d0h, .d0d"
+and rest of the data associated with this FOS rootname must be in the
+current working directory where one is running this task.
+.le
+.ls pixtab [file]
+Input table (in STSDAS format) which contains pixel positions;  the 
+table can have 
+any number of columns, but at least one column (which contains the 
+pixel positions) must be called "PIXPOS" and must be of type "double".
+In order to create this pixel positions table, 
+one can use the task 'tcreate' in the
+'tables.ttools' package.  The description 'cdfile' for table creation 
+must have column name "PIXPOS" and column type "d" (for double).
+The pixtab can have any number of rows/positions; position values
+should not be negative.  If pixel position values are out of bounds of 
+the data, an attempt will still be made to calculate the wavelength 
+equivalent at that position.  Please make do not include pixel 
+positions from multiple datasets in one pixtab file;  positions in this
+table should correspond only to one particular FOS dataset.  One will 
+need individual pixel tables for each
+FOS dataset one wants to process with this task.
+.le
+.ls wavtab [file]
+Output results table (in STSDAS format) which contains a copy of the 
+input pixtab, along with new sub-pixel corrected pixel positions, and the 
+calculated wavelength positions.  The 'wavtab' will have two new 
+columns with respect with the input pixtab, called "WAVPOS" and "NEWPIX"; 
+the table will 
+have the same number of rows as the input pixtab.  If 'sub_pix=no', then
+the "NEWPIX" values will be equal to the "PIXPOS" input values.
+To view the results,
+use the 'tprint' task from the 'tables.ttools' package.  Wavtab cannot
+be a blank input string.
+.le
+.ls (sub_pix = yes) [boolean]
+Option to correct the input pixel positions with the sub-pixel offset.
+The 'poa_calfos' pipeline "corrects" the FOS data by shifting it 
+in the FOS X-direction (the dispersion direction);
+this shift is calculated with sub-pixel resolution, but
+applied in integer pixels in order to avoid resampling the data.
+This 'pfos_pix2wav' tool can apply the remaining sub-pixel value
+of this correction to the pixel positions in the input table.
+The sub-pixel offset correction is calculated as the  
+average of the OFF_DIOD value(s) found in the '.poa' file.  The user 
+also has the option to specify the spectrum number for which to 
+extract the OFF_DIOD offset value, 
+instead of taking the default average of all the OFF_DIOD values.  The
+'spec_num' parameter can be set to the integer spectrum number instead
+of INDEF (the default setting which uses all the spectra OFF_DIOD values
+to calculate the average).
+The "PIXPOS" positions are re-calculated using the sub-pixel part of the
+offset and then placed into the
+wavelength output table under the column name "NEWPIX".
+If 'sub_pix=no', then the sub-pixel correction will be skipped; the
+'.poa' file is not required if the correction is omitted; the
+wavtab "NEWPIX" values are then the same as the input "PIXPOS" values. 
+.le
+.ls (poafile = "") [string]
+The rootname of the '.poa' file.  The default blank string will use
+the 'input' rootname.  The parameter is needed in case the 'poa_calfos'
+pipeline processing input and output names differed;  if they did, then 
+use the rootname of the output for this parameter.   The file name 
+will be constructed  by  appending the '.poa' extension to the 'poafile'
+parameter (or to 'input' parameter when 'poafile' is null).
+If 'sub_pix=no' this 
+parameter setting is ignored.
+.le
+.ls (specnum = INDEF) [integer]
+The sub-pixel calculation by default will use an average of all the
+OFF_DIOD values in the '.poa' file.  Therefore the INDEF 'specnum' 
+default uses all the spectra available, for the calculations.
+The user has the option to specify the spectrum number for which 
+to extract OFF_DIOD value, 
+instead of taking the average of all OFF_DIOD values.
+This parameter is ignored when 'sub_pix=no'.
+.le
+
+.ih
+EXAMPLES 
+1. Run the 'pfos_pix2wav' task on already POA pre-processed sample 
+data y0k4510dt; pixel postion table is called y0k4510dt_pix.tab;
+output is called y0k4510dt_wav.tab.  The sub-pixel correction is
+applied by default, using all the OFF_DIOD values in the '.poa' file.
+.nf
+
+  st> copy poa_spec$y0k4510dt* .
+
+  [ One must first run the POA pipeline on the raw data if that
+    has not not already been done. ]
+  st> processfos y0k4510dt y0k4510dt
+
+  st> pfos_pix2wav y0k4510dt y0k4510dt_pix.tab y0k4510dt_wav.tab 
+.fi
+
+2. Run the same example, but turning off the sub-pixel correction
+for dataset  y0k4510dt.
+.nf
+
+  st> copy poa_spec$y0k4510dt* .
+
+  [ One must first run the POA pipeline on the raw data if that
+    has not not already been done. ]
+  st> processfos y0k4510dt y0k4510dt
+
+  st> pfos_pix2wav y0k4510dt y0k4510dt_pix.tab y0k4510dt_wav.tab \
+      sub_pix-
+.fi
+
+3. Run the same example, with the sub-pixel correction turned on, 
+for dataset  y0k4510dt, using a different name for the '.poa' file.
+.nf
+
+  st> copy poa_spec$y0k4510dt* .
+
+  [ One must first run the POA pipeline on the raw data if that
+    has not not already been done. ]
+  st> processfos y0k4510dt y0k4510dt
+
+  st> copy y0k4510dt.poa out_y0k4510dt.poa
+  st> pfos_pix2wav y0k4510dt y0k4510dt_pix.tab y0k4510dt_wav.tab \
+      poafile=out_y0k4510dt
+.fi
+
+.ih
+NOTES
+Please make sure the FOS data have been POA processed (have run
+through the 'poa_calfos' pipeline) before
+the pixel to wavelength conversion task is run.  As noted in the
+POA FOS pipeline task, one cannot run POA tasks on FOS data which
+do not fall within the POA processing criteria.  Please see the 'poa_calfos'
+help file for more details on the POA processing criteria.
+
+.ih
+BUGS
+.ih
+REFERENCES
+References to the Post Operational Archive system for HST data can be
+found on:
+
+.nf
+      "http://www.stecf.org/poa"
+.fi
+.ih
+HELP
+For assistance using this particular task, please contact
+ecf-poa@eso.org, or stdesk@eso.org (see http://www.stecf.org/poa).
+
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+poa_preproc_fos, poa_calfos, processfos, imheader, tcreate, tprint
+
+Type "help poa_fos opt=sys" for a higher-level explanation of the 
+'poa_fos' package and the process of re-calibrating a FOS data set.
+
+Type "help poa_preproc_fos" for an explanation of the task which
+runs the FOS data pre-processor.
+
+Type "help poa_calfos" for an explanation of the 'poa_calfos' task
+for re-calibrating FOS data.
+
+.endhelp

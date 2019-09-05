@@ -1,0 +1,70 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+debug:
+	$set XFLAGS = "-g -q $(XFLAGS)"
+	$set LFLAGS = "$(LFLAGS) -/Bdynamic"
+	$call relink
+	;
+ 
+relink:
+        $ifeq (MACH, sparc)
+        $set XFLAGS = '-c -I. -Inolibc -O $(XFLAGS)'
+        $set LFLAGS = '-H -z -lansi $(LFLAGS)'
+        $else
+        $set XFLAGS = '-c -I. -Inolibc -O $(XFLAGS)'
+        $set LFLAGS = '-H -z $(LFLAGS)'
+        $endif
+
+
+	$update libnicb.a
+	$omake calnicb.c
+	$omake n_calnicb.c	calnic.h calnicb.h
+	$link calnicb.o n_calnicb.o libnicb.a \
+	-lhstio -lcvos -ltbtables \
+	-o xx_calnicb.e
+	;
+
+install:
+	$move xx_calnicb.e stsdasbin$x_calnicb.e
+	;
+
+libnicb.a:
+	n_aerrclip.c		calnic.h calnicb.h
+	n_assoctable.c		calnic.h calnicb.h
+	n_background.c		calnic.h calnicb.h
+	n_bilin_grp.c		calnic.h calnicb.h
+	n_bilin_sci.c		calnic.h calnicb.h
+	n_calreport.c		calnic.h calnicb.h
+	n_ckofiles.c		calnic.h calnicb.h
+	n_combniter.c		calnic.h calnicb.h
+	n_err.c			calnic.h calnicb.h
+	n_imageio.c		calnic.h calnicb.h
+	n_imstat.c		calnic.h calnicb.h
+	n_math.c		calnic.h calnicb.h
+	n_mosaic.c		calnic.h calnicb.h
+	n_pixcheck.c		calnic.h calnicb.h
+	n_refdata.c		calnic.h calnicb.h
+	n_setup.c		calnic.h calnicb.h
+	n_sources.c		calnic.h calnicb.h
+	n_statcalc.c		calnic.h calnicb.h
+	n_xcorr.c		calnic.h calnicb.h
+	;
+
+                            
+devdebug:
+        $set XFLAGS = "-g -g3 -q $(XFLAGS)"
+        $set LFLAGS = "$(LFLAGS) -/Bdynamic"
+        $call relink
+        $call installdebug
+        ;
+
+installdebug:
+        $move xx_calnicb.e stsdasdev$x_calnicb.e
+    ;
+ 

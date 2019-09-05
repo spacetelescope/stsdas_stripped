@@ -1,0 +1,94 @@
+.help msjoin May07 stsdas.toolbox.imgtools.mstools
+.ih 
+NAME
+msjoin -- Join or re-assemble the image sets (IMSETs) from 
+NICMOS, STIS, ACS or WFC3 images.
+.ih 
+USAGE 
+msjoin inimg outimg 
+.ih
+DESCRIPTION
+The 'msjoin' task will assemble the specified files, each containing individual 
+image sets (IMSETs) of NICMOS, STIS, ACS or WFC3 data, into a single file 
+consisting of multiple IMSETs.  This data may have previously been created 
+with the 'mssplit' task.
+
+NICMOS and WFC3/IR IMSETs consist of five image extensions with the following
+image extension names: SCI, ERR, DQ, SAMP, and TIME.  STIS, ACS, and WFC3/UVIS
+IMSETs consist
+of three image extensions with the following image extension names:
+SCI, ERR, and DQ.  In joining or assembling the IMSETs,
+a single, new output file is generated from the multiple
+input files.  The Primary Header Unit which contains descriptive information
+for the new file is taken from the first input file.  Each input file is
+assumed to contain only one IMSET, as this task is a complement to the
+'mssplit' task.  The IMSET from each of the input files is then copied into 
+the new file, in the order that the input names are specified.  The
+EXTVER keywords are updated in the new file to correspond to the sequential
+order of the input files, beginning with EXTVER = 1.
+
+INPUT
+
+The only input parameters for this task are the input and output image names.  
+The input value(s) for 'inimg' can be
+several image names separated by commas on the command
+line, or an input file (i.e., @input.lst).  The value of 'outimg' is a
+single file name.
+
+.ih
+PARAMETERS
+.ls inimg [file name list/template]
+Parameter 'inimg' contains the names of the files whose IMSET contents
+are to be concatenated.
+.le
+.ls outimg [file name]
+Parameter 'outimg' contains the name of the file to be 
+created from contents of the multiple input files.
+
+.le
+It should be noted that the two input parameters can be specified with
+the minimum number of unique characters, i.e., in=n3s20304t_raw.fits and
+out=temp.fits.
+.le
+.ih
+EXAMPLES
+1. Assemble two input files as designated on the command line into
+a new file, 'out.fits'.  The new file will have the same Primary Header
+Unit as the first input file in the list.  The NEXTEND keyword will be
+updated to reflect the number of image extensions in the new file.  In
+this case, NEXTEND will be updated to 10, as both 'n3_5.fits' and 'n3_9.fits'
+each contain one NICMOS IMSET.  The EXTVER values in the new
+file, 'out.fits', will be "1" for the IMSET from 'n3_5.fits' and "2" for the
+IMSET from 'n3_9.fits'.
+
+.nf
+   cl> msjoin n3_5.fits,n3_9.fits out.fits 
+.fi
+
+2. The same example as above, but the two input file names are designated by 
+an input file. 
+
+.nf
+   cl> msjoin @input.lst out.fits 
+.fi
+.le
+.ih
+NOTES
+This task does not update any instrument-dependent FITS keywords.
+.le
+.ih
+BUGS
+.le
+.ih
+REFERENCES
+This script was written by M.D. De La Pena, SSG.  
+.le
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.le
+.ih
+SEE ALSO
+mssplit
+.endhelp

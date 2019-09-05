@@ -1,0 +1,10 @@
+$checkout focprism.a ../
+$update   focprism.a
+$checkin  focprism.a ../
+$exit
+
+focprism.a:
+	t_objcalib.x	<imhdr.h> <tbset.h> "objcalib.h"
+	objmkphot.x
+	whatkind.x	"objcalib.h"
+	;

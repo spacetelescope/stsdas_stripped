@@ -1,0 +1,97 @@
+.help shiftfind Mar99 stsdas.analysis.dither
+.ih
+NAME
+shiftfind --  Finds shift between images by examining cross-correlation images.
+.ih
+USAGE
+shiftfind  cclist outfile
+.ih
+PARAMETERS
+.ls cclist [file name list/template]
+Cross-correlation image list/template.
+.le
+.ls outfile [file name]
+Output ASCII file with results, in format appropriate for task 'avshift'.
+.le
+.ls (xshift, yshift = INDEF) [real]
+Shift amount of the search box in image.  Note that this is the shift needed 
+to bring the image TO the reference image.  If INDEF, the search box is 
+centered in the image.
+.le
+.ls (boxsize = INDEF) [real]
+Size of box where to search for peak. If INDEF, the full image is scanned
+(thus xshift,yshift are not used).
+.le
+.ls (fwhm = 7.) [real]
+FWHM of the Gaussian used to fit cross-correlation peaks.
+.le
+.ls (ellip = 0.05) [real]
+Ellipticity (1 - b/a) of the Gaussian used to fit cross-correlation peaks.
+.le
+.ls (pa = 45.) [real]
+Position angle (in degress) of the Gaussian used to fit cross-correlation 
+peaks. Position angle increases counterclockwise from the +x direction.
+.le
+.ls (fitbox = 7) [int]
+Size of box where the 2-D Gaussian fit takes place.
+.le
+.ls (kellip = "yes") [bool]
+Keep ellipticity fixed during fit ?
+.le
+.ls (kpa = "yes") [bool]
+Keep position angle fixed during fit ?
+.le
+.ls (tempdir = "tmp$") [path name]
+Path to directory where temporary files are kept.
+.le
+.ih
+DESCRIPTION
+'Shiftfind' locates the peak in a cross-correlation image, and
+from the offset of the peak from the center of the image, calculates
+the shift betweent the two cross-correlated images.
+If the maximum of the cross-correlation is the highest point in
+the image, then 'shiftfind' will automatically acquire the correct
+peak.  However, if, for instance, cosmic rays or other noise sources
+have produced false peaks, the user can restrict the search using
+'xshift', 'yshift' and 'boxsize'.
+
+'Shiftfind' first locates the brightest pixel in the search box, and
+then attempts to fit a Gaussian to the peak, performing the fit over
+the smaller 'fitbox'.  The size of the fitbox should probably
+not be larger than the 'fwhm', as the Gaussian is, in this case, a
+proxy for a parabolic fit to the peak of the cross-correlation.
+.ih
+EXAMPLES
+Here a user wishes to locate the shift from a cross-correlation
+image pos2x6.fits.   
+
+.nf
+di> shiftfind pos2x6.fits pos2x6.out
+
+Backg = 0.  (0.)        Chi-sq = 1.657710E10
+        Resid = 124663.6
+Ampl  = 13773156.  (31377.6)
+Xcent = 334.7148  (0.03916022)  Ycent = 335.5871  (0.03108041)
+FWHM  = 18.27402  (0.2749151)
+Ellip = 0.05  (0.)      Theta  = 45.  (0.)
+Line 1 created in output table.
+   0.95  CPU seconds,     0.03  elapsed minutes.
+Crosscor: pos2x6.fits
+Xshift =   -8.7148   Error = 0.0392
+Yshift =   -9.5871   Error = 0.0311
+.fi
+
+In this case, the output file, pos2x6.out, contains a single line:
+
+.nf
+pos2x6.fits   -8.7148 0.0392   -9.5871 0.0311
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko in collaboration with A. Fruchter
+.ih
+SEE ALSO
+rotfind, avshift n2gaussfit
+.endhelp

@@ -1,0 +1,17 @@
+# Update the spearman application code in the statistics package library
+# Author: BSIMON, 23-NOV-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	akrank.x
+	spdata.x	<tbset.h>
+	spearho.f
+	spprint.x
+	sprman.x
+	sptitle.x	<tbset.h>
+	t_spearman.x
+	;

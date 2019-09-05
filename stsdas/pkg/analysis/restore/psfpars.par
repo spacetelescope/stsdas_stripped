@@ -1,0 +1,7 @@
+# Wiener filter PSF parameters
+#
+nlpsf,b,h,y,,,">noiseless psf ?"
+px0,r,h,INDEF,1.,,">center of psf on frame (pixels)"
+py0,r,h,INDEF,1.,,""
+mask,r,h,INDEF,1.,,">psf masking radius (pixels)"
+mode,s,h,al

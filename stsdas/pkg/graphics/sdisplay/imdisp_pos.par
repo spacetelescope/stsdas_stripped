@@ -1,0 +1,6 @@
+image,f,a,,,,"Displayed image specification"
+left,r,h,INDEF,0.,1.,"Left side of viewport, NDC"
+right,r,h,INDEF,0.,1.,"Right side of viewport, NDC"
+bottom,r,h,INDEF,0.,1.,"Bottom side of viewport, NDC"
+top,r,h,INDEF,0.,1.,"Top side of viewport, NDC"
+section,s,h,,,,"Section actually displayed"

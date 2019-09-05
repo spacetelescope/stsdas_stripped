@@ -1,0 +1,10 @@
+igi_output, f, a, "", , ,	Output igi script file name
+visit, f, a, "", , ,		Visit text
+obs, f, a, "", , ,		Observation text
+prop, f, a, "", , ,		Proposal ID  text
+instru, f, a, "", , ,		instrument
+
+timetag, f, h, "", , ,		time tag
+page, i, h, , , ,		Page number
+
+mode, s, h, "al"

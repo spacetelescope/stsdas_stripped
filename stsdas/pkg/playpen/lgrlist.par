@@ -1,0 +1,4 @@
+image,f,a,"",,,Input image file
+members,s,a,"",,,Which group members to plot
+inclusive,b,h,no,,,Include non-group files?
+verbosity,s,h,"low","|low|medium|high|",,Level of output information

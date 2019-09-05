@@ -1,0 +1,15 @@
+# Update the ngaussfit application code in the fitting package library
+# Author: I.Busko, 12-FEB-1990
+
+$checkout fitting.a ../
+$update   fitting.a
+$checkin  fitting.a ../
+$exit
+
+fitting.a:
+	ngaussfit.x		../nlfit/nlfit.h  \
+				../ncfit/names.h  \
+				../lib/colnames.h \
+				<pkg/gtools.h> <error.h> <mach.h> \
+				<ctype.h> <gset.h> <fset.h> <tbset.h>
+	;

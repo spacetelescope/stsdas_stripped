@@ -1,0 +1,48 @@
+.help depind Jul93 stsdas.graphics.stplot
+.ih
+NAME
+depind -- Print a list of dependent and independent pixel values.
+.ih
+USAGE
+depind indvar depvar
+.ih
+DESCRIPTION
+This task prints a list of pairs of pixel values from two input image
+sections.  The input image sections are assumed to be 1-dimensional.
+The output values are printed, two per line to STDOUT (usually the
+terminal screen).  Individual points in each pair are assumed to
+match.  If the two image sections are not of equal length, the size of
+the shorter image will determine the number of pairs listed.  Output
+from this task can be piped to 'sgraph' (or 'plot.graph') to produce a
+plot of one image section against another.
+.ih
+PARAMETERS
+.ls indvar [file name]
+Image section used for independent variable (X) values. This is
+treated as a 1-dimensional image.
+.le
+.ls depvar [file name]
+Image section containing dependent variables (Y values). This is
+treated as a 1-dimensional image.
+.le
+.ih
+EXAMPLES
+1. Plot a spectrum file structured as two lines in a 2-dimensional image.
+The wavelengths and fluxes are represented in two adjacent lines in the
+image.
+
+.nf
+st> depind spect[*,1] spect[*,2] | sgraph
+.fi
+
+2. Plot a flux image versus a wavelength image.
+
+.nf
+st> depind wavel flux | sgraph
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+sgraph, graph
+.endhelp

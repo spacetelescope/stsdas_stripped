@@ -1,0 +1,7 @@
+# Global environment definitions for the SPECRES package.
+
+set	specreslib	= "specres$lib/"
+set     specressrc	= "specres$src/"
+set     specresbin	= "stecf$bin/"
+
+keep

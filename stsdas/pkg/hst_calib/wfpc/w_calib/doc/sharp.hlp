@@ -1,0 +1,99 @@
+.help sharp Jul94 stsdas.hst_calib.wfpc.w_calib.sharp
+.ih
+NAME
+sharp -- compute sharpness of stars in WFPC2 images
+.ih
+USAGE	
+sharp image inlist statsec outlist 
+.ih
+DESCRIPTION
+
+This task computes and prints, in tabular form, sharpnesses of a list of
+stars, along with their positions and brightnesses. These results are
+for the purpose of monitoring the HST focus.
+
+This task measures sharpness of stars for a given group of the WFPC2 image.
+The group number can be specified in the standard group specification attached
+to the image name. E.g., the `image' parameter specified as u20e1020t.d0h[3] 
+would mean to operate on group number three of that image, u20e1020t.d0h.
+The task first estimates a background level by computing a median from 
+an image section specified by the parameter, `statsec'.  If it is blank, 
+it will take the median of the entire image. It then subtracts the background 
+from the input image.
+
+The initial positions of a list of stars should be given in an input list 
+file, `inlist', which is an ASCII file with two numbers each line, indicating 
+the center position of a star in x and y directions in pixel units. These 
+positions need not be precise, but they should be as close to the peaks of 
+the stars as possible. The task will search for a local maximum within a user 
+specified box with the parameter, `boxsize'. The initial center positions 
+will be updated by the locations of the found maxima, which are served as 
+true star positions. 
+
+The "brightness" of a star is defined as
+
+	B = Sum [P(i)],
+
+where P(i) is the pixel value of the i'th pixel. And the sharpness is 
+given as
+
+	S = Sum [P(i)**2] / B**2.
+
+These two quantities are measured in the box specified with the parameter,
+`boxsize'. The updated star positions, along with their brightnesses, 
+sharpnesses are stored in the output list file, specified by the parameter 
+`outlist'. In the outlist file, the mean and the standard deviation of the
+sharpness are also recorded.
+
+.ih
+PARAMETERS
+.ls image [string]
+Input image for which sharpnesses of a list of stars are to be computed.
+.le
+.ls inlist [string]
+Input list of star positions
+.le
+.ls statsec [string]
+Image section for computing background
+.le
+.ls outlist [string]
+Output list of star positions and their sharpnesses
+.le
+.ls (boxsize = 9) [integer]
+Box size in units of numbers of pixels
+.le
+.ih
+EXAMPLES
+
+.nf
+cl> sharp u2820409t.d0h[1] list1 statsec="[20:200,30:310]" outl boxsize=9
+.ni
+
+The input star list, list1, looks like
+
+.nf
+300 628
+500 428
+.ni
+
+The output list, outl, contains the following lines:
+
+.nf
+#Sharpness for Image u2820409t.d0h, Group No. 1, SKY= 295.
+#Star No.  Xc    Yc    Brightness Sharpness
+1          301   629   768.       0.06570096
+2          501   428   122.       0.09029831
+#Mean Sharpness= 0.07799964, RMS= 0.01739296
+.ni
+
+.ih
+REFERENCES
+The task is written by CY Zhang. The sharp program was based on the similar 
+task written in IDL by John Krist and Hashima Hasan. The definition of 
+the sharpness is taken from H. Hasan, Instrument Science Report, 
+No. OTA 16, Apr 19, 1994.
+
+.ih
+SEE ALSO
+.bp
+.endhelp

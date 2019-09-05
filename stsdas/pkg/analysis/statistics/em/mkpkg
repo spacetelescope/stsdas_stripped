@@ -1,0 +1,21 @@
+# Update the em application code in the statistics package library
+# Author: BALL, 6-APR-1988
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	chol.f
+	em.x
+	emalgo.f
+	emalpha.x
+	emdata.x	<tbset.h>
+	emprint.x
+	emtitle.x	<tbset.h>
+	rmills.f
+	syminv.f
+	t_em.x		<tbset.h>
+	unpack.f
+	;

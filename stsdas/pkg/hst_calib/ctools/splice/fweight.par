@@ -1,0 +1,8 @@
+intable1,s,a,"",,,"tables containing spectra"
+intable2,s,a,"",,,"tables of wavelengths and smoothed fluxes"
+outtable,s,a,"",,,"output tables"
+wgt_name,s,h,"weight",,,"weight column name"
+interpolant,s,h,"spline","|linear|spline",,"interpolation method"
+verbose,b,h,yes,,,"print file names?"
+Version,s,h,"7July2000",,,"date of installation"
+mode,s,h,"al"

@@ -1,0 +1,29 @@
+# FOURIER.HD -- help directory info for STSDAS fourier package
+
+$fourier	= "stsdas$pkg/analysis/fourier/"
+$doc		= "stsdas$pkg/analysis/fourier/doc/"
+
+$carith		= "stsdas$pkg/analysis/fourier/carith/"
+$crosscor	= "stsdas$pkg/analysis/fourier/crosscor/"
+$fconvolve	= "stsdas$pkg/analysis/fourier/fconvolve/"
+$forward	= "stsdas$pkg/analysis/fourier/forward/"
+$inverse	= "stsdas$pkg/analysis/fourier/inverse/"
+$polar		= "stsdas$pkg/analysis/fourier/polar/"
+$powerspec	= "stsdas$pkg/analysis/fourier/powerspec/"
+$shift		= "stsdas$pkg/analysis/fourier/shift/"
+$taperedge	= "stsdas$pkg/analysis/fourier/taperedge/"
+$factor		= "stsdas$pkg/analysis/fourier/factor/"
+
+autocorr	hlp=doc$autocorr.hlp,	src=powerspec$powerspec.x
+carith		hlp=doc$carith.hlp,	src=carith$carith.x
+crosscor	hlp=doc$crosscor.hlp,	src=crosscor$crosscor.x
+factor		hlp=doc$factor.hlp,	src=factor$factor.x
+fconvolve	hlp=doc$fconvolve.hlp,	src=fconvolve$fconvolve.x
+forward		hlp=doc$forward.hlp,	src=forward$forward.x
+frompolar	hlp=doc$frompolar.hlp,	src=polar$frompolar.x
+inverse		hlp=doc$inverse.hlp,	src=inverse$inverse.x
+listprimes	hlp=doc$listprimes.hlp,	src=factor$listprimes.x
+powerspec	hlp=doc$powerspec.hlp,	src=powerspec$powerspec.x
+shift		hlp=doc$shift.hlp,	src=shift$shift.x
+taperedge	hlp=doc$taperedge.hlp,	src=taperedge$taperedge.x
+topolar		hlp=doc$topolar.hlp,	src=polar$topolar.x

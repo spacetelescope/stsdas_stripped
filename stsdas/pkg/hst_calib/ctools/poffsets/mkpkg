@@ -1,0 +1,20 @@
+$checkout ctools.a ../
+$update ctools.a
+$checkin ctools.a ../
+$exit
+
+ctools.a:
+	t_poffsets.x    <gset.h> <od.h> "poffsets.h"
+        out_table.x     <tbset.h> "shift_table.h"
+        pofcht.x
+        pofcoe.x        
+        pofint.x
+        pofmar.x
+        pofmnt.x
+        pofopn.x        "poffsets.h"
+        pofopr.x
+        pofpos.x        <od.h> "poffsets.h"
+        pofsht.x
+        poftas.x        <od.h> "poffsets.h"
+        pofwcs.x        <od.h> "poffsets.h"
+        pofwrr.x

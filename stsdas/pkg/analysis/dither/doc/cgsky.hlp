@@ -1,0 +1,71 @@
+.help cgsky Mar97 stsdas.analysis.dither
+.ih
+NAME
+cgsky -- Compute sky using `gsky' plus a correction for histogram truncation. 
+.ih
+USAGE
+cgsky input
+.ih
+DESCRIPTION
+This task runs the `gsky' algorithm and applies a small correction to the 
+result. This correction takes into account a histogram truncation effect 
+that affects images with very low sky levels. Most of the task parameters 
+are just passed to the underlying `gsky' task. Two additional parameters, 
+`width' and `stat', are used to control the histogram analysis algorithm.
+.ih
+PARAMETERS
+.ls input = "" [string]
+Input image list/template.
+.le
+.ls (masks = "") [string]
+Input Data Quality File list/template.
+.le
+.ls (lower = -99.) [real]
+The lower limit of the input data to be used.  Data lower than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no lower limit.
+.le
+.ls (upper = 4096.) [real]
+The upper limit of the input data to be used.  Data higher than this limit 
+will be excluded from subsequent calculations.  
+..If it is set to INDEF, there will be no upper limit.
+.le
+.ls (dq = "") [pset]
+Data quality filter pset.  This parameter set can be used to exclude pixels
+with certain data quality bit values.
+.le
+.ls (subsky = no) [boolean]
+Subtract sky from input image(s) ?
+.le
+.ls (width = 8) [int, min=2]
+Interval width for sky statistics.
+.le
+.ls (stat = "mode") [char, "mean|mode"]
+Sky correction statistics.
+.le
+.ls (skyname = "") [string]
+If this is set to a group parameter name in the input image, the sky values
+calculated in this task will be used to update that group parameter.
+For WFPC2, this is usually set to 'BACKGRND'.
+.le
+.ls (skyvalue) [real]
+Output sky value. This is the sky value of the last image/group in the
+input list.
+.le
+.ls (verbose = yes) [boolean]
+Print out results at STDOUT ?
+.le
+.ls (tempdir = "tmp$") [file]
+Directory for temporary files.
+.le
+.ih
+EXAMPLES
+.ih
+REFERENCE
+This task was written by I. Busko.
+.ih
+BUGS
+.ih
+SEE ALSO
+gsky
+.endhelp

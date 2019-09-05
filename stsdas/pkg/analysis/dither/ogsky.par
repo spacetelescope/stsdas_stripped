@@ -1,0 +1,13 @@
+input,f,a,"",,,>Input images
+masks,f,h,"",,,>Input masks
+lower,r,h,-99.,,,>Lower limit of usable data
+upper,r,h,4096.,,,>Upper limit of usable data
+dq,pset,h,,,,>Data Quality bits
+subsky,b,h,no,,,>Subtract sky from input images ?
+bunit,s,h," ","|      |counts|cps|",,>is the image in count or count per second?
+expname,s,h,"",,,>Exposure time keyword name (for countrate image)
+skyname,s,h,"",,,>Header parameter to be updated with sky
+skyvalue,r,h,,,,>Last image's sky value (output value)
+verbose,b,h,yes,,,>Print out verbose messages?
+version,s,h,"19May99",,,>Date of installation
+mode,s,h,"al"

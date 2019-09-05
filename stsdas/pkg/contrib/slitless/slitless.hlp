@@ -1,0 +1,125 @@
+.help slitless Oct97 ST_ECF
+.ih
+NAME
+slitless -- Extract a spectrum from a direct/GRISM image pair
+.ih 
+USAGE
+slitless image grism output
+PARAMETERS
+.ls image
+A two dimensional direct image to be used to select an object.
+.le
+.ls grism
+A two dimensional GRISM image containing slitless spectra of objects present in the direct image.
+.le
+.ls output
+The name of a text file into which the object spectrum and sky spectrum will be written.
+.le
+.ls outfits
+Whether Slitless should use the task rspectext from the noao onedspec package to convert the test output file to an IRAF FITS file (WARNING: The noao onedspec package should be loaded prior to enabling this feature.)
+.le
+.ls skysub = yes
+Toggle whether or not a background estimate is subtracted from the extracted object spectrum.
+.le
+.ls mingood = INDEF
+Pixels of the grism image with values smaller than this are ignored. 
+.le
+.ls maxgood = INDEF
+Pixels of the grism image with values larger than this are ignored.
+.le
+.ls auto = yes
+Toggle the automatic estimate of the background using the parameters \fIswidth1\fR, and \fIswidth2\fR.
+.le
+.ls gdatin
+Number of the extension containing the data in both the direct and the grism images.
+.le
+.ls gdtqin
+Number of the extension containing the Data Quality in both the direct and grism images.  If set to \fIINDEF\fR then the Data Quality is not used by Slitless.
+.le
+.ls dtqstr
+A 16 character string representing which bits of the Data Quality will be check to determine whether a pixel should be considered to be good or bad.  The string should only contain 0's and 1's.  The first bit is the left most character.  This string must be 16 characters in length.
+.le
+.ls width
+Width, in number of rows, of the object region to box extract from the grism image.
+.le
+.ls swidth1
+Beginning row of the region of background, from the position of the extracted object spectrum. This number can be negative.
+.le
+.ls swidth2
+Ending row of the region of background, from the position of the extracted object spectrum. This number can be negative.
+.le
+.ls autofil = yes
+When set to \fIon\fR, the program will attempt to determine  the grism/filter properties from the header of the grism file. When set to \fIoff\fR, the needed parameters are read from the parameter file.
+.le
+.ls step_la = INDEF
+Wavelength per pixel scale of the grism image.
+.le
+.ls zero_la = INDEF
+Wavelength of the reference pixel. This should be given in the same units as \fIstep_la\fR.
+.le
+.ls ccx = INDEF
+Pixel offset in the column direction between the direct image and the grism image.  Any value other than INDEF overwrites the content of the filter description file.
+.le
+.ls ccy = INDEF
+Pixel offset in the row direction between the direct image and the grism image..  Any value other than INDEF overwrites the content of the filter description file.
+.le
+.ls angle = INDEF
+Orientation of the grism dispersion with respect to the rows of the detector.
+.le
+.ls maxx1 = INDEF
+Extent of the dispersion in the left direction.
+.le
+.ls maxx2 = INDEF
+Extent of the dispersion in the right direction
+.le
+.ls DESCRIPTION
+Slitless is a iraf program to facilitate the quick extraction of a spectrum from a direct/grism image pair.  It allows for the user to select an object in the direct image and automatically selects the corresponding region in the grism image.  Slitless can be run in two modes, selected via the parameter \fIauto\fR: One interactive and one semi-automatic.
+.ls Selecting an object
+Slitless first displays the direct image (NOTE: SAOimage or Ximtool must be running prior to staring Slitless.). In that display, the user can then either type S to select a particular point in the direct image to serve as the position of the object, or X twice to define the bottom left and top right corner of a box whose centroid will serve as the position of the object in the direct image.
+.le
+.ls Interactive mode
+In interactive mode, the grism image is then displayed with a box surrounding the expected location of the object's spectrum.  In the IRAF graphics window, an approximate line profile is plotted to help the user determine what rows of the grism image should be extracted.  The user should then select the beginning and ending rows of the region to be extracted by pressing X twice (While the window displaying the grism image is active.) 
+If the \fIskysub\fR parameter is set to \fIyes\fR, the user then selects a region of the grism image to serve as estimate of the background.  This is a semi-interactive task as several bands of the grism image can be sequentially selected and either accepted or rejected prior to computing a new background average.  As a new band of background is selected, it is plotted using dots while the current background average is plotted is solid line for comparison.
+.le
+.ls Automatic mode
+In the automatic mode, Slitless will automatically extract \fIwidth\fR rows in the grism image and will additionally extract a band of background that is between \fIswidth1\fR and \fIswidth2\fR rows away.  This will be used to estimate the local background and will be subtracted from the object's spectrum.
+.le
+.ls Output file format
+The file defined by the keyword output is a simple ASCII table. Each column contains the following:
+.ls #1 Wavelength of that pixel
+.le
+.ls #2 Background subtracted object spectrum (If \fIsubsky = yes\fR)
+.le
+.ls #3 Pixel number in the grism image
+.le
+.ls #4 Subtracted background
+.le
+.ls #5 Non-background subtracted object spectrum (Same as #3 if \fIsubsky = no\fR)
+.le
+.le
+.ls GRISM configuration file format
+The filter/grism configuration file, \fIslitless.cfg\fR is a simple ASCII table with the following fields:
+.ls #1 Instrument name
+.le
+.ls #2 Filter name
+.le
+.ls #3 Left extent in the dispersion direction.
+.le
+.ls #4 Right extent in the dispersion direction.
+.le
+.ls #5 Column pixel offsets between the direct and grism images.
+.le
+.ls #6 Row pixel offsets between the direct and grism images.
+.le
+.ls #7 Wavelength per pixel value.
+.le
+.ls #8 Wavelength of the reference pixel.
+.le
+.ls #9 Angle from dispersion direction and row direction in grism image.
+.le
+.le
+.ls BUGS
+	The \fIangle\fR option is only valid for small angles.
+.le
+.endhelp
+

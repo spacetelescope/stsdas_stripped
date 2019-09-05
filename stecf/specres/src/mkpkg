@@ -1,0 +1,31 @@
+# SPECRES package
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	libpkg.a
+	$call	specres
+	;
+
+install:
+	$move	xx_specres.e ../../bin/x_specres.e
+	;
+
+specres:
+	$omake	x_specres.x
+	$link	x_specres.o libpkg.a -liraf77 -luttables -ltbtables -liminterp -o xx_specres.e
+	;
+
+libpkg.a:
+        nplucy.f
+        spelib.f
+        spepsf.f
+        splfit.f
+	timtem.x <iraf77.h>
+	;

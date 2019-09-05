@@ -1,0 +1,64 @@
+.help FOC_RES Apr88 "FOC 4.3"
+.ih
+CHAPTER
+FOC_RES -- FOC approximate reseau locations  reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_RES
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of approximate
+reseau locations reference files for RSDP
+and may also be used by Guest Observers to generate calibrations files
+for recalibration. 
+
+Based on reseau mark locations in a flat field (LED) image, we find first
+the approximate locations.
+This calibration may be needed very frequently.
+.le
+
+.ih
+FREQUENCY
+
+The RES calibration will be required as frequently as the GEO calibration,
+and the two should be linked. This assumes that we will use the data from 
+the pipeline for the reseau positions.
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxresr1
+generate a res file from a flat field exposure.
+obtained from a database relation CXRESOP, based on the instrument 
+configuration. 
+.le
+
+.ls focgeom.rmarkerx
+low level task called by cxresr1x. This task actually does the processing
+and may be called by a GO who must supply the additional file names.
+.le
+
+.ih 
+SEE ALSO
+From FOC_RES see also:
+
+.nf
+res file creation		...... cxresr1
+                                ...... focgeom.rmarkerx
+res verification                ...... FOC_RES_VER
+.fi
+
+
+.endhelp

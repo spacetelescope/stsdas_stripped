@@ -1,0 +1,285 @@
+.help blot Oct04 stsdas.analysis.dither
+.ih
+NAME
+blot v3.4 -- Image Sampling using Interpolation - reverse Drizzle  
+.ih
+USAGE
+blot data outdata 
+.ih
+PARAMETERS
+.ls data = "" [file name]
+The name of the input image file which is to be blotted. This will
+normally be the output from a previous run of Drizzle.
+.le
+.ls outdata = "" [file name]
+The name for the output data image into which the data will be blotted.
+.le
+.ls (scale = 1.0) [real]
+The size of the input pixels relative to the output pixels.  This is
+the same number that would have been used to create the drizzled image.   
+.le
+.ls (coeffs = "") [file name]
+The name of a text file containing the coefficients for the geometric
+transformation to be applied.   If left blank, no geometric distortion
+correction will be applied.  If coeffs="header", then the task will
+attempt to determine the appropriate geometric distortion correction
+from the header.  At present this only works with HST instruments.  Note
+that if the input image is a mosaic of different WFPC2 chips, the header
+will not generally provide the correct group number.  In this case the user
+must supply the full name of the geometric distortion file, and set 
+the parameter "lambda" to the observing wavelength.
+.le
+.ls (lambda = 555.0) [real]
+The wavelength (in nm) associated with the image. The geometric distortion
+correction used on WFPC2 images depends weakly on the wavelength.
+If the coeffs=header option is used the lambda parameter is
+ignored and the observing wavelength is read from the image
+header.
+.le
+.ls (xsh = 0.0) [real]
+The shift in X (with the coordinate frame determined by shft_fr).
+The sense is such that the value that should be supplied is the one that
+would be used to drizzle the Blot output image onto the Blot
+input image.
+.le
+.ls (ysh = 0.0) [real]
+The shift in Y (with the coordinate frame determined by shft_fr). 
+The sense is such that the value that should be supplied is the one that
+would be used to drizzle the Blot output image onto the Blot
+input image.
+.le
+.ls (rot = 0.0) [real]
+The rotation in orientation between the input and output frames.  
+The sense is such that the value that should be supplied is the one that
+would be used to drizzle the Blot output image onto the Blot
+input image.
+.le
+.ls (sh_units = "output") [string]
+Whether the shifts are specified in units of input or output pixels.
+Note that this parameter will have the opposite value of that which
+would be used to drizzle the Blot output image onto the Blot input image.
+.le
+.ls (shft_fr = "output") [string]
+The coordinate frame in which the shifts are applied.  
+If set to "input", the X and
+Y axes of the shift are the X and Y axes of the input coordinate frame.
+If set to "output", the X and Y axes of the shift are the X and Y axes of the
+output coordinate frame.  See notes below for a definition of the center of
+rotation.
+Note that this parameter will have the opposite value of that which would
+be used to drizzle the Blot output image onto the Blot input image.
+.le
+.ls (xgeoim = "") [file name]
+The name of an additional distortion correction image, in the X-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the X direction which is applied after the polynomial
+distortion coefficients but before the linear transformation. 
+.le
+.ls (ygeoim = "") [file name]
+The name of an additional distortion correction image, in the Y-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the Y direction which is applied after the polynomial
+distortion coefficients but before the linear transformation. 
+.le
+.ls (align = "center") [string]
+Whether the reference point used in transforming the output image
+coordinates to the input ones is aligned on the corner or center of
+a pixel. 
+Note that this parameter should have the same value as that which would
+be used to drizzle the Blot output image onto the Blot input image.
+.le
+.ls (outnx = 800) [integer]
+The size in X for the output pixel grid. 
+.le
+.ls (outny = 800) [integer]
+The size in Y for the output pixel grid.
+.le
+.ls (interpol = "poly5") [string]
+The interpolation method to use. These are the standard options used
+in IRAF.  The choices are the following.
+.ls nearest
+Nearest neighbour.
+.le
+.ls linear
+Bilinear interpolation in x and y.
+.le
+.ls poly3
+Third order interior polynomial in x and y.
+.le
+.ls poly5
+Fifth order interior polynomial in x and y.
+.le
+.ls spline3
+Bicubic spline.
+.le
+.ls sinc    
+Sinc interpolation - accurate but slow.
+.le
+The poly5 interpolation method has been chosen as the default because it
+is relatively fast and accurate.
+.le
+.ls (fillval = "INDEF") [string]
+This value is assigned to points in the output image which 
+correspond to points outside the input image area and which are
+hence undefined.
+.le
+.ls 
+(expkey = "exptime") [string]
+The keyword in the header which specifies the exposure time (in seconds)
+of the image. The default is suitable for HST images. 
+.le
+.ls
+(in_un = "counts|cps") [string]
+Whether the input units of image intensity are in "counts" or "cps"
+(counts per second).    In the case where blot
+is being used to map a drizzled image back for comparison
+with an original, the
+in_un should be the same as the out_un used in the drizzle operation
+which created the input image.
+.le 
+.ls 
+(out_un = "counts|cps") [string]
+Whether the output units of image intensity are in counts or counts-per-second (cps). 
+In the case where the user will be comparing the blotted image with another
+image, out_un should match the units used in the comparison image.  
+In the case of HST, WFPC2 and STIS images are in counts, while NICMOS
+images are in cps.
+.le
+.ls 
+(expout = "input") [string]
+The exposure time to which the output image is scaled. By default this is 
+the same
+as that in the input image. If a numerical value is specified then the
+output will be scaled appropriately and the header keyword adjusted.
+This is useful for comparing a blotted image to one of the original
+images from which a drizzled image (here the Blot input) was created.
+.le
+.ih
+DESCRIPTION
+Blot can be thought of as the reverse of Drizzle and is probably of most use 
+in this
+role.  It was created to allow users to compare a drizzled output image
+with each of the original input images for the purpose of cosmic ray
+and chip defect removal.  Performing these operations generally
+requires a number of ancillary scripts and tasks in addition to the Blot task
+and these are to be found in the STSDAS dither package.  
+
+For most HST imaging applications blot is invoked from a higher level
+script, such as PyDrizzle or MultiDrizzle.
+
+It is recommended that the documentation and papers on drizzling
+are consulted before using Blot.
+
+Drizzle distributes the flux of each input pixel between pixels in an
+output image. In contrast Blot samples the input image at positions
+corresponding to each output image pixel. The sampling is done using
+the IRAF standard interpolation methods.
+
+.ih
+IMPORTANT NOTE ON SECONDARY PARAMETERS
+Versions of Blot from V1.0 also use the "secondary geometric parameters"
+which are held in the pset dr2gpar. These allow for the possibility of
+an additional transformation after the standard geometrical distortion
+correction and linear transformation have been applied. More details of
+the use and value of this feature are given in the help file for Drizzle
+which should be consulted. Note that these parameters may be inspected
+and modified using "epar dr2gpar" - they are not accessible from the
+blot parameter list.
+
+Users are warned to check the values of the parameters in this pset!
+If they are set they will be used and a warning message issued but they
+can easily be forgotten and hence lead to curious results.
+
+.ih
+Blot, like Drizzle, is a collaborative effort between Andy Fruchter and
+Richard Hook.  
+
+More information relevant to blotting can be found in the Drizzle help file
+and on the web at
+.nf
+http://www.stsci.edu/~fruchter/dither/drizzle.html
+.fi
+.ih
+EXAMPLES
+Users are referred to the Dither Handbook (Koekemoer et al., STScI) for
+far more explanation and detailed examples of the use of Blot.
+
+It should be noted that Blot is normally only evoked indirectly from
+a script such as PyDrizzle or MultiDrizzle and is rarely needed directly.
+
+In the following example four images are drizzled, then medianed using
+gcombine.  This medianed image is then blotted back to the original
+positions of the four drizzle inputs for comparison to determine the
+position of cosmic rays.  Pixels with cosmic rays can have their weights
+set to zero before a final drizzle of the four input images.
+
+First the script used to drizzle the four image:
+.nf
+drizzle.outnx=1600
+drizzle.outny=1600
+drizzle.lambda=450
+drizzle.coeffs="drizzle$coeffs/wf4-trauger"
+drizzle.scale=0.5
+drizzle.pixfrac=1.0
+ 
+drizzle pos1_cr[4] pos1_dr outweig=pos1_drw in_mask=Mask_gr \\
+        xsh=0 ysh=0
+drizzle pos2_cr[4] pos2_dr outweig=pos2_drw in_mask=Mask_gr \\
+        xsh =-0.02 ysh=-5.46
+drizzle pos3_cr[4] pos3_dr outweig=pos3_drw in_mask=Mask_gr \\
+        xsh = 5.38 ysh=0.04
+drizzle pos4_cr[4] pos4_dr outweig=pos4_drw in_mask=Mask_gr \\
+        xsh = 5.42 ysh=-5.48
+.fi
+
+These outputs were then medianed using gcombine to create the image pos_min_z.
+ and
+blotted back to the original positions using
+
+.nf
+blot.lambda=450
+blot.coeffs="drizzle$coeffs/wf4-trauger"
+blot.scale=0.5
+ 
+blot pos_min_z pos1_bl xsh = 0.0 ysh=0.0
+blot pos_min_z pos2_bl xsh =-0.02 ysh=-5.46
+blot pos_min_z pos3_bl xsh = 5.38 ysh=0.04
+blot pos_min_z pos4_bl xsh = 5.42 ysh=-5.48
+.fi
+
+ After using these blotted images to locate cosmic
+rays and other image defects, and creating image masks corresponding to
+these defects, the user can then redrizzle the  original input images, possibly with a smaller "pixfrac" to
+ create a final optimal reconstructed image free of blemishes. 
+In comparing the blotted images to the originals, users should take into
+account the slight blurring of the PSF that comes from having medianed
+the drizzled images.
+
+.ih
+CITATION
+We request that authors using Drizzle/Blot cite it in resulting
+publications. It should be cited as Fruchter A.S. & Hook R.N. 2002, PASP, 114, 144
+.ih
+TIMINGS
+A 4096x2048 ACS/WFC image can be blotted from a 4500x4500 drizzled
+image in about 30s on a SUN Blade 1000, 750MHz machine using the "poly5"
+interpolator. This includes geometric correction.
+.ih
+BUGS
+.nf
+1. WCS implementation is not comprehensive and will not work
+   correctly on image sections.
+
+2. The method of storing the coefficients is not compatible with other
+   IRAF tasks such as geomap/geotran.
+
+3. The geometric distortion correction may be incorrectly applied
+   if the input image is an image section.
+
+4. Grouped data must be handled image by image.
+
+.fi
+.ih
+SEE ALSO
+drizzle,dither,traxy,tranback,wcs2dr
+.endhelp

@@ -1,0 +1,5 @@
+input, s, a, "", , ,	">input file template"
+
+output, i, h, , , ,	">output number of files"
+
+mode, s, h, al

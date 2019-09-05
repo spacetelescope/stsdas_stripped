@@ -1,0 +1,355 @@
+.help wiener Jul91 stsdas.analysis.restore
+
+.ce
+FOURIER NONITERATIVE IMAGE RESTORATION
+
+.sh
+1. INTRODUCTION
+
+Fourier noniterative image restoration techniques have as their main
+advantage the short computation time they need to produce a solution,
+when compared with more elaborate iterative restoration methods. Also,
+they are strictly linear by design. The reason behind that computational
+efficiency lies in the fact that the computations are made in the Fourier
+transform domain, where the 2-D matrix operations needed for inverting the
+imaging equation are expressible as 1-D vector-only operations. Also, the
+existence of very efficient FFT algorithms adds to the overall efficiency
+of the technique.
+
+The Wiener filter approach tries to build an "optimal" estimate of the
+original, undegraded image, by enforcing a minimum mean-square-error
+constraint between estimate and original images, under the assumption of
+adequate spatial sampling and signal-independent noise [1]. A less strict
+least-squares deviation criterion leads to the usual inverse filter. Under
+the minimum mean-square-error constraint, the filter assumes a functional
+form that involves essentially the blur matrix (PSF) and the original
+image and noise autocorrelation matrices. Here we come to the first
+problem: besides knowledge about the PSF, some a priori knowledge about
+the original, undegraded image itself must be available, in order to
+perform the restoration. This knowledge is unecessary in the case of
+inverse filter, since it depends only on the PSF matrix. However, its
+ill-conditioned behavior limits its use to very high signal-to-noise ratio
+images.
+
+For the most general case, a matrix inversion with size of the order of
+N**2, where N is the number of pixels in the image, is required. This is
+clearly an unfeasible task for reasonabily sized images, unless
+simplifications can be found. Additional assumptions and approximations
+about the structure of the original, undegraded image, as well as the PSF
+nature, must be done.
+
+The first approximation is to assume a spatially-invariant PSF. This
+introduces so-called block-Toeplitz structure in the PSF matrix. A second
+approximation is to assume that inter-pixel correlation is negligible
+beyond a certain distance between pixels. Most important, however, is the
+additional assumption that the image structure (texture) can be modelled
+by a wide-sense stationary stochastic process; that is, a process whose
+autocorrelation function is invariant with respect to spatial coordinate
+translations. Also, constant mean must be assumed for this process. Under
+all these assumptions, the autocorrelation matrices will also show
+block-Toeplitz structure similar to the PSF matrix. For large sizes,
+Toeplitz and block-Toeplitz matrices can be approximated by circulant and
+block-circulant matrices, respectively. Since circulant matrices are
+readily diagonalized by the Fourier transform matrix (that is, the Fourier
+transform coefficients are the eingenvalues of a circulant [2]), the
+problem reduces to a scalar inversion in the Fourier transform domain,
+subject to a constraint dictated by the image and noise second-order
+statistics. Notice that the circulant approximation is equivalent to
+assuming periodicity in the image and PSF matrices.
+
+Now lets resume the approximations adopted in deriving the
+fast-computation Wiener restoration:
+.ls (1)
+Image and noise are wide-sense stationary with constant mean. Their
+autocorrelation functions are known a priori.
+.le
+.ls (2)
+PSF is spatially invariant.
+.le
+.ls (3)
+Image and PSF are periodic.
+.le
+.ls (4)
+PSF is not undersampled.
+.le
+.ls (5)
+Noise is signal-independent.
+.le
+
+In the case of HST images, none of these assumptions are completely
+satisfied. In particular, a typical astronomical image shows regions with
+very different correlation functions: nearby a star image, inter-pixel
+correlation is very high; in sky background regions correlation is low.
+In other words, the stationarity hypothesis does not apply to those
+images. This is the main reason why Wiener filter restorations look of
+lower quality than more expensive methods, which in some way take into
+account the spatially variant image statistics. Of course, a spatially
+variant PSF and significant undersampling (as e.g. in the WF/PC) 
+also contribute to the
+lower restoration quality atainable with Wiener restoration.
+
+Another Wiener filter drawback comes directly from the minimum
+mean-square-error constraint. It is known from psychophysics that the
+human eye is not a minimum mean-square-error detector. The eye is willing
+to accept more noise than allowed for by the Wiener filter, provided this
+noise is spatially associated with sharp intensity changes. The
+stationarity hypothesis plus the minimum mean-square-error constraint
+result in restored images having an unpleasantly smooth look.
+
+Nevertheless, experience with a limited number of HST images (mostly 
+pre-COSTAR FOC
+f/96, where the PSF may be assumed to be spatially invariant, and is
+adequately sampled) has shown that acceptable restorations can be atained
+by the Wiener filter. For WF/PC images, lower quality results must be
+expected, of course. The main advantage over iterative methods is
+execution speed. In a Sparc 2, a 512 X 512 image may take 10-15 CPU
+minutes to be deconvolved by the Richardson-Lucy algorithm, while the same
+image is restored in 50-90 CPU seconds by the Wiener filter. One
+may think of the Wiener filter 
+as a "quick-look" tool, capable of producing acceptable (not the best
+possible) restorations in a very short time, while the final restoration
+is performed by a costlier iterative algorithm.
+
+.sh
+2. FILTER IMPLEMENTATION
+
+The most general filter implementation may be written as in [1]:
+.nf
+
+G(u,v) = F(u,v) * (I(u,v) ** alpha) * (W(u,v) ** (1.-alpha))
+
+.fi
+where G(u,v) is the estimated image Fourier transform, 
+F(u,v) is the input, degraded image Fourier transform, 
+I(u,v) is the inverse filter function,
+W(u,v) is the Wiener filter function, and
+alpha is a parameter. 
+For alpha=0 we have the standard Wiener filter, and for alpha=1.
+the standard inverse filter. By varying alpha between 0. and 1.
+we may emphasize the relative effect of each filter. The so-called 
+geometric mean filter is obtained setting alpha=0.5.
+This geometric mean filter was introduced [1] as an attempt to
+de-emphasize the low-frequency dominance of the Wiener filter,
+while avoiding the early singularity of the inverse filter.
+
+The inverse filter is simply:
+.nf
+
+             H*(u,v)
+I(u,v) = ----------------
+         (abs(H(u,v)))**2
+
+.fi
+and the Wiener filter is:
+.nf
+
+                        H*(u,v)
+W(u,v) =  ---------------------------------------
+          (abs(H(u,v)))**2  + (Pn(u,v) / Pg(u,v))
+
+.fi
+where
+H(u,v) is the PSF Fourier transform, 
+H*(u,v) its complex conjugate, 
+Pn(u,v) is the noise power spectrum, and
+Pg(u,v) the original, undegraded image, power spectrum
+(u,v is spatial frequency).
+
+.sh
+3. SIGNAL AND NOISE MODELS
+
+The a priori knowledge about the undegraded image manifests itself in the
+Pg(u,v) and Pn(u,v) terms, which are essentially the Fourier transforms of
+the image and noise autocorrelation functions, respectively. The STSDAS
+implementation provides a range of choices for these image and noise models.
+.sh
+3.1 Noise
+
+Noise is assumed to be white (that is Pn(u,v) = Pn = constant), and is
+measured at a certain fixed frequency
+.nf
+
+fnoise = sqrt (u**2 + v**2)
+
+.fi
+in the image Fourier transform F(u,v), averaging the power in all (u,v)
+pixels satisfying relation above.  If not supplied by the user, the
+program uses the largest value of fnoise available. This assumes that, at
+these large frequencies, signal power is negligible with respect to noise
+power. Notice that this may not be true in the case of undersampled
+images.
+
+It is possible to introduce a modification in the Wiener filter
+derivation, to take into account signal-dependent noise [3,4]. The STSDAS
+implementation includes that modification, for the case of Poisson noise.
+This usually produces, when applicable, slight, but noticeabily better
+restorations, than the standard independent noise model.
+.sh
+3.2 Signal
+
+For the undegraded image model Pg(u,v), the available options are:
+.ls white
+This is the simplest image model. Pg(u,v) is assumed to be constant
+and equal to the average power in the input image.
+.le
+.ls input
+A good bet is to assume that the input image power spectrum is a
+reasonable estimate of the undegraded image power spectrum. The observed
+image power spectrum may be written in terms of the original image, PSF
+and noise, as:
+.nf
+
+Pf(u,v) =~ (abs(H(u,v)))**2 * Pg(u,v) + Pn(u,v)
+
+.fi
+After subtracting the noise contribution, Pg(u,v) may be estimated from
+the observed Pf(u,v). Using directly H(u,v)**2 usually induces strong high
+frequency noise in the solution. A better approach is to simply multiply
+Pf(u,v) by a "correlation parameter" > 1, to correct for the effects of
+H(u,v)**2.  This approach usually works well in terrestrial scenes with
+small blurs, where image correlation is large. In a typical HST stellar
+field scene, however, where the input image power spectrum is dominated by
+the PSF power spetrum, noticeable artifacts may be introduced in the
+restoration.
+.le
+.ls Markov
+It is known that, for terrestrial scenes, a first-order Markov stochastic
+process is a good model for the image structure (texture) [5]. In such a
+process, the autocorrelation matrix depends only on nearest-neighbor pixel
+correlation. The program measures average inter-pixel correlation in the
+input image and builds Pg(u,v) as a (circularly symmetric) Markov
+spectrum. This usually produces the best restorations in terrestrial
+scenes. In HST images there is a tendency to strongly low-pass filter the
+image. This is because the average inter-pixel correlation in a scene
+dominated by sky background is very small. Under such conditions, the
+computed Markov spectrum will show very low powers at high spatial 
+frequencies, thus strongly de-emphasizing these frequencies. The
+geometric filter form is a useful compromise in compensating that behavior.
+.le
+.ls Gaussian
+In some circunstances, we may be interested in restoring optimally some
+specific structure in the image. In the particular case of HST stellar
+fields, this particular structure may be a star image. We may adopt as
+signal model the shape of such a star image; in the current
+implementation, the adopted model is a Gaussian shape. Notice that this
+will produce non-optimal restoration of the sky background, effectively
+enhancing the high frequency noise in that background. Nevertheless, it
+may be the best signal model when we are interested in restoring star
+images in a crowded field with a minimum amount of contamination [6].  It
+may be argued that the best model would be instead an Airy diffraction
+pattern compatible with the telescope pupil characteristics. Experiments
+with this image model showed an intolerable amount of "ringing" around
+star images. This is because the noise suppression mechanism in the Wiener
+filter introduces such ringing associated with abrupt intensity changes
+[7]. This mechanism enhances the already present ring structure in the
+diffraction pattern.
+.le
+.ls psf    
+As a compromise between the Gaussian signal model, and the input image
+signal model (for HST images), we may take the degraded star, that is, the
+PSF itself, as signal model.
+.le
+.ls external image
+In some circunstances, there may be available other images which belong to
+the same "ensemble" as the image being restored. More specifically, an
+external image with similar second-order statistics as the one being
+restored is available. This image may be used as source for the signal
+model Pg(u,v).
+.le
+
+There is one more implemented functional form for the Wiener filter, the
+so called parametric filter. It completely ignores the points discussed
+above, and uses as substitute for the term Pn(u,v)/Pg(u,v) a parameter
+gamma. Small values of gamma will enhance the high frequency content on
+the restored image; large values will enhance the low-pass filter
+characteristics.  In the current implementation, the value of gamma input
+by the user is actually multiplied by the average of Pn(u,v)/Pg(u,v), with
+both power spectra measured in the input image. Gamma thus represents the
+input image average noise-to-signal ratio in frequency space.
+
+.sh
+4. HINTS ON USAGE
+
+First, the user must be aware that the restoration quality depends,
+more than everything else, on the quality of the available PSF image.
+This is related to the problem of so-called consistent convolutions [8].
+
+Regarding signal model choice, the best approach when trying to deconvolve
+an image for the first time is to leave all filter settings at their
+default values. These include: ftype=Wiener, signalm=white (notice that
+this is precisely the same filter generated by the combination
+ftype=parametric, gamma=1.). Another suitable starting point could be
+ftype=geometric, signalm=Markov. Both of these settings have the advantage
+of being independent of any numerical input parameter, and are
+representative of the "average" filter for the image being studied.
+
+If the goal is to restore stellar images, the Gaussian signal model should
+be tried. To minimize ringing around very bright stars, as well as sky
+background noise, a mild (fwhm ~ 1.5 - 2 pixels) low-pass filter may be
+useful. Another way to avoid ringing it is to resort to the inverse plus
+low-pass filter [7]. However, stellar shapes will become more erratic
+along the image.
+
+For extended object restoration, a good bet is the ftype=geometric,
+signalm=Markov model.
+
+As a last comment, we must stress that most of the results obtained with
+the more sophisticated signal models could be approximatelly arrived at by
+the simpler parametric and pure inverse filters, if coupled to a suitably
+chosen low-pass filter. The values of gamma and fwhm have to be chosen by
+trial and error, until a "satisfactory" image is obtained.
+This approach has two disadvantages relative to the more elaborate
+filters: the results are only approximately equal; and, we do not know
+precisely which criteria is being used for the restoration. In other
+words, we do not know how far, and for which spatial structures and
+frequencies, we are from the optimal minimum mean-square-error criterion.
+
+.sh
+5. REFERENCES
+
+.ls [1]
+ANDREWS, H.C., HUNT, B.R., 1977, "Digital Image Restoration", 
+Prentice-Hall, New Jersey.
+.le
+.ls [2]
+HUNT, B.R., 1971, "A Matrix Theory Proof of the Discrete Convolution
+Theorem", IEEE Trans. Audio Electroacustics, v.AU-19, p.285
+.le
+.ls [3]
+KONDO, K., ICHIOKA, Y., SUZUKI, T., 1977, "Image Restoration by Wiener
+Filtering in the Presence of Signal-dependent Noise", Applied Optics, 
+v.16, p.2554
+.le
+.ls [4]
+WHAL, F.M., 1987, "Digital Image Signal Processing", Artech House, London.
+.le
+.ls [5]
+PRATT, W.K., 1978, "Digital Image Processing", John Wiley, New York.
+.le
+.ls [6]
+BUSKO, I.C., 1991, "Wiener Restoration of HST Images: Signal Models
+and Photometric Behavior", in: First Annual Conference on Astronomical Data
+Analysis Software and Systems, Tucson.
+.le
+.ls [7]
+LAGENDIJK, R.L, BIEMOND, J., BOEKEE, D.E., 1986, "Iterative Image 
+Restoration with Ringing Reduction", in: Signal Processing III: Theories 
+and Applications, I.T. Young et.al. (editors), Elsevier Science Publishers 
+B.V., North-Holland.
+.le
+.ls [8]
+BATES, R.H.T., McDONNELL, M.J., 1986, "Image Restoration and Reconstruction",
+Claredon Press, Oxford.
+.le
+
+.sh
+6. AUTHOR
+.nf
+
+Ivo Busko
+Astrophysics Division
+National Space Research Institute, Brazil
+busko@das.inpe.br
+
+.fi
+.endhelp

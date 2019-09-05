@@ -1,0 +1,46 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-c -DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_msreadnoise.c readnoise.h
+	$update	libreadnoise.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_msreadnoise.o libreadnoise.a \
+		-lhstio -lcvos -lc -lxtools \
+		-o xx_msreadnoise.e
+		;
+
+install:
+	$move xx_msreadnoise.e stsdasbin$x_msreadnoise.e
+	;
+
+libreadnoise.a:
+	rn_buildn.c		readnoise.h
+	rn_checkf.c		readnoise.h
+	rn_checkname.c		readnoise.h 
+	rn_checkon.c		readnoise.h
+	rn_cblksz.c		readnoise.h
+	rn_computern.c		readnoise.h
+	rn_immap.c		readnoise.h
+	rn_inputpar.c		readnoise.h 
+	rn_instr.c		readnoise.h
+	rn_lib.c		readnoise.h
+	rn_open.c		readnoise.h
+	rn_output.c		readnoise.h
+	rn_readnoise.c		readnoise.h
+	rn_singleb.c		readnoise.h
+	rn_singleg.c		readnoise.h
+	rn_singlei.c		readnoise.h
+	rn_stat.c		readnoise.h
+	;

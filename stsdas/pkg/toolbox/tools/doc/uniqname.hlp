@@ -1,0 +1,60 @@
+.help uniqname Dec91 stsdas.toolbox.tools
+.ih
+NAME
+uniqname -- Create a unique file name for files that are to be archived.
+.ih
+USAGE
+uniqname extension instr 
+.ih
+DESCRIPTION
+This task combines the instrument name with the current time to create a 
+file name that will be unique over the telescope's lifetime. The file 
+name root has the format YMDHHMMSI where
+.nf
+
+  Y  denotes the year (where 1981 = 1)
+  M  denotes the month of the year (where January = 1)
+  D  denotes the day 
+  HH denotes the hour (00-23)
+  MM denotes the minutes 
+  S  denotes seconds/2
+  I  denotes the instrument ( where f=fgs, v=HSP, w=WFPC, 
+     x=FOC, y=FOS, z=HRS, m=multiple)
+.fi
+
+The file name extension provided by the user is appended to the unique 
+root. The task checks to see if a file by the same name already exists 
+in the current directory and if it does, it creates a new file name 
+root. The file name generated is not guaranteed to be unique across 
+directories. The algorithm used to generate the file name has a time 
+granularity of two seconds. 
+.ih
+PARAMETERS
+.ls extension [string]
+File name extension. The extension may be given either with or without a 
+leading period. If the extension is one or more blanks, no extension 
+will be added to the file name.
+.le
+.ls instr [string, allowed values: fgs | hsp | wfpc | wfp2 | foc | fos | 
+hrs | multi]
+
+HST instrument name. If a file is used by more than one instrument, the  
+value "multi" should be passed to 'instr'.
+.le
+.ls (value) [string]
+File name produced by this task.
+.le
+.ih
+EXAMPLES
+1. Generate a unique file name for the FGS with the extension '.d0h'.
+
+.nf
+  to> uniqname d0h fos
+  to> print(uniqname.value)
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+uniqid, uniqfile
+.endhelp

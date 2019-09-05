@@ -1,0 +1,9 @@
+$checkout imgtools.a ../
+$update imgtools.a
+$checkin imgtools.a ../
+$exit
+
+imgtools.a:
+	t_gcopy.x 	<imio.h> <imhdr.h>
+	newcopy.x	<imio.h> <imhdr.h>
+	;

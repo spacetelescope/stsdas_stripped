@@ -1,0 +1,103 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   16 /                                                
+DATATYPE= 'UNSIGNED*2'         /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                  965 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           /number of segments containing fill              
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           /number of segments containing errors            
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           /time from the packet ancillary data             
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+DADSFILE= 'Y0UE0103T.ULF'      /                                                
+DADSCLAS= 'CAL     '           /                                                
+DADSDATE= '08-MAY-1994 17:21:00' /                                              
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / FOS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'Y0UE0103T         ' / rootname of the observation set                
+FILETYPE= 'UDL               ' / file type                                      
+CTYPE1  = 'UNITLESS          ' / units of first data axis                       
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = '27/10/92          ' / date this file was written (dd/mm/yy)          
+                                                                                
+                 / CDBS KEYWORDS                                                
+Y1STCHNL=                    0 / first channel to be processed                  
+YAPERPO1=                24600 / same as first YAPERHOE|LOE                     
+YAQMD   =                   40 / acquisition mode                               
+YDATALIM=                  255 / high byte of acquisition limit                 
+YDEAD   =                64256 / accum close time                               
+YFFCPWR =                    0 / flat field cal lamp power                      
+YFGWAPO1=                   11 / same as first YFGWAPOS                         
+YINTEG  =                    1 / number of integrations/X-step                  
+YLINSFRM=                    1 / lines per frame                                
+YLIVE   =                51448 / accum open time                                
+YMCLEARS=                   58 / memory clears/data acquisition                 
+YMSLICES=                    1 / number of memory slices                        
+YNOISELM=                65535 / burst noise rejection limit                    
+YNUMCHNL=                    0 / number of channels to be processed             
+YOVRSCAN=                    5 / X-deflection overscan                          
+YPLRZPO1=                 4954 / same as first YPLZRHOE|LOE                     
+YPTRNS  =                   16 / patterns per readout                           
+YRANGE  =                    0 / Y range                                        
+YREADCYC=                    1 / readouts/memory clear                          
+YWRDSLIN=                  965 / words per line                                 
+YXBASE  =                    0 / X-deflection base                              
+YXPITCH =                 1584 / X-deflection pitch between diode               
+YXSTEPS =                    4 / X-deflection sub-steps                         
+YYBASE  =                 -693 / Y-deflection base                              
+YYINDFHY=                    1 / do deflection hyst. at begin. of data acqn.    
+YYPATH  =                    1 / path identification                            
+YYPITCH =                 1846 / Y-deflection pitch                             
+YYSTEPS =                    1 / Y-deflection sub-steps                         
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'OX169             ' / proposer's target name                         
+RA_TARG =  0.3258981708333E+03 / right ascension of the target (deg) (J2000)    
+DEC_TARG=  0.1773030833333E+02 / declination of the target (deg) (J2000)        
+PEQUINOX= 'J2000.0           ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 1192 / PEP proposal identifier                        
+PEP_EXPO= '1.4000000         ' / PEP exposure identifier including sequence     
+LINENUM = '1.400             ' / PEP proposal line number                       
+SEQLINE = '                  ' / PEP line number of defined sequence            
+SEQNAME = '                  ' / PEP define/use sequence name                   
+                                                                                
+BACHFILE= 'yref$b3m1128my.r0h'                                                  
+FL1HFILE= 'yref$d2f1332py.r1h'                                                  
+FL2HFILE= 'yref$N/A'                                                            
+IV1HFILE= 'yref$c3u1342iy.r2h'                                                  
+IV2HFILE= 'yref$N/A'                                                            
+AISHFILE= 'yref$g2t1439ky.r8h'                                                  
+RETHFILE= 'yref$N/A'                                                            
+DDTHFILE= 'yref$c6q16020y.r4h'                                                  
+DQ1HFILE= 'yref$b2f1306ry.r5h'                                                  
+DQ2HFILE= 'yref$N/A'                                                            
+PCPHFILE= 'yref$   '                                                            
+CCG2    = 'mtab$a3d1145ly.cmg'                                                  
+CCS0    = 'ytab$a3d1145dy.cy0'                                                  
+CCS1    = 'ytab$aaj0732ay.cy1'                                                  
+CCS2    = 'ytab$a3d1145fy.cy2'                                                  
+CCS3    = 'ytab$a3d1145gy.cy3'                                                  
+CCS4    = 'ytab$N/A'                                                            
+CCS5    = 'ytab$a3d1145jy.cy5'                                                  
+CCS6    = 'ytab$bck10546y.cy6'                                                  
+CCS7    = 'ytab$ba910502y.cy7'                                                  
+CCS8    = 'ytab$ba31407ly.cy8'                                                  
+CCS9    = 'ytab$e3i09491y.cy9'                                                  
+CCSA    = 'ytab$g310947py.cya'                                                  
+CCSB    = 'ytab$i1n1816gy.cyb'                                                  
+CCSC    = 'ytab$g3109483y.cyc'                                                  
+CCSD    = 'ytab$g3109487y.cyd'                                                  
+MOD_CORR= 'OMIT    '                                                            
+END                                                                             

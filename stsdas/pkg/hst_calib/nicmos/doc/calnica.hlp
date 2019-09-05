@@ -1,0 +1,534 @@
+.help calnica Apr08 stsdas.hst_calib.nicmos
+.ih
+NAME
+calnica -- Apply instrumental calibrations to NICMOS data.
+.ih
+USAGE
+calnica input output
+.ih
+PARAMETERS
+.ls input [file name]
+The name of the input NICMOS data file.
+Can be either a root name, in which case a "_raw" suffix and ".fits" or ".fit"
+extension is assumed, or a complete file name.
+.le
+.ls output [file name]
+The name of the output NICMOS data file.
+If no value is specified for this parameter, 'output' will default to the
+rootname of the file passed to 'input'.
+.le
+.ls (crthresh = 4.0) [real, min=0]
+Cosmic ray rejection threshold, in units of sigma, to be used in the CRIDCALC
+step.
+.le
+.ls (zsthresh = 5.0) [real, min=0]
+Zero-read signal detection threshold, in units of sigma, to be used in the
+ZSIGCORR step.
+.le
+.ls (barthresh = 3.0) [real, min=0]
+Bar detection threshold, in units of sigma, to be used in the BARSCORR step.
+.le
+.ls (samprej = 0) [int, min=0, max=NSAMP]
+Number of initial samples (readouts) to reject in CRIDCALC step.
+.le
+.ls (writedark = no) [boolean]
+Write out dynamically-generated DARK file?
+.le
+.ih
+DESCRIPTION 
+The CALNICA task performs the routine instrumental calibration of NICMOS data,
+including dark current subtraction, correction for detector non-linearity,
+flat fielding, conversion to countrates, and cosmic ray identification and
+rejection.
+
+INPUT AND OUTPUT FILES
+
+The input to the task is usually a file containing the raw data from a
+NICMOS observation (usually the file with a "_raw.fits" suffix and extension
+names) and the output is a file containing the calibrated data.
+All observing modes produce at least one output file from CALNICA, which is
+a fully-calibrated final image, usually contained in a file with a "_cal.fits"
+suffix and extension name.
+MultiAccum mode, however, produces an additional output file, containing
+intermediate results of processing, usually with a "_ima.fits" file name
+suffix and extension.
+The "ima" file contains the fully-calibrated images produced by each
+of the multiple detector readouts of a MultiAccum observation, while the
+"cal" file contains a single image that is the result of combining the 
+calibrated data from all readouts.
+
+The input NICMOS images are contained in Image extensions in FITS files,
+with a set of five extensions for each image: science (EXTNAME=SCI), error
+(ERR), data quality (DQ), number of samples (SAMP), and integration time (TIME).
+Input raw data files for MultiAccum observing mode will contain multiple image
+sets (or "imsets"), one for each detector readout. The intermediate MultiAccum
+("ima") files will contain the same number of imsets as the raw data file.
+The output "cal" file for all observing modes will contain only one imset.
+
+CALIBRATION SWITCHES
+
+The task is completely data driven, in that the calibration steps carried out
+by CALNICA are determined by the values of certain keywords contained in the
+header of the file being processed.
+A list of the calibration keywords, known as calibration "switches", and their
+functions is shown below.
+The calibration switches may be edited with the 'chcalpar' task in order to
+selectively turn on or off desired calibration steps.
+The 'hedit' task in the 'images' package or 'eheader' in the 'toolbox.headers'
+package may also be used to change keyword values.
+The calibration switches may be set to values of "PERFORM" or "OMIT". 
+
+WARNING: The calibration switch keywords reside only in the primary header of
+NICMOS FITS files, therefore it is critically important to specify
+extension number zero when passing file names to tasks like 'chcalpar',
+'hedit', and 'eheader' when you want to modify these keywords.
+For example, to modify calibration keywords in the file 'n3xe01bhm_raw.fits',
+be sure to use the file name "n3xe01bhm_raw.fits[0]" as input to these tasks.
+If you specify an extension other than zero, the keywords you modify will
+get written into one of the extension headers, where CALNICA 
+will NOT find them.
+
+The NICMOS science file headers also contain a set of keywords known as
+calibration "indicators".
+These keywords duplicate the list of calibration switches and indicate to the
+user whether or not a given calibration step has already been performed on the
+data contained in a given file.
+
+REFERENCE FILES
+
+Many of the processing steps require the use of calibration reference files or
+tables, which contain dark-current and flat-field images and the like.
+The names of the reference files to be used by each step are also given by
+keywords in the primary header of the input data file.
+A list of the reference file keywords and the type of calibration data contained
+in each file is shown below.
+Note that the reference file keyword values may contain a directory path
+(either explicitly or via an environment variable) in addition to the file
+names.
+
+When an environment variable is used as part of a reference file name
+(e.g. "nref" in FLATFILE = "nref$h5j1437pn_flt.fits"), there are several points
+that should be borne in mind. First, the environment variable must be defined
+in the Unix or VMS shell before logging into IRAF, and the directory name must
+include the trailing "/", e.g.:
+
+	setenv nref /data/reffiles/stdata/
+
+Setting an IRAF environment variable "nref" will simply not work. Also, if the
+reference files are in the users working directory, nref can be set to "./",
+rather than editing the header to remove the "nref$" string from each
+reference file name. Furthermore, note that the file name is specified using
+IRAF notation rather than Unix, i.e. "nref$h5j1437pn_flt.fits" rather than
+"$nref/h5j1437pn_flt.fits".
+
+RE-ENTRANT CAPABILITIES
+
+Because the structure and content of the input and output files are identical,
+the CALNICA task can be used in a re-entrant fashion.
+In other words, output files that contain data that has only received partial
+processing can be rerun through CALNICA again in order to execute other
+calibration steps.
+For example, it would be possible to process an observation with application
+of only the dark-current subtraction, examine the results, and then resubmit
+the dark-subtracted data file to CALNICA to then execute subsequent steps
+such as linearity correction and flat-fielding.
+This would of course require turning on and off the appropriate calibration
+switches for each step as desired before each processing run.
+Note, however, that certain calibration steps require other steps as a
+prerequisite.
+For example, because the flat-field reference data have been dark-subtracted,
+it is necessary to perform dark subtraction on science observations before
+applying the flat-field correction.
+CALNICA is aware of the various dependencies and will not allow the user
+to perform a given step if all of its required dependencies have not also been
+performed.
+.ih
+CALIBRATION KEYWORDS
+.nf
+------------------------------------------------------------------
+|  Calib.  | Calib.   |  Refer.  |                               |
+|  Switch  | Indicator|  File    | Function                      |
+-----------------------------------------------------------------|
+| ZSIGCORR | ZSIGDONE | several  | Correct for zero read signal  |
+| ZOFFCORR | ZOFFDONE |   n/a    | Subtract MultiAccum zero read |
+| MASKCORR | MASKDONE | MASKFILE | Mask bad pixels               |
+| BIASCORR | BIASDONE |   n/a    | Correct wrapped pixels        |
+| NOISCALC | NOISDONE | NOISFILE | Calculate statistical errors  |
+| DARKCORR | DARKDONE | DARKFILE | Subtract dark current         |
+|          |          | TEMPFILE | Temperature-dependent version |
+| NLINCORR | NLINDONE | NLINFILE | Non-linearity correction      |
+| BARSCORR | BARSDONE |   n/a    | Correct for electronic "bars" |
+| FLATCORR | FLATDONE | FLATFILE | Flat-field correction         |
+| UNITCORR | UNITDONE |   n/a    | Convert units to count rates  |
+| PHOTCALC | PHOTDONE | PHOTTAB  | Calculate photometric values  |
+| CRIDCALC | CRIDDONE |   n/a    | Cosmic-ray identification     |
+| BACKCALC | BACKDONE | BACKTAB  | Estimate background           |
+| WARNCALC | WARNDONE |   n/a    | Generate user warnings        |
+------------------------------------------------------------------
+.fi
+.ih
+CALIBRATION STEPS
+The calibration steps, listed by keyword, are:
+.ls ZSIGCORR
+This step is controlled by the ZSIGCORR calibration switch, which was added
+to NICMOS image headers in April of 1998. When processing images that were
+produced before that time, CALNICA will automatically apply this step to all
+MultiAccum mode observations if both ZOFFCORR and NLINCORR are also being
+performed. This step computes an expected number of counts
+for each pixel in the zeroth readout of a MultiAccum. This information is then
+used later in the NLINCORR step to estimate the absolute charge in each pixel
+and the appropriate linearity correction for that charge level. The signal in
+the zeroth read is estimated by 1) subtracting the zeroth read from the
+first read, 2) subtracting dark current from the difference image, 3) computing
+a noise estimate for the difference image, 4) scaling the difference image
+counts to the effective exposure time of the zeroth read (obtained from the
+SAMPZERO keyword; approximately 0.203 seconds), 5) resetting to zero all pixels
+in the difference image that have fewer than zsthresh*err counts.
+This internal image is then passed to the NLINCORR step.
+The ZEROSIG DQ flag (value=2048) is set for all pixels with detected signal in
+the zeroth read.
+ZSIGCORR also compares the absolute count (DN) level of each pixel in the zeroth
+and first reads with the "super zero read" science (ZSCI) image in the NLINFILE
+and flags as saturated any that are above the level of ZSCI by more than
+the saturation value in the [NODE,2] extension of the NLINFILE.
+The number of pixels flagged as saturated in the zeroth and first reads is
+reported. This step uses the MASKFILE, NOISFILE, DARKFILE, and NLINFILE
+reference files.
+.le
+.ls ZOFFCORR 
+Subtract the initial ("zeroth") read image of a MultiAccum-mode observation
+from all subsequent readouts in the exposure.
+This step must be performed in order to apply subsequent dark, linearity,
+flat-field, and units conversions and corrections.
+The data for the zeroth read are physically stored as the last imset in
+the MultiAccum data files.
+The zeroth read image is subtracted from all readouts, including itself,
+so that the zeroth read science image in the output file will be exactly zero.
+.le
+.ls MASKCORR
+Mask pixels that are known to be permanently defective (i.e. hot or cold).
+This step uses the static bad pixel mask stored in the MASKFILE.
+Data quality flag values are copied from the DQ image in the MASKFILE to
+the DQ image of all imsets in the file being processed.
+.le
+.ls BIASCORR 
+Correct pixel values that have wrapped around the dynamic range limit of
+the on-board Analog-to-Digital Converters (ADC's).
+In Accum, Bright Object, and Ramp mode observations, the subtraction of the
+final and initial reads is performed on-board in 16-bit integer arithmetic,
+therefore it is possible for the difference value for a pixel containing a
+very bright source to exceed the available range of the calculation.
+Wrapped pixels will show up with a large negative DN value, usually in the
+range of -26000 to -32768.
+The BIASCORR step adds an offset of 65536 DN to correct these wrapped values.
+.le
+.ls NOISCALC 
+Statistical errors are computed to initially populate the error (ERR) images
+in all imsets.
+The error values are computed from a noise model of the NICMOS detectors,
+which currently is a simple summation (in quadrature) of the detector read
+noise and the Poisson noise of the detected signal.
+The results are expressed as a real number of standard deviations.
+This step uses the NOISFILE which contains the readout noise for each pixel
+as the 1 standard deviation noise level in electrons.
+The readnoise values are stored in the science (SCI) image of the NOISFILE.
+Data quality (DQ) flags set in the DQ image of the NOISFILE are propagated
+into the DQ images of all imsets being processed.
+
+In versions 3.3 and later of CALNICA, this step also uses the DARKFILE to
+estimate and account for the level of "shading" signal when estimating the
+Poisson noise in the detected counts.
+
+For RAMP-mode data, where the variance of the detected signal from multiple
+readouts is computed on-board, the calculation of errors is not necessary.
+In this case, the NOISCALC step simply computes the square-root of the
+variance data already contained in the ERR images in order to place it on
+the same basis as the errors computed for other modes.
+.le
+.ls DARKCORR
+Correct for the detector dark current by subtracting a dark current reference
+image of the same exposure time as the science data being processed.
+This step uses the DARKFILE reference file which contains a set of dark
+current images, in units of DN's, for various exposure times.
+For MultiAccum-mode observations obtained using one of the predefined sample
+exposure time sequences, a DARKFILE for that particular sample sequence must
+be used.
+Error estimates of the dark current, stored in the ERR images of the DARKFILE,
+are propagated, in quadrature, into the ERR images of all processed imsets.
+Data quality (DQ) flags set in the DARKFILE are also propagated into the DQ
+images of all processed imsets.
+
+Starting in April 2002, Version 4 of CALNICA incorporates the dynamic
+determination of a temperature-dependent dark reference file.  This uses
+the methods described in NICMOS ISR 99-010, and was first implemented as a
+WWW tool, separate from CALNICA.  To use the temperature-dependent dark
+correction, the TEMPFILE keyword in the primary header must be set to the
+appropriate _tdd reference file name.  If you wish to process your image using
+a static dark reference file, you can set the TEMPFILE keyword to 'N/A' and the
+dark reference file named in the DARKFILE keyword will be used.  Old NICMOS
+data (generated or retrieved before May 2002) will not have the TEMPFILE
+keyword, so it will be necessary to add it to the primary header.  If the
+TEMPFILE keyword is not set to 'N/A', then CALNICA will attempt to generate
+and use a temperature-dependent dark file, and the reference file named in
+the DARKFILE keyword will be ignored.  
+
+If you want to see the dynamically-generated dark reference file produced,
+set the "writedark" task parameter to True.  This will create a file that
+looks like a dark reference file, but with only the groups that were actually
+generated by CALNICA.  The format is very similar to that produced by the
+Web tool, allowing direct comparison of groups.  The name of the dark file
+written will be the same as the rootname of the data file, with the extension
+"_drk", so you must make sure that a file of this name does not exist when
+you run CALNICA, or the program will terminate prematurely.
+.le
+.ls NLINCORR
+Correct the integrated counts in the science data for non-linear response of
+the NICMOS detectors.
+At low to intermediate signal levels the detector response deviates in a
+2nd-order fashion from the incident flux and is easily correctable.
+At high signal levels - as saturation sets in - the response becomes highly
+non-linear and is not correctable to a scientifically useful degree.
+Therefore the NLINCORR step applies a 2nd-order correction term to pixels
+with signal values below saturation and applies no correction to pixels in
+the saturation regime but rather flags them in the DQ image as saturated.
+Error estimates on the correction applied to non-saturated pixels are
+propagated into the ERR images of all imsets processed.
+Data quality (DQ) flags set in the NLINFILE are also propagated into the
+processed DQ images.
+.le
+.ls BARSCORR
+Added in CALNICA v3.3, this step searches for and flags pairs of image rows
+or columns that are affected by electronic "bars", which are lines of
+pixels that are alternately higher and lower in value than their surroundings
+by a contant DN value.
+The BARSCORR step searches for this signature in the SCI extension of each
+imset and flags affected pixels as "Bad pixel detected during calibration"
+(DQ = 256) in the DQ extensions. For MultiAccum observations, these pixels
+will be rejected when combined with other imsets in the CRIDCALC step, thus
+eliminating their effects in the final "cal" image.
+MultiAccum images that do not have the BARSCORR calibration switch in their
+primary header will automatically receive this correction.
+.le
+.ls FLATCORR 
+Remove pixel-to-pixel sensitivity variations and fine structure by multiplying
+by the (inverse) flat-field response.
+This step requires the flat-field reference file FLATFILE.
+The camera number and filter name of the data being processed must match
+that of the FLATFILE.
+Error estimates and DQ flags contained in FLATFILE are propagated into the
+processed images.
+.le
+.ls UNITCORR 
+Convert the data from units of counts (DN's) to count rates (DN's per second).
+This is accomplished by dividing the SCI and ERR image data by the exposure
+time values contained in the TIME image extension for each imset.
+.le
+.ls PHOTCALC 
+Populate photometric parameter keywords in the image header.
+The keywords populated are: PHOTMODE, PHOTFLAM, PHOTFNU, PHOTZPT, PHOTPLAM,
+and PHOTBW.
+This step requires the PHOTTAB reference table, which contains values for
+the above 6 keywords appropriate for each NICMOS observing mode.
+An observing mode is any unique combination of camera and filter.
+This step does not modify the data in any way, but simply populates the
+values of the 6 photometric header keywords.
+The values of PHOTFLAM and PHOTFNU are useful for converting observed
+count rates to absolute fluxes in units of ergs/sec/cm**2/Angstrom or Jy,
+respectively.
+.le
+.ls CRIDCALC 
+Identify and flag pixels suspected of containing cosmic-ray hits.
+For MultiAccum mode observations, this step also combines the data from all
+readouts into a single image.
+In MultiAccum mode, the data from all readouts is analyzed pixel-by-pixel,
+computing an error-weighted linear fit to the accumulating counts vs.
+exposure time, rejecting outliers from the fit using iterative sigma-clipping.
+Pixel samples identified as outliers are flagged in the DQ images of the
+intermediate MultiAccum ("ima") file, but the pixel values themselves in the
+SCI and ERR images of the ima file are unchanged.
+The result of this operation is stored as a single imset in the output "cal"
+file, in which the final slope and its uncertainty for each pixel are stored
+in the SCI and ERR extensions, and the number of unrejected samples and their
+total exposure time are stored in the SAMP and TIME image extensions.
+Pixels for which there are no unrejected samples, e.g. permanently hot or
+cold pixels, will be fit separately.
+
+Users have the option of automatically rejecting some number of initial
+samples (readouts) for all pixels in MultiAccum observations via the "samprej"
+task parameter. Note that the value specified by this parameter does NOT
+include the zeroth-read.
+
+The algorithm is not yet completely defined or implemented for Accum,
+Bright Object, and Ramp mode observations, therefore the "cal" output file
+for these modes will still contain CR hits.
+.le
+.ls BACKCALC
+Compute a predicted background (sky plus thermal) signal level, based on
+models of the zodiacal scattered light and the telescope plus instrument
+thermal background.
+This step uses the BACKTAB reference table which contains the background
+model parameters.
+Results are written to the BACKEST1, BACKEST2, and BACKEST3 header keywords.
+The image data are not modified in any way.
+
+This step is not yet implemented.
+.le
+.ls WARNCALC
+Issue warning messages if it appears that the science data may be compromised
+in any way due to unusual instrumental characteristics or behavior.
+Various engineering keywords values are analyzed and any anomalous readings
+are reported.
+
+This step is not yet implemented.
+.le
+.ih
+EXAMPLES 
+1. Perform calibration for observation "n3v701qln".
+Output file(s) are to have the same root name as the input file.
+.nf
+
+  ni> calnica n3v701qln ""
+.fi
+
+2. Calibrate the observation "n3t501c2r" and produce output files 
+with a root name of "ngc3603".
+Set the cosmic ray rejection threshold to 6.5 sigma.
+.nf
+
+  ni> calnica n3t501c2r ngc3603 crthresh=6.5
+.fi
+
+3. Perform additional processing on the data contained in file
+"irc10216_ima.fits" which was produced by a previous run of calnica.
+Give the output files a root name of "irc10216b".
+.nf
+
+  ni> calnica irc10216_ima.fits irc10216b
+.fi
+.ih
+REVISIONS
+.ls Version 4.2
+Improved CRIDCALC processing.  The sample weightings are now more in
+line with theoretical values, for example, those in Fixsen et al. (2000),
+PASP, 112, 1350.  The ramp fits are now determined iteratively, with each
+ramp split into pre- and post- cosmic ray sections that are fit independently.
+The ramp fitting is now done for pixels which have no "GOOD" samples,
+resulting in far fewer zeros in the _cal file.
+The DQ flags must be carefully checked to make sure that pixels with known
+problems are treated appropriately in subsequent analysis.  A new DQ flag,
+HIGH_CURVATURE, was defined to account for those pixels that appear to have
+more than 3 cosmic rays up the ramp.  Since this is statistically extremely
+unlikely, the most likely explanation is curvature in the ramp.  See the
+NICMOS ISR "CALNICA Update" (2008).
+.le
+.ls Version 4.1.1
+Fixed an array access error in the ZSIGCORR routine.
+.le
+.ls Version 4.0
+New temperature-dependent dark subtraction.
+Order of processing changed to execute each calibration step on a given group
+before going on to the next group.
+Default "barthresh" parameter set to 3.0.
+.le
+.ls Version 3.3
+New BARSCORR routine and associated task parameter "barthresh" were added.
+Capability to reject user-selected number of initial samples in CRIDCALC and
+associated task parameter "samprej" were added.
+Changed all count-to-countrate conversions to use TIME image data for
+exposure times, rather than the SAMPTIME keyword value.
+NOISCALC step was enhanced to estimate and account for "shading" signal
+when estimating noise in detected signal.
+NLINCORR step was upgraded from use of 1st-order to 2nd-order correction
+scheme.
+Rejection of electronic noise spikes in CRIDCALC step was enhanced.
+.le
+.ls Version 3.2.2
+Modification of internal library interface.
+.le
+.ls Version 3.2.1
+Fixed a memory allocation bug that was causing the task to crash on Linux
+systems.
+.le
+.ls Version 3.2
+Use of the new ZSIGCORR, ZSIGDONE, and SAMPZERO keywords in the ZSIGCORR step
+was added.
+The ZSIGCORR step was also modified to make use of any good data in the
+zeroth readout for those pixels that are already saturated in the first
+readout. The CRIDCALC step was also modified to make use of the zeroth read
+data for these pixels when computing an output value for the "cal" file.
+Use of the new ZEROSIG and GROT data quality flag values was implemented.
+CALNICA treats these conditions as warnings only and will not reject any
+pixels containing only these DQ values.
+Relaxed the exposure time matching criterion for the dark current reference
+data to one-tenth of a second.
+Added computation of output image median statistics for populating the new
+median statistics keywords GOODMEDN, QAMEDN, QBMEDN, QCMEDN, and QDMEDN.
+.le
+.ls Version 3.1.2
+Modified the routine that writes processing history keywords to the output
+image headers to correct a bug that was causing the task to crash on HP/UX
+systems.
+.le
+.ls Version 3.1.1
+Modified the calnica cl script so that it issues the proper command to
+run the host-level calnica executable on VMS systems. Fixed a bug that was
+causing the task to crash when processing NSAMP=2 MultiAccum exposures.
+.le
+.ls Version 3.1
+Modified to recognize the new file name suffixes used for the flat field and
+background images obtained with Target Acquisition observations. The raw file
+name suffixes are "rwf" and "rwb" (for the flats and backgrounds, respectively),
+and the corresponding calibrated file name suffixes are "clf" and "clb".
+.le
+.ls Version 3.0
+The wrapped pixel correction threshold in the BIASCORR step was changed
+from -26000 to -23500 DN.
+The CRIDCALC routine was rewritten so that it no longer needs the NOISFILE
+to compute errors and eliminated the huge values that occasionally resulted
+from rejecting all but 1 sample for a pixel.
+The order in which MultiAccum readouts are processed was reversed so that
+the readouts are now processed in chronological order (zeroth readout first,
+final readout last).
+Added the use of command-line arguments crthresh and zsthresh so that the
+user can set rejection thresholds.
+Added the ZSIGCORR routine which calculates the amount of signal in the
+zeroth read of a MultiAccum and accounts for that signal when performing
+NLINCORR.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: Howard Bushouse, Science Software Group, STScI
+         Robert Jedrzejewski, Science Software Group, STScI
+
+The  following additional references are available from STScI and the
+NICMOS instrument group and describe in more detail the NICMOS calibration
+process and general usage of STSDAS:
+
+.nf
+	"The STScI NICMOS Pipeline: CALNICA, Single Image Reduction",
+		Instrument Science Report NICMOS-028
+        "NICMOS Data Handbook"
+        "NICMOS Instrument Handbook"
+        "STSDAS Users Guide"
+        "Phase II Proposal Instructions"
+.fi
+    
+The following are technical references meant for internal usage and
+are not written as "end-user" products. However, these documents
+can be retrieved if a detailed understanding of the software is required.
+    
+The reference tables and images are controlled by CM.
+The document describing the contents and form of the reference data is
+"Post Observation Data Processing System to Calibration Database System
+Interface Control Document", (ICD-47).
+    
+The header keywords found in the data files are controlled by CM.
+The document describing the keywords is "Post Observation Data
+Processing System to Space Telescope Science Data Analysis Software
+Interface Control Document", (ICD-19).
+.ih
+SEE ALSO
+eheader, hedit, chcalpar, calnicb
+.endhelp

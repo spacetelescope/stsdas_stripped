@@ -1,0 +1,7 @@
+# Help directory for the STSDAS.PAPERPROD package
+
+$doc		= "stsdas$pkg/hst_calib/paperprod/doc/"
+$testpp		= "stsdas$pkg/hst_calib/paperprod/"
+
+pp_dads		hlp = doc$pp_dads.hlp,
+		src=testpp$pp_dads.cl

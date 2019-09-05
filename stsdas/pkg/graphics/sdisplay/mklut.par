@@ -1,0 +1,7 @@
+infile, f, a, "", , , 	">input file name"
+
+lower, r, h, .01, , ,	">lower limit of the usable histogram"
+upper, r, h, .99, , ,	">upper limit of the usable histogram"
+contrast, r, h, 3., , ,	">contrast control"
+
+mode, s, h, "al"

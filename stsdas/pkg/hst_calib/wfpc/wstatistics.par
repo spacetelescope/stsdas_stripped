@@ -1,0 +1,16 @@
+# wfpc.wstatistics parameters
+
+images,s,a,,,,Images
+lower,r,h,INDEF,,,Lower cutoff for pixel values
+upper,r,h,INDEF,,,Upper cutoff for pixel values
+doall,b,h,no,,,Compute all statistical quantities?
+npix,b,h,yes,,,Print number of non-rejected values?
+minmax,b,h,yes,,,Print extreme image values?
+mean,b,h,yes,,,Print image mean?
+midpt,b,h,yes,,,Compute estimate of image median?
+mmode,b,h,yes,,,Compute image mode?
+stddev,b,h,yes,,,Print standard deviation of image?
+skew,b,h,no,,,Compute skew of pixel distribution?
+kurt,b,h,no,,,Compute kurtosis of pixel distribution?
+usedqf,b,h,no,,,Reference DQF images to mask bad pixels?
+dqfpar,pset,h,,,,Data Quality File parameters (pset)

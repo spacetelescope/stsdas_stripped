@@ -1,0 +1,13 @@
+# Update the north application code in the ctools package library
+
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+	north.x     		<imhdr.h> <error.h> "north.h"
+	norfname.x		
+	nornonfoc.x		<math.h> 
+	nororient.x		<math.h> "north.h"
+	;

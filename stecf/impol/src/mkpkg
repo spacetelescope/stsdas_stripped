@@ -1,0 +1,33 @@
+# IMPOL package
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	libpkg.a
+	$call	impol
+	;
+
+install:
+	$move	xx_impol.e ../../bin/x_impol.e
+	;
+
+impol:
+	$omake	x_impol.x
+	$link	x_impol.o libpkg.a -liraf77 -luttables -ltbtables -liminterp -o xx_impol.e
+	;
+
+libpkg.a:
+	polimd.f
+	polime.f
+	polimf.f
+	polimg.f
+	polimh.f
+	timtem.x <iraf77.h>
+	impollib.f
+	;

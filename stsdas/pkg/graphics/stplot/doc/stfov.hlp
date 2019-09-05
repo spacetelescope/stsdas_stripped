@@ -1,0 +1,135 @@
+.help stfov Jan2004 stsdas.graphics.stplot
+.ih
+NAME
+stfov -- Draw the HST instrument field of view over an image.
+.ih
+USAGE
+stfov input ra dec apertures center_ap orient
+.ih
+DESCRIPTION
+The 'stfov' task draws the science instrument apertures of the Hubble
+Space Telescope (HST) on a grayscale image.  This task can
+be used to create overlays of the HST Field-of-View (FOV) onto images.
+
+This task is basically a "wrapper" script using the task disconlab but 
+with a simplified user interface.  The input image can be any image with WCS
+parameters in the header or a Digital Sky Survey (DSS) image.  In the 
+later case, the gasp package must be loaded and the task makewcs will be 
+executed on such an image.
+.le
+.ih
+PARAMETERS
+.ls input [file name]
+An image containing the world coordinate system (WCS) information
+is needed to properly scale and rotate the HST apertures.
+If a DSS image is used, it will be populated with WCS keywords by this task.
+.le
+.ls ra = "" [string]
+The right ascension (in H:M:S or decimal HOURS, NOT in decimal degrees) 
+at which the center aperture will be located.  
+If the value is NULL, the CRVAL1 value (in this case, in decimal degrees) 
+in the image header will be used.
+.le
+.ls dec = "" [string]
+The declination (in D:M:S or decimal degrees) at which the 
+center aperture will be located.
+If the value is NULL, the CRVAL2 value (in this case, in decimal degrees) 
+in the image header will be used.
+.le
+.ls apertures = "sm3b" [string]
+A list of aperture names to be plotted.  The names may be separated by 
+spaces or commas.  See the Aperture specification section in the SIAPER task 
+help file for a complete listing of available apertures.
+
+Several aliases are provided: "launch", "sm1" (or "sm93"), "sm2" (or "sm97"),
+"sm3b" (or "sm2002") include all 
+apertures of instruments available on HST after launch (in 1990), after 
+the first service mission (in 1993), after the second service mission 
+(in 1997) and after the service mission 3B (in 2002), respectively.  The 
+service mission 3A did not replace any science instrument.
+
+The names can also be placed in a text file.  To specify the file name
+as the parameter value proceeded with the "@" character.  
+.le
+.ls center_ap = "ota" [string]
+The aperture which will be located at the specified right ascension and 
+declination.  Any aperture can be specified.  This parameter does not
+support pattern matching; an exact aperture name needs to be specified.
+See the Aperture specification section in the SIAPER task 
+help file for a complete listing of available apertures.
+.nf
+
+Some more commonly used apertures include:
+
+aperture	description
+--------        -----------
+FGS1		optimum position in FGS1 (also: FGS2, FGS3)
+NIC1FIX		NICMOS camera 1 (also: NIC2FIX, NIC3FIX)
+OV50		clear aperture for STIS CCD
+UPC1		optimum location on PC1 (also: UWF2, UWF3, UWF4)
+UPC1FIX		center of PC1 (also: UWF2FIX, UWF3FIX, UWF4FIX)
+UWFALL		~14" from apex of pyramid, on WF3
+XK96NLRG	FOC, 512x512, 16 bit pixels, includes COSTAR
+X96NLRG		same as XK96NLRG but before COSTAR
+
+(Aperture names can be either upper or lower case.)
+.fi
+.le
+.ls orient = 0. [real]
+The spacecraft roll measured in degrees east from north.  It is the same
+angle as that required in the Phase II proposal template (see Proposal 
+Instructions for complete definition).  
+.le
+.ls (color) = "blue" [string, allowed values: red, green, yellow, blue, white]
+The color used to draw apertures and labels.
+.le
+.ls (append) = no [boolean]
+Append a new FOV on an existing chart.  If this switch is set to yes, only the 
+newly specified FOV will be overplotted on the existing image, together with
+previously plotted FOV and labels.  When running stfov on a new field for 
+the first time, this switch should be set to no.
+.le
+.ls (interactive) = no [boolean]
+Interactive mode to get photometry estimation.
+
+This task provides a rudimentary way of estimating brightness magnitudes 
+of stars in the field.  If this switch is turned on, if will start the task 
+imexamine and the user can move the cursor to any star position and hit the 'a'
+key to get the magnitude.  Hitting the 'q' key will quit imexamine.
+
+The zero point is based on DSS images and depends on the exposure time 
+(from the image header keyword EXPOSURE):
+
+magzero = 28.0 + log10 (EXPOSURE/60.) * 2.5
+
+The error of magnitude is about 1.0.  For over- and under-exposed stars, 
+the errors will be much larger.
+If the keyword EXPOSURE does not exist, magzero is arbitrarily set to 0.
+.le
+.ih
+EXAMPLES
+
+1. Use CRVAL1 and CRVAL2 of the image header as RA and Dec of the aperture
+center:
+
+st> stfov dss.fits "" "" "sm3b" "ota" 0.
+
+2. Specify RA in hours and Dec in degrees, centered at WF3 of WFPC2 with 
+orient of 30 degrees:
+
+st> stfov dss.fits "4:20:40" "28:42:05" "sm3b" "uwf3" 30.
+
+3. Plot several FOV's on the same image (the label will only show the 
+center aperture and orient of the first plot):
+
+.nf
+st> stfov dss.fits "" "" "sm3b" "uwf3" 30. color=red append-
+st> stfov dss.fits "" "" "sm3b" "uwf3" 90. color=yellow append+
+.fi
+.ih
+BUGS
+Do not append FOV's by running stfov and siaper on the same image. 
+.ih
+SEE ALSO
+siaper, disconlab, imexamine
+.endhelp

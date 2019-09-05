@@ -1,0 +1,54 @@
+.help immean Jan92 stsdas.playpen
+.ih
+NAME
+immean -- Compute image mean.
+.ih
+USAGE
+immean input
+.ih
+DESCRIPTION
+This task computes the mean of an image and saves the mean to
+the parameter 'mean'.
+This is useful in scripts that need mean values,
+as neither 'imstatistics' nor 'wstatistics' saves computed values
+as task parameters.
+This task gets the values and does the arithmetic in double precision.
+.ih
+PARAMETERS
+.ls input [file name]
+Input image.
+This may be of any dimension.
+.le
+.ls (verbose = yes) [boolean]
+Print the result?  
+
+The mean value will be saved in 'mean'
+regardless of the value of  'verbose'. 
+.le
+.ls (mean) [real]
+This is an output parameter containing the computed mean.
+.le
+.ih
+EXAMPLES
+1.  Compute the mean of image 'file1.hhh' over the image section [30:72,41:46].
+Then subtract that value from the entire image,
+putting the result in 'diff.hhh'.
+
+.nf
+	pl> immean file1.hhh[30:72,41:46]
+	pl> imarith.operand2 = immean.mean
+	pl> imarith "file1.hhh"  -  result="diff" mode=h
+.fi
+
+In a script, this would be written as follows:
+
+.nf
+	pl> immean ("file1.hhh[30:72,41:46]", verbose=no)
+	pl> imarith ("file1.hhh", "-", immean.mean, "diff")
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+imstatistics, wstatistics
+.endhelp

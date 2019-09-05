@@ -1,0 +1,149 @@
+.help vla Apr91 stsdas.contrib
+
+This document describes the purpose and use of the three IRAF scripts:
+SMOOTH.CL, INTENSITY.CL, and VELOCITY.CL
+	   
+.ih
+PURPOSE
+These scripts are used to reduce 	
+radio or optical imaging spectroscopy
+"data cubes" (e.g., with axes of right ascension, declination, and 
+velocity) into a set of two-dimensional images representing various
+moments of the data cube along the velocity (wavelength or frequency)
+axis.  These moments include the total intensity, the mean and peak
+velocity, and the profile dispersion (width).  A mechanism is provided
+to mask out regions of insufficient signal strength and to enhance the
+signal to noise ratio by smoothing the original data cube in all three
+dimensions.  
+
+The operations are carried out in three separate scripts which
+the user must invoke in turn: "smooth.cl", "intensity.cl", and
+"velocity.cl".
+
+.ih
+DESCRIPTION OF USAGE
+The three scripts were intended to be run in the order: 'smooth',
+'intensity', and 'velocity'.  It is assumed that the input files are
+consistent, i.e., in the case of the 'intensity.cl' script, the input 
+cube for mask-making ("mimage") would normally be related to the input
+image ("image").  One may use a smoothed version of the input image as
+"mimage" for the creation of the mask.  In the case of the 'velocity.cl'
+script, it is assumed that the "nrchan" file was derived from the
+masked intensity file which produced the total intensity map, all of
+which are inputs to this script.
+
+The spatial smoothing section of the smooth task uses a kernel 
+which extends out to four times the sigma of the smoothing gaussian
+(in pixels) and the final smoothed image is not decimated.  When a
+spatial smooth is done, the more smooth the output image, the longer
+the task takes to run.  The user can change the smoothing kernel size
+(default is a factor of four sigma) by simply changing its value in the
+"gauss" task before running the "smooth.cl" script.  Except for very
+small images, this task should be run in batch.  Timing information is
+given in the help files for each of the tasks.
+
+In all of the scripts, none of the input images are 
+over-written. Instead, new images are created.  These new images will all
+have the same header as the input image, with a few exceptions (the
+smoothed file will have the header keyword values for BMAJ, BMIN
+updated after smoothing).  Also, comments will be added to each output
+file describing what it is.
+
+In these versions of the scripts, it is assumed that the input
+image has a round point source response.  No provision has been made to
+smooth with other than a normal gaussian whose width is the same in any
+direction.  In addition, the sampling in the X and Y direction are
+assumed to be the same (i.e., the same number of arcseconds per pixel in
+both directions).
+
+Certain header parameters are expected to appear in the headers
+of the input images.  They are NAXIS, NAXIS1, NAXIS2, and NAXIS3 which
+together describe the dimensions of the image.  Also, if the user
+chooses not to provide an ASCII file of velocities, the 'velocity.cl'
+script will attempt to create one from keywords CRPIX3, CRVAL3, and
+CDELT3 found in the header of the input image.  They are, respectively,
+the reference pixel, its velocity in meters/sec, and the pixel width in
+velocity units of meters/sec (usually the channel width).  If the
+CDELT3 parameter is missing, the script will assume that the channel
+width in velocity of the input image is 1 km/sec and will continue to
+run. If either the CRVAL3 or CRPIX3 keyword is missing, the program
+will terminate with a message.
+
+.ih
+NOTES
+	
+The following packages must be loaded to run any one of the scripts:
+
+.nf	  
+	  images
+	  stsdas.tools
+	  noao.proto
+	  language 
+.fi
+
+After loading these packages, unlearn the following tasks: 
+
+.nf
+	  imcalc
+	  imarith
+	  imdel
+	  gauss
+	  convol
+	  blkavg
+	  hedit
+.fi
+
+If you are starting with a FITS format file, first convert
+it to an ST-format (hhh/hhd) file using the iraf task 'strfits'.  The
+tasks should also run on imh/pix format files, but the file types of
+the input and output images should be consistent.
+
+If you are running tests with these scripts, you should
+set 'clobber=yes'.  This will enable output ASCII files to be over-written
+after an unsuccessful or interrupted run of a task, however, you must
+delete any images before re-running the task with the same
+filenames.
+
+To run any one of these tasks in batch, you should specify
+all required parameters, and set the 'logfile' 
+parameter.  Then a task can be run in batch by typing after the cl
+prompt: `cl> taskname mode="h" &' For example, to run the intensity
+task in batch, type:
+
+.nf
+         cl>  intensity mode="h" & batch
+.fi
+
+or, to run it in the background (in a UNIX shell) type:
+
+.nf
+	 cl>  intensity mode="h" &
+.fi
+
+Setting the mode to "h" or "hidden" will disable the interactive query
+for the task parameters, so that if a required parameter is missing,
+the batch job will crash.  The user should read the help information
+for the individual scripts to see which parameters are required, or
+just type `lpar taskname'.  Those parameters not in parentheses are 
+required.
+
+.ih
+MORE INFORMATION
+Each script has an associated help file.  These files
+have the same root name as the script, but with the extension `.hlp'. 
+For example, one may access the help file for smooth.cl by typing:
+
+.nf
+st> help smooth.hlp file+
+.fi
+
+The scripts themselves are, of course, simply ASCII files and may be
+edited for specific applications.  Each script has a header with
+pertinent information.  If more detail is needed, typing the name of any
+one of the IRAF or STSDAS tasks that are used in the scripts will yield
+more specific information. 
+
+These scripts were developed by Diane Gilmore and Ron Allen
+at the Space Telescope Science Institute in 1990.
+
+.endhelp

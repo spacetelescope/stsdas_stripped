@@ -1,0 +1,136 @@
+.help sflux Jul2000 ctools
+.nj
+.ih
+NAME
+sflux -- fit a continuum to one or more spectra
+.ih
+USAGE
+sflux intable outtable
+.ih
+DESCRIPTION
+This is a cl script for creating a continuum fit
+which can then be used as 'intable2' for the 'fweight' task.
+
+There are several related tasks
+with the ultimate goal of splicing spectra together,
+averaging in the overlap regions.
+'splice' does the splicing,
+but to get the best results
+the weights should be assigned carefully.
+'fweight' and 'pweight' are two tasks that assign weights.
+'pweight' uses reference tables (primarily phottab),
+rather than the observed spectral data.
+'fweight' uses the NET and FLUX columns
+together with a continuum fit to the flux;
+'sflux' is an easy way to generate that continuum fit.
+
+The main task used by this script is 'continuum',
+but other tasks are used to initially combine the input spectra
+and to convert between the different data formats
+that the various tasks require.
+All the input data will first be spliced together into one spectrum.
+Before running 'splice', however,
+'pweight' is used to assign initial values to the weights
+so the splicing will be done as well as can be at this stage.
+Then 'tomultispec' (or 'mkmultispec', as appropriate)
+will be run on the spliced spectrum
+to convert from a table to a multispec format image.
+Then 'continuum' will be run to create a continuum fit,
+and the fit will be converted to a table using 'imtab'.
+
+Due to the use of the above tasks,
+the input tables are expected to contain
+specific columns and header keywords.
+The files written by the 'x1d' task
+do contain the required columns and keywords.
+It is not necessary that the input columns be arrays;
+scalar columns are fine,
+as long as the columns have the usual names,
+and the header keywords are present.
+
+The following columns are required
+in the input tables:  WAVELENGTH, FLUX, ERROR, and DQ.
+SPORDER and EXTRSIZE can be either columns or table header keywords;
+SPORDER is required, but EXTRSIZE is optional.
+The following keywords are required:  PHOTTAB, OPT_ELEM, CENWAVE, EXPTIME.
+The following keywords are optional:  PCTAB, APERTAB, APERTURE, HELCORR,
+RA_TARG, DEC_TARG, EXPSTART, EXPEND.
+See the help for 'pweight' for further information
+about these keywords and columns.
+
+Tasks are used from several packages, which must be loaded;
+these are:  images, noao.onedspec and stsdas.hst_calib.
+.ih
+PARAMETERS
+.ls intable [file name template]
+A list of tables containing spectra
+to be used for creating the continuum fit.
+
+If an input FITS file contains more than one table,
+each such table needs to be listed individually.
+.le
+.ls outtable [file name]
+The output table.
+The wavelengths derived from the spliced input tables,
+together with the fitted continuum,
+will be written to this table
+with column names "WAVELENGTH" and "FLUX".
+.le
+.ls (logfile = "") [string]
+The name of the log file optionally written by the 'continuum' task.
+.le
+.ls (function = "spline3") [string: legendre | chebyshev | spline1 | spline3]
+The function that 'continuum' will fit to the combined spectra.
+.le
+.ls (order = 1) [int]
+For 'function', the number of polynomial coefficients
+or the number of spline pieces.
+.le
+.ls (interactive = no) [boolean]
+Perform the continuum fit interactively using the icfit commands?
+.le
+.ls (verbose = yes) [boolean]
+Print more info?
+.le
+.ih
+EXAMPLES
+1.  Create the continuum fit file for o52z24010_x1d.fits.
+This will create smoothed_flux.tab, with columns "wavelength" and "flux".
+
+.nf
+    on> sflux o52z24010_x1d.fits smoothed_flux.tab
+.fi
+
+2.  Run the individual steps to generate a continuum fit.
+In this example, we skip the 'pweight' step,
+doing the initial splicing without weights.
+We can get the resulting fit in a text file by using 'listpixels',
+or we can get STSDAS or FITS table format by using 'imtab'.
+In the example,
+smoothed_flux.txt is an ASCII text file
+(a text table with implicit columns "c1" and "c2"),
+and smoothed_flux.tab is an stsdas table
+with columns "wavelength" and "flux".
+
+.nf
+    st> splice o52z24010_x1d.fits qqtemp.fits wgt_name="" sw_name=""
+    st> tomultispec qqtemp.fits qqtemp.imh
+    on> continuum qqtemp.imh qqtemp_c.imh type="fit"
+
+    im> listpixels qqtemp_c.imh wcs="world" > smoothed_flux.txt
+or
+    tt> imtab qqtemp_c.imh smoothed_flux.tab flux pname="wl" wcs="world"
+    tt> tchcol smoothed_flux.tab wl1 wavelength "" ""
+
+    # delete temporary files
+    im> imdel qqtemp.fits,qqtemp.imh,qqtemp_c.imh
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+.ih
+SEE ALSO
+splice, pweight, fweight, tomultispec, continuum, listpixels, imtab
+.endhelp

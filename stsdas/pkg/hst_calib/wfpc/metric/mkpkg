@@ -1,0 +1,13 @@
+# Update the metric application code in the wfpc package library
+# Author: HSU, 16-OCT-1992
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_metric.x 	<tbset.h>	<ctotok.h>	"metric.h"
+	metric_do.x	<math.h>	"metric.h"
+	mpc_cntr.x	<imhdr.h>
+	;

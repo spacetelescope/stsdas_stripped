@@ -1,0 +1,10 @@
+# catlim.par -- pset parameters for catalog table
+
+minrow,i,h,INDEF,1,,First table row to read
+maxrow,i,h,INDEF,1,,Last table row to read
+ramin,r,h,INDEF,,,Minimum RA to read from table
+ramax,r,h,INDEF,,,Maximum RA to read from table
+decmin,r,h,INDEF,,,Minimum Dec to read from table
+decmax,r,h,INDEF,,,Maximum Dec to read from table
+brightlim,r,h,INDEF,,,Magnitude of brightest stars plotted
+faintlim,r,h,INDEF,,,Magnitude of faintest stars plotted

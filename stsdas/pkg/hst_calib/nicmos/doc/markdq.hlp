@@ -1,0 +1,122 @@
+.help markdq Aug10 stsdas.hst_calib.nicmos
+.ih
+NAME
+markdq -- mark DQ flags on a displayed image
+.ih
+USAGE
+markdq image frame
+.ih
+DESCRIPTION
+Mark DQ flags on a displayed image using graphic overlays.
+The overlayed color for each DQ flag value can be set independently,
+including turning off the overlay for specific DQ values.
+
+The image extension containing the DQ array to be displayed must be
+included explicitly in the input image name.
+First display a science image using the \fIdisplay\fR task, and then run
+\fImarkdq\fR to overlay the DQ flags.
+
+The color of the mark for each DQ bit is specified by an integer value
+between 0 and 255. Color values set to zero will not be plotted by this task.
+The meaning of the color is device dependent. In the current version of the
+Sun/IRAF display tools numbers between 202 and 217 may be used to display
+graphics colors. The current color assignments are:
+
+.nf
+          0 = sunview background color (normally white)
+      1-200 = frame buffer data values, windowed
+        201 = cursor color (white)
+        202 = black
+        203 = white
+        204 = red
+        205 = green
+        206 = blue
+        207 = yellow
+        208 = cyan
+        209 = magenta
+        210 = coral
+        211 = maroon
+        212 = orange
+        213 = khaki
+        214 = orchid
+        215 = turquoise
+        216 = violet
+        217 = wheat
+
+    218-254 = reserved for use by other windows
+        255 = black (sunview foreground color)
+.fi
+.ih
+PARAMETERS
+.ls image
+DQ image to be used to overlay flags.
+.le
+.ls frame        
+The frame or image plane number of the display to be marked.
+.le
+.ls pointsize = 1
+The size of the mark to overlay for each flag. Point size will be rounded
+up to the nearest odd number.
+.le
+.ls col1 = 208 (cyan)
+Color of the mark for DQ bit 1 = 1.
+.le
+.ls col2 = 209 (magenta)
+Color of the mark for DQ bit 2 = 2.
+.le
+.ls col3 = 210 (coral)
+Color of the mark for DQ bit 3 = 4.
+.le
+.ls col4 = 211 (maroon)
+Color of the mark for DQ bit 4 = 8.
+.le
+.ls col5 = 212 (orange)
+Color of the mark for DQ bit 5 = 16.
+.le
+.ls col6 = 206 (blue)
+Color of the mark for DQ bit 6 = 32.
+.le
+.ls col7 = 205 (green)
+Color of the mark for DQ bit 7 = 64.
+.le
+.ls col8 = 213 (khaki)
+Color of the mark for DQ bit 8 = 128.
+.le
+.ls col9 = 204 (red)
+Color of the mark for DQ bit 9 = 256.
+.le
+.ls col10 = 207 (yellow)
+Color of the mark for DQ bit 10 = 512.
+.le
+.ls col11 = 213 (khaki)
+Color of the mark for DQ bit 11 = 1024.
+.le
+.ls col12 = 214 (orchid)
+Color of the mark for DQ bit 12 = 2048.
+.le
+.ls col13 = 215 (turquoise)
+Color of the mark for DQ bit 13 = 4096.
+.le
+.ls col14 = 216 (violet)
+Color of the mark for DQ bit 14 = 8192.
+.le
+.ls col15 = 217 (wheat)
+Color of the mark for DQ bit 15 = 16384.
+.le
+.ih
+EXAMPLES
+1. Mark the DQ flags for the science image n3t502cur_ima[sci,3]:
+
+.nf
+    cl> display n3t502cur_ima[sci,3] 1
+    cl> markdq n3t502cur_ima[dq,3] 1
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, SSG/SSB
+.ih
+SEE ALSO
+display, tvmark, ndisplay
+.endhelp

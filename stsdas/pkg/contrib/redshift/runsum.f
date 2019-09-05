@@ -1,0 +1,16 @@
+      SUBROUTINE RUNSUM(YE,NBIN,LUP,NRUN,CHI) 
+      REAL YE(1) 
+      SUM=0 
+      DO 20 I=1,NRUN 
+      SUM=SUM+1/YE(I) 
+20    CONTINUE 
+      ILO=NRUN+1 
+      IMAX=NBIN/2-1
+      DO 30 I=ILO,IMAX 
+      SUM=SUM+1/YE(I)-1/YE(I-NRUN) 
+      IF(SUM.LT.CHI)GO TO 40 
+30    CONTINUE 
+40    CONTINUE 
+      LUP=I 
+      RETURN 
+      END 

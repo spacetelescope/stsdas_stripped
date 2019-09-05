@@ -1,0 +1,63 @@
+.help uchscale Oct94 stsdas.hst_calib.wfpc
+.ih
+NAME
+uchscale -- Update plate scales of WFPC2 (or WF/PC) images
+.ih
+USAGE
+uchscale infile newscale
+.ih
+DESCRIPTION
+The task updates the plate scales of WFPC2 (or WF/PC, if necessary) images 
+by updating the CD matrices.  The plate scale values used by the pipeline to 
+populate WFPC2 files have undergone changes since the instrument was first 
+commissioned.  This task can be used to update the CD matrices of earlier 
+observations to the more accurate plate scales and therefore cohere with
+images obtained at different epoches.  A history of the updating will be 
+added to the image header.
+.ih
+PARAMETERS
+.ls infile [string]
+Input images.  
+.le
+.ls newscale [string]
+New plate scales to be used in the image(s).  The plate scale values should be 
+delimited by commas or spaces.  If this parameter is given a null value,
+the task will simply print out the current plate scales for the user to 
+examine and nothing is updated.  
+
+The input plate scales can be in either arcseconds per pixel or degrees 
+per pixel.  The task recognizes which unit to use from the plate scale's 
+numerical range.  On the other hand, this capability restricts this task's 
+application to WFPC2 and WF/PC only.  Unreasonable plate scale values will 
+stop the task.  
+
+If the input image has more groups than the input plate scales, the
+last plate scale in the list will be repeated for the subsequent groups.  
+For example, if newscale="0.046 0.0997", then group 2, 3, and 4 will all 
+use 0.0997 as the new plate scale.
+.le
+.ih
+EXAMPLES
+1. Change the plate scales of abc.c0h to 0.046, 0.101, 0.102, 0.103 
+(arcseconds per pixel).
+
+.nf
+wf> uchscale abc.c0h "0.046 0.101 0.102 0.103"
+.fi
+
+2. Examine the plate scales of all .c0h files.
+
+.nf
+wf> uchscale *.c0h ""
+.fi
+
+3. Update the plate scale of group 2 of all .c0h files to 2.7694^-5 deg/pixel.
+
+.nf
+wf> uchscale *.c0h[2] "2.7694e-5" 
+.fi
+.ih
+REFERENCES
+.ih
+SEE ALSO
+.endhelp

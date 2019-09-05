@@ -1,0 +1,37 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                 2064 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    0 /                                                
+PSIZE   =                    0 /                                                
+                                                                                
+                               / FOS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'FOS               ' / instrument                                     
+FILETYPE= 'FLAT FIELD        ' / default background reference file              
+HEADNAME= 'l7m14179y.hhh'      / header filename                                
+DATANAME= 'l7m14179y.hhd'      / data filename                                  
+DATE    = '04/05/01'           / date this file was written (dd/mm/yy)          
+                                                                                
+                               / FOS CONFIGURATION KEYWORDS                     
+DETECTOR= 'BLUE              ' / detector: AMBER,BLUE                           
+FCHNL   =                    0 / first channel processed: 0,2,...,510           
+NCHNLS  =                  512 / number of channels processed: 2,4,...,512      
+NXSTEPS =                    4 / number of x substeps: 1,2,4,8,16               
+OVERSCAN=                    5 / overscan number: 1,...,256                     
+APER_ID = 'ANY               ' / aperture  id: A-1,A-2,A-3,A-4,B-1,...          
+POLAR_ID= 'C                 ' / polarizer id: A,B,C                            
+FGWA_ID = 'H19               ' / disperser id: CAM,H13,H19,H27,H40,...          
+PASS_DIR=                    0 / pass direction: 0,1,2                          
+APER_POS= 'LOWER'              / aperture position: UPPER,LOWER,SINGLE          
+USEAFTER= 'January 1, 1992'    / use for observations taken after this date     
+                                                                                
+HISTORY  FOS_CRUD  4-May-2001 12:09:41.00                                       
+HISTORY  Flat based on superspectra from 2821 data.                             
+HISTORY   blue_h19_l.hhh renamed to  d2f1333gy.r1h                              
+HISTORY   d2f1333gy.r1h renamed to l7m14179y.r1h on Sun 14:17:18 22-Jul-2001    
+DESCRIP = 'Superflux-derived FOS closeout flatfield'                            
+PEDIGREE= 'INFLIGHT  01/01/1992'                                                
+END                                                                             

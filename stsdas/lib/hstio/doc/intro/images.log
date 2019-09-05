@@ -1,0 +1,50 @@
+This is TeX, Version 3.1415 (C version 6.1) (format=lplain 95.12.11)  10 MAY 1996 16:48
+**26023_images.tex
+(26023_images.tex
+LaTeX Version 2.09 <7 Dec 1989>
+
+(/usr/local/lib/tex/inputs/latex209/article.sty
+Document Style `article' <16 Mar 88>.
+(/usr/local/lib/tex/inputs/latex209/art12.sty)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+) (/usr/local/lib/tex/inputs/latex209/times.sty (/usr/local/lib/tex/inputs/late
+x209/psfonts.sty
+\@cmrfam=\fam11
+\@cmrscale=\count87
+\aadimen=\dimen99
+(/usr/local/lib/tex/inputs/latex209/psttsbfs.sty
+\ttsfam=\fam12
+\bfsfam=\fam13
+) (/usr/local/lib/tex/inputs/latex209/psgreek.sty) (/usr/local/lib/tex/inputs/l
+atex209/monster.sty))) (/usr/local/lib/tex/inputs/latex209/psfig.sty
+\@unused=\write3
+\ps@stream=\read0
+\p@intvaluex=\dimen100
+\p@intvaluey=\dimen101
+psfig/tex 1.10-dvips
+) (26023_images.aux) [1
+
+
+]
+psfig: searching farrisa1.eps for bounding box
+psfig: including farrisa1.eps 
+[2
+
+] (26023_images.aux) ) 
+Here is how much of TeX's memory you used:
+ 481 strings out of 11984
+ 4642 string characters out of 87240
+ 32059 words of memory out of 262141
+ 2405 multiletter control sequences out of 9500
+ 31432 words of font info for 112 fonts, out of 100000 for 255
+ 14 hyphenation exceptions out of 607
+ 12i,4n,17p,180b,126s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on 26023_images.dvi (2 pages, 1124 bytes).

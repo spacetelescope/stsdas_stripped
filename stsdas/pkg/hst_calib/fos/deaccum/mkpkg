@@ -1,0 +1,8 @@
+$checkout fos.a ../
+$update   fos.a
+$checkin  fos.a ../
+$exit
+
+fos.a:
+	deaccum.x	<imhdr.h>
+	;

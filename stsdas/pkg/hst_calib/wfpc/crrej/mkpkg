@@ -1,0 +1,20 @@
+# Update the crrej application code in the wfpc package library
+# Author: HSU, 25-Feb-1996
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_crrej.x	crrej.h
+	crrej_in.x    	crrej.h
+	crrej_do.x	crrej.h	<imhdr.h> <mach.h>	
+	crrej_check.x	crrej.h	<imhdr.h>	
+	crrej_init.x	crrej.h	<imhdr.h>
+	crrej_loop.x	crrej.h	<imhdr.h> <imio.h> <mach.h>
+	crrej_sky.x	<imhdr.h>
+	cr_history.x	crrej.h
+	cr_scaling.x
+	cr_mode.x
+	;

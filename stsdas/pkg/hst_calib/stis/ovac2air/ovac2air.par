@@ -1,0 +1,4 @@
+input,s,a,"",,,"input file"
+output,s,a,"",,,"output file"
+Version,s,h,"10Jun2002",,,"date of installation"
+mode,s,h,"al"

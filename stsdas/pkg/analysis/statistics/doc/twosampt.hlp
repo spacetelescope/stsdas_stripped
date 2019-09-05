@@ -1,0 +1,114 @@
+.help twosampt Sep92 stsdas.analysis.statistics
+.ih
+NAME
+twosampt -- See if two sets of censored data are from the same population.
+.ih
+USAGE
+twosampt input
+.ih
+DESCRIPTION
+The 'twosampt' task computes several nonparametric two-sample tests
+for comparing two or more censored data sets, giving a variety of ways
+to test whether two censored samples are drawn from the same parent
+population.  These are mostly generalizations of standard tests for
+uncensored data, such as the Wilcoxon and logrank nonparametric
+two-sample tests.  They differ, however, in how the censored data are
+weighted or "scored" in calculating the statistic.  Thus each is
+more sensitive to differences at one end or the other of the
+distribution.  The Gehan and logrank tests are widely used in
+biometrics, while some of the others are not.
+
+The two-sample tests are somewhat less restrictive than the
+Kaplan-Meier estimator, since they seek only to compare two samples
+rather than determine the true underlying distribution.  Because of
+this, the two-sample tests do not require that the censoring patterns
+of the two samples are random.  The two versions of the Gehan test
+assume that the censoring patterns of the two samples are the same,
+but the version with hypergeometric variance is more reliable in case
+of different censoring patterns.  The logrank test results appear to
+be correct as long as the censoring patterns are not very different.
+Peto-Prentice seems to be the test least affected by differences in
+the censoring patterns.  There is little known about the limitations
+of the Peto-Peto test.
+
+If the results of the tests differ significantly, then the
+Peto-Prentice test is probably the most reliable.  The two-sample
+tests all use different, but reasonable, weightings of the data
+points, so large discrepancies between the results of the tests
+indicates that caution should be used in drawing conclusions based on
+this data.
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files. Following each file name
+is a list of column names in brackets. Thes column names specify which
+columns in the file contain the information used by this task. The
+brackets MUST contain three names in the following format:
+[censor_indicator, variable, group_indicator]. The censor indicator
+specifies the censorship of the data point. A 0 indicates a
+detection, 1 indicates that the data point is a lower limit, and
+-1 indicates that the point is an upper limit. The variable
+specifies the column containing the data points. The group indicator
+specifies to which group the data point belongs. Each file must
+contain at least two different groups. The group indicators may be any
+integers. The two groups to be tested are specified by the task
+parameters 'first' and 'second'. If the input file is an STSDAS table,
+the names in brackets are the table column names. If the input file is
+a text file, the names in brackets are the column numbers.  A title
+string will be printed if the input file is a table containing the
+header parameter 'TITLE'.
+.le
+.ls (tests = " ") [string, allowed values: gehan-permute | gehan-hyper |
+logrank | peto-peto | peto-prentice ]
+
+Names of two-sample tests to perform. If this task parameter is blank
+(the default), the task will perform all of the above tests. Otherwise
+the task will perform those tests specified as the task parameter.
+Test names are given as a comma or blank separated list of names. Test
+names may be abbreviated as long as the abbreviation is unambiguous.
+Ambiguous abbreviations or unrecognized test names will be ignored.
+.le
+.ls (first = 1) [integer]
+The group indicator which specifies the first group of data to use in
+the two sample test.
+.le
+.ls (second = 2) [integer]
+The group indicator which specifies the second group of data to use in
+the two sample test.
+.le
+.ls (kaplan = no) [boolean]
+Is Kaplan-Meier estimator also desired for each group?  
+
+This is the 
+same as given by the 'kmestimate' task.  
+.le
+.ls (verbose = no) [boolean]
+Print detailed output? 
+.le
+.ih
+EXAMPLES 
+1. Apply the two-sample tests to the data in the text file
+"twosampt.dat".  There is a copy of this file in the statistics$data
+directory (i.e., "statistics$data/twosampt.dat").  The notation [2,3,1]
+means that the second column is the censor indicator, the third column
+contains the values, and the first column contains the group numbers.
+The hidden parameters first and second indicate that the task should
+compare groups 0 and 1.
+
+.nf
+cl> twosampt twosampt.dat[2,3,1] first=0 second=1
+.fi
+.ih
+BUGS
+If none of the data are censored (i.e., all values in the censor column
+are zero), then the task may crash with a divide by zero error.  A 
+workaround is to give an additional value that is marked as a lower or
+upper limit but with such an extreme value that it does not bias the 
+result.
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

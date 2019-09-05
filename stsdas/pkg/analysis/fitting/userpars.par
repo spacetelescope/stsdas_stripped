@@ -1,0 +1,25 @@
+# User function parameters.
+#
+function,s,h,,,,>function or file name
+c1,r,h,INDEF,,,>initial guess for 1st coefficient
+c2,r,h,INDEF,,,>initial guess for 2nd coefficient
+c3,r,h,INDEF,,,>initial guess for 3rd coefficient
+c4,r,h,INDEF,,,>initial guess for 4th coefficient
+c5,r,h,INDEF,,,>initial guess for 5th coefficient
+c6,r,h,INDEF,,,>initial guess for 6th coefficient
+c7,r,h,INDEF,,,>initial guess for 7th coefficient
+c8,r,h,INDEF,,,>initial guess for 8th coefficient
+c9,r,h,INDEF,,,>initial guess for 9th coefficient
+c10,r,h,INDEF,,,>initial guess for 10th coefficient
+v1,b,h,yes,,,>vary 1st coefficient ?
+v2,b,h,no,,,>vary 2nd coefficient ?
+v3,b,h,no,,,>vary 3rd coefficient ?
+v4,b,h,no,,,>vary 4th coefficient ?
+v5,b,h,no,,,>vary 5th coefficient ?
+v6,b,h,no,,,>vary 6th coefficient ?
+v7,b,h,no,,,>vary 7th coefficient ?
+v8,b,h,no,,,>vary 8th coefficient ?
+v9,b,h,no,,,>vary 9th coefficient ?
+v10,b,h,no,,,>vary 10th coefficient ?
+version,s,h,"15May90",,,>date of installation
+mode,s,h,al

@@ -1,0 +1,181 @@
+<!-- Translated by iraftex version 0.15 -->
+<html>
+<title>POLIMPLOT (V2.00) --- November00 --- POLIMPLOT (V2.00)</title>
+<h1>NAME</h1>
+<blockquote>
+polimplot  -- Plot a polarization vector map 
+<p>
+USAGE
+polimplot inpol inpopa poi_err inpoer inpaer xybin poscal polow pohigh pacorr
+xysam polab title xlabel ylabel device left right bottom top erase
+<p>
+</blockquote>
+<h1>PARAMETERS</h1>
+<blockquote>
+<dl>
+<dt>inpol = &quot;&quot; [name]
+<dd>
+Input linear polarization image (in %) to plot.
+<dt>inpopa = &quot;&quot; [name]
+<dd>
+Input image for position angle of linear polarization vectors (degrees).
+<dt>poi_err = &quot;&quot; [boolean]
+<dd>
+Switch to control whether polarization errors are plotted as separate vectors.
+<dt>inpoer = &quot;&quot; [name]
+<dd>
+Name of corresponding polarization error image (%). Must be same size
+as polarization image.
+<dt>inpaer = &quot;&quot; [name]
+<dd>
+Name of corresponding polarization position angle error image (degrees). 
+Must be same size as polarization image.
+<dt>xybin = &quot;&quot; [integer]
+<dd>
+Binning factor in x and y direction used to produce polarization
+images from data frames.
+<dt>poscal = &quot;&quot; [real]
+<dd>
+Scaling factor to convert linear polarization (in %) to length in pixels.
+<dt>polow = &quot;&quot; [real]
+<dd>
+Lowest value of percentage polarization to plot.
+<dt>pohigh = &quot;&quot; [real]
+<dd>
+Highest value of percentage polarization to plot.
+<dt>pacorr = &quot;&quot; [real]
+<dd>
+Additive correction to position angles for plotting.
+<dt>xysam = &quot;&quot; [integer]
+<dd>
+Number of points to skip in each axis when plotting vectors
+(0 to plot all pixel vectors).
+<dt>polab = &quot;&quot; [boolean]
+<dd>
+Switch to control labelling of plot.
+<dt>title = &quot;&quot; [name]
+<dd>
+Title for plot.
+<dt>xlabel = &quot;&quot; [name]
+<dd>
+Label for X (lower) axis.
+<dt>ylabel = &quot;&quot; [name]
+<dd>
+Label for Y (left) axis.
+<dt>device = &quot;&quot; [name]
+<dd>
+Graphics device for plot.
+<dt>(left = &quot;&quot;) [real]
+<dd>
+Viewport limit in Normalised Device Coordinates (NDC): minimum X.
+<dt>(right = &quot;&quot;) [real]
+<dd>
+Viewport limit in NDC: maximum X.
+<dt>(bottom = &quot;&quot;) [real]
+<dd>
+Viewport limit in NDC: minimum Y.
+<dt>(top = &quot;&quot;) [real]
+<dd>
+Viewport limit in NDC: maximum Y.
+<dt>erase = &quot;&quot; [boolean]
+<dd>
+Switch to control whether graphics device is erased before vector plot.
+Should be set false for hardcopy devices.
+<p>
+</dl>
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+This task is a flexible tool for plotting a polarization
+vector map from two images of the polarization and the position angle
+of the polarization vector. Whilst it can be used to plot general
+vector maps, it is primarily aimed at polarization maps, such as the
+output images from the task hstpolima. 
+<p>
+If polarization and position angle error images are available there is
+an option to plot them as vectors centred on the plotted points
+but with larger and smaller lengths given by the plus and minus 
+polarization error bars and rotations given by the maximum and mimumum 
+offset angles specified by the plus and minus position angle errors.
+The 'error' vectors are plotted as dotted lines. Note however that
+the polarization and position angle errors may not strictly be 1 sigma 
+errors, so this should be seen as an illustrative tool.
+<p>
+If the data has been binned in producing the polarization and position
+angle maps, and it is required to plot the vector map on the unbinned 
+scale, then the binning factor must be supplied 
+in order to match the polarization map with an unbinned image or plot.
+If the binning factor is not given then the labelled plot will display 
+binned pixels only.
+<p>
+In order to convert the polarization in percent to a length, a scalar
+multipler is used to convert vector length to pixel length before 
+plotting. A little trial and error, together with altering the 
+parameter to control the parameter which sets the number of points to 
+skip over in plotting (parameter xysam), will soon produce a map where 
+the vectors do not overlay each other. 
+<p>
+The range of polarization values to plot can be selected - this helps
+to avoid having points (dots) where the polarization is zero or very close to 
+zero, or where there may be large polarization values (usually
+associated with large errors). An additive correction can be applied 
+to the position angle values to ensure that the absolute position angle is
+plotted. Such rotations can be introduced by instrument rotation 
+or realignment of images.
+<p>
+In order to overplot the polarization vector map on an image device
+(imd) it is necessary to specify the normalised device coordinates
+(NDC) of the left and right ends of the X axis and the bottom and
+top ends of the Y axis. Once an image has been displayed, the
+NDC of the four limits can be determined using
+stsdas.graphics.sdisplay imdisp_pos. The four values can then be 
+entered in order to the parameters left, right, bottom, top. 
+See the help for fieldplot and imdisp_pos for more details.
+<p>
+</blockquote>
+<h1>EXAMPLES</h1>
+<blockquote>
+<pre>
+1. To plot an unbinned 512x512 pixel polarization map and 
+vectors for the errors over the polarization range 2 to 100%, 
+correcting the position angle by +12.5 degrees and plotting 
+every fourth point, with axes and labelling on the standard 
+graphics display in square format:
+<p>
+cl&gt; polimplot inpol=&quot;nebpol.fits&quot; inpopa=&quot;nebpa.fits&quot; poi_err=yes
+    inpoer=&quot;nebpoer.fits&quot; inpaer=&quot;nebpaer.fits&quot; xybin=1 
+    poscal=0.25 polow=2.0 pohigh=100.0 pacorr=12.5 xysam=3
+    polab=yes title=&quot;Reflection Nebula&quot; xlabel=&quot;Alpha&quot;
+    ylabel=&quot;Delta&quot; device=&quot;stdgraph&quot; left=0.19 right=0.82
+    bottom=0.12 top=0.96 erase=yes
+<p>
+2. To display an intensity image on the image display device,
+determine the NDC of the corners of the displayed image and
+overplot a polarization map which has been produced by binning the
+raw data by 2x2, plotting the polarization range 1 to 50% and
+plotting every second point, without error vectors or labelling:
+<p>
+cl&gt; display ima=&quot;nebint.fits&quot;
+cl&gt; imdisp_pos image=&quot;nebint.fits&quot;
+cl&gt; lpar imdisp_pos
+cl&gt; polimplot inpol=&quot;nebpol.fits&quot; inpopa=&quot;nebpa.fits&quot; poi_err=no
+    inpoer=&quot;&quot; inpaer=&quot;&quot; xybin=2 poscal=0.10 polow=1.0 pohigh=50.0 
+    pacorr=0.0 xysam=1 polab=no title=&quot;&quot; xlabel=&quot;&quot; ylabel=&quot;&quot; 
+    device=&quot;imdr&quot; left=0.3402 right=0.6598 bottom=0.3402 
+    top=0.6598 erase=yes
+<p>
+</pre>
+<p>
+</blockquote>
+<h1>BUGS</h1>
+<blockquote>
+<pre>
+None known.
+</pre>
+<p>
+</blockquote>
+<h1>SEE ALSO</h1>
+<blockquote>
+hstpolima, polimodel, fieldplot, imdisp_pos
+</blockquote>
+</html>

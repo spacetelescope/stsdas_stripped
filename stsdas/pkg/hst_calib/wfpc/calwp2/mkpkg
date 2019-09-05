@@ -1,0 +1,71 @@
+# Make the calwp2 task
+#
+#	Last updated: 12 Aug 92 by RAShaw
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg debug		update object library, link w/debug options	#
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+dev:
+    $call relink
+    $call devinstall
+    ;
+    
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+	$set XFLAGS = "-fgq $(XFLAGS)"
+	$set LFLAGS = "-xz $(LFLAGS)"
+	$call relink
+        ;
+
+relink:
+	$update cwpc2.a
+	$call linkonly
+	;
+
+install:
+	$move	xx_calwp2.e stsdasbin$x_calwp2.e
+	;
+
+devinstall:
+	$move	xx_calwp2.e stsdasdev$x_calwp2.e
+	;
+
+cwpc2.a:
+	bjdet_do.x
+        u_err.x         <error.h> "u_context.h"
+        u_fio.x         <imhdr.h> <imio.h> <tbset.h> <error.h> <mach.h>\
+                        "u_incl.h"
+        u_grpkw.x       <imhdr.h> <error.h> "u_data.h"
+        u_updtdgr.x     "u_incl.h" "u_data.h"
+        u_init.x        <imhdr.h> <error.h> <mach.h> "u_data.h" "u_incl.h"\
+                        "u_context.h"
+	u_pedigree.x
+        u_proc.x        <imhdr.h> <imio.h> <mach.h> <tbset.h> <error.h>\
+                        "u_data.h" "u_incl.h"
+        u_phot.x        <mach.h> <tbset.h> <error.h> "u_data.h" "u_incl.h"
+        u_util.x        <imhdr.h> <error.h> "u_data.h" "u_incl.h"
+        u_sec_stat.x    <imhdr.h> <mach.h> "u_data.h" "u_incl.h"
+	u_isFits.x      <imhdr.h> <imio.h> <fio.h> "u_data.h" "u_incl.h" <error.h>
+        t_calwp2.x      <error.h> "u_incl.h"
+	;
+
+linkonly:
+        $set    LIBS = "-lsynphot -lstxtools -luttables -ltbtables \
+			-lgflib -lgilib"
+	$omake x_calwp2.x 
+	$link   x_calwp2.o cwpc2.a $(LIBS) -o xx_calwp2.e
+	;
+
+$exit

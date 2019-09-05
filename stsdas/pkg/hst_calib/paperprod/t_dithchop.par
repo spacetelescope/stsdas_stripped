@@ -1,0 +1,7 @@
+igi_output, f, a, "", , ,	Output igi script file name
+pattern, s, a, "", "", ,        Dither/chopping pattern
+npos, i, a, , 1, 40,		Number of positions
+dithsize, r, a, , 0., ,		dither size (in arc seconds)
+chopsize, r, a, , 0., ,		chop size (in arc seconds)
+
+mode, s, h, "al"

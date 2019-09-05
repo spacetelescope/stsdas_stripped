@@ -1,0 +1,30 @@
+# WFPC consistency check
+
+filetype
+imagetype
+cdbsfile
+exptime
+wba3pctm
+filtnam1,filtnam2
+filter1,filter2
+pfilter1,pfilter2
+
+naxis when naxis != 2
+naxis1,naxis2 when filetype != 'A2D' && naxis1 != naxis2
+naxis1 when filetype != 'A2D' && mode == 'AREA' && naxis1 != 400
+naxis1 when filetype != 'A2D' && mode == 'FULL' && naxis1 != 800
+naxis1 when filetype == 'A2D' && naxis1 != 4096
+naxis1 when filetype == 'A2D' && naxis2 < 2
+
+groups when ! groups
+gcount when gcount != 4
+pcount when pcount != 37
+psize when psize != 1728
+
+rootname when rootname != toupper($root)
+detector when camera == 'WF' && detector != $group
+detector when camera == 'PC' && detector != ($group + 4)
+instrume when instrume != 'WFPC'
+mode when mode != 'FULL' && mode != 'AREA'
+serials when filetype == 'DRK' && serials != 'ON' && serials != 'OFF'
+kspots when kspots != 'OFF'

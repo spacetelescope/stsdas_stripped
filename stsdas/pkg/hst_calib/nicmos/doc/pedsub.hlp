@@ -1,0 +1,324 @@
+.help pedsub Jun2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+pedsub -- subtract pedestal signal from a NICMOS image
+.ih
+USAGE
+pedsub input output
+.ih
+DESCRIPTION
+The pedsub task measures and removes an estimate of the quadrant-dependent
+residual bias (or "pedestal") in a NICMOS image.
+The input image to the task must be fully calibrated, including
+zero-read subtraction, dark subtraction, linearization, and flatfielding.
+Unlike the pedsky task, which only works well on images containing
+few sources and large regions of blank sky, this task can be used effectively
+on most any NICMOS image, regardless of source content.
+However, some experimentation with parameter settings may be necessary in
+order to achieve optimum results for different types of fields.
+Best use of the various settings are briefly described below.
+
+Pedsub runs on a single science image (i.e. not on all the separate readouts
+of a NICMOS MULTIACCUM file).  It operates only on the [SCI,1] extension,
+which is appropriate when the task is run on, e.g., the _cal type images
+that are the final product of the "calnica" calibration pipeline.
+
+The task takes as input a calibrated NICMOS image and the image that was
+used to apply the flatfield correction during the calibration process.
+It then estimates, for each quadrant of the image, the size of any constant
+bias signal that may be present in the data, but was not subtracted before
+flatfielding was applied.
+An output image is created that has the best-fitting constant pedestal
+subtracted.
+An algorithm that attempts to remove any remaining DC offsets between image
+quadrants is also included.
+
+The task assumes that the calibrated signal in each pixel (C) is composed of the
+intrinsic signal from sky and sources (I), plus the pedestal (P) times the
+flatfield value for the pixel (F):
+
+.nf
+  C = I + P*F
+.fi
+
+The task tries to determine the pedestal value, P, by exploiting the fact
+that the additional term P*F in the calibrated image introduces a spread in
+the pixel values in the image.
+The task loops over a range of trial pedestal values, T, and for each value
+it generates a trial image I_T = C - T*F, and then measures the spread in
+pixel values in the trial image I_T.
+The trial value that produces the minimum spread in pixel values is taken as
+the best guess for the pedestal value.
+This process is performed independently for each image quadrant.
+
+A filtering operation can optionally be applied to each trial image in order
+to remove unwanted features or spatial frequencies that might bias the
+calculation of the pixel value spread.
+The task provides various choices for the filtering operation, which is set
+via the task parameter "filter":
+.ls filter = "none"
+No filtering is applied to the trial image, which implies
+that all Fourier frequencies in the trial image are used to compute the spread.
+This approach is likely to work well only if the image is almost completely
+free of sources.
+.le
+.ls filter = "median"
+A ring-median filter is applied to the trial image
+(i.e. every pixel is replaced by the median value in a ring of pixels
+around it). This implies that all pixel-to-pixel variations are removed,
+and only the low Fourier frequencies in the trial image are used. This
+approach may work well for a field that contains only small sources (stars or
+faint, small galaxies). The inner and outer radii of the
+median filter annulus are set by the parameters "minbox" and "maxbox".
+.le
+.ls filter = "mask"
+This option produces an unsharp mask version of the
+trial image, by first applying a ring-median filter (as in the previous option)
+and then subtracting the median-filtered image from the unfiltered trial image.
+This implies that low frequency structure is removed and only pixel-to-pixel
+variations remain. Thus only high frequency information in the trial image
+is used. This approach may work well for any field, even if it contains stars
+or galaxies, or even if it contains a galaxy that fills the whole image.
+.le
+
+The spread in pixel values in a trial image is taken to be the Gaussian
+dispersion of the pixel value histogram. The pixel values are sorted into
+ascending order, binned into a histogram, and a Gaussian is then fitted to the
+histogram. This approach helps minimize sensitivity to bad pixels and outliers,
+because the Gaussian fit is sensitive primarily to only the core of the pixel
+histogram, and not to its wings.
+
+Known bad pixels and/or pixels containing source signal can also be explicitly
+rejected from the pixel spread computations through the use of the pixel
+masking feature (parameter "dqon=yes"), which rejects pixels based on their
+Data Quality bit settings in the input image.
+Furthermore, the "statregions" pset can be used to specify limits to the
+regions of each quadrant used in the pixel spread computation. This is useful,
+for example, to exclude the vignetted regions in the lower quadrants (1 and 2)
+of NICMOS camera 2 and 3 images.
+
+The search for the optimal pedestal value in each image quadrant is performed
+in two phases. First, a "quick and dirty" estimate of the pedestal value is
+determined by using the Brent minimization algorithm to search for the minimum
+in the function pixel spread vs. pedestal value.
+This "quick'n'dirty" result should be interpreted with some care, since
+numerical errors may make the function jagged near its minimum, and the
+pedestal value arrived at may be due to a local minimum.
+A second phase is then applied to refine the initial pedestal estimate.
+The second phase consists of computing the pixel spread in a set of trial
+images using a range of pedestal values centered on the initial estimate.
+The number of pedestal values and their spacing are set by the parameters
+"nrefine" and "refstep", respectively.
+A smooth polynomial of order "reforder" is fitted to these trial values, and
+the minimum of this polynomial is determined and adopted as the best guess
+for the pedestal value.
+If "dorefine=no", this second phase in the pedestal estimation is skipped.
+
+After the best-fitting pedestal value has been determined and subtracted from
+each image quadrant, differences in the DC levels between the quadrants may
+still exist.
+The task includes an algorithm for removing these differences and is performed
+if "doquadeq=yes".
+Offsets between the quadrants are determined by sampling the pixel values
+in each row or column near the borders of adjoining quadrants.
+If "eqorder>=0", the algorithm fits a polynomial of order "eqorder" to pixels
+in the range "eqpix1" through "eqpix2" on each side of a quadrant boundary,
+extrapolates the fit to the border position, and then computes the difference
+between the extrapolated values from either side of the border. 
+If "eqorder=-1" or "eqorder=-2", the median or the mode, respectively, of
+the sampled pixel values will be computed, rather than fitting a polynomial,
+and the difference in these values across the border is computed.
+This is done for every row or column along each border.
+
+The polynomial fit option tends to work best for images that have bright
+sources on or near the quadrant boundaries, where either the source
+itself (e.g. a large galaxy) or the wings of the PSF (e.g. stars) result in
+large signal gradients near the boundaries.
+The median and mode methods, on the other hand, often produce better results
+for images that are sparsely populated, due to the fact that the polynomial
+fits can be easily biased by background noise in the image.
+
+The differences between the quadrants are minimized by attempting to minimize
+the high-frequency Fourier power along the quadrant borders. The Fourier
+power is proportional to the squared differences in intensity extracted 
+(as outlined above) at each side of a border. The algorithm uses the
+"amoeba" (downhill simplex) minimization method to search for the set of
+DC offsets that minimize the power estimator. The offsets that simultaneously
+minimize the power between all four quadrants are added to each image quadrant.
+
+If "eqflat=no", only the constant offset values are added to each quadrant.
+If "eqflat=yes", the constant multiplied by the flatfield is added. When
+using this option, the fit to the offsets is iterated 3 times, to take into
+account the fact that the flatfield may not be normalized exactly to unity
+in the region around the quadrant boundaries.
+The best setting of this option for particular images often requires some
+experimentation.
+
+The pedestal values determined by the task are stored in the output image
+header in the keywords "PEDQUAD1" through "PEDQUAD4".
+The DC quadrant offsets, if computed, are stored in the output image header
+in the keywords "DCQUAD1" through "DCQUAD4".
+The quadrant numbering scheme is as follows:
+
+.nf
+---------
+| 3 | 4 |
+---------
+| 1 | 2 |
+---------
+.fi
+
+The pedsub task complements and supplements the pedstal removal techniques
+available in the pedsky task. While pedsky will only work well
+for images which are relatively blank, the image filtering techniques
+employed in this task should make it relatively insensitive to sources.
+The "filter=none" mode of operation utilizes techniques roughly equivalent
+to those in pedsky and yields comparable results when applied to images
+that have few sources. The "filter=mask" mode can be applied to any image,
+regardless of source content, but is particularly useful for images of
+crowded stellar fields and large, extended sources.
+.ih
+PARAMETERS
+.ls input [file]
+Input image name(s).
+This will normally be a single IMSET file (_cal type) that has been processed
+through "calnica".  The full file name must be given.
+.le
+.ls output [file]
+Output image name(s).
+Must be a full file name specification and the numbers of input and output
+images must be equal.
+.le
+.ls (filter = "mask") [string, allowed values: |none|median|mask]
+Filter type for trial images. "None" = no filtering, "median" = ring-median
+filter, "mask" = unsharp mask (image minus median-filtered image).
+.le
+.ls (minbox = INDEF) [integer]
+Inner box radius, in pixels, for median filter. Only used if "filter" is
+not equal to "none".
+If INDEF, default value is 6 for "filter=median" and 1 for "filter=mask".
+.le
+.ls (maxbox = INDEF) [integer]
+Outer box radius, in pixels, for median filter. Only used if "filter" is
+not equal to "none".
+If INDEF, default value is 8 for "filter=median" and 2 for "filter=mask".
+.le
+.ls (dorefine = yes) [boolean]
+Compute refined pedestal estimate after initial "quick'n'dirty" estimate?
+.le
+.ls (nrefine = 41) [integer, min=3]
+Number of trial pedestal values to use in refinement phase. Only used if
+"dorefine=yes". Should be an odd number.
+.le
+.ls (refstep = INDEF) [real]
+Step size between trial pedestal values in refinement phase. Only used if
+"dorefine=yes". If INDEF, the maximum of either 3% of the initial pedestal
+value or 0.5 DN will be used.
+.le
+.ls (reforder = 5) [integer, min=0, max=10]
+Order of the polynomial fit used in the refinement phase. Only used if
+"dorefine=yes".
+.le
+.ls (doquadeq = yes) [boolean]
+Equalize quadrant DC levels after subtracting pedestal values?
+.le
+.ls (eqorder = 1) [integer, min=-2, max=7]
+Order of polynomial fit used in quadrant equalization. If "eqorder=-1" the
+median pixel value is computed; if "eqorder=-2" the mode is computed. Only
+used if "doquadeq=yes".
+.le
+.ls (eqpix1 = 2) [integer, min=1, max=128]
+First pixel to use in each row/column for quadrant equalization. Pixels are
+counted outwards from quadrant boundary, starting with 1. Only used if
+"doquadeq=yes".
+.le
+.ls (eqpix2 = 10) [integer, min=1, max=128]
+Last pixel to use in each row/column for quadrant equalization. Pixels are
+counted outwards from quadrant boundary, starting with 1. Only used if
+"doquadeq=yes".
+.le
+.ls (eqflat = yes) [boolean]
+Apply flatfield to quadrant equalization offset values? Only used if
+"doquadeq=yes".
+.le
+.ls (flatfield = "") [file]
+Name of the flatfield file to use for pedestal subtraction. If left blank,
+the task will read the name of the flatfield file from the FLATFILE keyword
+in the input image header.
+.le
+.ls (statregions = "") [pset]
+Pset containing image section specifications for computing statistics.
+The "quad1" through "quad4" parameters specify the boundaries to use for each
+quadrant when computing the pixel spread in trial images.
+The "statsec" parameter is not used at this time.
+See the description section above for the quadrant numbering scheme.
+.le
+.ls (dqon = yes) [boolean]
+Turn on pixel masking by data quality bits? If yes, then pixels with DQ bits
+corresponding to those listed in the dqpar pset (see below) will not be used
+in any statistical computations.
+.le
+.ls (dqpar = "") [pset]
+Data quality bits parameter set. Pixels with DQ bits corresponding to those
+bits turned on in this pset will be rejected from statistical computations
+if "dqon=yes".
+.le
+.ls (logfile = "") [file]
+Processing log file name. If not null, a text file is created containing
+a log of information generated during processing.
+.le
+.ls (verbose = yes) [boolean]
+Verbose output during task execution?
+.le
+.ih
+EXAMPLES
+1. Estimate and subtract pedestal from the calibrated image
+n3z302g7m_cal.fits, storing the resulting image in the file n3z302g7m_ped.fits.
+The flatfield image named in the input image header is used, unsharp masking
+is applied to the trial images, and the inter-quadrant DC levels are
+equalized by adding a constant multiplied by the flatfield:
+
+.nf
+ni> pedsub n3z302g7m_cal.fits n3z302g7m_ped.fits
+.fi
+
+2. Correct the same image, but use the median value of border pixels to
+determine the quadrant equalization:
+
+.nf
+ni> pedsub n3z302g7m_cal.fits n3z302g7m_ped.fits eqorder=-1
+.fi
+
+3. Correct the image n4ls01i1q_cal.fits without applying any filtering to the
+trial images and also do not multiply the quadrant equalization constants by
+the flatfield:
+
+.nf
+ni> pedsub n4ls01i1q_cal.fits n4ls01i1q_ped.fits filter=none eqflat-
+.fi
+
+4. Process the images listed in the file "cal.lis", using all default
+parameter settings.  The corresponding list of output file names is contained
+in the file "ped.lis":
+
+.nf
+ni> pedsub @cal.lis @ped.lis
+.fi
+.ih
+REVISIONS
+.ls Version 23-Jun-2000 (STSDAS v2.2)
+First release of the task.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Original core algorithms based on the "unpedestal" program, which was written
+by Roeland van der Marel and David Zurek (STScI). Ported to the C language
+and the IRAF environment, with further algorithm refinements, by Howard
+Bushouse (STScI).
+.ih
+SEE ALSO
+pedsky, biaseq
+.endhelp
+

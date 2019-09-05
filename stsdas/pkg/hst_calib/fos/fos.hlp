@@ -1,0 +1,329 @@
+.help fos Feb02 stsdas.hst_calib.fos
+.ih
+NAME
+fos -- Calibration and Analysis of Faint Object Spectograph (FOS) 
+Observations.
+.ih
+INTRODUCTION 
+The 'fos' package contains the Routine Science Data 
+Processing (RSDP) calibration code ('calfos'), 
+routines to generate the calibration reference files and 
+tables required by 'calfos', routines to generate the 
+parameters needed for observation planning and instrument 
+configuration, and routines to display and reduce FOS data. 
+The RSDP pipeline, operated at STScI, 
+provides consistent calibration of FOS observations.  The purpose of 
+the STSDAS calibration software is first, to provide the 
+calibration parameters used in RSDP, and second, to calibrate 
+FOS observations.
+
+The user should be aware of the existence of an external
+IRAF package, 'STPOA', available from the ST-ECF Post-Operational 
+Archives group 
+(http://www.stecf.org/poa/pcrel/POA_CALFOS.html)
+which contains improved calibration for specified FOS data.
+The 'poa_calfos' pipeline in the STPOA package will provide
+an improved calibration for the following FOS data:
+.nf
+
+  Detector:  BLUE
+  Grndmode:  SPECTROSCOPY, RAPID-READOUT, IMAGE
+  Fgwa_id:   H13, H19, H27, H40, H57, L15, L65    
+  Aper_id:   A-1, A-2, A-3, A-4, B-1, B-2, B-3, B-4
+
+.fi
+Data which corresponds to the preceding list can be 
+processed using the 'calfos' pipeline 
+('stsdas.hst_calib.fos.calfos').  The 'calfos' will 
+issue a warning message regarding the availability of
+an improved calibration using the 'poa_calfos' pipeline, 
+but 'calfos' will continue to process the data.
+
+.ih
+CALIBRATION REFERENCE FILES AND TABLES 
+
+The following table summarizes the FOS calibration parameters 
+needed by RSDP.  For each parameter, the table lists the 
+STSDAS tasks that generate the parameter, and the name of the 
+CDBS relation (if any) in which the parameter is stored.   
+
+.nf
+Table 1.  FOS Calibration Parameters Required by RSDP
+------------------------------------------------------------------
+| Parameter Description | Primary STSDAS task(s) | CDBS Relation |
+------------------------------------------------------------------
+|deadtime constants     | deadtimey              |  CYCCG2R      |
+|aperture parameters    | aperlocy, apscale      |  CYCCS0R      |
+|aperture positions     | ybase                  |  CYCCS1R      |
+|emission lines         |                        |  CYCCS2R      |
+|filter widths          |                        |  CYCCS3R      |
+|Wollaston/Waveplate    |                        |  CYCCS4R      |
+|    parameters         |                        |               |
+|sky shift parameters   |                        |  CYCCS5R      |
+|wavelength coefficients| linefind, dispfity,    |  CYCCS6R      |
+|                       | waveoffset, fitoffsety |               |
+|GIMP-correction scale  |                        |  CYCCS7R      |
+|    factors            |                        |               |
+|predicted background   |                        |  CYCCS8R      |
+|    count rates        |                        |               |
+|scattered light        |                        |  CYCCS9R      |
+|    parameters         |                        |               |
+|OTA focus history	|			 |  CYCCSAR	 |
+|Relative aperture	|			 |  CYCCSBR	 |
+|    throughputs	|			 |		 |
+|Aperture throughput	|			 |  CYCCSCR	 |
+|    vs. OTA focus	|			 |		 |
+|Time change in		|			 |  CYCCSDR	 |
+|    sensitivity	|			 |		 |
+|background reference   | parthity               |  CYBACR       |
+|    files              |                        |               |
+|flat field reference   | flatfield              |  CYFLTR       |
+|    files              |                        |               |
+|inverse sensitivity    | absseny, absfity       |  CYINVR       |
+|    reference file     |                        |               |
+|average inverse	| absseny, absfity	 |  CYAISR	 |
+|    sensitivity file   |			 |		 |
+|retardation reference  |                        |  CYRETR       |
+|    files              |                        |               |
+|disable diode files    !                        |  CYDDTR       |
+|quality initialization | parthity               |  CYQINR       |
+|    reference files    |                        |               |
+|post-COSTAR polarimetry|                        |  CYPCPR       |
+|    correction files   |                        |               |
+------------------------------------------------------------------
+.fi
+.ih
+RSDP CALIBRATION CODE -- CALFOS
+.ls The calibration process consists of the following steps:
+.nf
+  1)  Convert to count rates.
+  2)  Apply GIMP correction.
+  3)  Correct for diode non-linearities.
+  4)  Subtract background.
+  5)  Subtract scattered light. (CALFOS v1.3.1+)
+  6)  Apply flat fielding.
+  7)  Subtract sky.
+  8)  Assign wavelengths.
+  9)  Correct for changes in OTA focus. (CALFOS v2.0+)
+ 10)  Normalize to reference aperture.  (CALFOS v2.0+)
+ 11)  Convert to absolute flux units.
+ 12)  Correct for time change in sensitivity. (CALFOS v2.0+)
+ 13)  Produce the output statistical error array.
+ 14)  Special mode processing.
+.fi
+.le
+
+Raw counts are converted to count rates by dividing each data 
+point by the exposure time and correcting for disabled 
+diodes. If the science data header keyword 'DEFDDTBL' is 
+true, then the disabled diodes are taken from the Unique Data 
+Log (UDL), otherwise, disabled diodes are found in the file 
+given by the keyword 'DDTHFILE'. This file is selected from 
+the reference relation 'CYDDTR'.
+
+Count rates are corrected for the geomagnetically-induced image motion
+problem (GIMP), if necessary. GIMP-correction scale factors (table 'CCS7') 
+are used to shift the spectrum in the FOS X-direction to correct for the effects
+of the Earth's magnetic field on the FOS detector. The offset are based
+on model calculations of the Earth's magnetic field at the position of 
+the telescope at the time of the FOS observation. This processing step
+is not needed for observations obtained after April 4, 1993. Observations
+obtained after this date use the on-board GIMP correction scheme.
+
+Raw count rates are corrected for saturation in the detector 
+electronics. Deadtime constants (table 'CCG2') are used to correct 
+for the non-linear channel response of each diode. These 
+constants are not expected to change through the lifetime of 
+the FOS instrument. Analysis of prelaunch data indicate that 
+the same constants can be used for both FOS detectors.
+  
+The particle-induced background can be subtracted from the sky and object 
+spectra. If no background observation was taken, a default reference 
+background indicated by the keyword 'BACHFILE' is used. The 
+observed background is smoothed with a median, followed by a 
+mean filter before subtraction. The filter widths are 
+contained in table  'CCS3'. No smoothing is done to the 
+reference background if it is used. The reference bckground may, 
+however, be scaled (using table 'CCS8') according to the 
+geomagnetic position of the telescope at the time of the FOS 
+observation. The default background is selected from the 
+reference relation 'CYBACR'.
+
+Contributions from (non-dispersed) scattered light can be measured
+and removed from object and sky spectra obtained using gratings
+that have a region of no sensitivity to dispersed light within the
+recorded spectrum. The mean light level is computed within this
+no sensitivity region of the spectra and is then subtracted (as a
+constant) from all regions of the object and sky spectra. The diode 
+ranges of the no sensitivity region for each grating are stored in the 
+reference table 'CCS9'.
+
+Diode-to-diode sensitivity variations and fine structure are 
+removed by multiplying by the flat-field response. This 
+process requires the flat-field response file given by the 
+keyword 'FL1HFILE'. A second flat-field file, 'FL2HFILE', is  
+required for paired aperture or spectropolarimetry 
+observations. These files are selected from the reference 
+relation 'CYFLTR'.                   
+          
+The sky can be subtracted from the object spectra. The 
+emission line relation ('CCS2') gives regions where a sky 
+spectrum should not be smoothed before subtraction from the 
+object spectrum; the detector parameters ('CCS3') contain the 
+filter widths (mean and median) for smoothing the sky spectra.  
+The sky shift parameter ('CCS5') gives 
+an integer shift in pixels that is to be applied to the sky 
+spectrum before subtraction. The aperture parameters ('CCS0') 
+contain aperture areas required to scale a sky spectrum taken 
+in one aperture of a paired aperture before subtraction from 
+the object spectrum taken in the other aperture.  Values for 
+this relation are required only for the paired apertures. The 
+aperture position parameters (CCS1) are used to determine 
+which aperture (UPPER or LOWER) of an aperture pair was used 
+for observing an object or sky spectrum.
+  
+The wavelength parameters ('CCS6') give the dispersion 
+coefficients used to generate wavelength scales. Separate 
+coefficients are required for each detector, disperser, 
+aperture and polarizer mode.
+
+Object spectra are converted to absolute flux units by 
+multiplying by the inverse sensitivity vector. This step 
+requires the inverse sensitivity  file found in header 
+keyword 'IV1HFILE'. A second inverse sensitivity file, 
+'IV2HFILE', is  required for paired aperture or 
+spectropolarimetry observations. These files are selected 
+from the reference relation 'CYIVSR'.                   
+
+Pre-COSTAR object spectra can utilize the following four enhanced flux
+calibration techniques (available only in CALFOS versions 2.0 and higher):
+
+Object spectra are corrected for changes in aperture throughput due
+to changes in OTA focus. This step requires the OTA focus history
+table found in header keyword 'CCSA' and the focus change in aperture
+throughput table found in header keyword 'CCSC'.
+
+Object spectra are normalized to the throughput of the reference aperture
+for which the average inverse sensitivity (AIS) curve was derived.
+This step requires the relative aperture throughput table found in header
+keyword 'CCSB'.
+
+Object spectra are converted to absolute flux units by multiplying
+by the average inverse sensitivity vector for the reference aperture.
+This step requires the average inverse sensitivity file found in
+header keyword 'AISHFILE'. This file is selected from the reference
+relation 'CYAISR'.
+
+Object spectra are corrected for changes in instrumental sensitivity
+over time. This step requires the time change in sensitivity table
+found in the header keyword 'CCSD'.
+
+The propagated error can be calculated at each point in the 
+spectrum.
+
+The final step performs ground software mode dependent 
+reductions for time-resolved, spectropolarimetry, and 
+rapid-readout observations. The  spectropolarimetry 
+reductions require the the Wollaston and Waveplate  parameter 
+table, 'CCS4', and the retardation reference file, 
+'RETHFILE'. The retardation file is selected from the 
+reference relation 'CYRETR'.                   
+If the spectropolarimetry data were acquired during the post-COSTAR epoch 
+as indicated by the Science header keyword/value pair, KYDEPLOY=T, and a 
+post-COSTAR calibration is available, the post-COSTAR polarimetry correction
+reference file, 'PCPHFILE', selected from the relation 'CYPCPR' is
+also required for proper calibration.
+However, it should be noted that if no post-COSTAR
+polarimetry calibration file for the 'PCPHFILE' calibration file keyword 
+is provided,  'calfos' will not abort.  Instead, warning 
+messages will be issued and the data in the output 'c3h' file will still be
+calibrated, but the additional post-COSTAR correction will not have been
+applied.  Only versions 3.0 and higher of 'calfos' include the post-COSTAR 
+polarimetry correction capability.
+
+The calibration process is controlled by the values of certain
+header keywords. These keywords may be examined and modified
+using the task 'chcalpar'.
+
+Later versions of 'calfos' (version 1.2.3 and later) are not 
+backwards compatible with all FOS header formats. In this case,
+the task 'newfoshdrs' can be used to transform the old headers
+to an acceptable format for running 'calfos'. Please note, that
+some additional header changes may be needed to get 'calfos'
+to run to completion. Furthermore, the scattered light correction
+step is only available in versions 1.3.1 and later of 'calfos' and
+the enhanced flux calibration steps are only available in versions
+2.0 and later of 'calfos'.
+In order to run these versions of 'calfos' on old data sets it 
+is necessary to use the task 'addnewkeys' to add the required
+header keywords that pertain to these correction steps.
+  
+.ih
+OBSERVATION PLANNING AND INSTRUMENT CONFIGURATION   
+In addition to the calibration parameters needed by RSDP, 
+there are other FOS calibration parameters that are needed to 
+configure the instruments, and compute target acquisition 
+parameters.
+  
+.nf
+Table 2.  Non-RSDP FOS Calibration Parameters 
+------------------------------------------------ 
+| Parameter Description | Primary STSDAS tasks |
+------------------------------------------------
+| ybases                | ybase                | 
+| discrimator values    | phay                 |
+| target acquisition    | aperlocy, apscale,   |
+------------------------------------------------
+.fi
+  
+Ybases are the Y positions required to center a spectrum on 
+the diode array for any detector, disperser, aperture, and 
+polarizer mode.  These must be closely monitored as they 
+affect the quality of the scientific data.  Improper Ybases 
+will decrease the amount of flux recorded by the diode array.
+  
+The detector descriminator values are computed by the 'phay' 
+task, which fits a Gaussian function with a polynomial 
+baseline to the differential pulse height distribution.
+
+The 'aperlocy' and 'apscale' tasks are used to analyze FOS 
+target acquisition images.
+
+.ih
+DATA REDUCTION AND DISPLAY
+The tasks listed in Table 3 are used to display or prepare
+the data for further analysis.
+  
+.nf
+Table 3.  Display and Reduction Tasks
+----------------------------------------------------------------
+| STSDAS tasks | Task Description                              | 
+----------------------------------------------------------------
+| bspec        | compute scattered light spectrum using FFTs   |
+| countspec    | calculate countrate spectrum from flux        |
+| deaccum      | unstack ACCUM mode data into separate reads   |
+| fwplot       | plot flux vs. wavelength                      |
+| foswcorr     | correct blue wavelengths for zero-point shift |
+| gimpcor      | show the magnitude of the calfos gimp         |
+| mkmultispec  | Create a Multispec MWCS for the spectra       | 
+| rapidlook    | display multigroup image as 2-d image         |
+| rcombine     | average or sum rapid-readout data with        |
+|              |    propagation of errors and data quality     |
+| pcombine     | average multiple data sets with propagation   |
+|              |    of errors and data quality                 |
+| resample     | resample data to a linear wavelength scale    |
+| vac2air      | convert vacuum wavelengths to air             |
+| yd2p, yp2d   | pixel <--> diode conversions                  |
+| ymkmu        | Place wavelength information in headers       |
+| yddintplot   | analyze dead diode locations                  |
+| yfluxcal     | reset calibration switches for flux cal.      |
+| ypeakup      | Analyse ACQ/PEAK observations                 |
+| yratio       | Take ratios of each group of ACCUM obs.       |
+----------------------------------------------------------------
+.fi
+  
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.endhelp

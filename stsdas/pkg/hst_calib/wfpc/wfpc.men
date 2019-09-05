@@ -1,0 +1,32 @@
+Menu for the package `stsdas.hst_calib.wfpc':
+
+   bjdetect - Detect bias jump.
+     calwfp - Run the WF/PC calibration code on an input image. 
+     calwp2 - Routine calibration of HST Wide Field Planetary  Camera-II images.
+  checkwfpc - Perform consistency checks on a WF/PC reference file.
+    combine - Combine images using various algorithms & pixel rejection schemes.
+      crrej - Combine images to make a cosmic ray free image.
+     dqfpar @ Select DQF error flags (pset). 
+      dqpar @ Select DQF error flags (pset). 
+    engextr - Extract info. from WF/PC engineering data (.X0H and .X0D) files.
+  invmetric - Translate RA & Dec to WF/PC pixel coordinates with geometric 
+              corrections.
+     metric - Translate WF/PC pixel coordinates to RA & Dec with geometric 
+              corrections.
+     mkdark - Create a dark by combining images to get rid of cosmic rays.
+ noisemodel - Determine noise model parameters from CCD frames.
+   noisepar @ Set parameters describing noise model (pset).
+   pixcoord - Compute pixel coordinates of stars in an image.
+    qmosaic - Quick mosaic of the four WFPC or WFPC2 frames into one image.
+       seam - Smooth the boundaries between mosaicked WF/PC frames.
+   uchcoord - Update plate scale, shift, and rotation of WFPC2 images.
+   uchscale - Update plate scales of WFPC2 (and WFPC) images.
+    w_calib + Tasks for deriving the WF/PC instrument calibration.
+    warmpix - Flag an/or correct hot pixels in WFPC2 images.
+  wdestreak - Remove streaks from a low-bias WFPC2 image
+     wfixup - Interpolate over bad columns in a WF/PC frame.
+    wmosaic - Mosaic the four WF/PC frames into one image.
+wstatistics - Compute & print WF/PC image pixel statistics.
+
+(Type "help wfpc option=sysdoc" for detailed information about the `wfpc' 
+package).

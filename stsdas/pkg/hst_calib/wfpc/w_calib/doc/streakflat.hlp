@@ -1,0 +1,146 @@
+.help streakflat Dec92 stsdas.hst_calib.wfpc.w_calib
+.ih
+NAME
+streakflat -- Generate WF/PC flat field from streak exposures of the Earth.
+.ih
+USAGE
+streakflat infile outfile iterations widths good_points
+.ih
+DESCRIPTION
+The flat field of the Wide-Field/Planetary Camera (WF/PC) on board
+the Hubble Space Telescope is
+obtained by taking exposures of the bright Earth.  Because of the relative
+motion between the telescope and the Earth, these "Earth flats" show the
+pattern of streaks.  An algorithm was developed by the WF/PC Investigation
+Definition Team to use these exposures to generate flat fields of the CCD chips.
+This task is a modified version of this algorithm. 
+The following steps are used to generate the WF/PC flat field:
+ 
+Step 1: Calculate the mean flat by taking a straight average, pixel by 
+pixel, of all
+input Earth flats (raw streak flats), but excluding pixels that are masked
+as bad.  The "raw" data here are data having minimal calibrations applied,
+i.e., A-to-D error correction, known bad pixels masking, and bias level
+correction.
+ 
+Step 2: Each Earth flat frame is divided by the mean flat obtained in
+step 1.  The ratios from this division 
+in the central 400 x 400 pixel region are averaged into
+a single value of ratio for that frame.  This last step also involves
+exclusion of very large or very small ratios in this region by two passes of
+2 sigmas rejection.
+ 
+Step 3: A first guess of the flat field is obtained from the scaled
+Earth flat for each pixel, i.e., at each pixel, every Earth flat frame is
+divided by its ratio from step 2 to generate the scaled Earth flat, and 
+a median value is chosen among these scaled Earth flats.
+ 
+Step 4: Each of the Earth flats is divided by the median flat from step
+3 to get an estimate of the streak pattern in that frame.
+
+Step 5: The estimate of the streak pattern form step 4 is then smoothed
+along the streak direction.  The smoothing function used here is a box filter.
+The streak angle is determined from the spacecraft orbital velocity and
+the direction of its pointing.
+ 
+Step 6: Each Earth flat is divided by the smoothed streak pattern to
+give an estimate of the "chip flat" for that frame.
+ 
+Step 7: Repeat steps 1, 2, and 3 but using the "chip flats" generated
+in step 6, instead of the original Earth flats as input.  The new 
+median is the next approximation to the
+flat field.  This new median flat is then used in place of the previous
+median flat and starts a new iteration by going through steps 4 to 7.  Each new
+iteration will use a narrower filtering box.
+
+The number and widths of the filtering box along the streaks can be chosen
+by the user.  From past experience, we set the default to be the following
+eight half-widths: 800, 600, 400, 250, 150, 90, 50, and 30 pixels.
+ 
+The output of this task is an unnormalized flat fields for each CCD chip.  
+A separate task
+called 'normclip' does the final normalization between chips and scales the
+flat field pixels such that the overall average of all four chips is one.
+The 'normclip' task also clips out extremely low or high flat field values
+and inverts the flat field values for use in pipeline processing.
+
+When input Earth flats are taken within one or consecutive orbits without 
+changing the spacecraft's roll angle, the streak angles will lie within 
+a very small range.  Our algorithm cannot handle this situation with total 
+satisfaction, i.e., 
+some remnant streaky features may show up in the final flat field.
+In addition, the corners will have larger uncertainty in the final flat field.
+The solution to this problem is to plan the Earth flat exposures such that they
+can cover as large a range of streak angles as possible.
+
+Our algorithm is also based on the assumption that the streaks or deviations 
+in each Earth flat are not large (not more than 10 to 20 percents) 
+compared to the 
+general background.  Visual inspection of each input file is recommended and
+Earth flats with abnormally large bright or dark features or steep gradients 
+should be excluded from the final flat field calculation.
+ 
+Running the 'streakflat' task uses extensive computing resources.  
+Calculating the flat fields of all four chips with 8 iterations requires approximately one
+hour (clock time) per input Earth flat file on a Sun SPARC 2 machine.
+
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input streak file template.  If the input file names do not have
+extensions, the extension "c0h" is assumed.  This task also needs a 
+corresponding data quality file and a standard header packet (SHP) file
+for each input data file.  The extension of the data quality files must 
+be "c1h" and the SHP file "shh". 
+The following SHP keywords are used in this task:
+
+.nf
+PA_V3		position angle of the V3 axis
+RA_V1		right ascension of the V1 axis
+DEC_V1		declination of the V1 axis
+VELOCSTX	X-component of the spacecraft velocity
+VELOCSTY	Y-component of the spacecraft velocity
+VELOCSTZ	Z-component of the spacecraft velocity
+.fi
+.le
+.ls outfile = "" [string]
+Name of the output file, i.e., the flat field file.  If the output file name 
+does not have an extension, the extension "r6h" is assumed.  This task will 
+also generate an output data quality file.  The extension of the data 
+quality file is "b6h".
+.le
+.ls iterations = 8 [integer]
+Number of iterations to be used in the 1-D smoothing of the streaks.
+.le
+.ls widths = "800,600,400,250,150,90,50,30" [string]
+Half widths (in pixels) used in 1-D smoothing.
+.le
+.ls good_points = 1 [integer, min = 1]
+Minimum number of valid points at each pixel required to calculate the flat 
+field.  If the number of valid points at a certain pixel is less than the 
+value of this parameter, the data quality file of the final flat field will 
+have a fill value at the corresponding pixel.
+.le
+.ls (verbose) = no [boolean]
+Print out detailed messages as the task progresses?
+.le
+.ih
+EXAMPLES
+1. Produce a flat field based on all streak exposure files in the local 
+directory and use 4 iterations of half widths 300, 200, 120, and 70.
+Redirect the output messages to the file 'flat.log' and run the task in the 
+background.
+
+.nf
+w_> streakflat *.c0h testflat.r6h 4 "300,200,120,70" ver+ > flat.log &
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+The maximum number of input images is 18.  This is imposed by IRAF (LAST_FD
+in hilb$config.h).
+.ih
+SEE ALSO
+normclip
+.endhelp

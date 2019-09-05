@@ -1,0 +1,410 @@
+<!-- Translated by iraftex version 0.15 -->
+<html>
+<title>CPLUCY (V0.22) --- Sep98 stsdas.contrib --- CPLUCY (V0.22)</title>
+<h1>NAME</h1>
+<blockquote>
+cplucy -- Photometric image restoration with unconstrained star positions
+</blockquote>
+<h1>USAGE</h1>
+<blockquote>
+plucy data psf fracent niter starlist 
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+This task is an implementation of a method developed by Leon Lucy
+(ST-ECF) for multi-channel photometric image restoration. It is a variant
+of the PLUCY method which regards the point-sources as (x,y,intensity)
+points rather than delta-functions.
+<p>
+The true image on the sky is 
+regarded as the sum of two components. One of these is
+a smooth surface which models an underlying extended light distribution,
+perhaps from a background source or perhaps from an underlying object. The
+other is a list of positions and intensities which represent the point 
+sources in the image. The positions for these objects must be known. 
+An iterative maximization is performed of a function
+which is likelihood for the point sources but contains
+an additional entropy component for the background. This latter term constrains
+the background to be smooth and consequently suppresses the artifacts seen
+about point sources in a traditional Lucy-Richardson restoration.
+<p>
+The way in which the point source and background images are handled will
+be described first, followed by details of options.
+<p>
+The Point Sources:
+<p>
+The positions of the point sources are given in a text table which also can
+specify an initial estimate for the brightness of each source. The X 
+and Y positions use the convention that the bottom left corner pixel is 
+(1,1) and its centre is at (1.0,1.0).
+<p>
+The positions of the stars are determined by the user, they are not modified
+by the program itself. The only thing which it changes is the flux assigned
+to each one.
+<p>
+Before the iterations begin the PSF image supplied is shifted according
+to the offsets of all the stars and a set of &quot;small&quot; shifted PSFs produced.
+The size of these small PSFs is specified using the &quot;psfsnx&quot; and &quot;psfsny&quot;
+parameters.
+<p>
+Initially half the total flux is allocated to the background channel which 
+is flat and the other half is distributed among the point sources which
+start all equal.
+<p>
+At each iteration the shifted versions of the PSF are multiplied by the current
+estimates for the fluxes of the stars and added together to create a current
+estimate image for the point sources.
+<p>
+As the iterations proceed the point source intensities converge on the
+maximum likelihood values and are unaffected by the entropy constraints on
+the background. The resultant fluxes in the point sources are written out
+to the output table of results.
+<p>
+It is possible to specify the starlist file name as null (&quot; &quot;) in which
+case the restoration will become one in which the entire image is treated
+as background and the result will be a standard Lucy-Richardson one with
+added smoothness constraint.
+<p>
+The primary difference between the earlier PLUCY code and CPLUCY is the
+representation of the point source channel. In PLUCY the points are delta
+functions in an image array and hence are constrained to be at the centre
+of pixels. In CPLUCY the points are free to be at any sub-pixel positions
+because they are represented as X,Y pairs rather than delta-functions in
+an image. This new features also avoids the need to sub-sample the data frames.
+<p>
+The Background:
+<p>
+The background starts off flat with a value and containing half the flux
+of the input image. It then starts to model the background found in the data
+as the objective function is iteratively maximised. The smoothness of
+this background is constrained by the behaviour of the entropy.
+<p>
+This code uses a &quot;floating prior&quot; when the entropy becomes 
+relative to a (smooth) surface computed from the previous background estimate:
+<p>
+<pre>
+      ----
+      \
+Sf = - &gt; PS ln(PS/FP) where FP is the &quot;floating prior&quot;. 
+      /
+      ---- pixels
+</pre>
+<p>
+This &quot;floating prior&quot; is the result of convolving
+the previous background estimate with a gaussian smoothing kernel having
+a width (sigma) specified by the &quot;skernel&quot; parameter.
+At each iteration the previous background
+image is convolved with this kernel and used as the floating prior. If a
+large width is specified the background image is forced to be smooth over
+larger spatial scales.
+<p>
+One can consider the entropy term as a reluctance to change
+relative to the previous shape of the background. The relative strength of
+the entropy term in the objective function is controlled by the &quot;fracent&quot;
+parameter which typically takes values in the range 0.1 to 0.5.
+<p>
+The speed of convergence seems to depend strongly on the strength of the
+background when compared to the flux in the point sources. If it is very low
+and perhaps contains some zeroes progress will be slow. However very high backgrounds 
+also lead to slow convergence. It is recommended that any large DC offset in the background
+is removed but not fully - for example if the image has a minimum value of
+9500 and the background has a mean of 10000 then subtracting 9400 before
+processing may be wise.
+</blockquote>
+<h1>OPTIONS</h1>
+<blockquote>
+In order to improve the results for HST WFPC2 images there is an option 
+to also apply a &quot;pixel response function&quot; convolution kernel. This is
+applied when creating the individual PSFs for the point sources in the
+field.
+</blockquote>
+<h1>PARAMETERS</h1>
+<blockquote>
+<dl>
+<dt>data = &quot;&quot; [string]
+<dd>
+The name of the input image. The image dimensions must be even.  Any 
+negative values found in the images will be set to zero before processing.
+<dt>psf = &quot;&quot; [string]
+<dd>
+The name of the point spread function image. This must be the same
+size as the data frame and be normalised to a total of 1.0. 
+The PSFs must have their peaks positioned such that when
+they are convolved with the point source image the result is registered with
+the input data image. PSF registration is often the most difficult
+part of using this software effectively - as a rule if the PSF peak is
+in the centre of pixel (NX/2,NY/2) then the peaks in the estimates for the
+data images will be in the same pixels as the positions of the delta functions.
+Any negative values found in the PSFs will be set to
+zero and the result will be normalised to a total of 1.0.
+<dt>fracent = 0.1 [float]
+<dd>
+The fractional strength of the entropy in the expression for the objective
+function. A larger value forces the background to be smoother, a value of
+zero results in a normal Richardson-Lucy restoration likelihood maximisation
+with no entropy component. A typical value is 0.1, the default, but some trial
+and error is recommended. See also the notes for the smoothing kernel below.
+<dt>niter = 50 [integer]
+<dd>
+The number of iterations to be performed. The speed of convergence depends
+on many factors and no firm recommendations can be made. It is suggested that
+the &quot;verbose&quot; option is used and the rate of change of the objective function
+monitored. If the former is very small (1.0e-8) then the restoration has 
+converged and the result is likely to be optimal. This can occur after 
+only 20 iterations but is more likely to require many more. It should be 
+noted that because the background is &quot;regularised&quot; by the entropy term the 
+optimal solution is actually at convergence - there is no need for 
+(probably arbitrary) stopping rules to define the best point at which to 
+stop iterating.
+<dt>starlist = &quot;&quot; [string]
+<dd>
+The name of an text file which lists the positions and relative 
+initial intensities of the point sources. There are three columns: 
+<p>
+<pre>
+Column 1    The X coordinate of the star in pixel coordinates.
+Column 2    The Y coordinate of the star in pixel coordinates.
+Column 3    Initial estimate for the magnitude of the star [not used].
+</pre>
+<p>
+The coordinate system is such that (1.0,1.0) is at the centre of the
+first pixel in the image.
+<p>
+The column 3 values are not currently used by the program.
+<p>
+This file may contain comments following a # or ! symbol. Empty lines are
+ignored. The numbers may be given in free format. If this parameter is null
+it will be assumed that there are no point sources in the frame.
+<dt>(back = &quot;&quot;) [string]
+<dd>
+The name for the output background only (smooth) image. 
+This parameter is optional and if set to null no image will be created.
+<dt>(starim = &quot;&quot;) [string]
+<dd>
+The name for the output stars-only image. This image is generated from
+the list of star positions and intensities using the PSF image.
+This parameter is optional and if set to null no image will be created.
+<dt>(outtab = &quot;&quot;) [string]
+<dd>
+The name for the output text file to contain the photometric results.
+This table has six columns:
+<p>
+<pre>
+Column 1    The sequence number of the star.
+Column 2    The X coordinate of the star in pixel coordinates.
+Column 3    The Y coordinate of the star in pixel coordinates.
+Column 4    The initial estimate for the star flux [from input list].
+Column 5    The final measured flux in the star.
+Column 6    The final measured magnitude of the star. 
+</pre>
+<p>
+The magnitude is calculated from: mag=magzero-2.5log10(flux).
+The file has a header which lists all the parameters used in
+the run for future reference.
+This parameter is optional and if set to null no file will be created.
+<dt>(verbose = yes) [boolean]
+<dd>
+Whether or not to give frequent information about the progress of the 
+processing.  If this is switched on quite a lot of diagnostics are given, 
+when it is off none at all. It is strongly recommended that this be 
+switched on. The meaning of the diagnostic messags is explained below
+in the detailed example.
+<dt>(prf = no) [boolean]
+<dd>
+Whether an additional convolution with the HST WFPC2 pixel response function
+is performed. This is a special addition purely for WFPC2 and should normally
+be set to no.
+<dt>(interpol = &quot;linear&quot;) [string]
+<dd>
+The type of interpolant used to move the PSFs around. The options are the
+standard IRAF ones: nearest,linear,poly3,poly5 or spline3. If the PSF is very
+well sampled &quot;linear&quot; may be adequate but usually &quot;poly5&quot; or &quot;spline3&quot; should
+be used.
+<dt>(psfsnx = 21) [integer]
+<dd>
+The size, in X, of the small images used to contain the shifted PSF images
+which are created from the supplied image PSF before the interations start.
+This array should be large enough to contain the PSF without significant loss
+around the edge.
+<dt>(psfsny = 21) [integer]
+<dd>
+The size, in Y, of the small images used to contain the shifted PSF images
+which are created from the supplied image PSF before the interations start.
+This array should be large enough to contain the PSF without significant loss
+around the edge.
+<dt>(psfxb = 1) [integer]
+<dd>
+The X subsampling of the supplied PSF image relative to the data image.
+This option is not supported at present and should be set to 1.
+<dt>(psfyb = 1) [integer]
+<dd>
+The Y subsampling of the supplied PSF image relative to the data image.
+This option is not supported at present and should be set to 1.
+<dt>(magzero = 25.0) [float]
+<dd>
+The magnitude zero point. The flux in a star is: 10**(0.4*(magzero-mag)).
+This is used to convert the initial guesses to fluxes and at the end of
+processing to convert the measured fluxes back to magnitudes.
+.le.
+<dl>
+<dt>(skernel = 10.0) [float]
+<dd>
+The standard deviation of the two dimensional gaussian smoothing kernel used
+to create the floating prior image from the current estimate for the background.
+The default is suitable for cases where the background is very smooth.
+If this number is too small the background may be able to model the stars in
+which case the photometry will be inaccurate (star fluxes will be underestimated)
+and the background
+</dl>
+</dl>
+</blockquote>
+<h1>EXAMPLES</h1>
+<blockquote>
+This task is complicated and some of the concepts are probably unfamiliar. So
+to help ease the process of using it a detailed example is given.
+Let's say that you have an image called just &quot;data&quot; which has six stars in it.
+The star positions are in the file &quot;stars&quot;:
+<p>
+<pre>
+65 65 15
+100 100 14
+20 30 13
+50 60 16
+70 20 17
+80 90 18
+</pre>
+<p>
+The magnitudes are relative to a magnitude zero point of 25 given.
+<p>
+Then we could setup the parameters for CPLUCY as follows:
+<p>
+<pre>
+data    =                 data  Input data image
+psf     =                  psf  Input Point-Spread-Function image
+fracent =                  0.2  Fractional strength of entropy term
+niter   =                   10  Number of iterations
+starlist=                stars  File containing list of star positions
+(back   =              out-bac) Smooth background output image
+(starim =           out-starim) Point source output image     
+(outtab =               out-ph) Output text list file
+(verbose=                  yes) Display details of what is being performed?
+(prf    =                   no) Apply HST/WFPC2 pixel-response function?
+(interpo=                poly5) Interpolant used for small PSFs
+(psfsnx =                   33) Size of small PSFs (X)
+(psfsny =                   33) Size of small PSFs (Y)
+(psfxb  =                    1) Subsampling of input PSF image (X)
+(psfyb  =                    1) Subsampling of input PSF image (Y)
+(magzero=                   25) Magnitude zero point
+(skernel=                    5) Width of smoothing kernel
+</pre>
+<p>
+When this is run a typical start to the verbose output 
+will look something like this:
+<p>
+<pre>
++ CPLUCY Version 0.22 (Apr 98)
+-Opening data file: data
+-Opening PSF file: psf
+-Reading star list file: stars                (    6 stars).
+-Setting background in first estimate to:       53.157
+<p>
+# Starting iteration     1/   10-----------
+--Flux distribution, Stars:  50.00% Background:  50.00%.
+- Sum of background image is     0.8709272919D+06
+--RMS residual: 0.2046D+03 Max residual of 0.2365D+04 at (  80,  90)
+--Log.Lik:  0.761617E+07 Ent:   -0.444785E-08 Obj.Func: 0.761616989334E+07
+ Star #     1 Flux:   0.4435E+05 Input:   0.1000E+05
+ Star #     2 Flux:   0.6063E+05 Input:   0.2512E+05
+ Star #     3 Flux:   0.9449E+05 Input:   0.6310E+05
+ Star #     4 Flux:   0.4026E+05 Input:    3981.
+ Star #     5 Flux:   0.4216E+05 Input:    1585.
+...
+<p>
+# Starting iteration     2/   10-----------
+--Flux distribution, Stars:  18.08% Background:  81.92%.
+- Sum of background image is     0.1426907723D+07
+--RMS residual: 0.1030D+03 Max residual of 0.5793D+03 at (  70,  20)
+--Log.Lik:  0.814180E+07 Ent:  -0.333412E+04 Obj.Func: 0.814113266317E+07
+--Objective function increased by   0.5249628D+06
+ Star #     1 Flux:   0.3104E+05 Input:   0.1000E+05
+ Star #     2 Flux:   0.4618E+05 Input:   0.2512E+05
+ Star #     3 Flux:   0.8058E+05 Input:   0.6310E+05
+ Star #     4 Flux:   0.2556E+05 Input:    3981.
+ Star #     5 Flux:   0.2389E+05 Input:    1585.
+...
+</pre>
+<p>
+The first few lines just show the files in use, the preprocessing of the PSF and
+data and the value assigned to the initial guess at the background. For each
+iteration the first line shows the distribution of flux between points and
+background. The next shows the residuals between the current estimate of the
+observed image (ie, the convolution of the current estimate of the truth
+and the PSF) and the input data. The next line shows the two parts of the
+objective function and their total value. Finally the estimates for the 
+star fluxes (up to a maximum of the first five in the list) are given.
+If the restoration has converged the magnitude estimates should
+be constant to the accuracy given between iterations.
+</blockquote>
+<h1>TIMINGS</h1>
+<blockquote>
+About 15s per iteration for a 512x512 frame on a SPARC Ultra 1/143MHz. 
+The processing is dominated by FFTs and hence will scale roughly as the 
+number of pixels.
+</blockquote>
+<h1>BUGS</h1>
+<blockquote>
+1. The images must have dimensions which are multiples of two.
+<p>
+2. The use of double precision arithmetic throughout makes this task
+<pre>
+   slower than single precision implementations on many machines.
+</pre>
+<p>
+3. There are many internal large arrays and many convolutions. As a result
+<pre>
+   this task is greedy on both memory and CPU speed.
+</pre>
+<p>
+4. The multiple PSF option is not fully implemented.
+<p>
+5. World coordinate systems are completely ignored.
+<p>
+6. This version doesn't support acceleration.
+<p>
+7. The sub-sampled PSF option, which is important for critically or
+<pre>
+   undersampled data, isn't yet fully implemented.
+</pre>
+</blockquote>
+<h1>REFERENCES</h1>
+<blockquote>
+The original PLUCY method was devised by Leon Lucy and is described, with 
+examples, in:
+<p>
+Hook, R.N., Lucy. L.B., Stockton, A. &amp; Ridgway, S., &quot;Two Channel
+Photometric Image Restoration&quot;, ST-ECF Newsletter 21, pp. 16-18, 1994.
+<p>
+see also:
+<p>
+Lucy. L.B., &quot;Image Restorations of High Photometric Quality.&quot;, 
+Proc. The Restoration of HST Images and Spectra,
+(eds. R.J. Hanisch &amp; R.L. White), STScI, pp. 79-85, 1994.
+<p>
+Hook, R.N. &amp; Lucy. L.B., &quot;Image Restorations of High Photometric
+Quality. II. Examples&quot;, Proc. The Restoration of HST Images and Spectra,
+(eds. R.J. Hanisch &amp; R.L. White), STScI, pp. 86-94, 1994.
+<p>
+and
+<p>
+R. N. Hook &amp; S. R. Stolovy, 1998, &quot;Some Experiments with the Restoration
+of NICMOS Camera 2 Images of OMC-1&quot;, in the Proceedings of the
+workshop &quot;NICMOS and the VLT&quot;, Pula, Sardinia, Italy, May 26-27th, 1998,
+eds. Wolfram Freudling and Richard Hook
+<p>
+The CPLUCY implementation and this help file were written by Richard Hook.
+</blockquote>
+<h1>SEE ALSO</h1>
+<blockquote>
+The 'stsdas.analysis.restore' package, stsdas.contrib.plucy. 
+</blockquote>
+</html>

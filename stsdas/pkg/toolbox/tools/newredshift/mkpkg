@@ -1,0 +1,11 @@
+# Update the newredshift application code in the tools package library
+# Author: EJMC, 30 mar 00
+
+$checkout tools.a ../
+$update   tools.a
+$checkin  tools.a ../
+$exit
+
+tools.a:
+        t_newredshift.x <imhdr.h> <error.h> <time.h>
+	;

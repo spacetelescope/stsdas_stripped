@@ -1,0 +1,66 @@
+.help wfpc2_chips Jul2000 stsdas.analysis.dither
+.ih
+NAME
+wfpc2_chips -- Pset with parameters for 'avshift' and 'gprep' tasks.
+.ih
+USAGE
+wfpc2_chips
+.ih
+PARAMETERS
+.ls (t_1   = 44.026) [real]
+Angular position of WFPC2 chip 1 relative to WF3
+.le
+.ls (t_2   = 90.422) [real]
+Angular position of WFPC2 chip 2 relative to WF3
+.le
+.ls (t_4   =  0.057) [real]
+Angular position of WFPC2 chip 4 relative to WF3
+.le
+.ls (rad_1 = 736.572) [real]
+Radial distance of WFPC2 chip 1 relative to WF3
+.le
+.ls (rad_2 = 704.971) [real]
+Radial distance of WFPC2 chip 2 relative to WF3
+.le
+.ls (rad_3 =  0.) [real]
+Radial distance of WFPC2 chip 3 relative to WF3
+.le
+.ls (rad_4 = 723.072) [real]
+Radial distance of WFPC2 chip 4 relative to WF3
+.le
+.ls (r_1   = -179.79) [real]
+Rotation angle of WFPC2 chip 1 relative to WF3
+.le
+.ls (r_2   = -90.31) [real]
+Rotation angle of WFPC2 chip 2 relative to WF3
+.le
+.ls (r_3   = 0.) [real]
+Rotation angle of WFPC2 chip 3 relative to WF3
+.le
+.ls (r_4   = 90.55) [real]
+Rotation angle of WFPC2 chip 4 relative to WF3
+.le
+.ls (s_1   = 0.04557) [real]
+Pixel scale of WFPC2 chip 1 (arcseconds)
+.le
+.ls (s_2   = 0.09961) [real]
+Pixel scale of WFPC2 chip 2 (arcseconds)
+.le
+.ls (s_3   = 0.09958) [real]
+Pixel scale of WFPC2 chip 3 (arcseconds)
+.le
+.ls (s_4   = 0.09965) [real]
+Pixel scale of WFPC2 chip 4 (arcseconds)
+.le
+.ih
+DESCRIPTION
+This pset specifies the geometry of the WFPC2 chips relative to WF3, as
+measured from astrometric data.
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+avshift, gprep
+.endhelp

@@ -1,0 +1,7 @@
+input,f,a,,,,"Shift table to add granularity shift column to"
+reference,f,h,"",,,"Image that is the zero reference point"
+gran_col,s,h,"goff",,,"Name of column to add/modify"
+file_col,s,h,"file",,,"Input column containing file names"
+group_col,s,h,"group",,,"Input column containing group numbers"
+overwrite,b,h,no,,,"Overwrite column if it already exists"
+Version,s,h,"8Jul93",,,"Date of installation"

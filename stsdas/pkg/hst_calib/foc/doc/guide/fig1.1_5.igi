@@ -1,0 +1,10 @@
+data focdoc$FOC_GUIDE.plot_dat
+xcol 1
+ycol 2
+xlabel test x axis
+ylabel test y axis
+title  Fig 1.1_5 test plot of FOC data
+limits
+box
+connect
+end

@@ -1,0 +1,67 @@
+.help flagflat Jan93 stsdas.hst_calib.wfpc.w_calib
+.ih
+NAME
+flagflat -- Flag WF/PC flat field pixels which are abnormally higher or 
+lower than the local average value.
+.ih
+USAGE
+flagflat infile inmask outmask boxsize sigma
+.ih
+DESCRIPTION
+This task searches for pixels which are abnormally higher or lower than 
+the average value of their neighboring pixels.  The corresponding data quality 
+pixels will be flagged as defective.  This task is useful to mask protruding 
+features in a flat field file.  The following steps are used in this task:
+
+(1) Using a square box of user-specified size, take the mean of all pixels 
+in this box.  Pixels flagged as bad in the input data quality file are 
+not included.
+
+(2) Pixel values larger than the upper limit (= mean times the factor as
+specified in the parameter "sigma") or smaller than the lower limit (=mean 
+divided by sigma) are marked by assign their corresponding pixels in the
+output data quality file a "bad mask" value.
+
+(3) Start the above steps from the lower left corner, repeat it by moving 
+the box to the right, one column at a time, until it reaches the right boundary.
+
+(4) Repeat the above steps by moving the box upward, one row at a time, until
+it reaches the upper boundary.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input file template.  Input files must be two-dimensional and 
+REAL data type.
+.le
+.ls inmask = "" [string]
+Name of the input data quality file template.  Input data quality file must
+be 2-D and SHORT data type.  Each input file should have one corresponding 
+data quality file.  
+.le
+.ls outmask = "" [string]
+Name of the output data quality file template.  
+Each output file should have one corresponding output data quality file.  
+If the the value of this parameter is NULL, the input mask will be updated.
+.le
+.ls boxsize = 10 [integer, min = 1]
+Number of pixels on each side of the averaging box.
+.le
+.ls sigma = 2. [real, min = 1.]
+The factor used to exclude pixels with abnormally high or low flat field value.
+.le
+.ih
+EXAMPLES
+1. Flag flat field pixels which are higher than twice or less than half of the 
+local average in the file 'in.r6h'.  Use an area of 10x10 pixels around each 
+pixel to calculate the local average.
+
+.nf
+w_> flagflat in.r6h in.b6h new.b6h boxsize=10 sigma=2.
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

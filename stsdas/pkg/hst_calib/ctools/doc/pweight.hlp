@@ -1,0 +1,194 @@
+.help pweight Jul2000 ctools
+.nj
+.ih
+NAME
+pweight -- compute weights for use by the splice task
+.ih
+USAGE
+pweight intable outtable
+.ih
+DESCRIPTION
+This is an IRAF task to compute weights
+and include them as a column in spectral data,
+for use with the 'splice' task.
+The 'fweight' task also computes weights for 'splice',
+making use of the spectral data and a continuum fit to the spectrum.
+By contrast, 'pweight' uses primarily the throughput table PHOTTAB
+to compute the weights.
+
+The weight should be the signal-to-noise squared, (S/N)**2,
+and if N = sqrt (S), the weight is just S.
+The basis for determining the weight from the reference files alone
+is that the weight should be proportional to the number of electrons
+that you expect to have detected.
+It's only proportional and not equal because
+we don't take into account the actual flux of the target,
+and we don't use the NET column.
+This task would be appropriate for the case that
+the flux is so low that almost no counts were detected
+in at least one of the tables to be spliced together.
+For almost all other situations,
+the 'fweight' task can be used instead of this one.
+
+Because we don't know the normalization,
+the weights written by this task
+will typically be quite different from those written by 'fweight'.
+It is therefore essential, when running splice,
+to consistently use weights written either by 'pweight' or by 'fweight',
+but not to mix them.
+
+The weight at each pixel (each wavelength)
+is obtained by the following expression:
+
+.nf
+weight = throughput * (pct_h / pct_infinity) * Ta * HST_AREA * exptime /
+		dispersion
+.fi
+
+HST_AREA is the area (cm**2) of the unobstructed telescope aperture,
+pi * radius**2, with an adopted value of 45238.93416 cm**2.
+
+throughput is the quantum efficiency,
+electrons detected per incident photon.
+This includes the obstructions of the aperture,
+reflectivities of the optics,
+transmission of any filter,
+and sensitivity of the detector.
+The throughput of the slit is _not_ included in this term (see Ta).
+The width of the extraction box in the cross dispersion direction
+is taken to be infinite (see the pct factors).
+
+Ta is the throughput of the slit,
+which is thought of as being narrower in the dispersion direction
+than in the cross dispersion direction.
+
+(pct_h / pct_infinity) corrects for the fact that
+a box of height h pixels in the cross dispersion direction
+was used to extract the spectrum,
+rather than an infinite extraction box.
+"pct" refers to the "photometric correction table,"
+which contains this information.
+By convention, pct_h will by one
+if h is the default extraction box height,
+and pct_infinity will be greater than one
+(this is actually taken from the row for h = 600 pixels).
+
+exptime is the exposure time in seconds.
+
+dispersion is the dispersion of the spectrograph in Angstroms per pixel.
+
+Each of the above terms was included because it either
+increases or decreases the expected number of counts
+per unit wavelength interval due to the source.
+HST_AREA was included to allow splicing data from different telescopes.
+This task cannot assign weights for other telescopes,
+but the above description should be sufficient
+to allow the user with sufficient information
+to compute weights with the same constant of proportionality.
+
+Note that when running splice on output from 'pweight',
+the parameter 'splice.sw_name' for the scalar weight column name
+should be set to null (""),
+since the weight already includes the exposure time.
+
+The WAVELENGTH column is required in the input tables;
+this column can contain either scalar values or arrays.
+SPORDER must be either a column or a table header keyword.
+The following keywords are required,
+and they can be either in the primary header
+or in the table header:  PHOTTAB, OPT_ELEM, CENWAVE.
+The EXPTIME keyword is required;
+it will be looked for only in the table header, not in the primary header.
+The following keywords are optional;
+they can be either in the primary header or table header:  PCTAB,
+APERTAB, APERTURE, HELCORR.
+If the HELCORR keyword is found and its value is "COMPLETE",
+then RA_TARG and DEC_TARG will be looked for (in either header),
+and EXPSTART and EXPEND will be looked for (just in the table header).
+If HELCORR is "COMPLETE" and all these keywords are found,
+the heliocentric correction will be applied
+to shift the wavelengths back to the observed values
+before interpolating the reference tables at those wavelengths.
+EXTRSIZE can be either a column or a table header keyword;
+if it is found, and if the value matches
+a row in the PCTAB for column EXTRHEIGHT,
+the value in the PCTAB for that extraction height will be used.
+
+Several of the above keywords or columns
+are used for small corrections to the computed weights,
+or they are only relevant if tables with different parameters
+are to be spliced together.
+For example, the APERTAB gives the aperture throughput.
+If the data to be spliced together
+are all in one echelle spectrum,
+or if all observations used the same aperture,
+then the aperture throughput just results in a constant offset to the weights.
+The PCTAB correction for EXTRSIZE
+will only be relevant if a non-standard extraction height
+was used when running 'x1d'
+and files with different extraction heights are to be spliced together.
+The heliocentric correction results in
+a small shift in the dispersion direction,
+of order a quarter Angstrom.
+The weights computed by 'pweight' and 'fweight'
+can be shifted relative to each other by more than this
+depending on the smoothed flux spectrum used for 'fweight'.
+.ih
+PARAMETERS
+.ls intable [file name template]
+A list of tables containing spectra
+for which weights are to be assigned.
+
+If an input FITS file contains more than one table,
+each such table needs to be listed individually.
+.le
+.ls outtable [file name]
+A list of output tables.
+If 'outtable' is blank,
+or if the file names are the same as 'intable',
+then 'intable' will be modified in-place.
+If 'outtable' contains just one file name,
+while 'intable' contains more than one table name,
+all those in 'intable' will be copied to 'outtable',
+one table per extension.
+Otherwise, the number of names in 'outtable'
+must be the same as the number in 'intable'.
+.le
+.ls (wgt_name = "weight") [string]
+The name of the column to contain the weights.
+If a column by this name (case insensitive) doesn't exist,
+it will be created;
+if it does exist, the values will be overwritten.
+.le
+.ls (verbose = yes) [boolean]
+The default is to print the names of the input and output tables
+as they are processed.
+.le
+.ih
+EXAMPLES
+1.  Assign weights to o52z24010_x1d.fits,
+writing the output to o52z24010.fits.
+
+.nf
+    on> pweight o52z24010_x1d.fits o52z24010.fits
+.fi
+
+2.  Assign weights to o52z24010_x1d.fits, as above,
+but create the weight column in-place in o52z24010_x1d.fits.
+
+.nf
+    on> pweight o52z24010_x1d.fits
+.fi
+.ih
+BUGS
+The weights written by 'pweight' and 'fweight' use different normalization,
+since one is based on the throughput table and the other on the data.
+When running splice,
+the weights must be set consistently either by 'pweight' or by 'fweight'.
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+.ih
+SEE ALSO
+splice, sflux, fweight
+.endhelp

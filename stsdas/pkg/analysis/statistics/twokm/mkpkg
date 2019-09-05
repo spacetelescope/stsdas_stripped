@@ -1,0 +1,20 @@
+# Update the twokm application code in the statistics package library
+# Author: BALL, 16-MAR-1988
+# Revised by BSIMON, 17-SEP-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	bin.f
+	grdprb.f
+	makebin.x
+	schmit.f
+	t_twokm.x	<tbset.h>
+	tkmdata.x	<tbset.h>	
+	tkmprint.x
+	tkmtitle.x	<tbset.h>
+	twokm.x
+	;

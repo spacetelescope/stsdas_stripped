@@ -1,0 +1,16 @@
+
+reset   tables          = ROOT/tables/
+task    tables.pkg      = tables$tables.cl
+if (access("tables$lib")) reset helpdb= ( envget("helpdb") + ",tables$lib/helpdb.mip" )  
+
+reset   stsdas          = ROOT/stsdas/
+task    stsdas.pkg      = stsdas$stsdas.cl
+task    apropos         = stsdas$apropos.cl
+if (access("stsdas$lib")) reset helpdb= ( envget("helpdb") + ",stsdas$lib/helpdb.mip" )  
+
+reset   stecf           = ROOT/stecf/
+task    stecf.pkg       = stecf$stecf.cl
+if (access("stecf$lib"))  reset helpdb= ( envget("helpdb") + ",stecf$lib/helpdb.mip" )  
+
+print ""	# work around bug in CL parser
+

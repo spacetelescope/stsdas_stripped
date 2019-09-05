@@ -1,0 +1,13 @@
+# This is a config to help the sloccount tool count lines of code.
+# You probably don't care about it.
+*.cfg		data
+*.cl		irafcl
+*.dat		data
+*.def		data
+*.hd		data
+*.hlp		data
+mkpkg		makefile
+*.par		data
+*.x		spp
+*.h		spp
+*.inc		spp

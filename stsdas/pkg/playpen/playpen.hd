@@ -1,0 +1,16 @@
+# Help directory for the STSDAS.PLAYPEN package
+
+$playpen	= "stsdas$pkg/playpen/"
+$doc		= "stsdas$pkg/playpen/doc/"
+
+bwfilter	hlp=doc$bwfilter.hlp,		src=playpen$t_bwfilter.x
+edge		hlp=doc$edge.hlp,		src=playpen$edge.x
+fill		hlp=doc$fill.hlp,		src=playpen$fill.x
+ils		hlp=doc$ils.hlp,		src=playpen$ils/ils.x
+immean          hlp=doc$immean.hlp,     	src=playpen$t_immean.x
+geo2mag		hlp=doc$geo2mag.hlp,		src=playpen$geo2mag/t_geo2mag.x
+hstpos		hlp=doc$hstpos.hlp,		src=playpen$hstpos/t_hstpos.x
+hsubtract	hlp=doc$hsubtract.hlp,		src=playpen$hsubtract.x
+jimage		hlp=doc$jimage.hlp,		src=playpen$t_jimage.x
+lgrlist		hlp=doc$lgrlist.hlp,		src=playpen$t_lgrlist.x
+saolpr		hlp=doc$saolpr.hlp, 		src=playpen$saolpr.cl

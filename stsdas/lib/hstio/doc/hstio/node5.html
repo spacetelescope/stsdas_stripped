@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  Accessing and changing name, value, or comment in a FITS keyword.</TITLE>
+<meta name="description" value="  Accessing and changing name, value, or comment in a FITS keyword.">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html77 HREF="node6.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html75 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html69 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html78 HREF="node6.html">  Adding keywords to </A>
+<B>Up:</B> <A NAME=tex2html76 HREF="node2.html"> 
+Manipulating FITS Header </A>
+<B> Previous:</B> <A NAME=tex2html70 HREF="node4.html">  Finding keywords in </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00023000000000000000>  Accessing and changing name, value, or comment in a FITS keyword.</A></H2>
+<P>
+<PRE>    368:    char *getKwName(FitsKw);
+    369:    char *getKwComm(FitsKw);
+    370:    FitsDataType getKwType(FitsKw);
+    371:    Bool getBoolKw(FitsKw);
+    372:    int  getIntKw(FitsKw);
+    373:    float getFloatKw(FitsKw);
+    374:    double getDoubleKw(FitsKw);
+    375:    int getStringKw(FitsKw, char *str, int maxch);
+    376:    int putKwName(FitsKw, char *name);
+    377:    void putKwComm(FitsKw, char *comment);
+    378:    int putBoolKw(FitsKw, Bool value);
+    379:    int putIntKw(FitsKw, int value);
+    380:    int putFloatKw(FitsKw, float value);
+    381:    int putDoubleKw(FitsKw, double value);
+    382:    int putStringKw(FitsKw, char *value);</PRE>
+<P>
+These functions must be preceded by a ``find'' or ``findnext'' operation.
+Data conversions in the ``get'' routines:
+<P>
+<P><IMG ALIGN=BOTTOM SRC="_26108_tabbing21.gif"><P>
+<P>
+If the requested type conversion is not allowed, an error code is set.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

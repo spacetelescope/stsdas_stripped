@@ -1,0 +1,8 @@
+6/30/93
+
+Moved skymap source to subdirectory and separated source by procedure.
+
+Modified skymap to optionally draw a symbol centered on the chart
+reference coordinates (center) of selected style.  Added an option to
+connect visible (in the current viewport) objects with straight line
+segments of specified line style.

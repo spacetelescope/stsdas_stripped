@@ -1,0 +1,7 @@
+# Global environment definitions for the STECF package.
+
+set	stecflib	= "stecf$lib/"
+set     stecfsrc	= "stecf$src/"
+set     stecfbin	= "stecf$bin/"
+
+keep

@@ -1,0 +1,51 @@
+.help topolar May91 stsdas.analysis.fourier
+.ih
+NAME
+topolar -- Convert from real and imaginary parts to amplitude and phase.
+.ih
+USAGE
+topolar input ampl phase
+.ih
+DESCRIPTION
+This task takes a pair of images,
+real and imaginary parts of a Fourier transform,
+and converts them to the amplitude and phase.
+As with other tasks in the 'fourier' package,
+the names of the real and imaginary parts are produced by appending
+"r" and "i" respectively to the name specified by the parameter 'input'.
+For each pixel, the amplitude is the square root of the sum of the
+squares of the real and imaginary parts,
+and the phase is the arctangent:  ATAN2 (imaginary, real).
+The phase is in radians within the interval (-pi,+pi).
+.ih
+PARAMETERS
+.ls input = "" [file name]
+Name of the input image.
+
+The letters "r" and "i" will be appended to the name to form the names
+of the images for real and imaginary parts respectively.
+It is an error if either the real or imaginary part does not exist.
+.le
+.ls ampl = "" [file name]
+Name of the output image for the amplitude.
+.le
+.ls phase = "" [file name]
+Name of the output image for the phase.
+.le
+.ih
+EXAMPLES
+1. Converts real part 'x00w6601rr.d0h' and imaginary part
+'x00w6601ri.d0h' to amplitude 'a.hhh' and phase 'ph.hhh'.
+
+.nf
+     fo> topolar x00w6601r.d0h a.hhh ph.hhh
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+frompolar
+
+Type "help fourier option=sys" for a higher-level description of
+the 'fourier' package.
+.endhelp

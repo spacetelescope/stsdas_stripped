@@ -1,0 +1,117 @@
+.help FOC_GEO Apr88 "FOC 4.1"
+.ih
+CHAPTER
+FOC_GEO -- FOC geometric correctiion reference file generation
+
+.ih
+SUMMARY
+Summary for FOC_GEO
+.ls Sections:
+.nf
+	Overview
+	Frequency
+	Tasks
+.fi
+.le
+
+.ih
+OVERVIEW
+
+This chapter describes the generation of geometric reference files for RSDP
+and may also be used by Guest Observers to generate calibrations files
+for recalibration. As discussed in FOC_GEOMETRY,
+the problem may divided into two parts:
+
+.ls optical distortion
+
+.ls Normal imaging
+Based on the observed positions of stars of known coordinates in an image
+corrected for detector distortions. Note that we must take the star coordinates
+and transform V2, V3 and then to
+linear detector coordinates by assuming some particular
+transformation for the aperture - this could be arbitrary but it is advisable
+to choose something very nearly correct.
+
+The distortion field should be dependent only on the F number
+F/48, F/96 or F/288.
+.le
+
+.ls Spectrograph mode
+Here the distortion field depends on the order being used and the
+"skygrid" will be adjusted to produce a linear wavelength dispersion.
+.le
+
+.le
+
+
+.ls detector distortion
+
+Based on reseau mark locations in a flat field (LED) image, we find first
+the approximate locations and then more accurate positions 
+( to about 0.1 pixel).
+These coordinates are then fitted against the marks' locations on the 
+photocathode. Finally the distortion fit is evaluated on a set of
+positions which embody the optical distortions. Note that the contents of the
+final reseau file is NOT the location of the actual reseau marks, and
+in general will contain many more points than there are reseau.
+
+.le
+
+.ih
+FREQUENCY
+
+The part of the GEO calibration  connected with the optical distortion
+should be required infrequently. The optics are generally 
+assumed to be stable.
+
+That part connected with the detector distortion
+will be required frequently, possibly every day, or several
+times a day. LED flat field images are required with  the appropriate 
+FOC settings immediately before the science data to be calibrated.
+One may also, in principle, average the reseau positions of flat fields
+taken immediately before and after the science data - and this may be
+of interest to see the rate of change of the detector distortion.
+
+In future one may be able to predict the reseau positions as a function of
+temperature and voltages, and possibly history. But this requires longer 
+term studies.
+
+
+.ih
+TASKS
+
+The tasks available are:
+
+.ls cxgeoota1
+Sets up parameters for modelling optical distortion.
+.le
+.ls cxgeootaop2
+Models the optical distortion
+.le
+
+.ls cxgeor1
+generate a GEO file from a flat field exposure.
+Various other files are needed, the names of which are
+obtained from a database relation CXGEOOP, based on the instrument 
+configuration. 
+.le
+
+.ls cxgeorop2
+low level task called by cxgeor1x. This script actually does the processing
+and may be called by a GO who must supply the additional file names.
+.le
+
+.ih 
+SEE ALSO
+From FOC_GEO see also:
+
+.nf
+GEO file creation		...... cxgeor1
+                                ...... cxgeorop2
+                                ...... cxgeoota1
+                                ...... cxgeootaop2
+GEO verification                ...... FOC_GEO_VER
+.fi
+
+
+.endhelp

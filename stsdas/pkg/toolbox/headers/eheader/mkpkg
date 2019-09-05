@@ -1,0 +1,11 @@
+# Update the eheader application code in the headers package library
+# Author: B.Simon, 01-MAR-1989
+
+$checkout headers.a ../
+$update   headers.a
+$checkin  headers.a ../
+$exit
+
+headers.a:
+	eheader.x	<imio.h>  <imhdr.h>
+	;

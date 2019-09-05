@@ -1,0 +1,16 @@
+# Two black bodies function parameters.
+#
+temp1,r,h,INDEF,10.,300000.,>initial guess for 1st temperature
+ampl1,r,h,INDEF,,,>initial guess for 1st amplitude at ref. x
+ref1,r,h,INDEF,,,>reference x axis value for 1st bbody
+temp2,r,h,INDEF,10.,300000.,>initial guess for 2nd temperature
+ampl2,r,h,INDEF,,,>initial guess for 2nd amplitude at ref. x
+ref2,r,h,INDEF,,,>reference x axis value for 2nd bbody
+vtemp1,b,h,yes,,,>vary 1st bbody temperature ?
+vampl1,b,h,yes,,,>vary 1st bbody amplitude ?
+vref1,b,h,no,,,>vary 1st bbody reference ?
+vtemp2,b,h,yes,,,>vary 2nd bbody temperature ?
+vampl2,b,h,yes,,,>vary 2nd bbody amplitude ?
+vref2,b,h,no,,,>vary 2nd bbody reference ?
+version,s,h,"10Feb90",,,>date of installation
+mode,s,h,al

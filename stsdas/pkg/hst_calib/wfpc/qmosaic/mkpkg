@@ -1,0 +1,14 @@
+# Update the qmosaic application code in the wfpc package library
+# Author: HSU, 08-APR-1994
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_qmosaic.x 	<imhdr.h>	"qmosaic.h"
+	qmosaic_in.x	
+	qmos_check.x	<imhdr.h>	
+	qmosaic_do.x	<imhdr.h>	"qmosaic.h"
+	;

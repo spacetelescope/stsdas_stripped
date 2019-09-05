@@ -1,0 +1,60 @@
+.help twobbpars Feb90 stsdas.analysis.fitting
+.ih
+NAME
+twobbpars -- Edit the parameters for fitting a two black-bodies 
+function.
+.ih
+USAGE
+twobbpars
+.ih
+PARAMETERS
+.ls (temp1 = INDEF) [real]
+Initial guess for the temperature of the first black-body function.
+If INDEF, the task will set it to a pre-defined value.
+.le
+.ls (ampl1 = INDEF) [real]
+Initial guess for the amplitude at the reference point of the first 
+black body function. If INDEF, the task will set it to half the
+maximum value in the dependent variable.
+.le
+.ls (ref1 = INDEF) [real]
+Reference point in the independent variable scale, for the first black 
+body. If INDEF, the task will set it to the midpoint of the dependent
+variable range.
+.le
+.ls (temp2 = INDEF) [real]
+Initial guess for temperature of the second black-body function.
+If INDEF, the task will set it to a pre-defined value.
+.le
+.ls (ampl2 = INDEF) [real]
+Initial guess for amplitude at the reference point of the second black 
+body function. If INDEF, the task will set it to the maximum value in 
+the dependent variable.
+.le
+.ls (ref2 = INDEF) [real]
+Reference point in the independent variable scale, for the second black 
+body. If INDEF, the task will set it to the midpoint of the dependent
+variable range.
+.le
+.ls (vtemp1 = yes) [boolean]
+Vary the first black body temperature?
+.le
+.ls (vamp1 = yes) [boolean]
+Vary the first black body amplitude at reference point?
+.le
+.ls (vref1 = no) [boolean]
+Vary the X axis reference point for the first black body?
+.le
+.ls (vtemp2 = yes) [boolean]
+Vary the second black body temperature?
+.le
+.ls (vamp2 = yes) [boolean]
+Vary the second black body amplitude at the reference point?
+.le
+.ls (vref2 = no) [boolean]
+Vary the X axis reference point for the second black body?
+.le
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

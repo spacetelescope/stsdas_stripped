@@ -1,0 +1,247 @@
+.help funcform Feb96 stsdas.analysis.fitting
+
+.ce
+Non-linear functional forms 
+
+.ih
+POWERLAW
+The fitting function has the form
+.nf
+
+        y  =  ampl * ((x / ref) ** exponent)
+
+.fi
+where the three coefficients are defined in the following order: 
+.nf
+
+        coeff 1: exponent
+        coeff 2: ampl
+        coeff 3: ref
+
+.fi
+.ih
+BBODY
+ The fitting function has the form
+.nf
+
+                      (ref ** 5) * (exp( efactor / ref ) - 1)
+        y  =  ampl * ________________________________________
+                        (x ** 5) * (exp( efactor / x ) - 1)
+
+.fi
+where  
+.nf
+
+        efactor = c1 / temp
+
+.fi
+and x and ref are input directly in the formula in case of wavelength 
+units, or as x = 1./ x and ref = 1./ ref in case of frequency or energy units.
+
+The constant c1 depends on the physical units of the x variable. Five
+types of units are currently supported:
+.nf
+
+        x in cm:         c1 = 1.438786D+0
+        x in meter:      c1 = 1.438786D-2
+        x in Angstrom:   c1 = 1.438786D+8
+        x in Hz:         c1 = 4.795953D-11
+	x in keV         c1 = 1.159650D+7
+
+.fi
+The three function coefficients are defined in the following order: 
+.nf
+
+        coeff 1: temp
+        coeff 2: ampl
+        coeff 3: ref
+
+.fi
+.ih
+TWOBBODY
+The fitting function is the sum of two of the above BBODY functions,
+with coefficients being defined in the following order:
+.nf
+
+        coeff 1: temp1
+        coeff 2: ampl1
+        coeff 3: ref1
+        coeff 4: temp2
+	coeff 5: ampl2
+	coeff 6: ref2
+
+.fi
+.ih
+COMPOSITE
+The fitting function is the sum of the above POWERLAW and BBODY
+functions, with coefficients defined in the following order:
+.nf
+
+        coeff 1: exponent
+        coeff 2: ampl (powerlaw)
+        coeff 3: ref  (powerlaw)
+        coeff 4: temp
+	coeff 5: ampl (bbody)
+	coeff 6: ref  (bbody)
+
+.fi
+.ih
+GALPROF
+The fitting function has the form
+.nf
+
+	stotal = sbulge + sdisk + sbackgr
+
+.fi
+where
+.nf
+
+	sbulge = se * exp (-7.688 * ((r/re) ** 0.25 - 1.))
+	sdisk  = s0 * exp (-r/r0 + (r1/r) ** 3)
+
+.fi
+where sbulge is the bulge contribution, sdisk is the disk contribution
+and sbackgr is the (residual) background contribution to the total
+surface brightness stotal. Note the use of intensity instead of
+magnitude quantities. The parameters are defined in the following order:
+.nf
+
+	coeff 1: se
+	coeff 2: re
+	coeff 3: s0
+	coeff 4: r0
+	coeff 5: r1
+	coeff 6: sbackgr
+.fi
+
+.ih
+GAUSSIANS
+The fitting function has the form
+.nf
+
+y  = a  + b * x  + sum ( ampl * exp (-2.7725 * ((x - center) / fwhm) ** 2))
+
+.fi
+where the sum is performed over N gaussians, and the coefficients are 
+defined in the following order: 
+.nf
+
+	coeff 1: a
+	coeff 2: b
+        coeff 3: ampl1		# first Gaussian
+        coeff 4: center1
+        coeff 5: fwhm1
+        coeff 6: ampl2		# second Gaussian
+        coeff 7: center2
+        coeff 8: fwhm2
+            .....		# n-th Gaussian
+
+.fi
+.ih
+CGAUSS
+
+Constrained Gaussians are defined in terms of one base Gaussian,
+for which the three coefficients ampl, center and fwhm have the same
+meaning as above. The other Gaussians, however, are defined in terms of
+relative amplitudes (in a multiplicative sense) and relative centers (in
+an additive sense) to the base Gaussian.  The functional form is the
+same as in the GAUSSIANS case, but the coefficients have the following
+meaning:
+.nf
+
+        coeff 1: a
+        coeff 2: b
+
+        coeff 3: ampl1		# Coefficients of base Gaussian, given
+        coeff 4: center1	# in absolute units
+        coeff 5: fwhm1		# FWHM 
+
+        coeff 6: rampl2		# Amplitude of 2nd Gaussian / ampl1
+        coeff 7: rcenter2	# Center    of 2nd Gaussian - center1
+        coeff 8: fwhm2		# FWHM
+
+        coeff 9: rampl3		# Amplitude of 3rd Gaussian / ampl1
+        coeff 10: rcenter3	# Center    of 3rd Gaussian - center1
+        coeff 11: fwhm3		# FWHM
+
+            .....		# n-th Gaussian
+
+.fi 
+This functional form is useful in cases in which the user don't want to
+hold fixed the absolute values of the Gaussian coefficients, but their
+relative values instead.  This happens, for example, when constraining
+spectral line ratios by atomic physics values, or spectral line positions 
+by their difference in wavelength. 
+.ih 
+USER
+
+The nfit1d task supports a special form of function, named 'user'. Instead
+of being hard-coded (compiled), it is interpreted by a built-in
+interpreter.  The function is input as a string, written as a FORTRAN
+expression.  Alternatively, if the string begins with the '@' character,
+the remaining is taken to be a file name which contains the actual
+FORTRAN expression. 
+
+All FORTRAN operators, intrinsic functions, and numerical constant
+formats are supported.  Also, relational operators, as .eq., .gt., etc. 
+can be used.  Besides these operators, the interpreter recognizes the
+character 'x' as the independent variable vector, and the variable names
+'c1', 'c2', 'c3', etc.  as the function coefficients.  Comments can be
+embedded in the function expression: everything between a '#' character
+and the end of the line is discarded by the interpreter.  The actual
+value of the comment character is defined in stsdas$lib/xtools/vex.h as
+the constant CMTCHAR.  See 8.1 below.
+
+Since the basic operand, 'x', is a vector, every operation is performed
+on all vector elements at once.  Numerical constant values and function
+coefficients are replicated at every vector element before operating on
+them.  Relational operations are executed on a element-by-element basis,
+the resulting logical variable being also a vector. 
+
+All calculations are executed internally in single precision.  No
+coefficient or data scaling are performed.  The interpreter is based on the
+routines vex_* stored in directory stsdas$lib/xtools/.  Typical
+execution speeds are 2 - 3 times slower than with compiled functions,
+when using the same functional form in both cases. 
+
+8.1. Tokens recognized by the interpreter:
+.nf
+
+@  #
+
+*  /  +  -  (  )  <  <=  >  >=  ||  &&  ==  !=
+
+.or.  .and.  .eq.  .ne.  .lt.  .gt.  .le.  .ge.  .not.
+
+abs  acos  asin  atan  cos  cosh  cube  exp  int  log  log10  nint 
+sin  sinh  sqr  sqrt  tan  tanh  atan2  dim  max  min  mod  sign
+
+x   c1   c2   c3 ...
+
+.fi
+
+.ih 
+TWODGAUSS
+
+Two-dimensional function, has the form
+.nf
+
+y  = a + ampl * exp (-2.7725 * radius**2 / fwhm**2)
+
+.fi
+where 'radius' is the major axis length of the ellipse which passes on
+the point (x,y) and has ellipticity 'e' and position angle 'theta'. The 
+coefficients are defined in the following order: 
+.nf
+
+        coeff 1: a
+        coeff 2: ampl
+        coeff 3: xcent
+        coeff 4: ycent
+        coeff 5: fwhm
+        coeff 6: e
+        coeff 7: theta
+
+.fi 
+
+.endhelp

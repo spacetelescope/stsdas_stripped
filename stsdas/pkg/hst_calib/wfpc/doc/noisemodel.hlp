@@ -1,0 +1,222 @@
+.help noisemodel Jul93 stsdas.hst_calib.wfpc
+.ih
+NAME
+noisemodel -- Derive noise model parameters using pixel-to-pixel 
+variations. 
+.ih
+USAGE	
+noisemodel input 
+.ih
+DESCRIPTION
+This task calculates and plots the mean as a function of the 
+square-root of the variance within bins (of dimension `xsize' * 
+`ysize') on the input image(s).  A predicted relation, based on the 
+noise model parameters, is then overplotted for comparison.  If the 
+chi-square clipping limits have finite values, then the uncertainty 
+range corresponding to these limits, and based on the noise model, 
+is overplotted as a pair of dashed curves.  You can then 
+interactively adjust the noise model coefficients until a 
+satisfactory agreement is reached; the value of the normalized 
+chi-square will aid in this effort.  Output coefficients may 
+optionally be written to the parameter file.  You can also
+interactively adjust the X- and Y-size of the bins, and switch groups 
+on GEIS-format images.  
+
+This task is most useful if the input image(s) are fairly 
+featureless and span the full range of possible DN values; a graded 
+set of flat fields, particularly if they include dark 
+(non-illuminated) frames, is ideal.  Since it is possible for the 
+mean of some bins to be negative (if, for example, the bias 
+correction is a bit too large), the plot scale is linear between -10 
+and 10, and logarithmic for values below and above, respectively.  
+The distribution of points for a detector with no internal noise 
+would have a slope of +1/2 (on the log part of the plot), because of 
+photon shot noise, with a vertical position set by the detector 
+`gain'.  `readnoise' is evident if the distribution approaches 
+zero slope at some non-zero sigma at low DNs, which is common for 
+most detectors.  The `readnoise' component of the model is generic, 
+in that it can account for all additive components of the noise in a 
+calibrated image, such as a noisey bias correction on a CCD frame.  
+`scalenoise' is evident if the slope of the distribution is 
+increasing beyond +1/2 (to a limit of +1) at high DNs, and results 
+from noise that scales linearly with DN.  Such an effect would occur 
+if the image were corrected for flat field response with an 
+imperfectly normalized flat field frame. First time users of this 
+task should plot several limiting combinations of the model 
+parameters.  
+
+The input images are specified by an IRAF filename template or a 
+list.  Different sections of the same image may be specified by 
+including the image name in the input list multiple times---once with 
+each desired section appended.  The images may be of any size, 
+dimension, and pixel data type, but must all be consistent with 
+regard to GEIS format.  
+
+Deviant values are rejected in two stages: bad pixel rejection, and 
+bad bin rejection.  Deviant pixels within bins, i.e., those that 
+differ from the mean within a bin by more than sigma * `ksigreject', 
+may be excluded from the calculated mean and sigma for that bin.  The 
+`ksireject' parameter may be changed interactively; setting it to 
+"INDEF" will turn off rejection of deviant pixels altogether.  
+Deviant bins, i.e., those whose sigma differs from that predicted 
+from the noise model by more than `cliplo' (or `cliphi', as 
+appropriate) are excluded from the calculation of chi-square.  
+Setting these parameters to "INDEF" will bypass bin rejection 
+altogether.  (These bins will also be excluded from the parameter 
+fit, when it is implemented.)  
+
+The associated DQF files may be referenced for masking bad pixels 
+in the input images.  Note that the DQF files must be of type 
+`integer', and MUST have the same rootname as the input images: this 
+task will substitute the file extension specified by the `datextn' 
+parameter for that specified by the `dqfextn' parameter.  The user 
+may specify which types of pixel errors are to be rejected by setting 
+various flags in the `dqfpar' pset.  For example, setting 'rsbit = yes' 
+will exclude all pixels that suffered Reed-Solomon errors from the 
+calculation.  The bit-codes are then stored in a 32-bit integer 
+constant which is Boolean ANDed with the actual DQF values 
+corresponding to the input values for each pixel.  
+
+This task lets most parameters to be changed interactively, and 
+lets you replot, reset the plot limits, and show all of 
+the current parameters in the text window.  The interactive options 
+unique to this task are listed below; many other options that are 
+common to all IRAF tasks are discussed in the help file for 
+`language.cursors'.  
+
+.nf
+			 NOISEMODEL CURSOR KEYS
+
+  ?    Print help
+  q    Quit the task
+  r    Redraw the graph
+  I    Interrupt task immediately.  Noise parameters are not 
+       saved.
+
+			NOISEMODEL COLON COMMANDS
+
+.fi
+Colon commands may be abbreviated.  They take one or two 
+optional arguments.  If no argument is given then the current 
+value is printed.  
+.nf
+
+  :binsize  [Xsize][Ysize] Show or set binsize for X-, Y-axis
+  :clip       [low][high]  Show or set the lower, upper 
+                           chi-square clipping limits
+  :group      [value]      Show or change the current image group
+  :gain       [value]      Show or set the detector gain
+  :ksigma     [value]      Show or set the pixel rejection 
+                           threshold
+  :readnoise  [value]      Show or set the detector readnoise
+  :scalenoise [value]      Show or set the detector scalenoise
+  :show                    Show the current parameters 
+  :xrange     [low][high]  Show or set the lower, upper X-axis 
+                           bounds
+  :yrange     [low][high]  Show or set the lower, upper Y-axis 
+                           bounds
+  :write                   Write model parameters the `noisepar' 
+                           parameter file
+.fi
+.ih
+PARAMETERS
+.ls input [string]
+List or template of input image names to use in determining the noise 
+model parameters.  
+.le
+.ls (group = INDEF) [integer, min=1, max=4]
+Initial input image group.
+.le
+.ls (xbinsize = 10) [integer, min=1]
+Size of bin in X-direction for calculating means and sigmas.  Note 
+that the product of `xbinsize' * `ybinsize' must be at least 3.
+.le
+.ls (ybinsize = 10) [integer, min=1]
+Size of bin in Y-direction for calculating means and sigmas.  Note 
+that the product of `xbinsize' * `ybinsize' must be at least 3.
+.le
+.ls (ksigreject = INDEF) [real]
+Rejection threshold for bin arithmetic.  Pixel values above and below 
+sigma times this threshold will be excluded from the calculation of 
+mean and sigma.  Setting this parameter to INDEF will inhibit 
+kappa-sigma rejection altogether.  
+.le
+.ls (cliplo = 3.) [real, min=0.]
+Rejection threshold for chi-square calculation.  Deviations from the 
+`noisemodel' below sigma times this threshold will be excluded from 
+the calculation of chi-square.  Setting this parameter to INDEF will 
+inhibit chi-square rejection altogether for bins that lie below the 
+noise model.  
+.le
+.ls (cliphi = 3.) [real, min=0.]
+Rejection threshold for chi-square calculation.  Deviations from the 
+noise model above sigma times this threshold will be excluded from 
+the calculation of chi-square.  Setting this parameter to INDEF will 
+inhibit chi-square rejection altogether for bins that lie above the 
+noise model.  
+.le
+.ls (device = "stdgraph") [string]
+Output graphics device, ordinarily the user terminal.  You can send 
+plots directly to your default printer or plotter by setting this to 
+"stdplot". 
+.ls (listout = no) [boolean]
+List the output instead of plotting?  The output can be piped to an 
+ASCII file for later use as input to other tasks (e.g., 
+`stplot.igi'). 
+.le
+.ls (usedqf = no) [boolean]
+Reference the Data Quality Files for each input image?  
+
+If this is 
+set to "yes", data flaged as bad will be excluded from the 
+calculation.  Note that there must be a DQF file (of datatype 
+`integer') for each input image.  
+.le
+.ls (dqfpar = "") [string]
+Pset name for DQF parameters.  Edit this pset to select which 
+pathologies (bit-flags) to apply.  
+.le
+.ls (noisepar = "") [string]
+P-set name for coefficients of terms used in the noise model. 
+.le
+.ls (cur = "") [string]
+Cursor input file.  If a cursor file is not given then the standard 
+graphics cursor is read.  (Type "help cursor" for information about 
+cursor input files.)
+.le
+.ih
+EXAMPLES
+1. Generate a noise model plot without rejecting any pixels in the 
+calculation, but clipping bins that differ from the noise model 
+prediction by more than +/- 2 sigma.  The image names are read from 
+the ASCII file "imlist". 
+
+.nf
+    cl> noisemodel @imlist ksig=INDEF cliphi=2. cliplo=2.
+.fi
+
+2. Generate a noise model plot, using the DQF files to mask flagged 
+pixels:
+
+.nf
+    cl> noisemodel @imlist usedqf+ datextn="c0h" dqfextn="c1h"
+.fi
+
+.ih
+BUGS
+When using small bins (less than, say, 10x10), or large numbers of 
+large input images,  this task may generate a larger plot buffer than 
+can be accommodated on most laser printers.  The screen plot should 
+not be adversely affected, however.  
+.ih
+REFERENCES
+This task is based upon a FORTRAN program written by K. Horne (STScI), 
+and was enhanced and re-written in SPP as an STSDAS application by 
+R.A. Shaw (STScI).  The utility of this task, particularly in 
+rejecting image transients, can be found in a paper entitled 
+"Noise Model-Based Cosmic Ray Rejection" by R. Shaw & K. Horne 
+(ASP Conf. Ser., 25, 311, 1992.) 
+.ih
+SEE ALSO
+dqfpar, noisepar, cursors
+.endhelp

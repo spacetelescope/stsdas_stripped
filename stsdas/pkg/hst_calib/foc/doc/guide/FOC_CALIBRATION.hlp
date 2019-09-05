@@ -1,0 +1,64 @@
+.help FOC_CALIBRATION Jan88 "FOC 3"
+.ih
+CHAPTER
+FOC_CALIBRATION -- the initial chapter concerning calibration of the FOC
+.ih
+SUMMARY
+Summary for FOC_CALIBRATION
+
+.ls Sections:
+.nf
+	Overview
+.fi
+.le
+
+.ih
+OVERVIEW
+
+There are two main types of calibration processes, namely
+.sp
+.in 5
+those connected with Routine Science Data Processing (RSDP), 
+performed for the most part by STScI staff, but also available to
+other users. For the most part these are connected with the
+basic detector correction processes. General users will be assumed to
+be working in the IRAf environment. Care has been taken throughout
+to ensure that tasks are available to such a user with no dependencies
+on special hardware such as database machines, however at the very  least
+a graphics terminal are needed for optimal usage, and although image display
+capability is not essential it is certainly highly desirable. 
+A two level structure is used: 
+.ls lowest level tasks 
+Those tasks that do actual computations are independent of any database
+and in general can be used non-interactively if need be, 
+but will usually be better if there is interaction with the user.
+.le
+.ls tasks involving database interaction
+These tasks perform all the database interaction required for CDBS operations,
+for example setting file names and then they call the lower level
+tasks which are free of the database.
+.le
+.sp
+see FOC_OPGUIDE
+.in -5
+.sp
+and
+.sp
+.in 5
+those NOT required by RSDP. They are for the most part used for
+science data reduction.
+.sp
+see FOC_USERCAL
+.sp
+.in -5
+
+.ih
+SEE ALSO
+From FOC_CALIBRATION see also:
+
+.nf
+FOC_OPGUIDE                 RSDP related calibrations 
+FOC_USERCAL                 Non-RSDP calibrations     
+.fi
+
+.endhelp

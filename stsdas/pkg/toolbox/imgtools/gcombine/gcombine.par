@@ -1,0 +1,38 @@
+#  gcombine parameters
+
+input,s,a,,,,List of image names to combine
+output,s,a,,,,Output image name
+groups,s,h,"*",,,Range of groups
+masks,s,h,"",,,List of input mask names (optional)
+errmap,s,h,"",,,List of input error maps (optional)
+rej_cnt,s,h,"",,,Output rejection counts image name (optional)
+rej_list,s,h,"",,,List of output rejection map names (optional)
+out_err,s,h,"",,,Output error image (optional)
+nsmod_e,b,h,yes,,,"Use noise model for computing error map?"
+logfile,s,h,"STDOUT",,,"Log file
+"
+reject,s,h,"none","none|ccdclip|ccdcrrej|minmax|rsigclip|rsigcrrej|avsigclip|avsigcrrej|errclip|errcrrej",,Type of rejection
+combine,s,h,"average","average|median",,"Type of combine operation, average|median"
+weight,s,h,"none",,,Type of weighting scheme
+nsmod_w,b,h,no,,,"Use noise model for uniform weight from mode, median, mean?"
+outtype,s,h,"r","s|i|l|r|d",,Output image pixel datatype
+blank,r,h,0.,,,"Value if no points surviving at a pixel of output image
+"
+scale,s,h,"none",,,Image scaling
+zero,s,h,"none",,,Image zero level offset
+statsec,s,h,"",,,Image section for computing statistics
+expname,s,h,"EXPTIME",,,Image header exposure time keyword
+darkname,s,h,"",,,"Image header dark time keyword
+"
+lthreshold,r,h,INDEF,,,Lower threshold
+hthreshold,r,h,INDEF,,,Upper threshold
+nlow,i,h,1,0,,minmax: Number of low pixels to reject
+nhigh,i,h,1,0,,minmax: Number of high pixels to reject
+nkeep,i,h,1,,,Minimum to keep (pos) or maximum to reject (neg)
+mclip,b,h,yes,,,Use median in clipping algorithms?
+lsigma,r,h,3.,0.,,Lower sigma clipping factor
+hsigma,r,h,3.,0.,,Upper sigma clipping factor
+rdnoise,s,h,"13.",,,CCD readout noise (electrons)
+gain,s,h,"7.5",,,CCD gain (electrons/DN)
+snoise,s,h,"0.",,,CCD Sensitivity noise (fraction)
+

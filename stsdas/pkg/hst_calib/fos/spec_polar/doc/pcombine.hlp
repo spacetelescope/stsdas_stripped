@@ -1,0 +1,138 @@
+.help pcombine Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+pcombine -- Combine flux calibrated FOS datasets.
+.ih
+USAGE
+pcombine input output
+.ih
+DESCRIPTION  
+The 'pcombine' task takes any number of calibrated FOS spectral
+datasets and computes the average of the calibrated spectra ('c1h'
+files), as well as the associated statistical errors ('c2h' files), and also
+propagates the maximum data quality value ('cqh' files).
+Since an FOS POLSCAN observation sequence is usually limited in duration to
+one orbit, this routine allows for the averaging of many calibrated datasets
+before calculation of the Stokes parameters and polarization spectra. An
+averaged dataset can be reprocessed using the 'calpolar' task to recompute
+the polarization spectra from the averaged flux data.
+
+All input images must have the same number of pixels per spectrum.
+Furthermore, the value GCOUNT/NREAD (the total number of data groups
+divided by the number of readouts per memory clear) must be the same
+for all input images. For polarimetry data sets with NREAD > 1, only
+the input data groups corresponding to the last readout at each waveplate
+position will be used to produce the output images. In this case the
+value of NREAD in the output image headers will be reset to 1.
+
+The input spectra are combined pixel-by-pixel with no allowance for
+possible wavelength shifts from image to image. Therefore all data must
+be properly aligned (if necessary) before being combined.
+
+Regardless of the input or output image name extensions that are given, the
+routine uses image name extensions of 'c1h', 'c2h', and 'cqh' for the
+input and output flux, error, and data quality files, respectively.
+History records are added to the output image headers listing the name
+of each input file that was used to produce the combined data.
+
+Fluxes may be averaged using either uniform or variance weighting. In the 
+case of variance weighting, individual flux values are weighted by the 
+inverse of sigma squared, where sigma is the associated error value for that 
+pixel obtained from the 'c2h' file. Individual data points that have error
+values equal to zero are not included in any of the calculations.
+Furthermore, individual data points may also be rejected based on data quality 
+(dq) values from the 'cqh' file.
+Any data point that has a dq value greater than or equal to the specified
+rejection limit ('rejlim') will be ignored. If 'rejlim = 0', rejection based
+on data quality value will not be performed. The output dq value for a
+given pixel will be that of the maximum dq value for all of the pixels used
+to compute the average, i.e. if data rejection is used, the dq value of
+rejected pixels will not be propogated to the output dq file. If data 
+rejection is being used and all input values for a given pixel are rejected, 
+the output dq value will be the maximum of all input dq values.
+
+In mathematical form, the average flux and error values for a given pixel
+are computed as follows:
+.nf
+
+             Uniform Weighting                    Variance Weighting
+
+wgt(i)     = 1 (used) or 0 (rejected)             1 / sigma(i)**2
+
+wsum       = sum{ wgt(i) }                        sum{ wgt(i) }
+
+ave. flux  = sum{ f(i)*wgt(i) } / wsum            sum{ f(i)*wgt(i) } / wsum
+
+ave. error = sqrt{ sum{ sigma(i)**2 }} / wsum     sqrt{ 1/wsum }
+
+.fi
+where the sums are over the number of input images, and "f(i)", "sigma(i)",
+and "wgt(i)" are the flux, error, and weight values, respectively, for the
+pixel from input image number "i". If dq rejection is enabled, the flux
+and error values for rejected pixels do not contribute to the sums.
+If all input values for a given pixel are rejected, the output flux and error
+values are set to zero and the output dq value is the maximum dq value of
+the input data.
+.ih
+PARAMETERS 
+.ls input [file name]
+Input flux ('c1h') images to combine. May be a list or a file name template.
+The input error and data quality files are assumed to have the same
+root name as the flux images, with corresponding image name extensions of
+'c2h' and 'cqh', respectively.
+.le
+.ls output [file name]
+Output flux ('c1h') image name.  The output error and data quality files will
+have the same root name as the output flux image, with image name extensions
+of 'c2h' and 'cqh', respectively.
+.le
+.ls (weight = "uniform") [string, allowed values: uniform | variance]
+Type of weighting to use when computing averages. Uniform weighting gives
+equal weight to all input values, while variance weighting assigns a weight
+to the input flux values equal to the inverse of the square of its associated
+error value.
+.le
+.ls (rejlim = 0) [integer, min=0, max=800]
+Data quality (dq) rejection limit. If non-zero, all input pixels having a dq
+value greater than or equal to 'rejlim' will be excluded from the calculations.
+Furthermore, the dq values of rejected pixels will not be propagated to the
+output dq image.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Calculate the average of datasets 'y0nb0104t', 'y0nb0106t', 'y0nb0108t'
+using uniform weighting and no dq-based rejection. The flux, error,
+and data quality files for these datasets all have the same root file names,
+and have file name extensions of 'c1h', 'c2h', and 'cqh', respectively.
+Store the results in 'pg1222.c1h', 'pg1222.c2h', and 'pg1222.cqh'.
+
+.nf
+   sp> pcombine y0nb0104t,y0nb0106t,y0nb0108t pg1222
+.fi
+
+2. Calculate the average of datasets 'y0xr0305t', 'y0xr0306t', 'y0xr0307t', and
+'y0xr0308t' using variance weighting and reject pixels with dq values of
+200 and above. Store the results in 'ymean.c1h', 'ymean.c2h', 'ymean.cqh'.
+
+.nf
+   sp> pcombine y0xr030*t.c1h ymean.c1h weight=variance rejlim=200
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+calpolar, polave
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

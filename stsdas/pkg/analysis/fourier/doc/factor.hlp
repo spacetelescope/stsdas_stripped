@@ -1,0 +1,44 @@
+.help factor Jul97 stsdas.analysis.fourier
+.ih
+NAME
+factor -- Display prime factors of a number.
+.ih
+USAGE
+factor number
+.ih
+DESCRIPTION
+Factor a given integer into primes.  
+
+This might be useful for checking to see how the axis 
+lengths of a dataset decompose with respect to the 
+available Winograd kernels.  If the result is a large 
+prime number, you probably want to resample the data.
+.ih
+PARAMETERS
+.ls number = 1 [integer, min=1]
+Number to factor.
+.le
+.ls (showwks = no) [boolean]
+Show Winograd kernel sizes?
+.le
+.ih
+EXAMPLES
+1. Find the prime factors of 12,498.
+.nf
+
+    fo> factor 12498
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Knuth, Fundamental Algorithms, sec. 1.3.2, algorithm P, p. 143.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+Type "help fourier option=sys" for a higher-level 
+description of the fourier package.
+.endhelp

@@ -1,0 +1,10 @@
+#
+# Example mkpkg file for host-level task, h_globalhandler.
+#
+$set XFLAGS = "-Inolibc -p stsdas $(XFLAGS)"
+$omake h_globalhandler.c
+
+$set LFLAGS = "-H -z -p stsdas $(LFLAGS)"
+
+$link h_globalhandler.o -lcvos -o h_globalhandler
+$exit

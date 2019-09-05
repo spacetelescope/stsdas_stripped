@@ -1,0 +1,5 @@
+# Help directory file for STSDAS.TOOLS.CONVFILE package
+
+sun2vax		hlp = stsdas$pkg/toolbox/convfile/doc/sun2vax.hlp
+tconvert	hlp = stsdas$pkg/toolbox/convfile/doc/tconvert.hlp
+vax2sun		hlp = stsdas$pkg/toolbox/convfile/doc/vax2sun.hlp

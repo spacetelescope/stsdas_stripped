@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> ANSI C Structures Representing the Fundamental Data Items</TITLE>
+<meta name="description" value=" ANSI C Structures Representing the Fundamental Data Items">
+<meta name="keywords" value="intro">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html38 HREF="node4.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html36 HREF="intro.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html30 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html39 HREF="node4.html">  I/O Functions Related </A>
+<B>Up:</B> <A NAME=tex2html37 HREF="intro.html">Data Structures in STIS </A>
+<B> Previous:</B> <A NAME=tex2html31 HREF="node2.html"> General Structure of </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00030000000000000000> ANSI C Structures Representing the Fundamental Data Items</A></H1>
+<P>
+A number of basic ANSI C data structures have been defined to correspond
+to the FITS HDUs mentioned above.  The most fundamental structure
+consists of a two-dimensional array of an arbitrary size and various
+types (short, float, etc.), together with an array of header lines to
+represent collections of keywords associated with the data.  This basic
+structure is then specialized to represent specific types of header plus
+two-dimensional array, viz., Science, Error, Data Quality, Samples, and
+Integration Times HDUs.
+<P>
+In addition, the basic structures above are grouped into single and
+multiple groups of HDUs.  A single STIS group consists of a global
+header together with a Science, Error, and Data Quality HDU.  A single
+NICMOS group consists of a global header together with a Science, Error,
+Data Quality, Samples and Integration Times HDU.  A multiple STIS group
+consists of a global header together with N groups of Science, Error,
+and Data Quality HDUs.  Likewise, a multiple NICMOS group consists of a
+global header together with N groups of Science, Error, Data Quality,
+Samples and Integration Times HDUs.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:26:56 EDT 1996</I>
+</ADDRESS>
+</BODY>

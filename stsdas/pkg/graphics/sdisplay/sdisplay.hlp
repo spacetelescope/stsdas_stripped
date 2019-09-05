@@ -1,0 +1,39 @@
+.help sdisplay Aug93 stsdas.graphics.sdisplay
+
+The 'sdisplay' package contains generic tasks for displaying and
+manipulating images.  Some of these depend on the SAOimage display
+device.  Others transform images between different formats and permit
+the displayed image to be saved and further manipulated.
+
+.ls disconlab
+Combines the image display with graphics overlays of
+contours and coordinate labels.
+.le
+.ls imdisp_pos
+Used in 'disconlab', 'imdisp_pos' determines where an image is
+located within an image display and returns the viewport specification
+necessary for graphics task to overlay the image.
+.le
+.ls hltorgb
+Converts a pair of images representing brightness and
+hue into three images representing red, green, and blue---assuming that
+the images are the same size and registered.
+.le
+.ls im2gki
+Takes an image and outputs it to an IRAF GIO
+graphics device.
+.ls
+.le mosaic_display
+Displays a list of images within a single
+display buffer of an image display.
+.ls
+.le overlap
+Overlaps two images in X or Y, by a certain amount of
+columns or lines.
+.le
+.ls pltcmap
+Displays a colormap which is in image format as a plot with
+three panels, for red, green and blue or as three curves on a single panel using colored lines.
+.le 
+
+.endhelp

@@ -1,0 +1,6 @@
+input, s, a, "", , ,	">input file template"
+index, i, a, , , ,	">which file to select"
+
+output, s, h, "", , ,	">output file name"
+
+mode, s, h, al

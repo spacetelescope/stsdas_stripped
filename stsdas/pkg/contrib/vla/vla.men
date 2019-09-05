@@ -1,0 +1,7 @@
+Menu for the stsdas.contrib.vla package
+
+intensity -- Compute total intensity from 3-d velocity cube.
+smooth -- Smooth a data cube along the velocity or spatial dimensions.
+velocity -- Compute 2-d velocity images from 3-d data cubes.
+
+(Type "help vla" for more information about the vla package.)

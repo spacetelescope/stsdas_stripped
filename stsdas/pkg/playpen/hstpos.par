@@ -1,0 +1,22 @@
+input,f,a,"",,,">list of images or times for which \n\
+   to determine positions"
+orbit,f,h,"",,,">input shh file containing orbital parameters"
+timekey,s,h,"pkttime","pkttime|fpkttime|lpkttime|expstart|expend",,">header keyword containing time information"
+position,f,h,"",,,">Table to place positions"
+plot,b,h,yes,,,">Plot position on a world projection?"
+allgroups,b,h,yes,,,">Operate on all groups in input list?"
+model,i,h,INDEF,0,,">SAA Model to plot"
+saa,f,h,"stsdas$data/scidata/saa.tab",,,">Table containing SAA models"
+device,s,h,"stdgraph",,,">plotting device"
+marker,s,h,"cross","point|box|plus|cross|circle|diamond|hline|vline|hebar|vebar",\
+,">point marker character: \n\
+    point, box, plus, cross, circle,\n\
+    diamond, hline, vline, hebar, vebar"
+szmarker,r,h,0.01,,,">marker size in NDC"
+append,b,h,no,,,">append to existing graph?"
+geomag,b,h,no,,,">Draw constant geomagnetic latitudes?"
+n_latitudes,i,h,3,1,,">Number of north/south latitudes to draw"
+latint,r,h,10.,0.,90.,">Interval between latitudes (degrees)"
+mode,s,h,a
+
+

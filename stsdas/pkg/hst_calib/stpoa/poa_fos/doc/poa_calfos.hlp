@@ -1,0 +1,681 @@
+.help poa_calfos Jul00 stpoa.poa_fos
+.ih
+NAME
+poa_calfos -- Calibrate Faint Object Spectrograph (FOS) data.
+.ih
+USAGE
+poa_calfos input output
+.ih
+DESCRIPTION 
+The 'poa_calfos' task performs the Post Operational Archive (POA) 
+re-calibration  of  FOS  data.  This task incorporates the findings
+of the POA analysis and supersedes the previous FOS STSDAS calibration 
+task called  'calfos', for a large number of FOS data.  
+The POA FOS pipeline relies on the STSDAS
+and TABLES packages;  therefore, we advise that one adds the following
+to their IRAF login.cl file (before the 'keep' statement):
+
+.nf
+	tables
+	stsdas
+	hst_calib
+	fos
+        ctools
+	stpoa
+	poa_fos
+.fi
+
+If these packages are not loaded via the login.cl file, then one
+must open them on the command line prior to running the POA FOS tools.
+
+Please note that 'poa_calfos' is 
+able to only process data obtained in the following FOS observing 
+modes as described by header keywords:
+
+.nf
+
+	Detector:  BLUE
+	
+	Grndmode:  SPECTROSCOPY, RAPID-READOUT, IMAGE
+	
+	Fgwa_id:   H13, H19, H27, H40, H57, L15, L65
+	
+	Aper_id:   A-1, A-2, A-3, A-4, B-1, B-2, B-3, B-4
+
+.fi
+
+These data include science and non-science (wavelength calibrations 
+'wavecals' where target=WAVE, darks, and flat-fields).  In total this
+software can re-calibrate 5977 FOS BLUE datasets.  The current 
+version cannot re-process FOS SPECTRO-POLARIMETRY, TARGET 
+ACQUISITION or TIME-RESOLVED data.  In the event that 'poa_calfos'
+is run on data for which it cannot apply a correction, the
+task will exit with an error message to STDOUT, stating that it
+cannot make a POA correction or process this data.  The pre-processor
+will also warn the user of this issue and tell the user not to
+use 'poa_calfos' for data which do not fit the POA processing criteria.
+Data which cannot be processed by the POA tools can still be
+processed by 'calfos' in the STSDAS package.  The errors in running
+'poa_calfos' on data for which there is no POA correction, 
+can be avoided if the all-processor and/or the pre-processor are run,
+following the directions below.
+
+Raw data obtained from the HST archive need to be pre-processed by the
+task 'poa_preproc_fos' before running 'poa_calfos'. The pre-processor 
+performs a number of tasks on the input data; please see the
+'poa_preproc_fos' help file for more details on the pre-processor.
+In brief, the pre-processor changes the OFF_CORR keyword to a value
+of PERFORM, turns off the scattered light correction by setting
+the SCT_CORR keyword to OMIT, changes the location of the flat 
+fields to point to
+the new POA versions,  updates the CCS6 wavelength calibration
+file to the new POA filename, and adds 10 new header keywords
+containing names of reference files needed for POA processing.  
+These pre-processing steps are carried out by changing 
+header keyword(s) in the input raw header files. The new and/or
+updated calibration reference files are located within the STPOA
+package.  By default, the POA pre-processor will update the headers
+with the internal STPOA locations of these files.  It is also
+possible to use external CDBS locations of these files;  please
+see the 'poa_preproc_fos' help file for more information. 
+ 
+The user can run the pre-processor
+and the pipeline back to back in one step, by executing the 'processfos'
+task.  This task will run the pre-processor which will determine if the data 
+fit the POA criteria for a correction;  if yes, then the 'poa_calfos'
+pipeline will be run;  if not, then the old 'calfos' pipeline will
+be executed.  
+
+The calibration steps carried out by 'poa_calfos' are determined by the 
+values of certain keywords in the science data header (extension '.d0h'). 
+The science data header file may be edited with the STSDAS 'chcalpar' task 
+to change the values of the keywords ('hedit' in the 'images' package 
+can also be used), to select the
+desired calibration steps. These keywords may contain either of two values: 
+'OMIT' or 'PERFORM'. Some processing steps require the use of reference 
+tables and files. The header keywords for these reference files must be 
+edited to contain the appropriate reference file names (including their 
+directory paths). 
+
+Running 'poa_calfos' will produce the standard set of output
+files along with one new output file, which has the suffix
+'.poa'.  This file contains a "history" of the POA
+processing steps and results, for every spectrum in the 
+dataset (multi-group and rapid-readout modes are considered
+as having multiple spectra within one file).  This '.poa' file
+keeps track of POA related calculations, for each spectrum.
+In the initial POA FOS pipeline (v1.1) this information was added 
+to the header of the output
+'.c1h' file in a multi-group format.  However, since some data
+contain more than one spectrum, but are not multi-group, it was
+not possible to describe each spectrum in this manner for all 
+FOS data modes.  Therefore, this information was placed into a
+simple text '.poa' file, in order to have this information 
+available for all spectra from each FOS dataset.
+For a list and explanation of these POA "keywords", please look at 
+the "NEW OUTPUT FILE" section below.
+
+.ih
+NEW OUTPUT FILE
+Running 'poa_calfos' will produce a '.poa' output file.
+The following is a list of POA related "keywords" which
+are written to this file, for every spectrum in the dataset
+being processed.  The values are calculated when running 'poa_calfos'; 
+as such they are a measure of the new re-calibration algorithm 
+parameters/results/final offsets/etc.  Please read the OFF_CORR
+section below for information on how these keywords are used
+to make the POA GIMP correction.
+
+.nf
+  The format of the '.poa' file is as follows:
+     FOS_MODE_NAME_ABBREVIATED=  SPECTRAL_NUM,  KEYWORD=  VALUE
+.fi
+
+.nf
+  For example:
+     SPECT=   1, MIDTIMP=  50469.157141902
+     SPECT=   1, POAXP=    753.074
+     ...
+     SPECT=   2, OFF_DIOD=  -2.116
+     SPECT=   2, OFF_PIX=  -2
+.fi
+
+.ls Here is a list of the POA KEYWORDS in the '.poa' output file:
+.le
+.ls Epoch of midpoint of integration:
+.le
+.ls MIDTIMP				Unit:MJD
+.le
+
+.ls Greenwich Mean Sidereal Time:
+.le
+.ls GMSTP				Unit:HRS
+.le
+
+.ls Geocentric Longitude:
+.le
+.ls GLNGP				Unit:DEG
+.le
+
+.ls Geocentric Latitude:
+.le
+.ls GLATP				Unit:DEG
+.le
+
+.ls Dipole Magnetic Longitude:
+.le
+.ls MLNGP				Unit:DEG
+.le
+
+.ls Dipole Magnetic Latitude:
+.le
+.ls MLATP				Unit:DEG
+.le
+
+.ls Associated IGMF Magnetic Longitude:
+.le
+.ls ALNGP				Unit:DEG
+.le
+
+.ls Associated IGMF Magnetic Latitude:
+.le
+.ls ALATP				Unit:DEG
+.le
+
+.ls Geomagnetic Shell Parameter:
+.le
+.ls LSHP				Unit:
+.le
+
+.ls Position in orbit at MIDTIMP epoch:
+.le
+.ls POAXP				Unit:km 
+.le
+.ls POAYP				Unit:km
+.le
+.ls POAZP				Unit:km 
+.le
+
+.ls Velocity in orbit at MIDTIMP epoch:
+.le
+.ls VXP					Unit:km/s 
+.le
+.ls VYP					Unit:km/s 
+.le
+.ls VZP					Unit:km/s 
+.le
+
+.ls Geomagnetic model (North, East, Down):
+.le
+.ls BNP					Unit:Gauss 
+.le
+.ls BEP					Unit:Gauss 
+.le
+.ls BDP					Unit:Gauss 
+.le
+
+.ls Magnetic field in magnetometer coordinates:
+.le
+.ls BV1P				Unit:Gauss
+.le
+.ls BV2P				Unit:Gauss
+.le
+.ls BV3P				Unit:Gauss
+.le
+
+.ls Magnetic field in detector coordinates:
+.le
+.ls BDXP				Unit:Gauss
+.le
+.ls BDYP				Unit:Gauss
+.le
+.ls BDZP				Unit:Gauss
+.le
+
+.ls YGMP scale factors:
+.le
+.ls YGMPXSCL				Unit:pix/Gauss
+.le
+.ls YGMPYSCL				Unit:diode/Gauss
+.le
+
+.ls GIMP related offsets:
+.le
+.ls YOFFXP				Unit:pix 
+.le
+.ls YOFFYP				Unit:diode height
+.le
+
+.ls Reference YBASE of wavelength calibration:
+.le
+.ls YYBASE0				Unit:ybases 
+.le
+
+.ls Delta Ybase X scale factor:
+.le
+.ls YYBSXSCL				Unit:pix/ybases
+.le
+
+.ls Mean temperature:
+.le
+.ls YMEANTMP				Unit:deg(C) 
+.le
+
+.ls Temperature X scale factor:
+.le
+.ls YTMPXSCL				Unit:pix/deg(C)
+.le
+
+.ls Aperture/Grating/Mode specific zero point:
+.le
+.ls YAPGRTX0				Unit:pix
+.le
+
+.ls Velocity components in detector coordinates:
+.le
+.ls PVX					Unit:km/sec
+.le
+.ls PVY					Unit:km/sec
+.le
+.ls PVZ					Unit:km/sec
+.le
+
+.ls POA GIMP shift correction in X:
+.le
+.ls OFF_DIOD				Unit:diodes
+.le
+.ls OFF_PIX				Unit:pix
+.le
+
+
+.ih
+CALIBRATION STEPS
+The calibration steps, listed by keyword, are (where 'w.r.t' stands
+for 'with respect to'):
+.ls CNT_CORR 
+(no changes w.r.t. 'calfos')
+
+Convert from raw counts to count rates by dividing each data 
+point by the exposure time and correcting for disabled 
+diodes. If 'DEFDDTBL' is true, the disabled diodes are 
+taken from the Unique Data Log (UDL), otherwise, disabled 
+diodes are found in the file 'DDTHFILE'.
+.le
+.ls OFF_CORR
+(major changes w.r.t. 'calfos')
+
+Data are corrected for zero-point offsets in the dispersion 
+direction. These include:  (a) the geomagnetically-induced image
+motion problem (GIMP),  (b) a compensation for errors made in the
+on-board GIMP correction,  (c) a compensation for X-shifts 
+introduced by commanded Y-shifts (YBASE updates),  (d) drifts as
+a result of variable temperature in the optical bench and detector
+head, and  (e) drifts as a result of long term variation of the 
+optical bench geometry and the magnetic environment. The data are 
+shifted in the FOS X-direction (the dispersion direction);
+this shift is calculated with sub-pixel resolution, but
+applied in integer pixels in order to avoid resampling the data.
+The offsets are based on model calculations of the geo-magnetic
+field strength at the spacecraft's position. These calculations
+require the 'norad' table of the daily HST ephemeris parameters. 
+This table is within the release.  
+We would like to stress that ALL data throughout the operational 
+life of FOS REQUIRE this OFF_CORR correction (whether or not the
+on-board GIMP correction was already performed). Therefore,
+'poa_calfos' requires that the 'OFF_CORR' header keyword is
+set to 'PERFORM'. The pre-processor 'poa_preproc_fos' performs
+a header modification to the input data, in order to set this
+keyword to 'PERFORM'. 
+
+When one runs 'poa_calfos' the STDOUT POA related messages
+show the resultant GIMP correction (ie rootname y1010105t):
+
+.nf
+*** X-OFFSET corrections calculated from POA model ***
+POA ygimp: mode,grp/ystp,xoff: SPECTROSCOPY           1    -2.664
+POA x-offset for MODE = SPEC is -2.664 1/4 diodes =  -3 array pix
+*** End of POA calculations ***
+.fi
+
+Each GROUP or IMAGE line has an offset calculation; each
+offset will be printed to STDOUT.  The POA offset correction
+is listed twice:  REAL value calculation in diode units and 
+INTEGER round-off in pixel units.  The actual applied correction 
+uses the integer pixel offset value.  
+
+The POA "keywords" in the output '.poa' file, can also be used to 
+calculate this offset value.  The "keywords" OFF_DIOD and OFF_PIX 
+store the calculated POA offset value in diodes and pixels, respectively.  
+The data are shifted in the x direction by OFF_PIX.  In "words", 
+this calculation equation looks like this:
+
+.nf
+         "offset" = - "aperture/grating zero point" 
+                    - "GIMP related offsets"
+                    - "YBASE related offset"
+                    - "temperature related offset"  
+.fi
+
+Using the POA information in the '.poa' output file (as well as
+the root.d0h header keyword YBASE), one can translate it to:
+
+.nf
+     XOFFSET(diodes) = - YAPGRTX0 
+                       - YOFFXP*0.15
+                       - YYBSXSCL*(YBASE-YYBASE0)*0.018898118
+                       - YTMPXSCL*YMEANTMP      
+
+     [NOTE: YOFFXP = 0.0  if keyword YFGIMPEN=False, or if this
+      keyword is missing from the input root.d0h header.]
+
+     XOFFSET(array pixels) = NINT(XOFFSET(diodes)*NXSTEPS/4)
+.fi
+
+The output spectrum is shifted by XOFFSET(array pixels).  This
+is equivalent to the value of OFF_PIX in the '.poa' file.  The
+XOFFSET(diodes) is is equivalent to the value of OFF_DIOD
+in the '.poa' file.
+
+.le
+.ls PPC_CORR 
+(no changes w.r.t. 'calfos')
+
+Correct the raw count rates for saturation in the detector 
+electronics. Requires table 'ccg2' containing the 
+paired-pulse correction table.
+.le
+.ls BAC_CORR 
+(major changes w.r.t. 'calfos')
+
+Subtract the background from sky and object spectra. The default 
+reference background is the 'BACHFILE'.
+
+Note that this version of poa_calfos includes a refined method
+for scaling the 'BACHFILE'.  The L-shell geomagnetic parameter
+which describes the   expected   particle flux for   a   given
+geomagnetic longitude and latitude, is used in place of simply
+the geomagnetic  longitude and  latitude  alone. The  expected
+count rate versus L-shell  relation  was calibrated with  data
+covering  the  whole of the  FOS  lifetime.  In addition a bug
+affecting the way that accumulated datasets had the background
+subtracted has also been fixed.
+.le
+.ls GMF_CORR
+(no changes w.r.t. 'calfos')
+
+If a reference background is used in the 'BAC_CORR' calibration
+step, it will be scaled according to the geomagnetic position of the
+spacecraft at the time of observation. The background will be scaled
+to a mean count rate appropriate for the geomagnetic position. Requires
+table 'ccs8' containing predicted background count rates.
+.le
+.ls SCT_CORR
+(major changes w.r.t. 'calfos')
+
+The subtraction of the scattered light from object and sky spectra, 
+has been turned off in the FOS calibration pipeline.  The 'poa_preproc_fos'
+task set the STC_CORR keyword to a value of OMIT before the pipeline
+is run.  This was done
+because the scattered light correction should be taken care of as
+a post-pipeline processing step, not as an automated procedure in
+the pipeline.  The stsdas.hst_cal.fos.bspec task should be used
+to calculate the scattered light correction for the data, once
+the calibration pipeline has successfully completed.
+.le
+.ls FLT_CORR 
+(major changes w.r.t. 'calfos')
+
+Remove diode-to-diode sensitivity variations and fine 
+structure by multiplying by the flat field response. Requires 
+the flat  field response file 'FL1HFILE'. A second flat field 
+file, 'FL2HFILE', is  required for paired-aperture or 
+spectropolarimetry observations.
+
+Please note that the flat fields have been reprocessed using
+the POA correction.  The current version of the POA FOS software 
+(v1.2.1 Nov 2001), has
+the POA reference files internal to the STPOA package.  Therefore, the
+flat field reference files location will be set to "pref$".  However, 
+these same POA ref files are likely to be
+ingested into the STScI CDBS archive, later to be available via the
+standard "yref$" location. 
+
+The locations of the appropriate POA
+flat fields (FL1HFILE, FL2HFILE) are added to the FOS datafile
+using the POA pre-processor 'poa_preproc_fos'. Currently
+'processfos' and 'poa_preproc_fos' default to using the
+internal STPOA versions of the reference files.
+The pre-processor
+will check to make sure that there is an equivalent redone POA
+flat field, and update the .d0h header with it's name and location.
+If a new flat field with the POA corrections does not exist,
+then the original flat field will be used.  The pre-processor
+writes a message to STDOUT telling the user whether new flats will
+be used.  Please see the help file for 'poa_preproc_fos' for
+more information on the POA pre-processor.
+.le
+.ls SKY_CORR 
+(no changes w.r.t. 'calfos')
+
+Subtract the sky from the object spectra. The routine smooths 
+the sky using a median and mean filter, scales the sky by the 
+aperture size, and shifts the sky before the subtraction. The 
+routine requires  table 'ccs3' containing the filter widths, 
+the aperture size table 'ccs0', the emission line position 
+table 'ccs2', and the sky shift  table 'ccs5'.
+.le
+.ls WAV_CORR 
+(major changes w.r.t. 'calfos')
+
+Compute a vacuum wavelength scale for each object or sky 
+spectrum. Wavelengths are computed using coefficients stored 
+in table 'ccs6'.
+
+The 'ccs6' wavelength calibration file has been completely 
+changed from it's original 'calfos' format.  This file is an 
+internal reference files to the STPOA package;  it should also
+be visible in the standard CDBS reference file area once STScI
+has integrated it into it's archival system.
+The POA pre-processor 'poa_preproc_fos'
+updates the CCS6 header keyword with the POA file name 
+and location;  a message is printed to STDOUT, telling the user
+that the wavelength calibration file has been changed in the
+header. 
+
+The new 'ccs6' file contains 10 coefficients
+to calculate the wavelength dispersion.  For all POA criteria
+data, all 10 coefficients are being used for
+the solution.  These coefficients used for processing are printed
+to STDOUT.   
+.le
+.ls FLX_CORR 
+(no changes w.r.t. 'calfos')
+
+Convert the object spectra to absolute flux units by 
+multiplying by the inverse sensitivity curve.  Requires the 
+inverse sensitivity file 'IV1HFILE'. A second inverse 
+sensitivity file, 'IV2HFILE', is  required for paired 
+aperture or spectropolarimetry observations.
+This method of flux calibration for pre-COSTAR observations is superseded in 
+CALFOS v2.0 by the APR_CORR, AIS_CORR, and TIM_CORR steps (see below);
+and, has been copied into the POA_CALFOS pipeline.
+.le
+.ls APR_CORR
+(major changes w.r.t. 'calfos')
+
+Correct for changes in aperture throughput due to changes in OTA
+focus position. Also correct the observed countrates to match
+that of the AIS reference aperture. Requires OTA focus history table
+'ccsa', relative aperture throughput table 'ccsb', and aperture
+throughput vs focus table 'ccsc'.  This correction requires that
+WAV_CORR is turned on;  if WAV_CORR is set to 'OMIT', then APR_CORR
+will be skipped.
+.le
+.ls AIS_CORR
+(no changes w.r.t. 'calfos')
+
+Convert the object spectra to absolute flux units by multiplying by
+the average inverse sensitivity (AIS) curve for the reference aperture.
+Requires the AIS file 'AISHFILE'. This method of flux calibration
+for pre-COSTAR data supersedes the FLX_CORR step in CALFOS versions 2.0 
+and later and requires that the APR_CORR step be performed first.  This
+holds true for the POA_CALFOS pipeline as well.
+.le
+.ls TIM_CORR
+(no changes w.r.t. 'calfos')
+
+Correct the flux calibrated object spectra for changes in instrument
+sensitivity over time. Requires the table 'ccsd' containing correction
+factors as a function of wavelength and time for each detector/grating
+combination.  This correction requires that
+WAV_CORR is turned on;  if WAV_CORR is set to 'OMIT', then TIM_CORR
+will be skipped.
+.le
+.ls ERR_CORR 
+(no changes w.r.t. 'calfos')
+
+Compute the propagated error at each point in the spectrum.
+.le
+.ls MOD_CORR 
+(no changes w.r.t. 'calfos')
+
+Perform ground software mode dependent reductions for 
+time-resolved, spectropolarimetry, and rapid-readout 
+observations. The  spectropolarimetry reductions require the 
+the Wollaston and Waveplate  parameter table 'ccs4', and the 
+retardation reference file, 'RETHFILE'.
+If the spectropolarimetry data were acquired during the post-COSTAR epoch 
+as indicated by the Science header keyword/value pair, KYDEPLOY=T, and a 
+post-COSTAR calibration is available, the post-COSTAR polarimetry correction
+reference file, 'PCPHFILE', is also required for a proper calibration.
+However, it should be noted that if no post-COSTAR
+polarimetry calibration file for the 'PCPHFILE' calibration file keyword 
+is provided,  'poa_calfos' will not abort.  Instead, warning 
+messages will be issued and the data in the output 'c3h' file will still be
+calibrated, but the additional post-COSTAR correction will not have been
+applied.
+.le
+.ih
+PARAMETERS
+.ls input [string]
+The rootname of the input FOS observation data set.
+.le
+.ls output [string]
+The rootname of the output FOS data set. If no value is 
+specified for this parameter, 'output' will default to the 
+value passed to 'input'.
+.le
+.ih
+EXAMPLES 
+1. Run the pre-processor and perform calibration for observation 
+'y0k4510dt'. All data files for this observation are in the 
+directory 'poa_spec$' and are copied to the current working
+directory. Output files are to have the same root name as 
+the input files.
+.nf
+
+  st> copy poa_spec$y0k4510dt.* .
+  st> poa_preproc_fos y0k4510dt
+  st> poa_calfos y0k4510dt ""
+.fi
+
+2. The above example on root 'y0k4510dt' can be re-run using a 
+different output name.  If the data have already been copied as
+in example #1 and run the POA pre-processor has been run, then one simply 
+needs to run the pipeline again, using a name in the output field.
+Here, all output files will be called 'new_y0k4510dt'.
+.nf
+
+  st> poa_calfos y0k4510dt new_y0k4510dt
+.fi
+
+3. Pre-process and calibrate the observation 'y3ee2804t' (in one
+step) and produce output files with a root name of 'test186' in the 
+subdirectory 'temp'.
+.nf
+
+  st> copy poa_spec$y3ee2804t.* .
+  st> mkdir temp
+  st> processfos y3ee2804t temp/test186
+.fi
+
+4. Pre-process and calibrate a list of observations (in one
+step), using an ascii text file of the root names to be processed;
+having the output file name be the same as the input.  The sample
+data are in the poa_spec$ directory;  as is the sample list file,
+which is called 'y0.list'.
+.nf
+
+  st> copy poa_spec$y0cw0109t.* .
+  st> copy poa_spec$y0cw010it.* .
+  st> copy poa_spec$y0cw0110t.* .
+  st> copy poa_spec$y0k4510dt.* .
+  st> copy poa_spec$y0ue0103t.* .
+  st> copy poa_spec$y0.list .
+  st> processfos y0.list ""
+.fi
+
+
+.ih
+NOTES
+Always run the POA pre-processor 'poa_preproc_fos' prior to 
+running the POA pipeline 'poa_calfos'.
+
+The pipeline 'poa_calfos' cannot run on a list of root names;
+only the task 'processfos' is capable of executing the
+pipeline on a list of room names (ascii '.list' file).
+
+
+.ih
+BUGS
+.ih
+REFERENCES
+References to the Post Operational Archive system for HST data can be
+found on:
+
+.nf
+      "http://www.stecf.org/poa"
+.fi
+
+The  following references are available from STScI and  describe  various  
+aspects  of  the  calibration process, simple cookbook, and general usage 
+of STSDAS:
+
+.nf
+        "HST Data Handbook"
+        "FOS Instrument Handbook"
+	"FOS Data Products Guide"
+        "STSDAS Users Guide"
+        "Phase II Proposal Instructions"
+.fi
+    
+The  following are technical references meant for internal usage and
+are not written as "end-user" products.   However,  these  documents
+can  be  retrieved  if a detailed understanding of the instrument is
+required.
+    
+The  algorithms  used  by  CALFOS are described in "SOGS Requirements
+Document", (SE-06-01).
+
+The document describing the contents and form of  the  reference  data  
+is  "Post
+Observation  Data  Processing  System to Calibration Database System
+Interface Control Document", (ICD-47).
+    
+The  document  describing  the  keywords  is  "Post Observation Data
+Processing System to Space Telescope Science Data Analysis  Software
+Interface Control Document", (ICD-19).
+.ih
+HELP
+For assistance using this particular task, please contact
+ecf-poa@eso.org, or stdesk@eso.org (see http://www.stecf.org/poa).
+
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+hedit, chcalpar, poa_preproc_fos, processfos
+
+Type "help poa_fos opt=sys" for a higher-level explanation of the 
+'poa_fos' package and the process of re-calibrating a FOS data set.
+.endhelp

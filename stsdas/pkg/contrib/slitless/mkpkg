@@ -1,0 +1,34 @@
+ 
+$call   relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set    LIBS = "-lds"
+	$update slitless.a
+	$call link
+	; 
+link:
+	$omake  slitless.x
+	$link   slitless.o slitless.a $(LIBS) -o slitless.e
+	;
+
+install:
+	$move   slitless.e stsdasbin$slitless.e
+
+slitless.a:
+	x_display_spec.x 	<gset.h>
+	x_draw.x
+	x_draw_spec_box.x
+	x_extract_sky.x 
+	x_extract_spec.x	
+	x_read_filter_config.x 	
+	x_save_to_disk.x 	
+	x_select_object.x 	<imhdr.h> 
+	x_select_spectral_box.x 
+	x_tools.x
+	;

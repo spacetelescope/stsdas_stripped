@@ -1,0 +1,73 @@
+.help offsets Apr97 stsdas.analysis.dither
+.ih
+NAME
+offsets -- Builds a set of 4 cross-correlation images from a single
+multi-group WFPC image and a multi-group reference WFPC image.
+.ih
+USAGE
+offsets  image refimage output
+.ih
+PARAMETERS
+.ls image [file name list/template]
+List of input 4-group WFPC images.
+.le
+.ls refimage [file name]
+Input 4-group WFPC reference image.
+.le
+.ls output [file name list/template]
+List of base names for the output cross-correlation images. For each
+entry in the input list, 4 cross-correlation images are generated.
+Each of these images will have its name built by appending "_gN" to the 
+base name, where N is the group number.
+.le
+.ls (coeffs = "header") [string]
+Geometrical correction coefficient type used by the 'drizzle' task. 
+Acceptable values are "header" and "". The empty value implies that 
+no geometrical correction takes place.
+.le
+.ls (cdriz = "") [pset]
+Pset with 'crossdriz' parameters.
+.le
+.ls (tempdir = "tmp$") [path name]
+Path to directory where temporary images and tables are kept.
+.le
+.ls (verbose = yes) [boolean]
+Print log of what is beign done ?
+.le
+.ih
+DESCRIPTION
+This task is a simple script that calls the 'crossdriz' task 4 times
+in sequence, to process the 4 groups in a single WFPC image. It supports
+image lists/templates as well. In this case the input and output lists
+must be paired (one output image for each input image). 
+Only one reference image can be input, and the resulting
+cross-correlation images will all be in reference to that single image.
+
+This task is appropriate when one has WFPC2 images which are shifted
+with respect to one another, or shifted and rotated by at most a 
+small angle.
+.ih
+EXAMPLES
+The following line takes the output files from 'precor' (which appends
+_obj to input file names) and cross-correlates images from
+positions 2,3,4 with an image from position 1.  The output file
+naming convention chosen here displays
+the images used in the cross-correlation.  The
+default settings are used, so the images will be drizzled before
+cross-correlation.  This is appropriate in the case
+of WFPC2 when the likely shifts are more than a few pixels, and
+geometric distortion in WFPC2 will therefore
+reduce the cross-correlation if not removed.
+
+.nf
+di> offset pos2_obj,pos3_obj,pos4_obj pos1_obj pos2x1,pos3x1,pos4x1
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko in collaboration with A. Fruchter
+.ih
+SEE ALSO
+crossdriz
+.endhelp

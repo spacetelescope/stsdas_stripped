@@ -1,0 +1,69 @@
+#   Make the fos package
+#   Author: CDBS, 15-DEC-1987
+#	to include aperlocy,apscale,lib application(s)
+#   Major Revision: 14Jan93, jde
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call relink
+$exit
+
+debug:
+	$set XFLAGS = "-fgq $(XFLAGS)"
+	$set LFLAGS = "-xz $(LFLAGS)"
+	$call	relink
+	$exit
+	;
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update	fos.a
+	$update	calfos.a
+        $call	relink@spec_polar
+	$call	fos
+	;
+
+install:
+	$move	xx_fos.e stsdasbin$x_fos.e
+	$call	install@calfos
+	$call	install@spec_polar
+	;
+
+linkonly:
+        $call	linkonly@spec_polar
+
+fos:
+        $call	linkonly@calfos
+
+	$omake	x_fos.x
+
+	$link	x_fos.o fos.a calfos.a \
+		-lsynphot -liraf77 -lf77util -luttables -ltbtables \
+		-lgflib -lgilib -lstxtools \
+		-lxtools \
+		-o xx_fos.e
+	;
+
+calfos.a:
+	@calfos
+	;
+
+fos.a:
+	@lib
+	@aperlocy
+	@apscale
+	@deaccum
+	@fitoffsety
+        @gimpcor
+        @model
+	@unwrap
+	@waveoffset
+	;

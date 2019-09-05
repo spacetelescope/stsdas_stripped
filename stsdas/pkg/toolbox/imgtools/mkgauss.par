@@ -1,0 +1,14 @@
+outim,s,q,,,,Output image name
+n1,i,q,128,1,,Image size n1 (x_axis)
+n2,i,q,128,1,,Image size n2 (y_axis)
+pos1,r,q,65.0,1.0,,Source position pos1
+pos2,r,q,65.0,1.0,,Source position pos2
+amp,r,q,1.0,0.0,,Amplitude of Gaussian function
+sigma1,r,q,1.0,0.0,,Sigma1 of Gaussian fn. (0 for entering FWHM1)
+sigma2,r,q,1.0,0.0,,Sigma2 of Gaussian fn. (0 for entering FWHM2)
+fwhm1,r,q,1.0,0.0,,Full width1 at half max of Gaussian fn.
+fwhm2,r,q,1.0,0.0,,Full width2 at half max of Gaussian fn.
+rms,r,q,0.0,0.0,,Gaussian noise rms
+seed,i,h,347951,0,,Seed for random numbers
+mode,s,h,"ql",,,
+

@@ -1,0 +1,30 @@
+# NIC1 geometric distortion coefficients, 
+# adapted from Cox et al. ISR OSG-CAL-97-07
+# by L. Bergeron (3/2/99). Note Cox et al.
+# solution is quadratic, so cubic terms are zero here.
+#
+# Average NIC1 platescale from day 309-632 (1997) is 0.0431153 "/pix
+# This is the mean of the X+Y platescale measurements of days
+# 309,323,335,397,414,472,520,583,632 (1997), a time period over which
+# the platescale remained constant to within 0.03%. Therefore, any data
+# taken between day 309 and day 632 (1997) will be within 0.03% of the
+# stated mean platescale (0.0431153 "/pix).
+# 
+# The X to Y scale ratio has not changed at all on-orbit, so applying
+# these coeffs at any date is applicable and will produce square
+# pixels, but the farther back you go from day 300, the more your scale
+# will differ from the mean stated above. Use the tables on the web to
+# make time corrections to the mean scale when calculating your xoff
+# and yoff drizzle inputs if necessary:
+#
+# http://www.stsci.edu/ftp/instrument_news/NICMOS/nicmos_doc_platescale.html
+#
+cubic
+ 
+0.0 1.00202 0.0 10.9220e-6 -10.6214e-6
+7.41495e-6 0.0 0.0 0.0 0.0
+ 
+0.0 -0.0048402 0.997980 4.9899e-6 10.6784e-6
+14.3709e-6 0.0 0.0 0.0 0.0
+
+

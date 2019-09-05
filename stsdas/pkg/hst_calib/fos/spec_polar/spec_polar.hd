@@ -1,0 +1,16 @@
+# Help directory for the SPEC_POLAR package
+# Modified: H.A. Bushouse   24-Aug-93; Changed 'specpol' to 'calpolar'
+# Modified: H.A. Bushouse   02-Dec-93; Added new tasks
+
+$spec_polar	= "stsdas$pkg/hst_calib/fos/spec_polar/"
+$doc		= "stsdas$pkg/hst_calib/fos/spec_polar/doc/"
+
+calpolar	hlp=doc$calpolar.hlp,	src=spec_polar$calpol.f
+comparesets	hlp=doc$comparesets.hlp,src=spec_polar$comparesets.x
+pcombine	hlp=doc$pcombine.hlp,	src=spec_polar$pcombine.x
+plbias		hlp=doc$plbias.hlp,	src=spec_polar$plbias.x
+polave		hlp=doc$polave.hlp,	src=spec_polar$polave.x
+polbin		hlp=doc$polbin.hlp,	src=spec_polar$polbin.x
+polcalc		hlp=doc$polcalc.hlp,	src=spec_polar$polcalc.x
+polnorm		hlp=doc$polnorm.hlp,	src=spec_polar$polnorm.x
+polplot		hlp=doc$polplot.hlp,	src=spec_polar$polplot.x

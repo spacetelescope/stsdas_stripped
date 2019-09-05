@@ -1,0 +1,424 @@
+.help specholucy V2.00 Feb03 stecf.specres
+.ih
+NAME
+specholucy  -- Extract point source spectra from longslit spectrum image with
+homogeneous background spectrum using an iterative technique based on 
+Richardson-Lucy restoration
+.ih
+USAGE
+specholucy inpima errima dqima poitab Rootab poi_back bakima bakerr bakdq 
+psfima psfmeth psfb interpol posmeth icsum skernel niter epspoi epsbac1 
+ntrial seed dqlim verbose 
+.ih
+PARAMETERS
+.ls inpima = "" [file name]
+The name of the input longslit spectrum image. 
+.le
+.ls errima  = "" [file name]
+The name of the input statistical error image corresponding to the longslit 
+spectrum image. If this parameter is set to null, multiple 
+restoration trials cannot performed and no output error image will be 
+produced.
+.le
+.ls dqima  = "" [file name]
+The name of the input data quality image corresponding to the longslit 
+spectrum image. If set to null, no output data quality image will be 
+produced.
+.le
+.ls poitab = "" [table file name]
+Name of the STSDAS table file giving the X and Y value of the position of
+the point source and the first, second and third order terms of the change
+in position with respect to the X (dispersion) axis.
+.le
+.ls Rootab = "" [table file name]
+The root name of the output tables for the extracted point source spectra.
+The tables are post-fixed by an underscore and the item number of the profile as it 
+appears in the input point source position table. This is a four column table
+with the X channel number (or X value if a World Coordinate System is found in
+the header), integrated point source flux, statistical error on the
+flux and the data quality listed.
+.le
+.ls poi_back = "" [boolean]
+Switch to control the form of the output image(s). If switched on 
+the output image (and error image if specified) consists of the restored 
+background with the restored point source spectra (FWHM corresponding
+to the PSF); if switched off, the background image(s) only contains
+the restored background.
+.le
+.ls bakima = "' [file name]
+Name of the output image for the restored background or background + point
+sources.
+.le
+.ls bakerr = "" [file name]
+Name of the ouput statistical error image for the restored background or 
+background + point sources. If no statistical error image was input, then 
+no output error file is produced.
+.le
+.ls bakdq = "" [file name]
+Name of the ouput data quality image for the restored background or 
+background + point sources. If no data quality image was input, then no output 
+data quality file is produced.
+.le
+.ls psfima  = "" [file name]
+The name of the input Point Spread Function (PSF) longslit spectrum
+image corresponding to the input spectrum image. The X dimension of
+this image must be the same as the input image.
+.le
+.ls psfmeth = "" [string]
+Method used to fit the position of the centre of the Point Spread Function
+in the spatial (Y) direction. The options are C (Centroid of the profile) or 
+G (Gaussian fit).
+.le
+.ls psfb = "" [integer]
+The subsampling  of  the  supplied Point Spread Function image in the
+Y (cross-dispersion) direction relative to the data image. 
+.le
+.ls interpol = "" [string]
+Method used to interpolate the Point Spread Function when shifting it
+to the position of the point source prior to restoration. 
+The options are:
+.nf
+nearest - nearest neighbor interpolation
+linear - linear interpolation
+poly3 - third order interior polynomial
+poly5 - fifth order interior polynomial
+spline3 - cubic spline
+.fi
+.le
+.ls posmeth = "" [string]
+Method used to determine the position of the centre of the 
+point source in the Y (spatial) direction. The options are
+E (Exact position from the input position table) or C (by Cross-correlation 
+with the Point Spread Function).
+.le
+.ls icsum = "" [integer]
+Number of X (dispersion) channels to sum in order to form a
+profile for determining the position in the Y (cross-dispersion)
+direction by cross-correlation with the Point Spread Function.
+.le
+.ls skernel = "" [float]  
+The standard deviation of the one-dimensional Gaussian smoothing  kernel 
+in the Y (cross-dispersion) direction used to smooth the iterated estimate 
+of the background.
+.le
+.ls niter = "" [integer]
+The number of iterations for the point sources and scaled background 
+and the 1-D restoration of the summed background.
+.le
+.ls epspoi = "" [float]
+If in successive calls of the iterative restoration of the point sources and
+scaled background, the estimated fluxes of all the point sources do not differ 
+by more this fractional value, then the restoration is converged.
+.le
+.ls epsbac1 = "" [float]
+If in successive calls of the iterative restoration for the 1-D summed 
+background, the estimate of the background does not change by more than this
+fractional value, then the restoration of the background is converged.
+.le
+.ls ntrial = "" [integer]
+Number of Monte-Carlo trials for estimating the errors on the extracted 
+point source spectrum and fitted background. This parameter can only be
+applied if the statistical error frame is input.
+.le
+.ls seed = "" [integer]
+Value of the seed for the random number generator for producing Gaussian
+distributed errors for Monte Carlo simulation of statistical errors
+in the extracted spectra and restored background.
+.le
+.ls dqlim = "" [integer]
+Limiting value of data quality above which to ignore data in input image
+.le
+.ls verbose  = "" [boolean]
+Switch to control output of information to monitor the progress of
+the iterations. If switched on, information on the extracted point source 
+and background and their fractional changes per iteration are given as 
+the iterations progress. See Example 2 below for the form of the output. 
+If switched off, no progress report is output. 
+
+.ih
+DESCRIPTION
+This task applies a point-source and background spectral decomposition, 
+using a restoration method developed by Lucy and Walsh, to each column 
+of a 2D spectrum, with the constraint that the spectrum of the background 
+does not vary with position along the slit. This is referred to as a
+homogeneous 2D spectrum. This assumption allows the spectrum to be 
+summed in wavelength and the spatial profile of the background to be
+restored separately from the point sources. In the restoration of each 
+spectral element, the (restored) background is scaled to match the  
+level of the background, but its shape is not changed. The restoration 
+of the 1-D background takes place in a separate iteration loop: as the 
+point sources are better and better restored, so the global background 
+approaches the observed background without the point sources.
+The restoration technique is Richardson-Lucy
+for both steps (viz. convergence to Maximum Likelihood). 
+
+The X direction of the input image is the dispersion direction and Y the 
+spatial (i.e. cross-dispersion) direction. The point sources are 
+specified only by their Y position and are not shifted in the restoration
+process. The Point Spread Function (PSF) for each column is taken from 
+a PSF spectrum image (i.e. dispersion along the X axis and
+spatial direction along the Y axis). This image must have the
+same number of X-channels as the input image but the spatial
+(Y) dimension can differ. 
+
+The point sources are indicated by the columns of an STSDAS
+table. Only a single value is required to specify the Y position of
+the spectrum of a point source in the 2-D spectrum image, but since
+spectra with a bend (up to 3rd order) can be accommodated then both 
+X and Y values and coefficients are required. The five columns are:
+.nf
+Column 1    X coordinate of the point source spectrum (pixels)
+Column 2    Y coordinate of the point source spectrum (pixels)
+Column 3    Tilt of the spectrum with respect to the X axis (pixel^-1)
+Column 4    2nd order change of the Y spectrum with respect to the X axis
+Column 5    3rd order change of the Y spectrum with respect to the X axis
+.fi
+The X and Y positions use the IRAF convention that the bottom left corner pixel is 
+(1,1) and its centre is at (1.0,1.0). The positions of the point sources
+are not restricted to pixel centres.
+
+If the positions of the point sources are exactly specified, the
+Y pixel offsets with respect to the PSF are used in
+shifting the PSF to the point source position. If the positions of the
+point sources are not exactly known then they can be computed by the 
+task by cross-correlating the point source spectrum and the
+object spectrum and fitting a Gaussian to the cross-correlation peak. The 
+centre of the PSF is computed either by simple centroid or by a Gaussian fit.
+For symmetrical profiles these two methods give identical results.
+   
+Before the iterations commence, the columns of
+the PSF spectrum image are extracted, shifted according to the offsets of all the 
+point sources, and an array of shifted PSF spectra is produced. The PSF can 
+be oversampled (in the spatial dimension) with respect to the input
+data image, which is useful when the PSF of the data is undersampled.
+
+The initial values for the iterations use a constant value for the flux in
+all the point sources as a function of wavelength and a flat image for the 
+background.
+
+At each iteration, the shifted versions of the PSF are scaled by the current
+estimates for the fluxes of the point sources and added together with
+the scaled estimate of the 1D background to create the current estimated 
+profile at that spectral channel. This estimate is then incremented by 
+comparison with the observed data.  
+The 1-D restoration of the background is also performed each iteration.
+Both steps are iterated together until the maximum number of iterations, or 
+until the fractional change in the fluxes of all the point sources per  
+iteration is less than an amount (EPSPOI), AND 
+the difference in the restored 1D background between each iteration is 
+less than another amount (EPSBAC1). 
+Thus full convergence is deemed to occur when both convergence 
+criteria are met: i.e.
+.br
+a) the fractional changes in the fluxes of all the point sources per iteration 
+is < EPSPOI
+.br
+b) the fractional change in the 1-D background per iteration is < EPSBAC1
+.br
+Thus the two sets of restorations - the restoration for the 
+point sources+background at each spectral channel and the 1-D restoration 
+for the background - are iterated NITER times until these 
+convergence criteria are reached or NITER iterations have been performed. 
+An example of the output showing the 
+progress of the iterations is given below.
+
+For the point sources, the output tables list, for each 
+column of the input image, the X value of the column
+(wavelength if CRVAL1, CD1_1 were present in the header of the
+input image), the flux in the point source and the statistical error
+(if an input statistical error image was present and the number of
+Monte-Carlo trials was >1). 
+
+If the number of trials is set greater than 1 and a statistical error spectrum
+image is input, then an estimate of the corresponding statistical error on
+the restored longslit spectrum image can be obtained. Multiple trials 
+are performed on the spectrum formed
+from the input image and the error value randomly chosen from a Gaussian 
+distribution using a random number seed.
+The output error is the rms on the mean of the multiple trials.
+
+Points in the input image which have flagged data quality (i.e. a
+data quality value >= dqlim) are not used in the restoration for 
+iteration to the solution. The output restored data quality 
+image is a copy of the input data quality image. 
+
+.ih
+EXAMPLES
+
+1. To extract a single point source from an image with no associated
+statistical error or data quality files:
+
+.nf
+       inpima = "testsp1.fits"  Name of input flux file
+       errima = ""              Name of input statistical error file
+        dqima = ""              Name of input data quality file
+       poitab = "testpo1.tab"   Name of table of X,Y pixel centres and slope of point source spectra
+
+                                OUTPUT tables and images
+       Rootab = "test1t"        Root name for output point source extracted spectrum tables
+     poi_back = yes             Output fitted point sources+background (Y) or background only (N)
+       bakima = "testout1.fits" Name of output fitted point source+background or background file
+       bakerr = ""              Name of output fitted point source+background or background statistical error file
+        bakdq = ""              Name of output fitted point source+background or background data quality file
+
+                                POINT SPREAD FUNCTION Spectrum and Position
+       psfima = "psf1.fits"     Name of input Point Spread Function spectrum file
+      psfmeth = "c"             Method for fitting PSF peak (C=Centroid; G=Gaussian)
+         psfb = 1               Subsampling factor (Y-direction) for PSF image
+     interpol = "spline3"       Interpolation method used for shifting PSFs
+
+                                POSITIONS of Point Source Spectra
+      posmeth = "c"             Method for fitting input point source peak (E=exact; c=Cross-correlation)
+        icsum = 1               Number of columns of input data to sum for cross-correlation analysis
+
+                                BACKGROUND CHANNEL parameter
+      skernel = 4.              Sigma for smoothing kernel
+
+                                ITERATIONS and Stopping Criteria
+       niter  = 50              Number of iterations for point source and 1D background restoration
+       epspoi = 0.001           Stopping criterion for fractional change in spectra of point sources and background per set of iterations
+       epsbac1= 0.001           Stopping criterion for fractional change in summed background per set of iterations
+
+       ntrial = 1               No. of Monte Carlo trials for error estimation 
+        (seed = 7)              Seed for random number generator
+       (dqlim = 100)            Limiting data quality value above which to ignore data
+     (verbose = no)             Report parameters of restoration during execution
+.fi
+
+The input PSF spectrum has the same sampling as the input data. The 
+input table lists the X,Y position and slope of the spectrum of 
+the point source:
+.nf
+128.000    138.000      0.000
+.fi
+The PSF centre is determined by centroid fitting and the position of
+the point source spectrum in each column will be determined by
+cross-correlation with the PSF. Thus the value of Y in the input position
+table does not need to be exact (a value within a few pixels is adequate).
+The input has high signal-to-noise and only 1 column is to be summed before 
+determining its position by cross-correlation. Fifty iterations for the
+combined point-source + background restoration and restoration of
+the 1-D spectrally collapsed background will be made unless convergence
+is achieved. The 1D background will be deemed converged when successive 
+iterations differ by less than a fraction 0.001. Each spectral element
+will be converged if the fractional change
+in the sum of the restored point source flux is less
+than 0.001. The PSF will be shifted to the point source position using cubic 
+spline interpolation. The smoothing kernel has a sigma of 4.0 and since no 
+statistical errors are 
+specified multiple trials are not performed. The output table is test1t_1.tab.
+No input data quality was specified so no data quality is output. 
+
+2. To extract three point sources, which are tilted, from an
+image and to apply multiple trials to estimate the errors:
+
+.nf
+cl>  specholucy inpima="testspec1.fits" errima="testspec1er.fits"
+     dqima="testspec1dq.fits" poitab="demopos.tab" Rootab="test1t" 
+     poi_back=yes bakima="testout1.fits" bakerr="testout1er.fits" 
+     bakdq="testout1dq.fits" psfima="testpsf1.fits" psfmeth="g" 
+     psfb=2 interpol="spline3" posmeth="e" icsum=10 skernel=8.0 
+     niter=50 epspoi=5.0E-4 epsbac1=5.0E-4 ntrial=100 seed=13 
+     dqlim=10 verbose=yes 
+.fi
+
+The input PSF spectrum is subsampled by 2 with respect to the
+input data. The input table lists the X,Y position and slope of
+the spectrum of the point source:
+.nf
+    128.000    120.500      0.000
+    128.000    199.330      0.044
+    128.000     88.890     -0.044
+.fi
+The PSF centre is to be determined by fitting a Gaussian and the position of
+the point source spectrum in each column is taken from the input position
+table. The number of channels to sum for cross-correlation is ignored.
+Fifty iterations will be
+performed or until the fractional change per iteration in the flux of all the 
+point sources is less than 0.0005 and the fractional change in the 
+1-D background flux, is less than 0.0005. The PSF
+will be shifted to the point source position using a cubic spline. The smoothing
+kernel has a sigma of 8.0. 100 multiple trials are performed and output
+statistical error and data quality frames are written. Report on the progress
+of the iterations (for each column) will be written to the terminal.
+
+.nf
+!--------------------------------------------------------------------------------
+!-- Starting combined iteration no.   39
+!-- Point sources and background spectra NOT converged
+!-- Point source no.    1; % flux change    0.00786
+!-- Point source no.    2; % flux change    0.01315
+!-- Point source no.    3; % flux change    0.00308
+!-- All point sources: Maximum % flux change    0.01315
+!-- Summed background spectrum: % flux change    0.00332
+!-- 1D Background NOT converged: % flux change    0.06149
+ Star #   Flux (#  64) / Back       Flux (# 128) / Back       Flux (# 192) / Back
+    1     5010.9       103.04       5020.0       108.02       4945.5       111.79
+    2     528.86       2.9439       528.49       3.0861       527.06       3.1938
+    3     969.72       11.348       992.01       11.896       1030.8       12.311
+!-- Completed combined iteration no.   39
+!--------------------------------------------------------------------------------
+.fi
+The lines show the results from the 39th iteration on the restoration of the
+three point sources and background to reach the fractional change per iteration 
+in the restored point sources of 0.0005 for all X-sections and 0.0005 in the 
+wavelength summed 1-D background. The convergence of the point sources and
+background for all spectral elements is listed first. The fractional change in 
+flux of each point source through this iteration is listed in % and the maximum 
+change. The fractional change in the 1D spectrum of the background, applied 
+at each spatial element, is next listed. Note that this is not used as a 
+convergence criterion. The convergence of the 1D summed spatial background 
+is then reported.
+The following lines then list, for each point source spectrum,
+the flux and the flux in the mean background under the point source spectrum
+at three X-channels, selected at 0.25, 0.5 and 0.75 of the X range.
+.le
+
+.ih
+TIMING
+The processing is dominated by convolutions and scales roughly as the 
+number of pixels. The processing time is also proportional to the
+number of point source spectra to be extracted.
+
+.nf
+.fi
+
+.ih
+BUGS/FEATURES
+1. The input longslit spectrum image must have a Y dimension which 
+is a multiple of two (for the FFT's to succeed).
+
+2. If there is more than one point source which has a small separation
+(less than order three times the FWHM of each point source) and their 
+positions are determined through fitting of the cross-correlation peak 
+("posmeth=c"), then the determination of the positions may be in error.
+Either only one peak will be found or two peaks with incorrect positions
+depending on the signal-to-noise and the separation of the profiles in 
+pixels.  
+
+3. If any X channel of a point source spectrum falls within 2 pixels of the 
+(Y) top or bottom of the image, then that source is not considered for
+extraction. No output spectrum table will be produced for such spectra,
+but the table numbering will correspond to the original input table (i.e.
+if first spectrum falls at Y<2, then first output spectrum is named 
+Rootab_2.tab). 
+.fi 
+
+.ih
+REFERENCES
+An introduction is provided in:
+.br
+Walsh, J. R. "Long slit spectral extraction using restoration".
+ST-ECF Newsletter, 28, pp. 5-6, 2001.
+.br
+and the technique is fully described in 
+.br
+Lucy, L. B., Walsh, J. R., 2002. "Iterative techniques for the decomposition
+of long-slit spectra". Submitted to AJ.
+.fi
+
+.ih
+SEE ALSO
+specpsf, specinholucy 
+.fi
+.endhelp

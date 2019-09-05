@@ -1,0 +1,3 @@
+input,s,a,"",,,"Input raw datafile"
+output,s,a,"",,,"Output cleaned datafile"
+mode,s,h,al

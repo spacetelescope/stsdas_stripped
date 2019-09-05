@@ -1,0 +1,194 @@
+.help loop_driz Jun2000 stsdas.analysis.dither
+.ih
+NAME
+loop_driz -- Runs drizzle for a given list of input, output and mask images
+.ih
+USAGE
+loop_driz input output masks shiftfile
+.ih
+PARAMETERS
+.ls input = "" [Filename @list]
+Filelist containing the input image filenames.
+.le
+.ls output = "" [Single filename or @list]
+Single output filename, or @list containing output filenames corresponding to
+each of the input image filenames.
+.le
+.ls masks = "" [Single filename or @list]
+Single mask filename, or @list containing mask filenames corresponding to
+each of the input image filenames
+.le
+.ls shiftfile = "" [filename]
+File containing the x,y shift output from one of the two shift-related tasks
+(either shiftfind or avshift).
+.le
+.ls (group = "") [integer]
+The group number of the images (only used in the case of WFPC2 4-group data,
+otherwise ignored).
+.le
+.ls (shifttask = "") [string]
+The name of the task that was used to create the shiftfile (either
+shiftfind or avshift).
+.le
+.ls (driz_suffix = "_dr") [string]
+Suffix that will be appended to the output drizzled images.
+.le
+.ls (wght_suffix = "_drw") [string]
+Suffix that will be appended to the output weight images.
+.le
+.ls (tempdir = "tmp$") [file]
+Directory for temporary files.
+.le
+.ls (verbose = "yes" ) [boolean]
+Specifies the detail of the output to the screen.
+.le
+.ih
+DESCRIPTION
+This script is designed to loop over a list of input images, specified using
+an @list, and run drizzle for each input image. The task reads in the xshift
+and yshift values for each image from "shiftfile", which is expected to be in
+the output format of either the "shiftfind" or "avshift" tasks (one of which
+must be specified in the parameter "shifttask"). For WFPC2 4-group data, both
+"shiftfind" and "avshift" will usually have already been run and therefore
+the output from "avshift" should preferably be used. For non-WFPC2 data,
+"shiftfind" is the only task that would have been run and therefore its output
+would be used instead, in such cases. Once the xshift and yshift parameters
+have been read from "shiftfile", these are passed automatically to "drizzle".
+
+The output and mask files can be specified as either single filenames or as
+an @list of files. If a single output image file is specified, then all the
+input images will be drizzled onto this output image. Alternatively, if the
+output is specified as an @list then it must have the same number of entries
+as the input image @list, and each input image will be drizzled onto a
+separate output image with a name as specified in the output @list. Similarly,
+if a single maskfile name is specified then this maskfile will be used for all
+the input images. If an @list of maskfiles is specified then it must have the
+same number of entries as the input image @list, and each mask image will be
+used for the corresponding input image.
+
+The task creates two kinds of output files: a drizzled file and a weight
+file (see the help file on drizzle for more details about what is contained in
+these files). Both output files have the same root name, which is specified by
+the filename or @list in the "output" parameter. However, they have different
+suffixes appended to them, specified using the parameters "driz_suffix" and
+"wght_suffix". By default these suffixes are "_dr" for the drizzled output file
+and "_drw" for the output weight file (consistent with the naming schemes used
+in the Dither Handbook examples). However, cases can occur where it is
+desirable to change these suffixes. This can typically happen when drizzle is
+being re-run a number of times for the same dataset, perhaps using different
+drizzle parameters, in which case the "driz_suffix" could be set to "_dr1",
+"_dr2", "_dr3" etc for consecutive attempts.
+
+The shiftfile is expected to be a plain ASCII text file, as produced by either
+the "shiftfind" or "avshift" files. The first column contains the filenames
+and the second column contains the group number (which is only used by this
+task if the input files are 4-group WFPC2 images). This task reads in the
+shiftfile and identifies the first row corresponding to the input image (and
+group number, if appropriate). It then reads the xshift and yshift values
+from columns 3 and 5 if the file has been produced by "shiftfind", and columns
+5 and 6 if the file has been produced by "avshift". Intermediate columns are
+read in but ignored. The xshift and yshift values are then passed to "drizzle".
+.ih
+EXAMPLES
+Here are a number of examples showing how to use this script, drawn from cases
+covered in the Dither Handbook.
+
+1. Drizzle a set of 4-group WFPC2 images (img??.hhh), creating a separate pair
+of output drizzled and weight files for each input image (they will be called
+img??_dr.hhh and img??_drw.hhh respectively). A single input mask ("static.hhh")
+is used for all the images. In this case, "avshift" was run prior to this task,
+and created an output file called "average_shifts". For the purposes of
+book-keeping, the drizzled files corresponding to each WFPC2 group are put into
+separate subdirectories.
+
+.nf
+cl>
+cl> cd pc
+cl> !\ls -1 ../img??.hhh > ../img.list
+cl> loop_driz @../img.list @../img.list static.hhh average_shifts group=1
+    shifttask="avshift"
+
+cl> cd ../wf2
+cl> loop_driz @../img.list @../img.list static.hhh average_shifts group=2
+    shifttask="avshift"
+
+cl> cd ../wf3
+cl> loop_driz @../img.list @../img.list static.hhh average_shifts group=3
+    shifttask="avshift"
+
+cl> cd ../wf4
+cl> loop_driz @../img.list @../img.list static.hhh average_shifts group=4
+    shifttask="avshift"
+.fi
+
+
+2. Drizzle a set of 4-group WFPC2 images (img??.hhh) onto one single pair of
+output drizzled and weight files (which will be called final_g1 and final_g1w
+respectively for the PC1, final_g2 and final_g2w for WF2, etc). The suffixes
+are specified explicitly since they are different from the defaults. In this
+case the maskfiles are specified in an @list, since a separate one is used for
+each image.
+
+.nf
+cl> cd pc
+cl> !\ls -1 ../img??.hhh > ../img.list
+cl> !\ls -1 img??_cr.pl > mask.list
+cl> loop_driz @../img.list final @mask.list average_shifts group=1
+    shifttask="avshift" dr="_g1" wg="_g1w"
+
+
+cl> cd ../wf2
+cl> !\ls -1 img??_cr.pl > mask.list
+cl> loop_driz @../img.list final @mask.list average_shifts group=2
+    shifttask="avshift" dr="_g2" wg="_g2w"
+
+cl> cd ../wf3
+cl> !\ls -1 img??_cr.pl > mask.list
+cl> loop_driz @../img.list final @mask.list average_shifts group=3
+    shifttask="avshift" dr="_g3" wg="_g3w"
+
+cl> cd ../wf4
+cl> !\ls -1 img??_cr.pl > mask.list
+cl> loop_driz @../img.list final @mask.list average_shifts group=4
+    shifttask="avshift" dr="_g4" wg="_g4w"
+.fi
+
+
+3. Drizzle a set of STIS images input images (img??.hhh), creating a separate
+pair of output drizzled and weight files for each input image (to be called
+img??_dr.hhh and img??_drw.hhh respectively). A separate input mask is used for
+each input image (masks/static??.hhh), so the masks are also specified as an
+@list. The shifts in this case were only generated using "shiftfind", which
+produced an output file called "shifts.txt".
+
+.nf
+cl> !\ls -1 img??.hhh > img.list
+cl> !\ls -1 masks/static??.hhh > mask.list
+cl> loop_driz @img.list @img.list @mask.list shifts.txt
+    shifttask="shiftfind"
+.fi
+
+
+4. Drizzle a set of STIS images input images (img??.hhh) onto one single pair of
+output drizzled and weight files (which will be called final and final_w
+respectively). The suffixes are specified explicitly since they are different
+from the defaults. A separate input mask is used for each input image
+(masks/static??.hhh), so the masks are also specified as an @list. The shifts
+were generated using "shiftfind", which produced the output file "shifts.txt".
+
+.nf
+cl> !\ls -1 img??.hhh > img.list
+cl> !\ls -1 masks/static??.hhh > mask.list
+cl> loop_driz @img.list final @mask.list shifts.txt
+    shifttask="shiftfind" dr="" wg="_w"
+.fi
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+SEE ALSO
+
+
+.endhelp

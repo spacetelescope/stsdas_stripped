@@ -1,0 +1,63 @@
+.help wmosaic Jun95 stsdas.hst_calib.wfpc
+.ih
+NAME
+wmosaic -- Mosaic the 4 individual WF/PC or WFPC2 frames into 1 image.
+.ih
+USAGE
+wmosaic infile outfile 
+.ih
+DESCRIPTION
+This task will produce a mosaic of the four groups that comprise the full 
+WF/PC or WFPC2 field of view.  The input frames must be a 4-group 
+(multigroup) WF/PC or WFPC2 image.  The output file is a one group, 1600 
+pixels x 1600 pixels GEIS image where the 4 input frames have been placed 
+in their proper quadrants.  
+
+This task also makes the following corrections:
+(1) geometric distortion in each chip, and (2) rotation, offsets, and scale 
+differences among the chips.  A quicker mosaic task is also available (QMOSAIC),
+but it does not include the above mentioned corrections.
+
+After the completion of this task, there may be a cross-shaped dark area at
+the center.  This is due to imperfect matches between chip boundaries and
+the over-masking of original images near the boundaries.  For WF/PC images,
+a separate task called SEAM can be used to "airbrush" this for a more 
+visually pleasant appearance.  The task SEAM does not work on WFPC2 images.
+
+It takes about 6 minutes to run this task on a lightly loaded SUN SPARC 2
+machine.
+.ih
+PARAMETERS
+.ls infile [string]
+Input images.  Each file in the list must be a 4-groups WF/PC or WFPC2 image.
+.le
+.ls outfile [string]
+Output images.  The layout of the input groups on the output is:
+.nf
+
+		---------
+		| 1 | 4 |
+		|   |   |
+	        ---------
+		| 2 | 3 |
+		|   |   |
+                ---------
+.fi
+.le
+.ih
+EXAMPLES
+1. Mosaic the four groups in file wr1.c0h into a 1600 by 1600 image wr1mos.hhh.
+
+.nf
+wf> wmosaic wr1.c0h wr1mos.hhh  
+.fi
+.ih
+REFERENCES
+Geometric distortion and camera offset/rotation coefficients for WF/PC were 
+supplied by Roberto Gilmozzi and Shawn Ewald at STScI in November 1992.
+Coefficients for WFPC2 were supplied by Roberto Gilmozzi, Ellyne Kinney, and 
+Shawn Ewald in December 1994.
+.ih
+SEE ALSO
+seam, qmosaic, metric
+.endhelp

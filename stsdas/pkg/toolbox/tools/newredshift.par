@@ -1,0 +1,10 @@
+# Parameter file for the newredshift task.
+#
+input,s,a,,,,>input spectra
+output,s,a,,,,>output spectra or directory
+axis,i,h,1,1,,>dispersion axis
+oldz,r,h,0.,0.,,>original redshift
+newz,r,h,0.,0.,,>new redshift
+log,b,h,no,,,>log wavelength ?
+verbose,b,h,yes,,,>print operations ?
+mode,s,h,ql

@@ -1,0 +1,30 @@
+.help FOC_UTILITY Apr88 "FOC 11.3"
+
+.ih
+SUMMARY
+
+tasks in the focutility package:
+
+.nf
+    calfoc - simulates RSDP pipeline corrections 
+cloadrsdpx - examine, alter and then load RSDP parameters into image header
+ dumprsdpx - dump RSDP parameters from image header to pset par file
+ loadrsdpx - load RSDP parameters from par file into an image header
+ overflowx - correct image for 8 bit overflow
+  rsdpbacx - creates RSDP format BAC file for FOC
+  rsdpfmtx - creates RSDP format FMT file for FOC
+  rsdpgeox - creates RSDP format GEO file for FOC
+  rsdpmodx - creates RSDP format MOD file for FOC
+  rsdpparx - pset task with RSDP parameters
+  rsdpresx - creates RSDP format RES file for FOC
+  rsdpsdex - creates RSDP format SDE file for FOC
+  rsdpunix - creates RSDP format UNI file for FOC
+ rsdp2resx - converts a RSDP GEO format file to a reseau file
+   satsinx - reads SATS format data from tape
+    sdsinx - reads SDS  format data from tape
+   sdsoutx - writes FOC images to tape in SDS format 
+   testimx - generates FOC test data images with RSDP like labels
+
+( see also the tools and ttools packages )
+.fi
+.endhelp

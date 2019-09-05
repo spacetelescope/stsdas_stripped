@@ -1,0 +1,224 @@
+.help x1dcorr September2011 calcos
+.nj
+.ih
+NAME
+x1dcorr -- Extract a 1-D spectrum, starting from a corrtag file.
+.ih
+USAGE
+.nf
+x1dcorr input
+.fi
+.ih
+PARAMETERS
+.ls input [string]
+Input corrtag file name or names.
+A set of names may be given, separated by commas or blanks.
+For FUV, list both the _a.fits and _b.fits files explicitly
+if spectra from both segments are to be extracted.
+.le
+.ls (outdir = "") [string]
+The flt, counts, and x1d files will be written to this directory.
+If outdir = "", these files will be written to the default directory.
+.le
+.ls (update_input = no) [boolean]
+If this is set to yes,
+the extraction-location keywords will be updated in the input corrtag tables.
+The default is no to avoid modifying the input files
+unless this is explicitly specified.
+.le
+.ls (find_target = no) [boolean]
+Search for the target spectrum in the Y direction,
+rather than relying entirely on the wavecal offset (keyword shift2[abc])?
+See also `cutoff`.
+.le
+.ls (cutoff = 0.) [real]
+The default value of 0 disables the use of `cutoff`.
+If find_target = yes and `cutoff` is greater than 0,
+the found location will only be used if
+the standard deviation of the location is less than or equal to `cutoff`.
+.le
+.ls (location = "") [string]
+The location (FUV) or locations (NUV) at which to extract the spectra.
+The value(s) in the string `location` may be integer or float.
+
+Since the location will likely differ from one exposure to another,
+and especially from segment A to segment B for the same FUV exposure,
+if `location` is specified then
+`input` should probably include just one file name.
+
+The location to specify is the Y pixel coordinate of the spectrum
+as seen in the flt or counts image.
+The Y coordinate is the direction perpendicular to the dispersion,
+and the location is the zero-indexed pixel number.
+The spectrum will in general not be exactly parallel to the X axis;
+it can tilt by several pixels across the image.
+The `x1dcorr` task expects the location to be specified as
+the point at which the spectrum crosses
+the middle of the flt or counts image,
+X pixel 8192 for FUV or 637 for NUV.
+Note that these are fully corrected pixel coordinates, not raw coordinates.
+Furthermore, for NUV data the middle of the image
+is not the same as the middle of the XFULL coordinates in the corrtag table;
+NUV images are 250 pixels wider than the detector
+to allow for FPOFFSET and wavecal offsets.
+So if you examine data in a corrtag table
+to determine where the spectrum crosses the middle of the image,
+for NUV use XFULL = 537 as the "middle";
+the 100-pixel difference (637 - 537)
+is because the NUV flt and counts images have a
+100-pixel buffer on the left side of the images,
+but the corrtag XFULL values do not include that offset.
+
+For FUV only one value may be given.
+For NUV up to three values may be given, separated by commas and/or spaces.
+If a value is not specified (see the next paragraph),
+the spectrum will be extracted at
+the location in the B_SPEC column of the XTRACTAB.
+If `location` is not an empty string,
+the word or words that it contains will be converted to
+a list of floating point values,
+and the list will be passed to the function that does the 1-D extraction.
+Words in `location` that are omitted
+(a leading comma, two adjacent commas, a trailing comma)
+or are given as "none" or "indef" (case insensitive)
+will internally be set to None in the list,
+and the XTRACTAB position will be used.
+
+For NUV data, three values may be given;
+these will be used for stripes NUVA, NUVB and NUVC, in that order.
+If fewer than three are specified,
+the locations in the XTRACTAB will be used for the remaining stripes.
+Here are some examples.
+Suppose the locations (B_SPEC) in the XTRACTAB are
+100 for NUVA, 200 for NUVB, 300 for NUVC.
+If location = "105", the spectra will be extracted at
+105 for NUVA, 200 for NUVB, 300 for NUVC.
+If location = ",205" or ",205," or "indef 205 indef" or "none 205 none",
+the spectra will be extracted at
+100 for NUVA, 205 for NUVB, 300 for NUVC.
+
+.le
+.ls (extrsize = "") [string]
+The extraction height (FUV) or heights (NUV) to use
+when extracting the spectra.
+The value(s) in the string `extrsize` must be integer,
+and they should be odd.
+Warning:  Using an extraction height different from the default
+(which is specified in the XTRACTAB)
+will change the results of the flux calibration;
+that is, the values in the FLUX column in the x1d table will not be correct.
+
+The value or values are specified in a manner similar to those for `location`;
+however, there is an important difference.
+For NUV data, if only one value is given for extrsize,
+that value will be used for all three stripes.
+For example, suppose the extraction height is given as 57 in the XTRACTAB.
+If extrsize = "21",
+all three stripes will be extracted with a box of height 21.
+If extrsize = "21," or "21 indef" or "21,," or "21, indef, indef",
+then stripes NUVA, NUVB and NUVC will be extracted
+with boxes of height 21, 57 and 57 respectively.
+If extrsize = ",21" or "indef 21" or ",21," or "indef 21 indef",
+then the extraction heights will be 57, 21, 57.
+.le
+.ls (verbosity = 1) [integer, min=0, max=2]
+Print more messages if verbosity = 2; print very few if verbosity = 0.
+.le
+.ls (version = "") [string]
+When the `hstcos` package is loaded,
+the calcos version string will be copied to this parameter.
+Note that if the `x1dcorr` task is unlearned,
+this parameter will be reset to the default, an empty string.
+.le
+
+.ih
+DESCRIPTION
+The task `x1dcorr` calls the same 1-D extraction step as is used in `calcos`.
+The input may be either a single file
+(rootname_corrtag.fits, rootname_corrtag_a.fits, rootname_corrtag_b.fits)
+or a set of such files.
+
+The 1-D spectrum will actually be extracted from
+the flt and counts files (both are needed).
+These will be recreated from the corrtag file,
+and they will be written to the output directory (see `outdir`)
+along with the x1d file.
+
+The 1-D extraction will be done by `x1dcorr`
+regardless of the calibration switch keyword X1DCORR,
+but keywords HELCORR, BACKCORR, FLUXCORR and TDSCORR are still relevant,
+i.e. the corresponding step will be done if the keyword value
+is "PERFORM" (case insensitive).
+
+.ih
+REFERENCE FILES AND PROCESSING STEPS
+
+The names of the reference files (tables) to be used by `x1dcorr`
+are specified in the primary header of the input file,
+under the section CALIBRATION REFERENCE FILES.
+
+When an environment variable is used as part of a reference file name
+(e.g. "lref" in FLATFILE = "lref$s7g1700tl_flat.fits"),
+it is essential that the environment variable be set in the Unix shell
+before logging into PyRAF, for example:
+
+.nf
+    setenv lref /grp/hst/cdbs/lref/
+.fi
+
+Setting an IRAF environment variable lref will not work
+because `x1dcorr` is a Python task
+and doesn't have access to the IRAF environment.
+If the reference files are in the default directory,
+lref can be set to "./"
+rather than editing the header
+to remove "lref$" from each of the reference file names.
+The file name may be specified in the header
+using either IRAF notation or Unix notation,
+i.e. either "lref$s7g1700tl_flat.fits" or "$lref/s7g1700tl_flat.fits".
+
+.ih
+EXAMPLES
+
+1. To do the 1-D extraction step using input file
+"labq01ibq_corrtag.fits":
+
+.nf
+    cl> x1dcorr labq01ibq_corrtag.fits
+.fi
+
+2. As in the previous example,
+but if there is already a file "labq01ibq_x1d.fits" (or flt or counts)
+in the default directory
+we need to write the new x1d file to a different directory.
+In this case we'll write to a subdirectory "out" (which must already exist).
+
+.nf
+    cl> x1dcorr labq01ibq_corrtag.fits outdir=out
+.fi
+
+3. The output may be written to the default directory
+if the input is in a different directory
+(or if there are no files in the default directory
+with the same names as the files to be created by `x1dcorr`):
+
+.nf
+    cl> x1dcorr /home/user/labp73gyq_corrtag_?.fits
+.fi
+
+4. Specify the locations at which to extract the spectra
+(stripe A at 206, stripe B at 301, stripe C at 434.5):
+
+.nf
+    cl> x1dcorr labq01ibq_corrtag.fits outdir=out location="206,301,434.5"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.nf
+Task written by P. Hodge.
+.fi
+.ih
+SEE ALSO
+.endhelp

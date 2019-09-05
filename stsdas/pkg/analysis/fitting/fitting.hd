@@ -1,0 +1,47 @@
+# Help directory for the fitting package
+
+$fitting	= "stsdas$pkg/analysis/fitting/"
+$doc		= "fitting$doc/"
+
+$bbodypars	= "fitting$bbodypars.par"
+$cgausspars	= "fitting$cgausspars.par"
+$comppars	= "fitting$comppars.par"
+$controlpars	= "fitting$controlpars.par"
+$errorpars	= "fitting$errorpars.par"
+$funcform	= "fitting$nlfit/"
+$prfit		= "fitting$prfit/"
+$function	= "fitting$function/"
+$galprofpars	= "fitting$galprofpars.par"
+$gausspars	= "fitting$gausspars.par"
+$gfit1d		= "fitting$gfit1d/"
+$ncfit		= "fitting$ncfit/"
+$nfit1d		= "fitting$nfit1d/"
+$ngaussfit	= "fitting$ngaussfit/"
+$n2gaussfit	= "fitting$n2gaussfit/"
+$powerpars	= "fitting$powerpars.par"
+$tgausspars	= "fitting$tgausspars.par"
+$samplepars	= "fitting$samplepars.par"
+$twobbpars	= "fitting$twobbpars.par"
+$userpars	= "fitting$userpars.par"
+
+bbodypars	hlp=doc$bbodypars.hlp
+cgausspars	hlp=doc$cgausspars.hlp
+controlpars	hlp=doc$controlpars.hlp
+comppars	hlp=doc$comppars.hlp
+errorpars	hlp=doc$errorpars.hlp
+funcform	hlp=doc$funcform.hlp
+prfit		hlp=doc$prfit.hlp,	src=prfit$prfit.x
+function	hlp=doc$function.hlp,	src=function$function.x
+galprofpars	hlp=doc$galprofpars.hlp
+gausspars	hlp=doc$gausspars.hlp
+gfit1d		hlp=doc$gfit1d.hlp,	src=gfit1d$gfit1d.x
+i2gaussfit	hlp=doc$i2gaussfit.hlp,	src=fitting$i2gaussfit.cl
+ncfit		hlp=doc$ncfit.hlp
+nfit1d		hlp=doc$nfit1d.hlp,	src=nfit1d$nfit1d.x
+ngaussfit	hlp=doc$ngaussfit.hlp,	src=ngaussfit$ngaussfit.x
+n2gaussfit	hlp=doc$n2gaussfit.hlp,	src=n2gaussfit$n2gaussfit.x
+powerpars	hlp=doc$powerpars.hlp
+samplepars	hlp=doc$samplepars.hlp
+userpars	hlp=doc$userpars.hlp
+tgausspars	hlp=doc$tgausspars.hlp
+twobbpars	hlp=doc$twobbpars.hlp

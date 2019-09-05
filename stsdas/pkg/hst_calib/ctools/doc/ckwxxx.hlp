@@ -1,0 +1,118 @@
+.help ckwxxx    Mar93 tools
+.help ckwfoc    Mar93 tools
+.help ckwfos    Mar93 tools
+.help ckwhrs    Mar93 tools
+.help ckwhsp    Mar93 tools
+.help ckwwfp2   Mar93 tools
+.help ckwwfpc   Mar93 tools
+.help ckwnicmos Jul97 tools
+.help ckwstis1  Jul97 tools
+.help ckwstis2  Jul97 tools
+.help ckwstis3  Jul97 tools
+.help ckwstis4  Jul97 tools
+.ih
+NAME
+ckwfoc,ckwfos,ckwhrs,ckwhsp,ckwwfpc,ckwwfp2, ckwnicmos, ckwstis1, ckwstis2, 
+ckwstis3, ckwstis4 -- Standard HST instrument calibration psets.
+.ih
+USAGE
+.nf
+ckwfoc
+ckwfos
+ckwhrs
+ckwhsp
+ckwwfpc
+ckwwfp2
+ckwnicmos
+ckwstis1
+ckwstis2
+ckwstis3
+ckwstis4
+.fi
+.ih
+DESCRIPTION
+These psets are the standard Hubble Space Telescope (HST)
+instrument calibration psets used with the 'chcalpar' family of tasks.
+These psets are used to store changes in HST data calibration header
+keywords.
+
+These are not actual tasks, but are psets (Parameter SETS).  These are
+similar to IRAF task parameters, but are often used by groups of
+tasks for passing information.  Any of the parameter-specific tasks,
+such as `eparam' or `lparam' can be used on a pset.  (Type "help
+eparam" for further information.)  In the context of 'chcalpar', there
+is a pset defined for each of HST's science instruments.  The names of
+the psets are of the form 'ckwxxx', where "xxx" is the instrument
+identification, e.g., 'ckwhrs' for the Goddard High Resolution
+Spectrograph.
+
+Due to the complexity of the STIS instrument, there are four psets depending
+upon the detector and obstype of the data files.  'ckwstis1' applies to the
+CCD Imaging data; 'ckwstis2' applies to the CCD Spectroscopic data; 'ckwstis3'
+is for the MAMA Imaging data; and 'ckwstis4' is for the MAMA Spectroscopic
+data.
+
+Psets can be invoked as tasks.  Invoking a pset actually runs the task
+'eparam'.  The parameters that 'eparam' is editing will be the
+parameters of the pset.  Theses calibration parameter psets can be
+invoked this way.  However, they are meant to be used with 'chcalpar'.
+
+For 'chcalpar', you can also provide a customized pset
+instead of using a standard pset.  You can also start
+from scratch, but we suggest starting with one of the standard
+psets and modifying it as appropriate.
+
+If the data that will be used with 'chcalpar' and the customized pset
+has a header keyword "INSTRUME", then you should define a parameter
+called 'instrument' and give it as the default value for
+the header keyword value.
+
+If you create a parameter file, you must define it in IRAF, for
+example:
+
+.nf
+        cl> task newpset = "directory$newpset.par"
+.fi
+
+Once defined, the pset can be used in 'chcalpar' just as any of the
+other standard psets.
+.ih
+EXAMPLES
+These examples are lines from the various psets. The lines define
+the parameter name, whether or not it is required, any default
+values, minimum and maximum values, and a short description.
+
+1.  A parameter from the 'ckwhrs' pset which defines the keyword
+'diohfile' and specifies only a description:
+
+.nf
+        diohfile,s,h,"",,,"diode response header file"
+.fi
+
+2. A parameter from the 'ckwhrs' pset which defines a list of possible
+values for the parameter 'dqi_corr'.  The possible values are " ",
+"perform", "omit", and "complete".
+
+.nf
+        dqi_corr,s,h," ","| |perform|omit",,"data quality initialization"
+.fi
+
+3. Since all HRS data have the header parameter "INSTRUME = HRS", the
+'ckwhrs' pset defines the parameter instrument:
+
+.nf
+        instrument,s,h,"hrs","|hrs",,"Instrument represented by this pset"
+.fi
+
+4. Copy the pset for 'ckwwfpc' to the home directory and define it.
+Afterwards, the new file can be edited as described above.
+
+.nf
+        cl> stsdas
+        st> copy tools$ckwwfpc.par home$newwfpc.par
+        st> task newwfpc = home$newwfpc.par
+.fi
+.ih
+SEE ALSO
+chcalpar, eparam, getcal, modcal, parameters, putcal
+.endhelp

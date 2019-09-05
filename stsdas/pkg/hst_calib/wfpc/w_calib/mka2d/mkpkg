@@ -1,0 +1,15 @@
+# Update the mka2d application code in the w_calib package library
+# Author: HSU, 9-OCT-1991
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_mka2d.x 	mka2d.h	
+	get_err.x	mka2d.h		<tbset.h>
+	mka2d_do.x	mka2d.h		<imhdr.h> <time.h>
+	mka2d_in.x	mka2d.h	
+	mka2d_map.x	mka2d.h	
+	;

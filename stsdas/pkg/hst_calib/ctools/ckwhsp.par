@@ -1,0 +1,21 @@
+det_chr,s,h," ","| |complete|perform|omit",,"retrieve detector characteristics"
+deadtime,s,h," ","| |complete|perform|omit",,"dead time correction"
+true_cnt,s,h," ","| |complete|perform|omit",,"compute the true count rate"
+true_phc,s,h," ","| |complete|perform|omit",,"compute the true photocurrent"
+
+ccp0,s,h,"",,,"aperture area table name"
+ccp1,s,h,"",,,"high voltage factor table name"
+ccp2,s,h,"",,,"gain factor table"
+ccp3,s,h,"",,,"pre-amplifier noise table"
+ccp4,s,h,"",,,"relative sensitivity table"
+ccp5,s,h,"",,,"dark signal table"
+ccp7,s,h,"",,,"CVC offset table"
+ccp8,s,h,"",,,"dead time table"
+ccp9,s,h,"",,,"dark aperture translation table"
+
+graphtab,s,h,"",,,"the HST graph table"
+comptab,s,h,"",,,"the HST component table"
+
+instrument,s,h,"hsp","|hsp",,"Instrument represented by this pset"
+
+Version,s,h,"26Mar93",,,"Date of Installation"

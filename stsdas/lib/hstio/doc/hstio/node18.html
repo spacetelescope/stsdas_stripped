@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> Illustration of Low-Level I/O Routines</TITLE>
+<meta name="description" value=" Illustration of Low-Level I/O Routines">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html205 HREF="node19.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html203 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html199 HREF="node17.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html206 HREF="node19.html">  About this document </A>
+<B>Up:</B> <A NAME=tex2html204 HREF="node16.html"> Example Programs</A>
+<B> Previous:</B> <A NAME=tex2html200 HREF="node17.html"> Reading an Image </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00092000000000000000> Illustration of Low-Level I/O Routines</A></H2>
+<P>
+<PRE>      1:    # include &lt;hstio.h&gt;
+      2:    # include &lt;stdio.h&gt;
+      3:    
+      4:    /***************************************************************************
+      5:    
+      6:            Illustration of the low-level I/O routines
+      7:                            using
+      8:            Data Structures and I/O Function Declarations for
+      9:            STScI Calibration Pipeline Software for STIS and NICMOS
+     10:    
+     11:    Input data structures, such as FloatTwoDArray and Hdr, each have
+     12:    initilization, allocation, and free routines: initFloatData,
+     13:    allocFloatData, freeFloatData. 
+     14:    
+     15:    On input, if the data structures already have storage allocated and that
+     16:    storage is the same size as the requested data, that data storage is
+     17:    reused.  If it is not the same size, the old storage is freed and new
+     18:    storage is allocated.  If storage has not been allocated, then the input
+     19:    routines allocate it. 
+     20:    
+     21:    It is the responsibility of the application program to free the
+     22:    allocated storage. 
+     23:    
+     24:    ***************************************************************************/
+     25:    
+     26:    void detect_err() {
+     27:            printf(&quot;HSTIO Error (%d): %s\n&quot;,hstio_err(),hstio_errmsg());
+     28:            exit(0);
+     29:    }
+     30:    
+     31:    int main(int argc, char **argv) {
+     32:            IODescPtr in;
+     33:            FloatTwoDArray x = IFloatData;
+     34:            Hdr h = IHdr;
+     35:            IODescPtr out;
+     36:            FloatTwoDArray z = IFloatData;
+     37:            int i, j;
+     38:    
+     39:            /* install the error handler */
+     40:            push_hstioerr(detect_err);
+     41:    
+     42:            initFloatData(&amp;x); /* Initialize the data structures.  Failure to */
+     43:            initFloatData(&amp;z); /* initilize the data structures increases the */
+     44:            initHdr(&amp;h);     /* probablilty of getting a core dump.         */
+     45:    
+     46:            /* This section illustrates the input case. */
+     47:            in = openInputImage(&quot;infile.fit&quot;,&quot;&quot;,0);
+     48:            getFloatData(in,&amp;x);
+     49:            getHeader(in,&amp;h);
+     50:            closeImage(in);
+     51:            for (j = x.ny - 1; j &gt;= 0; --j) {       /* Do something with    */
+     52:                for (i = 0; i &lt; x.nx; ++i)          /* the data,            */
+     53:                    printf(&quot;%g &quot;, Pix(x,i,j));
+     54:                printf(&quot;\n&quot;);
+     55:            }
+     56:            for (i = 0; i &lt; h.nlines; ++i)          /* and the header.      */
+     57:                    printf(&quot;%s\n&quot;, h.array[i]);
+     58:            freeFloatData(&amp;x);                      /* The application must */
+     59:            freeHdr(&amp;h);                            /* free storage.        */
+     60:    
+     61:            /* This section illustrates the output case. */
+     62:            allocFloatData(&amp;z,5,5);                 /* Storage must be      */
+     63:            allocHdr(&amp;h,25);                        /* allocated.           */
+     64:            for (j = z.ny - 1; j &gt;= 0; --j)         /* Fill the data array  */
+     65:                for (i = 0; i &lt; z.nx; ++i)          
+     66:                    Pix(z,i,j) = (i + 1) * 1000.0 + j + 1;
+     67:            /* And, also fill the header array */
+     68:            addFloatKw(&amp;h,&quot;CRVAL1&quot;,1.5,&quot; &quot;); 
+     69:            addFloatKw(&amp;h,&quot;CRVAL2&quot;,2.5,&quot; &quot;); 
+     70:            addFloatKw(&amp;h,&quot;CRPIX1&quot;,3.5,&quot; &quot;); 
+     71:            addFloatKw(&amp;h,&quot;CRPIX2&quot;,4.5,&quot; &quot;); 
+     72:            addFloatKw(&amp;h,&quot;CD1_1&quot;,5.5,&quot; &quot;); 
+     73:            addFloatKw(&amp;h,&quot;CD1_2&quot;,6.5,&quot; &quot;); 
+     74:            addFloatKw(&amp;h,&quot;CD2_1&quot;,7.5,&quot; &quot;); 
+     75:            addFloatKw(&amp;h,&quot;CD2_2&quot;,8.5,&quot; &quot;); 
+     76:            addIntKw(&amp;h,&quot;TEST1&quot;,34,&quot; &quot;); 
+     77:            addBoolKw(&amp;h,&quot;TEST2&quot;,True,&quot; &quot;); 
+     78:    
+     79:            out = openOutputImage(&quot;outfile1.fit&quot;,&quot;sci&quot;,0,&amp;h,5,5,0);
+     80:            /* the openOutputImage routine writes the header */
+     81:            putFloatData(out,&amp;z);                   /* write the data.      */
+     82:            closeImage(out);
+     83:            freeFloatData(&amp;z);                      /* Then, free the       */
+     84:            freeHdr(&amp;h);                            /* storage.             */
+     85:    
+     86:            /* This section illustrates copying data from one file to another */
+     87:            in = openInputImage(&quot;infile.fit&quot;,&quot;sci&quot;,0);
+     88:            getHeader(in,&amp;h);
+     89:            getFloatData(in,&amp;x);
+     90:            closeImage(in);
+     91:            out = openOutputImage(&quot;outfile2.fit&quot;,&quot;sci&quot;,0,&amp;h,
+     92:                    getNaxis1(in),getNaxis2(in),0);
+     93:            putFloatData(out,&amp;x);
+     94:            closeImage(out);
+     95:            freeFloatData(&amp;x);
+     96:            freeHdr(&amp;h);
+     97:    
+     98:            return 0;
+     99:    }
+    100:</PRE>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

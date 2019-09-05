@@ -1,0 +1,5 @@
+output,f,a,,,,"output science data header file name template"
+keywords,pset,a,,,,"pset for calibration parameters"
+add,b,h,yes,,,"Add keywords if they are not present in header?"
+verbose,b,h,yes,,,"Print out files as they are modified?"
+Version,s,h,"21Jul97",,,"Date of Installation"

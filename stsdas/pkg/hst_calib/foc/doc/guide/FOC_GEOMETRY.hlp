@@ -1,0 +1,238 @@
+.help FOC_GEOMETRY Apr88 "FOC 4"
+
+.ih
+CHAPTER
+FOC_GEOMETRY -- description of geometric processing for FOC
+
+.ih
+SUMMARY
+Summary for FOC_GEOMETRY
+.ls Sections:
+
+.nf
+	Introduction
+	Measurement of PDA distortion
+	Model templates
+	Modelling the FOC distortion
+	Optical distortion models
+	Combining distortions
+.fi
+.le
+
+.ih
+INTRODUCTION
+The purpose of the set of geometry tasks is to calibrate, model
+and display FOC distortion and small changes in it, 
+to generate calibration files for PODPS/RSDP,
+and to rectify images.
+
+Geometric distortion in the FOC occurs both in the camera module (CM) and
+and the Photon Detector Assembly (PDA). There is also some astigmatism 
+arising in the ST because the FOC focal plane apertures are situated off the
+main telescope axis. However the CM is designed to match the ST and
+compensate for this effect. 
+
+The job of the CM is to produce a real image on the faceplate of each
+of the PDA. The amount of distortion introduced is expected to be small,
+about 1 or 2 normal pixels maximum. Initial estimates are available
+from raytrace calculations through the optics performed by Matra/LAS.
+This contribution is expected to be fixed, or at least to vary only
+very slowly.
+
+The PDA distortion is larger, about 10 pixels towards the edges of the format.
+Because the PDA is an electron-optic device the distortion field is
+complex, variable and cannot be modelled to 0.1 pixels by simple
+functions in 2 dimensions. Instead the distortion in a real
+image is measured by locating, in a fairly well uniformly illuminated
+image, marks specially deposited on the faceplate of the PDA
+intensifier (under the photocathode) and lying in a regular grid (reseau).
+The individual marks are referred to as reseau marks.
+
+To generate a geometric reference file to allow a science image to be 
+accurately corrected in principle requires the combination of the
+fixed CM distortion with the PDA distortion.
+
+Corrections within SDAS can include rotations to align the
+axes of the image with, for example RA and DEC, or a previous image,
+however calibration file for RSDP must not include such additional 
+rotations or shifts.
+
+.ih
+MEASUREMENT OF PDA DISTORTION
+The marks on the photcathode form a regular grid 17 by 17. Each mark is
+approximately 3 pixels (75 microns) square.
+
+First the marks must be accurately located using RFINDX. This requires
+initial positions at which to begin searching for each mark. One or more
+templates to be fitted to the marks in the image are also needed.
+
+.ls Initial positions
+Given a uniformly illuminated image, preferably with a mean count level
+of at least 100, initial positions may be recorded by an operator by loading
+the image on an image display and marking the positions with the cursor.
+
+ ????The SDAS package TVDISPLAY allows one to perform these operations using
+tasks LOAD and TVCURSOR. ????
+
+Task RGENX is then used to create a 
+"reseau file" (see separate help for a description of these). The help
+for RGENX has additional information about the order of recording the
+reseau. The results may be displayed with tasks RPRINTX and RPLOTX.
+
+If one has a reseau file already, then is may be used without
+going through the above procedure, as long as the reseau marks have
+not moved too far from one image to the next.
+Shifts from one image to the next may be displayed with RPLOTX.
+
+Alternatively one may use the task RMARKERX which allows one to
+refine some initial reseau positions using a graphics display.
+
+.ih
+MODEL TEMPLATES
+Fairly simple model templates may be used. An initial idea
+of the size of the marks may be gained by using LISTX to print
+a few small sections around several marks. Remember the templates
+one finally decides upon should be symmetric about the centre,
+and normalised to a surrounding image value of 100. For input to RFINDX
+a free format text file with the models in is required. Usually
+one may expect to set up a file with say 6 models in and use these
+most of the time.
+
+RSDP requires the templates as image file.
+
+.ih
+MODELLING THE FOC DISTORTION
+Distortion may be modelled using RFITX which produces a 
+surface fit to the line (axis2) and sample (axis1) displacements
+separately using a least squares method. 
+
+The goodness of fit may first of all be judged by the residuals
+displayed by RFITX. These may be allowed to be slightly larger
+than the nominal accuracy of 0.1 pixel because the fitting process
+is supposed to smooth small random errors introduced by the reseau location.
+
+Another concern relates to what happens between reseau marks. One test
+is to run the fitting program again, deleting one of the marks interactively.
+One may then see how closely the new fit 
+would have predicted its position. Another, easier way is to
+evaluate the fit on a much finer grid using REVALFITX. Careful choice
+of grid, followed by display with RPLOTX, can show the presence of
+unwanted oscillations which may arise from the use of too high an order in
+the function fit.
+However checking to the level of 0.1 pixels
+is not possible.
+
+The PDA distortion can be combined with CM distortions using
+REVALFITX to produce the file needed to perform the geometric
+correction.
+
+.ih
+OPTICAL DISTORTION MODELS
+.ls Normal mode
+.ls Ground based data
+Initial optical distortion data are provided by Matra/LAS by ray tracing.
+A grid of about 5 by 5 points is used and the results give the positions
+on the PDA faceplate corresponding to a perfectly regular sky grid.
+The results are relative to an FOC axis. REVALFITXX can be used to
+create the reseau file needed by REVALFITX.
+Correction of the PDA distortion in 
+such an image will leave the CM distortion which may be modelled once again
+by RFITX. The star locations may be found with other utilities.
+.le
+.ls In flight geometry determination
+In flight the distortion may be measured using a field of stars with
+accurately known relative positions. Task DAOPHOT or some other
+star locating task may be used to generate a list of accurate positions
+corresponding actual positions. These actual positions should be
+in pixel coordinates, having been transformed from RA an DEC to V2, V3 and
+then to linear detector coordinates using the entries in the database.
+Note that in principle we could choose the database entries as anything and
+force the geometric correction file to conform. However in practice one
+would find the transform approximately and then force the transform to
+agree.
+.le
+
+.le
+
+.ls Spectrograph Mode
+This model describes the distorted appearance on the PDA faceplate
+of slit images of a line source. As for normal mode, data from ray
+tracing is available on a 5 by 5 grid. It is assumed that the
+physical slit entrance aperture is perfectly straight. No account
+is taken of how the slit maps onto the sky.
+.le
+.ls Coordinate systems
+The RSDP system largely ignores the physical coordinate system. For normal
+imaging mode this is immaterial as long as the reference files do
+not introduce additional rotations for example. However in spectrograph
+mode the coordinate system has wavelength as one axis and at the
+time of writing RSDP does not insert the correct information
+about this into the headers. STP/G has been made aware of the problem.
+.le
+.le
+
+.ih
+COMBINING DISTORTIONS
+Distortions should be combined bearing in mind the fact that we are
+dealing with non-linear, non-commutative operations, so that 
+the order of operations is important.
+
+.ls Normal mode
+Imagine a regular grid on the sky, with the positions recorded in
+a reseau file created by RGENX.
+One may distort this according to the CM distortion using
+REVALFITX to show where these grid points lie on the detector faceplate.
+Assuming that one has used RFITX to model the PDA, one may 
+distort the REVALFITX output with REVALFITX.
+Thus one has the grid corresponding to the regular sky grid.
+
+Now an image may be geometrically corrected.
+.le
+
+.ls Spectrograph mode
+The aim is to generate the distortion model which will enable a
+spectrograph image to be rectified and at the same time oriented so
+that the slit images from a line source are parallel to the image
+scan lines, and at the same time the wavelength dispersion is
+uniform.
+
+The generation of a spectrograph geometric reference file may be
+done in three steps.
+
+First correct a wavelength image (one with several long slit lines)
+for PDA distortion. The reseau positions may have to be taken from
+an LED image taken close in time in the same format.
+
+Second measure the angle of the long slit lines to axis1 using task SLITANGLE.
+Rotate the square reference file by the negative of this angle using
+RTRANSFORMX. Apply small corrections from ray tracing information using tasks
+RFITX and REVALFITX, and, if known, apply the PDA/FOC alignment rotation. 
+Then these
+may be combined with the PDA distortions using REVALFITX.
+Geometrically correcting the spectrograph image with this file will
+produce an image with the spectral lines parallel to axis1, however
+the dispersion may not be linear.
+
+The third step is to measure the wavelength  dispersion by
+making a one dimensional image with task PROJECT and using various
+SDAS and/or IRAF tasks. Knowing the dispersion one may then alter the
+axis2 coordinates of the reference rectangular grid to stretch or
+compress the corrected image so as to produce a linear dispersion
+when the original image is geometrically.
+.le
+
+.ih 
+SEE ALSO
+
+From FOC_GEOMETRY see also:
+
+.nf
+             None, but see also
+
+FOC_INSTRUMENT              General instrument information
+FOC_OPGUIDE                 Operators guide for RSDP related calibrations
+FOC_CORRECTION              Image correction
+.fi
+
+
+.endhelp

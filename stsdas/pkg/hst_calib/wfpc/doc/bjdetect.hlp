@@ -1,0 +1,56 @@
+.help bjdetect Feb96 stsdas.hst_calib.wfpc
+.ih
+NAME
+bjdetect -- Detect bias jumps in a CCD overscan image.
+.ih
+USAGE
+bjdetect input thresh nbins ncomp
+.ih
+DESCRIPTION
+This task divides the CCD overscan image into NBINS equal subsections along
+the y-axis.  It then takes the mean value of each subsection and compare 
+with each other.  If the difference between any pair is over the threshold 
+value THRESH, it will print out a message to announce a detection of bias jump. 
+.ih
+PARAMETERS
+.ls input [string]
+Input image(s).  
+.le
+.ls thresh [real]
+Criterion of bias detection, in DN.
+.le
+.ls nbins [int]
+Number of subsections the overscan is divided up to.
+.le
+.ls ncomp [int]
+Number of neighboring subsections (in either direction) each subsection will
+be compared with.  For example, if ncomp = 2, then subsection #1 will be 
+compared with #2 and #3, but subsection #5 will be compared with #3, #4, #6, 
+and #7.
+.le
+.ls (x1) [int]
+Sometimes the overscan image will contain information other than the bias.
+For example, the WPPC2's bias is only in columns 5 to 14.  So this and the
+next parameter (X2) are used to specify the range in the X direction to 
+be used in bias detection.
+.le
+.ls (x2) [int]
+See above.
+.le
+.ls (out_format) [string, allowed values = "calwp2|general|detail"]
+Output format.  If out_format = "calwp2", it prints out the message used in the 
+pipeline task calwp2.  If out_format = "general", it also print out the file
+name and an estimate of where the jump occurs. If out_format = "detail", it 
+prints out more detailed information.
+.le
+.ih
+EXAMPLES
+1. Detect bias jump in WFPC2 images.  Compare all subsections.
+.nf
+wf> bjdetect *.x0h 0.09 8 7 x1=5 x2=14
+.fi
+.ih
+REFERENCES
+.ih
+SEE ALSO
+.endhelp

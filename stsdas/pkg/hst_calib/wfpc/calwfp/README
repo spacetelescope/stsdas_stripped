@@ -1,0 +1,97 @@
+STScI WF/PC Stage I Pipeline for STSDAS and PODPS/RSDP			
+										
+John W. MacKenty STScI 10.12.88
+Version 1:	12.30.88
+Version 1a:	03.28.89
+Last Revised: 10.23.89 Conformance with STSDAS-PODPS
+	1.00	11.27.89 Protect against zero divide when wrong PURGTIME
+	1.01	10.05.90 Fix Datamin/Datamax Keywords; PHOTMODE keyword
+	1.10	06.02.91 Get photometry keywords from PHOTTAB table
+	1.11	06.14.91 Add output file rootname.grp for group parameters
+	1.12	07.19.91 Change .grp to .cgr; _1 to _A, etc.
+	1.13	08.28.91 Set FILTNAM1 and FILTNAM1 strings="OPEN" when blank	
+										
+
+CALWFP -- Processes a WFPC image in the RSDP pipeline.
+
+This program performs the AtoD correction, Bias Level determination and
+subtraction, Bias, Preflash (or CTE), SuperPurge Residual, and Dark image 
+subtractions, and flat field correction. The input data quality file 
+(DQF) is updated by the DQFs of each reference file together with a 
+static mask DQF. An additional output DQF flagging all saturated pixels 
+is created. Histograms of the input data, the data after AtoD correction,
+and the output data are generated.
+
+This procedure requires the root names of the input and output datasets. 
+A path name may be included but extensions are not allowed. If the
+output name is null, it defaults to the input name. The extensions
+".d0h" and ".q0h" are assumed for the input image and its DQF.
+Control of the program is accomplished by keywords in the header file
+of the input image. All reference file names are provided in these
+keywords. The output files names are derived from the output root name
+as follows:
+       root.c0h    -- output image
+       root.c1h    -- output DQF
+       root.c2h    -- output histograms (3 image rows per group)
+       root.c3h    -- output saturated pixel DQF
+       root.cgr    -- output text file of group params for DMF/DADS
+
+The control keywords are: MASKCORR, ATODCORR, BLEVCORR, BIASCORR,
+  PREFCORR, PURGCORR, DARKCORR, FLATCORR, DOSATMAP, DOHISTOS, 
+  DOPHOTOM, OUTDTYPE, DOGRPFIL
+The reference file names are specified in the keywords:
+  MASKFILE, ATODFILE, BLEVFILE, BLEVDFIL, BIASFILE, BIASDFIL,
+  PREFFILE, PREFDFIL, PURGFILE, PURGDFIL, DARKFILE, DARKDFIL,
+  FLATFILE, FLATDFIL, PHOTTAB
+
+The following 'include' files are required:
+	wrincl.h		-- common blocks
+	wrdata.h		-- DQF condition values and various constants
+n.b. All constants and global variables placed in common blocks are
+    expressed in upper case in the procedures.
+	
+The following additional modules are required in STSDAS:
+	x_calwfp.x		-- task statement
+	t_calwfp.x		-- top level procedure
+
+To compile and link this routine for IRAF/STSDAS use:
+
+	xc x_calwfp.x t_calwfp.x calwfp.x -ltbtables
+
+Design Overview:
+	CALWFP			-- get input file name, log start/finish
+	    WR_SETUP		-- init constants, open input image
+		WR_GACTION	-- get action keywords
+		WR_GNAMES	-- get reference file names
+		WR_GOTHER	-- get other needed data and check
+				   input image for legal format
+		WR_GOUT		-- get output file names
+	    WR_CALC		-- process image (loop for each group)
+		WR_INPUT	-- open input files
+		WR_REFFILE	-- open reference image file
+		WR_REFTAB	-- open reference table
+		WR_OUTPUT	-- open output image files
+		WR_OUTFILE	-- open output group param text file
+		WR_DOCHIP	-- do processing on one chip
+		    WR_GETATOD	-- get AtoD lookup table
+		    WR_BLEV	-- get bias level from EEDfile
+		    WR_HIST	-- compute histogram
+		    WR_SAT	-- flag saturated pixels in row
+		    WR_ATOD	-- do AtoD conversion in row
+		    WR_STAT	-- accumulate statistics
+		WR_UPDATEKW	-- update action and stat keywords
+		    WR_GPHOTMODE-- create photmode string
+		    WR_PHOTOM	-- find and copy phot keywords
+		WR_GROUP1	-- write group params to .cgr textfile
+		WR_GROUP2	-- write 2nd set of group params
+	    WR_FINISHUP		-- close any open files
+Utility Routines:
+	    WR_IMUNMAP		-- unmap an image, clear its flag
+	    WR_TBUNMAP		-- unmap a table, clear its flag
+	    WR_CLOSE		-- close a text file, clear its flag
+	    WR_STRPWHT		-- strip trailing whitespace from a string
+	    WR_ADDGRP		-- add group suffix to file name
+	    WR_KWERR		-- report a keyword related error
+	    WR_MESSAGE		-- report message in uniform format
+	    WR_ERROR		-- assert and report error condition
+

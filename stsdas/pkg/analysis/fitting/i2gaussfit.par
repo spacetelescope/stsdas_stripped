@@ -1,0 +1,9 @@
+# Parameter file for the i2gaussfit script.
+#
+input,s,a,,,,>image to fit
+output,s,a,,,,>output table
+niter,i,h,2,1,,>number of interations
+errors,b,h,yes,,,>compute coefficient errors ?
+verbose,b,h,yes,,,>display intermediate results ?
+version,s,h,"18May91",,,>date of installation
+mode,s,h,al

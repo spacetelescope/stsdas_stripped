@@ -1,0 +1,286 @@
+.help poa_preproc_fos Jul00 stpoa.poa_fos
+.ih
+NAME
+poa_preproc_fos -- Pre-process Faint Object Spectrograph (FOS) data
+in preparation for calibration task 'poa_calfos'.
+.ih
+USAGE
+poa_preproc_fos input
+.ih
+DESCRIPTION 
+The 'poa_preproc_fos' task is the pre-processor required to prepair 
+raw data from the HST archive for processing with the 'poa_calfos' pipeline.
+The pre-processor performs the following steps: 
+
+.nf
+  1) Checks to see if the FOS dataset falls into the POA processing
+     criteria;  if yes, then pre-processing is commenced,  if not, 
+     then the pre-processing is aborted with a message to the user 
+     that the POA FOS data criteria were not met.  POA processing 
+     criteria for FOS data are:
+
+	Detector:  BLUE
+	Grndmode:  SPECTROSCOPY, RAPID-READOUT, IMAGE
+	Fgwa_id:   H13, H19, H27, H40, H57, L15, L65           
+	Aper_id:   A-1, A-2, A-3, A-4, B-1, B-2, B-3, B-4
+ 
+     If the data match the POA processing criteria, then steps 2-6
+     are performed on the input root.*h headers.
+
+  2) Sets the zero-point offset correction header keyword (OFF_CORR) 
+     to a value of 'PERFORM'.
+
+  3) Turns off the scattered light correction header keyword  
+     (SCT_CORR) by setting it to a value of 'OMIT'.  
+
+  4) Sets the value of the wavelength calibration header keyword
+     (CCS6) to the new POA location and filename:
+            CCS6=pwav$/l611655ty.cy6  (for pre-costar data)
+            CCS6=pwav$/l611655oy.cy6  (for post-costar data)
+
+  5) Extracts the names of the flat field correction header keywords
+     (FL1HFILE, FL2HFILE);  checks to see if there is an equivalent
+     flatfield which has been redone with a POA correction;  if yes,
+     then the location and new flat field(s) is written to the
+     header;  if no, then the flat field keyword(s) remain the same.
+            FL1HFILE=pref$/$l7m1413ly.r1h  (y3ck040bt.d0h example)
+
+  6) Adds 10 new header keywords to the raw headers.  These 
+     contain new reference files which are needed for the POA
+     pipeline processing.  These keywords are:
+            CYCCSFR=ref$l5u1739ay.cyf
+
+            CYCCSER1=ref$l5u1623cy.cye
+            CYCCSER2=ref$l5u16246y.cye
+            CYCCSER3=ref$l5u1624ay.cye
+            CYCCSER4=ref$l5u1624ey.cye
+            CYCCSER5=ref$l5u1624iy.cye
+            CYCCSER6=ref$l5u1624ny.cye
+            CYCCSER7=ref$l5u1624qy.cye
+            CYCCSER8=ref$l5u16250y.cye
+            CYCCSER9=ref$l5u16255y.cye
+
+.fi
+
+NOTE:  The current version of the POA FOS software (v1.2.1 Nov 2001), has
+the POA reference files internal to the STPOA package.  Therefore, 
+reference files locations will be set to "ref$", "pref$" and "pwav$";
+these variables are set by opening the stpoa.poa_fos packages.  However, 
+these same POA ref files are likely to be
+ingested into the STScI CDBS system, later to be available via the
+standard "yref$" and "ytab$" locations.  The 'internal_ref' parameter
+(described below) allows one to set the headers to point to the 
+internal STPOA reference files, or to those same files in CDBS 
+('internal_ref' parameter set to "no", which is the same as using external 
+reference files).
+
+The POA FOS tools rely on the STSDAS
+and TABLES packages;  therefore, we advise that one adds the following
+to their IRAF login.cl file (before the 'keep' statement):
+
+.nf
+	tables
+	stsdas
+	hst_calib
+	fos
+        ctools
+	stpoa
+	poa_fos
+.fi
+
+If these packages are not loaded via the login.cl file, then one
+must open them on the command line prior to running the POA FOS tools.
+
+The pre-processor will write messages to STDOUT, depending on what 
+it finds in the FOS header, and what aspect of the pre-processing 
+will be performed, if at all.  If a FOS dataset does not match
+the POA criteria (listed above, and to STDOUT), then a WARNING will
+indicate that it cannot continue processing using 'poa_calfos'. 
+One should use 'calfos' to process data that do not fit the POA
+criteria.
+
+Once the pre-processor has finished successfully, one can run the task
+'poa_calfos' on the dataset.
+
+The tool 'processfos' is also provided to ease FOS data
+processing.  It runs the pre-processor and the pipeline, checking
+to make sure the data fit the POA processing criteria.  If the
+data do not match the POA criteria, the tool will run 'calfos'
+on the data instead.  This tool also allows one to run on a list of FOS
+datasets, running the pre-processor and pipeline for all the 
+rootnames in the list.  Please see the 'processfos' for
+more details as well as instructions on how to run on a list.
+
+Also, please see the 'poa_calfos' help file for more details on the
+POA FOS re-calibration processing steps.
+
+.ih
+PARAMETERS
+.ls input [string]
+The rootname of the input FOS observation data set.
+.le
+.ls (internal_ref = yes) [boolean]
+The POA reference files are added to the raw headers using the 
+pre-processor;  the stpoa internal reference
+files are used by default (internal_ref = yes).  However, the user 
+also has the option to
+use external CDBS POA calibration reference files, by setting this
+parameter to "no".  It is up to the user to 
+check that the stpoa reference files are also available in CDBS.
+If the pre-processor does not find the reference files in CDBS, it
+will issue a warning and set the reference files to the internal files.
+Unless stated otherwise in the release notes or on the POA web pages, the
+FOS POA calibration reference files internal to stpoa should be 
+identical to the external CDBS files.  CDBS ingestion of the FOS POA
+ref files can take some time;  therefore, these files are always
+made available internally to match a given release, while CDBS 
+can only be updated after a given release.
+.le
+.ls (force_poa = no) [boolean]
+Prior to processing, the data are checked to see if the POA
+pre-processor has already been run;  if not, then this tool will
+run the pre-processor;  if yes, then this tool will
+exit, stating that one can run the pipeline directly or force
+re-pre-processing.
+This option is for the unusual case of needing to re-run the
+POA FOS pre-processor.  If the FOS data have already been pre-processed,
+then it is unlikely that one would want to re-run the pre-processor.
+Perhaps in the event that the header has been manually changed;  the 
+user may want to 'force' the POA pre-processor to be re-run.  If so,
+then set this option to 'yes'.  This option has built into the system
+mostly for the POA project, for testing the POA criteria.  If the
+'poa_calfos' pipeline is updated with further improvements (say for other
+FOS modes) one can issue the pre-processor to accept a FOS dataset
+even if it does not yet fall into the POA processing criteria.
+.le
+
+.ih
+EXAMPLES 
+1. Run the pre-processor and perform calibration for observation 
+'y0k4510dt'. All data files for this observation are in the 
+directory 'poa_spec$' and are copied to the current working
+directory. Output files are to have the same root name as 
+the input files.
+.nf
+
+  st> copy poa_spec$y0k4510dt.* .
+  st> poa_preproc_fos y0k4510dt
+  st> poa_calfos y0k4510dt ""
+.fi
+
+2. Pre-process and calibrate the observation 'y3ee2804t' (in one
+step) and produce output files with a root name of 'test186' in the 
+subdirectory 'temp'.
+.nf
+
+  st> copy poa_spec$y3ee2804t.* .
+  st> mkdir temp
+  st> processfos y3ee2804t temp/test186
+.fi
+
+3. Pre-process and calibrate a list of observations (in one
+step), using an ascii text file of the root names to be processed;
+output file rootnames will be the same as the input.  The sample
+data are in the poa_spec$ directory;  as is the sample list file,
+which is called 'y0.list'.  Please see the 'processfos' help
+file for more information on processing a list of FOS rootnames.
+.nf
+
+  st> copy poa_spec$y0cw0109t.* .
+  st> copy poa_spec$y0cw010it.* .
+  st> copy poa_spec$y0cw0110t.* .
+  st> copy poa_spec$y0k4510dt.* .
+  st> copy poa_spec$y0ue0103t.* .
+  st> copy poa_spec$y0.list .
+  st> processfos y0.list ""
+.fi
+
+.ih
+NOTES
+Running 'poa_preproc_fos' on data which do not match the POA criteria
+(listed in the DESCRIPTION section), will issue a WARNING to 
+STDOUT, telling the
+user that there is no POA correction for that particular dataset.
+Unfortunately there is no POA correction for FOS RED datasets
+nor for some modes of FOS BLUE data.
+Instead of running the POA pre-processor or pipeline 'poa_calfos',
+one should  run the current
+version of 'calfos' on these data instead.  The result
+will be the standard set of 'calfos' output products, with no
+POA changes in the calibration.
+
+Once the POA pre-processor has been run on the FOS data, one
+should not use 'calfos' on these pre-processed data.  The
+wavelength calibration files and the flat field files have
+been changed in the header to point to the POA version;  calfos
+should not use these files for processing.  Therefore, we highly
+recommend that one does not use 'calfos' on POA pre-processed data.
+Keep a copy of the original non-pre-processed data, if you want
+to run calfos.
+
+In the unusual case where one would like to reset the header back to the way
+it was before the POA pre-processing, one can use hedit to
+manually change the header values.  Use the POA pre-processor
+STDOUT messages as the source of what the original values
+were, prior to pre-processing the data files.
+
+An example for changing header keyword values after the pre-processor
+has been run, is as follows.  If the following changes took place
+during the pre-processing:
+.nf
+
+   OFF_CORR=OMIT   ===>   OFF_CORR=PERFORM
+   SCT_CORR=PERFORM   ===>   SCT_CORR=OMIT
+   FL1HFILE=yref$i1k1220cy.r1h   ===>    FL1HFILE=pref$l7m1413ly.r1h
+   FL2HFILE=yref$N/A   ===>    FL2HFILE=yref$N/A
+   CCS6=ytab$e5v11576y.cy6   ===>   CCS6=pwav$l611655oy.cy6
+.fi
+
+The user can change the values back to the original values:
+
+.nf
+   st> hedit root.*h OFF_CORR "OMIT" verify- update+
+   st> hedit root.*h SCT_CORR "PERFORM" verify- update+
+   st> hedit root.*h FL1HFILE "yref$i1k1220cy.r1h" verify- update+
+   st> hedit root.*h CCS6 "ytab$e5v11576y.cy6" verify- update+
+.fi
+
+Once the header edits the done, one should not run either the
+'poa_preproc_fos' or the 'processfos'
+tasks, since they will overwrite the changes which have just been 
+made.  The only reason to
+set the header back to the original values, is to be able to 
+run 'calfos' on these data.  The POA pipeline will not run on 
+data which have not been POA pre-processed.
+
+
+.ih
+BUGS
+.ih
+REFERENCES
+References to the Post Operational Archive system for HST data can be
+found on:
+
+.nf
+      "http://www.stecf.org/poa"
+.fi
+.ih
+HELP
+For assistance using this particular task, please contact
+ecf-poa@eso.org, or stdesk@eso.org (see http://www.stecf.org/poa).
+
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+poa_calfos, processfos, hedit, chcalpar
+
+Type "help poa_fos opt=sys" for a higher-level explanation of the 
+'poa_fos' package and the process of re-calibrating a FOS data set.
+
+Type "help poa_calfos" for an explanation of the 'poa_calfos' task
+for re-calibrating a FOS data.
+
+Type "help processfos" for an explanation of the task which
+runs both the FOS data pre-processor and re-calibration.
+.endhelp

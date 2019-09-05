@@ -1,0 +1,87 @@
+.help sex2gol Jul2006 axe
+.ih
+NAME
+sex2gol -- generates a Grism Object List file from a SExtractor Object List.
+.ih
+USAGE
+.nf
+sex2gol direct grism config
+.fi
+.ih
+PARAMETERS
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Filename of grism/prism extraction configuration file.
+.le
+.ls (in_sex = "") [string]
+Name of input object catalog name (if different from default).
+The aXe default file naming conventions are described below.
+.le
+.ls (use_direct = yes) [yes|no]
+Use the direct image to recompute object positions.
+.le
+.ls (direct)
+Name of direct image.
+.le
+.ls (dir_hdu) [int]
+Extract the CD matrix from this extension of the direct image.
+.le
+.ls (spec_hdu) [int]
+Extract the CD matrix from this extension of the grism/prism image.
+.le
+.ls (out_sex = "") [string]
+User-specified name of output object catalog name (if different from default).
+The aXe default file naming conventions are described below.
+.le
+.ih
+DESCRIPTION
+This task generates a Grism Object List file using a SExtractor Object List
+as input. The object list can be either related to a direct image
+(use_direct="YES") or to the grism image. If a direct image is used,
+the object positions are recomputed (in world coorinates) and then 
+transferred to image coordinates on the grism image. A small offset between
+the direct image and the grism image is allowed.
+
+If no direct image is used, the pixel coordinates of the object list
+are directly used. If they are not present in the list, pixel
+coordinates are computed using world coordinates and the WCS information
+in the grism image. 
+
+Please consult the manual for the object list format! 
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input catalog would be
+called <direct-rootname>_<science extension>.cat and the output catalog file
+would be <grism-rootname>_<science extension>.cat. 
+
+The in_sex and out_sex parameters may be set to override these defaults.
+.ih
+EXAMPLE
+
+To build the object catalog for the test images 'test_direct_1.fits' 
+(direct image) and 'test_grism_1.fits' (grism image) using the configuration 
+file 'SLIM.conf.test.0':
+.nf
+
+        ax> sex2gol test_direct_1.fits test_grism_1.fits SLIM.conf.test.0
+
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+gol2af
+.endhelp

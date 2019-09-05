@@ -1,0 +1,5 @@
+.help paperprod Jul96 stsdas.hst_calib.paperprod
+.ih
+NAME
+paperprod -- Tasks to produce HST instrument paperproducts
+.endhelp

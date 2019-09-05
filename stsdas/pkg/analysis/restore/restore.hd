@@ -1,0 +1,23 @@
+# Help directory for the STSDAS.ANALYSIS.RESTORE package
+
+$restore	= "stsdas$pkg/analysis/restore/"
+$doc		= "stsdas$pkg/analysis/restore/doc/"
+$adaptive	= "restore$adaptive/"
+$hfilter	= "restore$hfilter/"
+$lucy		= "restore$lucy/"
+$mem		= "restore$mem/"
+$sclean		= "restore$sclean/"
+$wiener		= "restore$wiener/"
+
+adaptive	hlp=doc$adaptive.hlp,	src=adaptive$adaptive/adaptive.x
+filterpars      hlp=doc$filterpars.hlp, src=restore$filterpars.par
+hfilter		hlp=doc$hfilter.hlp,	src=hfilter$t_hfilter.x
+lowpars         hlp=doc$lowpars.hlp,    src=restore$lowpars.par
+lucy		hlp=doc$lucy.hlp,	src=lucy$lucy.x
+mem		hlp=doc$mem.hlp,	src=mem$mem.x
+modelpars       hlp=doc$modelpars.hlp,  src=restore$modelpars.par
+noisepars       hlp=doc$noisepars.hlp,  src=restore$noisepars.par
+psfpars         hlp=doc$psfpars.hlp,    src=restore$psfpars.par
+sclean		hlp=doc$sclean.hlp,	src=sclean$sclean/sclean.x
+wiener		hlp=doc$wiener.hlp,	src=wiener$wiener.x,
+		sys=doc$wiener.doc

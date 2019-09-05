@@ -1,0 +1,7 @@
+infile, s, a, , , ,		">input A-to-D file or WF/PC template file name"
+outfile, s, a, "", , ,		">output A-to-D file name"
+option, s, a, "add","new|add|list|delete" , ,	">Operation option"
+errtable, s, a, "", , , 	">Name of the input error table"
+bay3temp, r, a, 300, 0, ,	">Bay 3 temperature (K)"
+
+mode, s, h, "al"

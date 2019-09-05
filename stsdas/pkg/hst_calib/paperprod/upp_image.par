@@ -1,0 +1,8 @@
+rootname, f, a, "", , , 	Input root name
+output, f, a, "", , ,		Output igi file name
+fits, f, a,"", , ,		Image type: FITS or GEIS files?
+calprt, b, a, yes, , ,		Print out BIAS/DARK/ECAL image pages?
+
+page, i, h, , , ,		Page number
+
+mode, s, h, "al"

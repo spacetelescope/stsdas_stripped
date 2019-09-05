@@ -1,0 +1,96 @@
+.help gimpcor Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+gimpcor -- Calculate and display GIMP magnitude for FOS observations.
+.ih
+USAGE
+gimpcor input
+.ih
+DESCRIPTION
+The 'gimpcor' task uses the same algorithm as the calibration pipeline task
+'calfos' to determine the magnitude of the correction
+needed to compensate for the Geomagnetic Induced Motion Problem
+(GIMP) of the FOS instrument.
+
+The task calculates the correction factor that would have been used
+by 'calfos' and writes its output to standard output (STDOUT). This
+will give you some idea of the correction factor---both for observing
+modes that can be corrected on the ground (i.e., most spectroscopy
+modes) and for those that cannot be directly corrected (spectropolarimetry).
+
+Because this task is a small version of 'calfos', the
+output of the two tasks is similar, but 'gimpcor' does not
+actually perform any corrections. 'gimpcor' also produces
+some additional output, notably, lines containing the following columns:
+
+.nf
+        XOFF    The correction in X in diodes.
+        YOFF    The correction in Y in Y deflection units.
+        B(V1)
+        B(V2)
+        B(V3)   The magnetic field, in gauss, along the telescope's
+                V1, V2, and V3 axes, respectively.
+.fi
+
+Each output line corresponds to one packet of data sent from the
+instrument.
+.ih
+PARAMETERS
+.ls input [string]
+The image rootname of the observation for which the GIMP will be
+calculated.
+.le
+.ih
+EXAMPLES
+1. Show the magnitude of the GIMP correction for the observation
+'y0nt0303t'.  This observation is RAPID-READOUT mode, thus each line
+corresponds to each readout of the science diodes.  This would be
+similar to most ACCUM spectroscopy modes.
+
+.nf
+        fo> gimpcor y0nt0303t
+        *** CALFOS - Version GIMP VER  ***
+        Y0NT0303T  Begin CALFOS for input file rootname: y0nt0303t
+        Y0NT0303T  Data quality initialization done using yref$b2f1258ry.r5h
+        Y0NT0303T  GIMP corrections calculated from model
+        Y0NT0303T  GIMP x scale factor =   0.29500000E+01
+        Y0NT0303T  GIMP y scale factor =   0.18880000E+03
+        Y0NT0303T  WARNING: GIMP y offsets computed but not applied
+        Y0NT0303T       XOFF       YOFF        B(V1)      B(V2)      B(V3)
+        Y0NT0303T      0.7937   -18.9236    -0.144756  -0.252337  -0.187240
+        Y0NT0303T      0.7774   -22.6758    -0.158107  -0.241623  -0.200176
+        Y0NT0303T      0.7540   -26.3918    -0.171826  -0.228918  -0.211748
+        Y0NT0303T      0.7235   -29.9800    -0.185674  -0.214425  -0.221575
+
+        ....
+
+        Y0NT0303T     -0.1363    30.6008    -0.142325  -0.105515   0.195814
+        Y0NT0303T     -0.0940    31.9168    -0.134098  -0.119314   0.193947
+        Y0NT0303T  Reduction completed for input file y0nt0303t
+        
+.fi
+
+2. Doing the same as above for spectropolarimetry data would print
+GIMP corrections for each position of the polarimeter's waveguide
+plate. Thus each line would be the correction applied for each pair of
+data.
+
+3. Doing the same as above for IMAGE mode data would produce a
+single line of output, corresponding to the average GIMP correction
+for the whole image.
+.ih
+BUGS
+The GIMP routines do not do any checking of the ground mode of the
+data.  You will need to verify the relevance of the correction
+magnitudes for your particular data.
+.ih
+REFERENCES
+Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+fos, calfos
+.endhelp

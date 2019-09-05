@@ -1,0 +1,87 @@
+# Global environment definitions for the STSDAS packages.
+#if (access("/grp/hst/cdbs")) {
+#set crrefer=/grp/hst/cdbs/
+#} 
+set	pkglibs		= "stsdas$bin(arch)/,stsdas$lib/"
+set	stsdasbin	= "stsdas$bin/"
+set	stsdaslib	= "stsdas$lib/"
+set	stsdaspkg	= "stsdas$pkg/"
+
+set	analysis	= "stsdaspkg$analysis/"
+set	contrib		= "stsdaspkg$contrib/"
+#set	fitsio		= "stsdaspkg$fitsio/"
+set	graphics	= "stsdaspkg$graphics/"
+set	hst_calib	= "stsdaspkg$hst_calib/"
+set	sobsolete	= "stsdaspkg$sobsolete/"
+set	playpen		= "stsdaspkg$playpen/"
+set	toolbox		= "stsdaspkg$toolbox/"
+
+set 	scidata		= "stsdas$data/scidata/"
+set	fitsdata	= "stsdas$data/scidata/fits/"
+
+# Only set these if they havent already been set by the user
+# Don't take the next line out; without it, the rest of the lines don't work
+if (defvar('dev')) {}
+
+if (!defvar('uref')) set uref = 'crrefer$uref/'
+if (!defvar('utab')) set	utab		= "crrefer$utab/"
+if (!defvar('vref')) set	vref		= "crrefer$vref/"
+if (!defvar('vtab')) set	vtab		= "crrefer$vtab/"
+if (!defvar('wref')) set	wref		= "crrefer$wref/"
+if (!defvar('wtab')) set	wtab		= "crrefer$wtab/"
+if (!defvar('xref')) set	xref		= "crrefer$xref/"
+if (!defvar('xtab')) set	xtab		= "crrefer$xtab/"
+if (!defvar('yref')) set	yref		= "crrefer$yref/"
+if (!defvar('ytab')) set	ytab		= "crrefer$ytab/"
+if (!defvar('zref')) set	zref		= "crrefer$zref/"
+if (!defvar('ztab')) set	ztab		= "crrefer$ztab/"
+
+
+
+if (!defvar('crcalobs'))  set    crcalobs      = "crrefer$calobs/"
+if (!defvar('crcalspec')) set   crcalspec      = "crrefer$calspec/"
+if (!defvar('croldcalspec')) set croldcalspec  = "crrefer$oldcalspec/"
+if (!defvar('crcomp'))    set      crcomp      = "crrefer$comp/"
+if (!defvar('crfgs'))     set       crfgs      = "crrefer$fgs/"
+if (!defvar('crfields'))  set    crfields      = "crrefer$fields/"
+if (!defvar('crmodewave'))set  crmodewave      = "crrefer$modewave/"
+if (!defvar('crcostarcomp')) set costarcomp    = "crrefer$comp/costar/"
+if (!defvar('cracscomp')) set   cracscomp      = "crrefer$comp/acs/"
+if (!defvar('crcoscomp')) set   crcoscomp      = "crrefer$comp/cos/"
+if (!defvar('crfoccomp')) set   crfoccomp      = "crrefer$comp/foc/"
+if (!defvar('crfoscomp')) set   crfoscomp      = "crrefer$comp/fos/"
+if (!defvar('crfgscomp')) set   crfgscomp      = "crrefer$comp/fgs/"
+if (!defvar('crhrscomp')) set   crhrscomp      = "crrefer$comp/hrs/"
+if (!defvar('crhspcomp')) set   crhspcomp      = "crrefer$comp/hsp/"
+if (!defvar('crotacomp')) set   crotacomp      = "crrefer$comp/ota/"
+if (!defvar('crnicmoscomp')) set  crnicmoscomp = "crrefer$comp/nicmos/"
+if (!defvar('crnonhstcomp')) set  crnonhstcomp = "crrefer$comp/nonhst/"
+if (!defvar('crstiscomp')) set  crstiscomp     = "crrefer$comp/stis/"
+if (!defvar('crwave'))     set  crwave         = "crrefer$crwave/"
+if (!defvar('crwfc3comp')) set  crwfc3comp     = "crrefer$comp/wfc3/"
+if (!defvar('crwfpccomp')) set  crwfpccomp     = "crrefer$comp/wfpc/"
+if (!defvar('crwfpc2comp'))set  crwfpc2comp    = "crrefer$comp/wfpc2/"
+if (!defvar('crgrid'))     set  crgrid         = "crrefer$grid/"
+if (!defvar('crgridbz77')) set  crgridbz77     = "crrefer$grid/bz77/"
+if (!defvar('crgridgs'))   set  crgridgs       = "crrefer$grid/gunnstryker/"
+if (!defvar('crgridjac'))  set  crgridjac      = "crrefer$grid/jacobi/"
+if (!defvar('crgridbpgs')) set  crgridbpgs     = "crrefer$grid/bpgs/"
+if (!defvar('crgridbk'))   set  crgridbk       = "crrefer$grid/bkmodels/"
+if (!defvar('crgridk93'))  set  crgridk93      = "crrefer$grid/k93models/"
+if (!defvar('crgridagn'))  set  crgridagn      = "crrefer$grid/agn/"
+if (!defvar('crgridgalactic')) set crgridgalactic  = "crrefer$grid/galactic/"
+if (!defvar('crgridkc96')) set  crgridkc96     = "crrefer$grid/kc96/"
+if (!defvar('crgridck04')) set  crgridck04     = "crrefer$grid/ck04models/"
+if (!defvar('mtab'))       set  mtab           = "crrefer$mtab/"
+
+
+# These must be Unix environment variables, not IRAF environment variables.
+# set	jref		= "crrefer$jref/"
+# set	jtab		= "crrefer$jtab/"
+# set	nref		= "crrefer$nref/"
+# set	oref		= "crrefer$oref/"
+
+# IGI environment
+set	igi_buflen	= 10000
+
+keep

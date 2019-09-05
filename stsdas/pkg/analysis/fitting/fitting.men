@@ -1,0 +1,29 @@
+Menu for the package stsdas.analysis.fitting
+
+    function - Generate functions as images, tables or lists.
+      gfit1d - Interactive 1-d linear curve fit to images, tables or lists.
+  i2gaussfit - Iterative 2-d Gaussian fit to noisy images (script).
+      nfit1d - Interactive 1-d non-linear curve fit to images, tables or lists.
+   ngaussfit - Interactive 1-d multiple Gaussian fit to images, tables or lists.
+  n2gaussfit - 2-d Gaussian fit to images.
+       prfit - Print contents of fit tables created by fitting task.
+
+ controlpars - Pset with algorithm control parameters.
+   errorpars - Pset with error-related parameters.
+  samplepars - Pset with data sampling parameters.
+
+   bbodypars - Pset with parameters for black-body function.
+  cgausspars - Pset with parameters for constrained Gaussians function.
+    comppars - Pset with parameters for composite (bb + powerlaw) function.
+ galprofpars - Pset with parameters for galaxy profile function.
+   gausspars - Pset with parameters for Gaussians function.
+   powerpars - Pset with parameters for powerlaw function.
+  tgausspars - Pset with parameters for two-dim Gaussian function.
+   twobbpars - Pset with parameters for two-black-body function.
+    userpars - Pset with parameters for user-defined function.
+
+(Type "help fitting option=sysdoc" for general information about the
+'fitting' package).
+(Type "help funcform" for information on the non-linear functional forms.)
+(Type "help ncfit" for more information on the non-linear interactive tools.)
+(Type "help icfit" for more information on the linear interactive tools.)

@@ -1,0 +1,200 @@
+.help axedrizzle May2010 axe
+.ih
+NAME
+axedrizzle -- spectral extraction from  deep 2D grism images
+.ih
+USAGE
+.nf
+axedrizzle inlist configs
+.fi
+.ih
+PARAMETERS
+.ls inlist
+List to give input images.
+.le
+.ls configs
+Name of aXe configuration file(s) to be used.
+.le
+.ls infwhm [float]
+Multiplication factor in PET's and DPP's used.
+.le
+.ls outfwhm [float]
+Multiplication factor for deep 2D drizzled grism images
+.le
+.ls (back = no) [yes|no]
+Drizzle background DPP's?
+.le
+.ls (driz_separat = no) [yes|no]
+Drizzling to separate image and CCR reject?
+.le
+.ls (clean = yes) [boolean]
+Remove temporary files?
+.le
+.ls (combine_type = "median") [median|sum|minmed|minimum]
+Type of combine operation?
+.le
+.ls (combine_mask = 0.7) [float]
+Percentage of weight image below which is is flagged as bad?
+.le
+.ls (combine_nsig = "4.0 3.0") [string]
+Significance for accepting minimum instead of median (for minmed)?
+.le
+.ls (combine_nlow = 0) [integer]
+Number of low pixels to reject?
+.le
+.ls (combine_nhig = 0) [integer]
+Number of high pixels to reject?
+.le
+.ls (combine_lthr = INDEF) [float]
+Lower threshold for clipping input pixel values?
+.le
+.ls (combine_hthr = INDEF) [float]
+Upper threshold for clipping input pixel values?
+.le
+.ls (combine_grow = 1.0) [float]
+Radius (pixels) for neighbor rejection?
+.le
+.ls (blot_interp = "poly5") [nearest|linear|poly3|poly5|sinc]
+Interpolant?
+.le
+.ls (blot_sinscl = 1.0) [float]
+Scale for sinc interpolation kernel?
+.le
+.ls (driz_cr_snr = "5.0 4.0") [string]
+Driz_cr.SNR parameter?
+.le
+.ls (driz_cr_grow = 1.0) [float]
+Driz_cr_grow parameter
+.le
+.ls (driz_cr_scal = "1.2 0.7") [string]
+Driz_cr.scale parameter
+.le
+.ls (makespc = yes) [yes|no]
+Extract spectra from the stamps?
+.le
+.ls (adj_sens = yes) [yes|no]
+Adjust sensitivity for extended objects.
+.le
+.ls (opt_extr = no) [yes|no]
+Drizzle background DPP's?.
+.le
+.ih
+DESCRIPTION
+The task extracts the object stamps from the DPP's and drizzles all
+stamp images of an object onto a common, deep 2D grism image. The drizzle
+coefficients are extracted from the keywords of the stamp images. In the 2D
+drizzled grism image the dispersion and the pixelscale in cross dispersion
+direction are as set in the configuration file with the keywords "DRZRESOLA"
+and "DRZSCALE", respectively. Also the pixfrac value and the drizzle kernel
+can be set in the aXe configuration file.
+The 2D drizzled images resemble ideal spectra with the rim of the spectra
+parallel to the x-axis.
+
+With the option "driz_separat='yes'" the tasks identifies deviant pixels
+(e.g. due to cosmic ray hits) such as MultiDrizzle does for direct images.
+This is done with the sequence: individually drizzle - combine the drizzles -
+blot the combined image back - identify deviant pixels by comparing blotted
+image and original image. The devian pixels are masked and a final drizzle
+then combines the individual object stamps to a deep 2D grism image.
+The parameters for the individual drizzles (combine_*, blot_*, driz_cr_*)
+work exactly as in MultiDrizzle. This method is only possible if the
+background was globally subtracted.
+
+The task also generates an OAF file, a modified configuration file, an object
+list and a dummy image such that the aXe tasks "drz2pet" and "pet2spc" can
+extract the 1D spectra from the drizzled 2D ones. For "makespc='yes'"
+the 1D extraction is done automatically in "axedrizzle".
+
+The drizzling results into pixels with only a fractional part of the total
+exposure time at the border of the drizzled images. To get only pixels
+with the maximum exposure time in the final 1D extraction, the PETS should
+be made with a larger extraction width than the the one used in the
+1D extraction. The parameters "infwhm" and "outfwhm" are used to specify
+the extraction width (=mfwhm in "gol2af" or extr/backfwhm in "axecore")
+used to create the PET and the 1D spectra, respectively. The extraction
+width (in pixels) for the objects are then adjusted accordingly.
+
+Running the task with 'opt_extr="YES"' leads to the computation of optimal
+weights and to an optimal weighted extraction in addition to the 'normal'
+extraction using exposure time weighting. Quantitative contamination
+as well as running the task 'drzprep' also with 'opt_extr="YES"' are
+necessary pre-conditions for an optimal weighted extraction.
+
+The format of the image list given as 'inlist' is:
+.nf
+grim_image1 object_cat11[,object_cat12] [direct_image1] [dmag1]
+grim_image2 object_cat21[,object_cat22] [direct_image2] [dmag2]
+grim_image3 object_cat31[,object_cat32] [direct_image3] [dmag3]
+.fi
+
+For the task "axedrizzle" only the first column with the name of the
+grism image is extracted and used to derive the names of the DPP's for
+the extension(s) given in the configuration file(s). All further columns
+are neglected. It is possible to use the same 'inlist' as in "axeprep",
+"axecore" and "drzprep".
+
+.ih
+FILE NAMING CONVENTION
+The name of the data products is based on the keyword "DRZROOT" specified
+in the configuration file(s). For each object, a multi extension fits file
+<drzroot>_mef_ID??.fits is created with the data, error and contamination
+values for the 2D grism images in the various extensions (?? = object number).
+Moreover a dummy image <drzroot>.fits, an OAF file <drzroot>_2.OAF, a 
+modified configuration file <drzroot>.conf and a file list <drzroot>_2.lis
+are produced. For "makespc='yes'" also the 1D spectral file
+<drzroot>_2.SPC.fits and the stamp images <drzroot>_2.STP.fits are produced.
+When optimal extraction is used, a second set of PET and SPC files is
+created with names <drzroot>_2_opt.PET.fits and <drzroot>_2_opt.SPC.fits,
+respectively.
+.ih
+EXAMPLES
+1) For ACS HRC images:
+
+.nf
+    ax> axedrizzle inlist="axeprep.lis" configs="HUDF.HRC.conf"
+                   infwhm=4.0 outfwhm=3.0 back="NO"
+                   makespc="YES" opt_extr="YES"
+.fi
+
+Drizzle the DPP's for the images specified in "axeprep.lis" onto 2D drizzled
+grism images. The PET's were generated with "mfwhm=4.0" for the
+1D extraction "mfwhm=3.0" is used. Do both, exposure time weighted as well 
+as optimal extraction of the spectra. To drizzle also the background DPP's
+"axedrizzle" must be run a second time:
+
+.nf
+    ax> axedrizzle inlist="axeprep.lis" configs="HUDF.HRC.conf"
+                   infwhm=6.0 outfwhm=5.0 back="YES"
+                   makespc="YES" opt_extr="YES"
+.fi
+
+The 1D spectra of both, object and background drizzle images are
+generated, and the background spectra is subtracted from the object spectra.
+
+
+2) For ACS WFC images:
+.nf
+    ax> axedrizzle inlist="axeprep.lis"
+                   configs="ACS.WFC.CHIP1.conf,ACS.WFC.CHIP2.conf"
+                   infwhm=4.0 outfwhm=3.0 back="NO" makespc="YES"
+.fi
+
+Drizzle the DPP's for the images specified in "axeprep.lis" onto 2D drizzled
+grism images. The PET's were generated with "mfwhm=4.0" for the
+1D extraction "mfwhm=3.0" is used.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+axecore, drzprep, drz2pet
+.endhelp

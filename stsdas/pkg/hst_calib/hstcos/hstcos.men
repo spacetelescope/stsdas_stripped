@@ -1,0 +1,6 @@
+Menu for the package stsdas.hst_calib.hstcos
+
+    calcos     - Process COS data through all the steps of the 
+                 COS Pipeline calibration.
+    splittag   - Split a COS rawtag or corrtag file into multiple files.
+    x1dcorr    - Extract 1-D spectra, starting with corrtag files.

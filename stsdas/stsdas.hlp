@@ -1,0 +1,54 @@
+.help stsdas May90 stsdas
+
+The Space Telescope Science Data Analysis System
+(STSDAS) comprises software packages that enable astronomers 
+to calibrate, display, and analyze their data.  It is 
+particularly suited to HST data, but includes a large body of 
+general purpose applications.
+
+The instrument calibration tasks for the Faint Object
+Camera, Faint Object Spectrograph, High Resolution 
+Spectrograph, High Speed Photometer, and Wide Field Planetary 
+Camera exist in
+STSDAS (the parallel pipeline) as well as the RSDP pipeline.  
+Instrument-specific analysis tasks are also contained in the 
+instrument packages,
+including the 'fgs' package, which contains analysis tasks 
+for the Fine Guidance Sensor.
+
+The 'synphot' package supports synthetic photometry including
+computation of throughput data.  
+
+'gasp' provides access to the HST Guide Star Catalog on compact
+disk (CD-ROM) currently supported on Sun systems.  
+
+Other packages provide general capabilities, but also support 
+STSDAS format files: The 'tools' package contains tasks for 
+working with images, 'ttools' contains tasks for
+working with STSDAS tables, 'testdata' contains tasks that 
+create test  images, 'stplot is composed of general purpose 
+plotting tasks tailored to
+STSDAS tables and group format images with additional 
+capability, and 'fitsio' provides tasks for reading and 
+writing FITS tapes or files of Space Telescope images and 
+tables. 
+
+General purpose analysis packages include:  'fourier' for 
+forward and inverse fourier transforms, 'statistics' for 
+statistical analysis (most tasks derived from the 
+Astronomical Survival Analysis Package at Pennsylvania State
+University), 'astrometry' for general function fitting and 
+plate solutions, and 'timeseries' for analysis of time series 
+data.  Linear and non-linear curve fitting tasks can be found 
+in the 'fitting' package.
+
+The 'isophote' package contains tasks for elliptical isophote 
+analysis of images.
+
+The 'playpen' package contains experimental (or new) tasks 
+not integrated into already existing packages.
+
+Finally, the 'problems' package contains the 'spr' task for 
+submitting a software problem report to the STSDAS group.
+
+.endhelp

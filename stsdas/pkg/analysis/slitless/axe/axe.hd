@@ -1,0 +1,20 @@
+# Help directory for the axe package
+$doc = "axe$doc/"
+af2pet	   hlp=doc$af2pet.hlp,     src=axe$/af2pet_iraf.py
+axecore    hlp=doc$axecore.hlp,    src=axe$/axecore_iraf.py
+axedrizzle hlp=doc$axedrizzle.hlp, src=axe$/axedrizzle_iraf.py
+axegps     hlp=doc$axegps.hlp,     src=axe$/axegps_iraf.py
+axeprep    hlp=doc$axeprep.hlp,    src=axe$/axeprep_iraf.py
+backest    hlp=doc$backest.hlp,    src=axe$/backest_iraf.py
+drz2pet    hlp=doc$drz2pet.hlp,    src=axe$/drz2pet_iraf.py
+drzprep    hlp=doc$drzprep.hlp,    src=axe$/drzprep_iraf.py
+fcubeprep  hlp=doc$fcubeprep.hlp,  src=axe$/fcubeprep_iraf.py
+fringecorr hlp=doc$fringecorr.hlp, src=axe$/fcubeprep_iraf.py
+gol2af     hlp=doc$gol2af.hlp,     src=axe$/gol2af_iraf.py
+iolprep    hlp=doc$iolprep.hlp,    src=axe$/iolprep_iraf.py
+pet2spc    hlp=doc$pet2spc.hlp,    src=axe$/pet2spc_iraf.py
+petcont    hlp=doc$petcont.hlp,    src=axe$/petcont_iraf.py
+petff	   hlp=doc$petff.hlp,	   src=axe$/petff_iraf.py
+sex2gol    hlp=doc$sex2gol.hlp,    src=axe$/sex2gol_iraf.py
+stamps	   hlp=doc$stamps.hlp,     src=axe$/stamps_iraf.py
+

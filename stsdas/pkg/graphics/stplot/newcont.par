@@ -1,0 +1,36 @@
+# Parameters for newcont
+
+image,f,a,,,,"image or image section to be plotted"
+
+floor,r,h,INDEF,,,"minimum value to be contoured"
+ceiling,r,h,INDEF,,,"maximum value to be contoured"
+zero,r,h,INDEF,,,"greyscale value of zero contour"
+ncontours,i,h,INDEF,2,100,"number of contours to be drawn"
+interval,r,h,INDEF,,,"contour interval"
+plev,r,h,INDEF,0.,1.,"Percent level"
+list,s,h,"",,,"List of contour levels"
+
+dvpar,pset,h,"",,,"Device parameters"
+
+xres,i,h,64,0,,"resolution in x"
+yres,i,h,64,0,,"resolution in y"
+preserve,b,h,yes,,,"preserve aspect ratio of image?"
+perimeter,b,h,yes,,,"draw labelled perimeter around plot?"
+wcslab,b,h,no,,,"Produce labelling based on image's WCS?"
+wlpars,pset,h,,,,"WCSLAB labeling parameters"
+usewcs,b,h,no,,,"Use the WCS parameters in wcspars?"
+wcspars,pset,h,,,,"User-specified WCS parameters"
+title,s,h,"imtitle",,,"optional title"
+
+subsample,b,h,no,,,"Subsample (vs blockaverage) to decrease resolution?"
+major_contours,i,h,INDEF,,,"Major contour interval"
+major_color,i,h,9,,,"Color for major contours (device dependent)"
+scale_box,b,h,no,,,"Draw contour scale?"
+function,s,h,"linear",,,"linear|log|rlog"
+negative_color,i,h,7,,,"Color for negative contours (device dependent)"
+nhi,b,h,no,,,"Mark high/low places on the graph?"
+
+rain,b,h,no,,,"Use a rainbow for contour colors? (device dependent)"
+cont_mode,s,h,"line","|line|fill",,"Type of contours to draw for rainbow"
+
+Version,s,h,"18Aug93",,,"Date of installation"

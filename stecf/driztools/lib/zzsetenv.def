@@ -1,0 +1,7 @@
+# Global environment definitions for the DRIZTOOLS package.
+
+set	driztoolslib	= "driztools$lib/"
+set     driztoolssrc	= "driztools$src/"
+set     driztoolsbin	= "stecf$bin/"
+
+keep

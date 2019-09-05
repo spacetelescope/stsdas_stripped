@@ -1,0 +1,305 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   16 /                                                
+DATATYPE= 'UNSIGNED*2'         /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                  965 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           /number of segments containing fill              
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           /number of segments containing errors            
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           /time from the packet ancillary data             
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+DADSFILE= 'Y2NC0D03P.SHF'      /                                                
+DADSCLAS= 'CAL     '           /                                                
+DADSDATE= '09-APR-1995 17:59:14' /                                              
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / FOS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'Y2NC0D03P         ' / rootname of the observation set                
+FILETYPE= 'SHP               ' / file type                                      
+CTYPE1  = 'UNITLESS          ' / units for first data axis                      
+DEFAULTS=                    F / default values used in reformatting these data 
+YFGIMPEN=                    T / onboard GIMP correction enabled (T/F)          
+YFGIMPER= 'NO                ' / error in onboard GIMP correction (YES/NO)      
+                                                                                
+                               / STATISTICAL KEYWORDS                           
+DATE    = '09/04/95          ' / date this file was written (dd/mm/yy)          
+DCFOBSN =                   47 / DCF observation number in SHP                  
+PROC_TYP= 'NORMAL            ' / level of reprocessing (NORMAL, MINOR, MAJOR)   
+                                                                                
+                               / TIME CONVERSION KEYWORDS                       
+CLKDRFTR=  0.5625299569849E-18 / spacecraft clock drift rate                    
+CLKRATE =      0.1250000013416 / spacecraft clock rate                          
+SPCLINCN=           1203858732 / spacecraft clock at UTC0                       
+UTCO1   =          -1798967808 / bytes 5-8 of UTC0                              
+UTCO2   =             10007522 / bytes 1-4 of UTC0                              
+UTC0    =       49747.66458333 / Coordinated Universal Time (Mod Julian Date)   
+                                                                                
+                               / COSTAR KEYWORDS                                
+KYDEPLOY=                    T / COSTAR deployed for FOS (T or F)               
+KXBFOCUS=  0.8908081054688E-01 / COSTAR FOC M1 Focus Position (mm)              
+KYBFOCUS=     -0.1055994033813 / COSTAR FOS M1 Focus Position (mm)              
+KYBXTILT=      -60.49987792969 / COSTAR FOS M1 X-tilt Position (arcsec)         
+KYBYTILT=       50.92602539063 / COSTAR FOS M1 Y-tilt Position (arcsec)         
+                                                                                
+                 / CDBS KEYWORDS                                                
+Y1OATMP =       9.465286254883 / optics area temperature location 1             
+Y1OBTMP =       14.14039611816 / optical bench temperature location 1           
+Y2OATMP =       1.448791503906 / optics area temperature location 2             
+Y2OBTMP =       12.57586669922 / optical bench temperature location 2           
+Y3OBTMP =       11.53469848633 / optical bench temperature location 3           
+Y4OBTMP =       12.57586669922 / optical bench temperature location 4           
+Y5VLPSV =       4.966550350189 / +5V logic power supply voltage                 
+Y8VQPSV =       8.053000450134 / +8V quiet power supply voltage                 
+YAPERTMP=       14.66221618652 / aperture mechanism temperature                 
+YARIUTMP=     -0.6662445068359 / RIU-A temperature                              
+YBRIUTMP=       2.117137908936 / RIU-B temperature                              
+YCALVLT =       73.41960906982 / calibration lamp supply voltage                
+YCEATMP =       16.74517822266 / central electronics temperature                
+YCLSCUR =       2.176470518112 / calibration lamp supply current                
+YCPSTMP =       10.49761962891 / central power supply temperature               
+YDOORTMP=       9.980712890625 / entrance door mechanism temperature            
+YDSCRVLT=       4.239999771118 / discriminator reference voltage                
+YFGMATMP=       14.14039611816 / filter/grating wheel motor A temperature       
+YFGMBTMP=       14.66221618652 / filter/grating wheel motor B temperature       
+YHVCUR  =       22.84313774109 / high voltage supply current                    
+YHVTMP  =       1.448791503906 / high voltage supply temperature                
+YHVVLT  =       22.84313774109 / high voltage supply voltage                    
+YPAMATMP=      -4.207778930664 / pre-amp assembly A temperature                 
+YPAMBTMP=      -1.547302246094 / pre-amp assembly B temperature                 
+YPCATMP =      -10.06637573242 / photocathode A temperature                     
+YPCBTMP =      -9.307006835938 / photocathode B temperature                     
+YPMFATMP=      -2.584121704102 / permanent magnet focus assembly A temperature  
+YPMFBTMP=     -0.5348052978516 / permanent magnet focus assembly B temperature  
+YPOLRTMP=       13.61878967285 / polarizer mechanism temperature                
+YSIGPTMP=      0.9558410644531 / signal processor temperature                   
+YTRMFCUR=     -0.3579101562500 / trim focus coil driver current                 
+YXDEFCUR=       2.823532104492 / X-deflection coil driver current               
+YXYDFTMP=       11.01570129395 / XY-deflection focus                            
+YYDEFCUR=      -95.52941894531 / Y-deflection coil driver current               
+                                                                                
+                 / SUPPORT SCHEDULE: PROGRAMMATIC DATA                          
+PROGRMID= '2NC               ' / program id (base 36)                           
+PR_INV_L= 'KORATKAR          ' / last name of principal investigator            
+PR_INV_F= 'ANURADHA          ' / first name of principal investigator           
+PR_INV_M= '                  ' / middle initial of principal investigator       
+AFFILIAT= 'CAL               ' / proposal class (eg: GO, IDT, OS)               
+ACCPDATE= '                  ' / proposal acceptance date (yyyyddd)             
+OBSET_ID= '0D                ' / observation set id                             
+CALIBRAT= 'Y                 ' / calibrate data flag                            
+OBSERVTN= '03                ' / observation number (base 36)                   
+EXPACKET=                   26 / expected number of source packets              
+PRODTYPE= 'P                 ' / output product medium type                     
+OPFORMAT= ' G                ' / output product format specification            
+CALIBTYP= 'I                 ' / calibration type : E, I or Blank               
+CDBSDATA= 'FALSE             ' / cdbs notification flag: 'CAL' or 'FALSE'       
+                                                                                
+                 / SUPPORT SCHEDULE: FLAGS AND INDICATORS                       
+SS_MODE = 'IMAGE             ' / ground software mode                           
+SS_DET  = 'BLUE              ' / detector in use: amber (side A), blue (side B) 
+SS_APER = 'A-4               ' / aperture id                                    
+SS_POLAR= 'C                 ' / polarizer id                                   
+SS_FGWA = 'H27               ' / FGWA id                                        
+SS_FCHNL=                    0 / first channel                                  
+SS_NCHNL=                  512 / number of channels                             
+SS_OVSCN=                    1 / overscan number                                
+SS_NXSTP=                    1 / number of x steps                              
+RTAMATCH= 'NO RTA FI AVAILABL' / above f&i match RTA (TRUE,FALSE,NO RTA F&I AVL)
+                                                                                
+                 / SUPPORT SCHEDULE: DATA GROUP II DATA                         
+WRD11_14=                   47 / word 11/14 (0-255)                             
+PSTRTIME= '1995.099:00:50:15 ' / predicted obs. start time (yyyy.ddd:hh:mm:ss)  
+PSTPTIME= '1995.099:00:55:49 ' / predicted obs. stop time (yyyy.ddd:hh:mm:ss)   
+APEROBJ = '                  ' / si object aperture id                          
+APERSKY = '                  ' / si sky aperture id                             
+TARG_ID = '                  ' / SPSS target ID from proposal+target no.        
+APERTYPE= 'SICS              ' / aperture type (SICS, SIAS, SIDS)               
+RA_V1   =  0.2174428814320E+03 / right ascension of v1 axis of st (deg)         
+DEC_V1  = -0.6268950774839E+02 / declination of v1 axis of st (deg)             
+PA_V3   =        0.1749878E+03 / position angle of v3 axis of st (deg)          
+APEROFFX=                  0.0 / x comp of object offset in aperture (arcsec)   
+APEROFFY=                  0.0 / y comp of object offset in aperture (arcsec)   
+ANGLESEP=                  0.0 / ang separation of target from ref obj (arcsec) 
+DGESTAR = 'NONE              ' / FGS ID(F1,F2,F3) concat. w/ dom. gd. star id   
+SGESTAR = 'NONE              ' / FGS ID(F1,F2,F3) concat. w/ subdom. gd. star id
+PA_APER =   .1749877929688E+03 / position ang of aperture used with target (deg)
+PA_REF  =                  0.0 / position ang of target from ref. object (deg)  
+SAAAVOID= '20                ' / SAA model for SAA Avoidance (range 02-99)      
+TARAQMOD= '00                ' / target acquisition mode (values 00, 01, 02, 03)
+POSTNSTX=  0.1521149798093E+04 / position of space telescope x axis (km)        
+POSTNSTY= -0.6522446760468E+04 / position of space telescope y axis (km)        
+POSTNSTZ=  0.1934766760119E+04 / position of space telescope z axis (km)        
+VELOCSTX=  0.6932955962111E+01 / vel of space telescope along x axis (km/sec)   
+VELOCSTY=  0.7467465878505E+00 / vel of space telescope along y axis (km/sec)   
+VELOCSTZ= -0.2933402645036E+01 / vel of space telescope along z axis (km/sec)   
+RA_SUN  =  0.1733334076245E+02 / right ascension of the sun (deg)               
+DEC_SUN =  0.7360175656211E+01 / declination of the sun (deg)                   
+RA_MOON =  0.1187994584831E+03 / right ascension of the moon (deg)              
+DEC_MOON=  0.1548341930174E+02 / declination of the moon (deg)                  
+VELABBRA=                  0.0 / aberration in position of the target           
+ANNPARRA=                  0.0 / par. shift in position, non-solar sys target   
+V2APERCE=                  0.0 / V2 offset of target from aper. center (arcsec) 
+V3APERCE=                  0.0 / V3 offset of target from aper. center (arcsec) 
+EQRADTRG=                  0.0 / equatorial radius of target (km)               
+FLATNTRG=                  0.0 / flattening of target                           
+NPDECTRG=                  0.0 / north pole declination of target (deg)         
+NPRATRG =                  0.0 / north pole right ascension of target (deg)     
+ROTRTTRG=                  0.0 / rotation rate of target                        
+LONGPMER=                  0.0 / longitude of prime meridian (deg)              
+EPLONGPM=                  0.0 / epoch of longitude of prime meridian (sec)     
+SURFLATD=                  0.0 / surface feature latitude (deg)                 
+SURFLONG=                  0.0 / surface feature longitude (deg)                
+SURFALTD=                  0.0 / surface feature altitude (km)                  
+MTFLAG  = '                  ' / moving target flag; T if it is a moving target 
+S0INVMAG=                  0.0 / S0 inverse magnitude                           
+S0XDIR  =                  0.0 / S0 X direction                                 
+S0YDIR  =                  0.0 / S0 Y direction                                 
+S0ZDIR  =                  0.0 / S0 Z direction                                 
+TRK_TYPE= 'NO                ' / track 48 or track 51 commanding used (T48, T51,
+T51_RATE=                  0.0 / rate of motion commanded (arcsecs/sec)         
+T51_ANGL=                  0.0 / position angle of motion of aperture (deg)     
+TARGDIST=                  0.0 / distance to target from Earth's center (km)    
+PAR_CORR= 'F                 ' / parallax correction used (T or F)              
+RA_REF  =                  0.0 / right ascension of reference object (deg)      
+DEC_REF =                  0.0 / declination of reference object (deg)          
+                                                                                
+                 / ONBOARD EPHEMERIS MODEL PARAMETERS                           
+EPCHTIME=       323913600.0000 / epoch time of parameters (secs since 1/1/85)   
+SDMEANAN=  0.1783514464182E-14 / 2nd deriv coef for mean anomaly (revs/sec/sec) 
+SDMA3SQ =  0.3527583103119E-05 / 3 * (SDMEANAN**2) radians/second**2.           
+HSTHORB =       2897.155949244 / half the duration of the ST orbit (seconds)    
+CIRVELOC=       7559.526447128 / circular orbit linear velocity (meters/second) 
+COSINCLI=      0.8793761083949 / cosine of inclination                          
+ECCENTRY=  0.3778872511007E-03 / eccentricity                                   
+ECCENTX2=  0.7557745022015E-03 / eccentricity times 2                           
+ECBDX4D3=  0.7194911516421E-10 / eccentricity cubed times 4/3                   
+ESQDX5D2=  0.3569969363612E-06 / eccentricity squared times 5/2                 
+ECBDX3  =  0.1618855091195E-09 / eccentricity cubed times 3                     
+FDMEANAN=  0.1725830465324E-03 / 1st derivative coef for mean anomly (revs/sec) 
+RCASCNRD= -0.1298881007386E-05 / rt chge right ascension ascend node (rads/sec) 
+RCASCNRV= -0.2067233328136E-06 / rt chge right ascension ascend node (revs/sec) 
+ARGPERIG=      0.9783668946700 / argument of perigee (revolutions)              
+MEANANOM=       6.054098687148 / mean anomaly (radians)                         
+RCARGPER=  0.3052978109161E-06 / rate change of argument of perigee (revs/sec)  
+RASCASCN=      0.3944609009444 / right ascension of ascending node (revolutions)
+SINEINCL=      0.4761277769509 / sine of inclination                            
+SEMILREC=       6971635.973663 / semi-latus rectum (meters)                     
+TIMEFFEC=       323916948.0000 / time parameters took effect (secs since 1/1/85)
+OBSSTRTT=       324003015.0000 / predicted obs. start time (secs since 1/1/85)  
+                                                                                
+                 / PROPOSAL INFO: Instrument Configuration                      
+CONFIG  = 'FOS/BL            ' / proposed instrument configuration              
+OPMODE  = 'IMAGE             ' / proposed operation mode                        
+SPEC_1  = 'G270H             ' / spectral element                               
+SPEC_2  = '                  ' / spectral element                               
+SPEC_3  = '                  ' / spectral element                               
+SPEC_4  = '                  ' / spectral element                               
+APER_1  = '0.1-PAIR          ' / instrument aperture                            
+APER_2  = '                  ' / instrument aperture                            
+APER_3  = '                  ' / instrument aperture                            
+APER_4  = '                  ' / instrument aperture                            
+                                                                                
+                 / PROPOSAL INFO: Target Description                            
+TAR_TYPE= 'POINT TARGET      ' / target type                                    
+                                                                                
+                 / PROPOSAL INFO: Flux Information                              
+MAG_V   =                  0.0 / expected V Magnitude                           
+SURF_V  =                  0.0 / expected V surface brightness                  
+MAG_B   =                  0.0 / expected B Magnitude                           
+SURF_B  =                  0.0 / expected B surface brightness                  
+MAG_U   =                  0.0 / expected U Magnitude                           
+SURF_U  =                  0.0 / expected U surface brightness                  
+MAG_R   =                  0.0 / expected R Magnitude                           
+SURF_R  =                  0.0 / expected R surface brightness                  
+COL_B_V =                  0.0 / expected B-V color                             
+COL_U_B =                  0.0 / expected U-B color                             
+COL_V_R =                  0.0 / expected V-R color                             
+E_B_V   =                  0.0 / E(B-V)                                         
+EXTNCT_V=                  0.0 / extinction in V                                
+                                                                                
+                 / PROPOSAL INFO: Exposure Information                          
+CMD_EXP =       132.0000000000 / commanded time per exposure (from TRANS)       
+                                                                                
+                 / PROPOSAL INFO: Moving Target Information                     
+                                                                                
+                 / PROPOSAL INFO: Target Properties                             
+REDSHIFT=                  0.0 / target redshift from proposal                  
+PARALLAX=                  0.0 / target parallax from proposal                  
+RA_PROP =                  0.0 / target right ascension from proposal (degrees) 
+DEC_PROP=                  0.0 / target declination from proposal (degrees)     
+PEQUINOX= '                  ' / equinox of coordinate system from proposal     
+MU_RA   =                  0.0 / target proper motion from proposal (degrees RA)
+MU_DEC  =                  0.0 / target proper motion from proposal (degrees DEC
+MU_EPOCH= '                  ' / epoch of proper motion from proposal           
+SP_TYPE = '                  ' / target spectral type from proposal             
+RAD_VEL =                  0.0 / target radial velocity from proposal (km/sec)  
+                                                                                
+                 / PROPOSAL INFO: Spatial Scan Info                             
+SCAN_TYP= 'N                 ' / C:bostrophidon; D:'C'with dwell; N:not applicab
+SCAN_WID=                  0.0 / scan width (arcsec)                            
+ANG_SIDE=                  0.0 / angle between sides of parallelogram (deg)     
+DWELL_LN=                    0 / dwell pts/line for scan pointing (1-99,0 if NA)
+DWELL_TM=                  0.0 / wait time (duration) at each dwell point (sec) 
+SCAN_ANG=                  0.0 / position angle of scan line (deg)              
+SCAN_RAT=                  0.0 / commanded rate of the line scan (arcsec/sec)   
+NO_LINES=                    0 / number of lines per scan (1-99,0 if NA)        
+SCAN_LEN=                  0.0 / scan length (arcsec)                           
+SCAN_COR= 'C                 ' / scan coordinate frame of ref: celestial,vehicle
+                                                                                
+                 / PROPOSAL INFO: Auxiliary                                     
+PARENTID=                    0 / PEP proposal identifier of the parent proposal 
+PROPTTL1= 'FOS LOCATION OF SPECTRA AND APERTURE - PART 2'                       
+PROP_TYP= 'CAL/FOS           ' / proposal type                                  
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'WAVE              ' / proposer's target name                         
+RA_TARG =                  0.0 / right ascension of the target (deg) (J2000)    
+DEC_TARG=                  0.0 / declination of the target (deg) (J2000)        
+                                                                                
+PROPOSID=                06146 / PEP proposal identifier                        
+PEP_EXPO= '303.0000481       ' / PEP exposure identifier including sequence     
+LINENUM = '111.000           ' / PEP proposal line number                       
+SEQLINE = '303.000           ' / PEP line number of defined sequence            
+SEQNAME = 'Y-MAPBA-P         ' / PEP define/use sequence name                   
+                                                                                
+BACHFILE= 'yref$N/A'                                                            
+FL1HFILE= 'yref$N/A'                                                            
+FL2HFILE= 'yref$N/A'                                                            
+IV1HFILE= 'yref$N/A'                                                            
+IV2HFILE= 'yref$N/A'                                                            
+AISHFILE= 'yref$N/A'                                                            
+RETHFILE= 'yref$N/A'                                                            
+DDTHFILE= 'yref$d9h1244ay.r4h'                                                  
+DQ1HFILE= 'yref$b2f1308by.r5h'                                                  
+DQ2HFILE= 'yref$b2f1308jy.r5h'                                                  
+PCPHFILE= 'yref$   '                                                            
+CCG2    = 'mtab$a3d1145ly.cmg'                                                  
+CCS0    = 'ytab$a3d1145dy.cy0'                                                  
+CCS1    = 'ytab$aaj0732ay.cy1'                                                  
+CCS2    = 'ytab$N/A'                                                            
+CCS3    = 'ytab$a3d1145gy.cy3'                                                  
+CCS4    = 'ytab$N/A'                                                            
+CCS5    = 'ytab$N/A'                                                            
+CCS6    = 'ytab$e5v11576y.cy6'                                                  
+CCS7    = 'ytab$ba910502y.cy7'                                                  
+CCS8    = 'ytab$ba31407ly.cy8'                                                  
+CCS9    = 'ytab$e3i09491y.cy9'                                                  
+CCSA    = 'ytab$fad1554cy.cya'                                                  
+CCSB    = 'ytab$i1n1816ey.cyb'                                                  
+CCSC    = 'ytab$i1n1816fy.cyc'                                                  
+CCSD    = 'ytab$i1n1816dy.cyd'                                                  
+BAC_CORR= 'OMIT    '                                                            
+FLT_CORR= 'OMIT    '                                                            
+SKY_CORR= 'OMIT    '                                                            
+AIS_CORR= 'OMIT    '                                                            
+MOD_CORR= 'OMIT    '                                                            
+END                                                                             

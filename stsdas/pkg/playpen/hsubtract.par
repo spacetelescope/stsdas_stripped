@@ -1,0 +1,9 @@
+input,s,a,,,,>input image
+background,s,a,,,,>input background image
+output,s,a,,,,>output image
+min,r,a,0.,,,>histogram minimum
+max,r,a,10.,,,>histogram maximum
+binsize,r,a,1.,,,>size of histogram bins
+kmax,r,a,10.,,,>upper cutoff for histogram matching
+verbose,b,h,no,,,>verbose ?
+mode,s,h,al,,,

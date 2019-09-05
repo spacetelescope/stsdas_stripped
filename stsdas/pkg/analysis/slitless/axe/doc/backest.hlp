@@ -1,0 +1,142 @@
+.help backest Jul2005 axe
+.ih
+NAME
+backest -- background or mask image for a slitless image
+.ih
+USAGE
+.nf
+backest grism config
+.fi
+.ih
+PARAMETERS
+.le
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Filename of grism/prism extraction configuration file.
+.le
+.ls (np) [integer]
+The number of points to use in computing the 
+medianed/averaged/fitted background.
+.le
+.ls (interp) [integer]
+The type of interpolation to perform. The permitted values and their
+meaning are given below in the description.
+.le
+.ls (niter_med) [integer]
+Number of kappa-sigma iterations around the sample median.
+.le
+.ls (niter_fit) [integer]
+Number of kappa-sigma iterations around the fit.
+.le
+.ls (kappa) [float]
+Kappa to use in the kappa-sigma iterations. 
+.le
+.ls (smooth_length) [int]
+Background smoothing length in dispersion direction?
+.le
+.ls (smooth_length) [float]
+FWHM for smoothing in dispersion direction?
+.le
+.ls (old_bck = false) [boolean]
+Create a background in the old, aXe-1.4 format .
+.le
+.ls (mask = false) [boolean]
+Create a mask image where the pixels at the beam positions 
+have a characteristic value rather than interpolated values.
+.le
+.ls (in_af = "") [string]
+Name to use for the input aperture file instead of the default.
+aXe default file naming conventions are described below.
+.le
+.ls (out_back = "") [string]
+Name to use for the output background file instead of the default.
+aXe default file naming conventions are described below.
+.le
+.ih
+DESCRIPTION
+This task uses the input slitless image and a Background Aperture File (BAF) to
+generate a Background Estimate File (BEF). In the BEF the beams listed in the
+BAF file are either masked ('mask="YES"') or replaced by background pixel
+values derived from intepolating the borders of the beam areas.
+
+If a background image is requested, the number of points to use (np) and
+the order of the interpolation (interp) to be used when computing the
+background balues can be set. The values in the regions within each of
+the BEAMs listed in the BAF are replaced by the median, average, linear,
+or nth order interpolation of pixels which are immediately above and below
+a BEAM (but not within any other BEAM). The number of pixels to use for
+this is by default set  to 10 both below and above each BEAM. The "np"
+option can be used to change  this default value. The type of
+interpolation is controlled by the  "interp" parameter:
+.nf
+     interp= -1     Median
+     interp= 0      Average
+     interp= 1      Linear fit
+     interp= n>1    nth order polynomial fit
+.fi
+
+If a mask image is requested, the pixels within the beams are replaced
+with the value -1000000. With the mask option set this task is used by
+the axetask AXEPREP.
+
+If the cosmic ray hits are not flagged in the dq-extensions, the background
+estimates are usually very bad due to the large data numbers in the cosmic
+ray affected pixels. To get also in those circumstances acceptable background
+estimates the task can perform a kappa-sigma rejection to eject the cosmics
+from the assembly of background pixels. 'backest' offers a kappa sigma
+rejection based on deviations from the median data value as well as a rejection
+based on the deviations from the fit to the data points. The number of
+iterations is given in 'niter_med' for median based rejection and
+'niter_fit' for fit based rejection, respectively. While the median based
+rejection is executed prior to the fit based, both use the identical
+value given in 'kappa' to identify pixels to be rejected.
+
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input BAF would be
+called <grism-rootname>_<science extension>.BAF and the output BEF 
+would be <grism-rootname>_<science extension>.BCK.fits for the background
+computation. If the beams are only masked out, the resulting file
+would be <grism-rootname>_<science extension>.MSK.fits
+.ih
+EXAMPLES
+1. Generate a background estimate file (BEF) from the image
+test_grism_1.fits using a background aperture file (BAF) with the standard
+default name. 10 points will be used and cubic (3rd order) interpolation
+will be performed.
+
+.nf
+
+  ax> backest test_grism_1.fits np=10 interp=3
+
+.fi
+
+2. As in 1., but reject cosmic rays using first 2 kappa-sigma iterations
+around the median and then 3 iterations around the (cubic) fit with 'kappa=3.0'
+before doing the final, cubic fit.
+
+.nf
+
+  ax> backest test_grism_1.fits np=10 interp=3 niter_med=2
+              niter_fit=3 kapp=3.0
+
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+gol2af, axeprep
+.endhelp

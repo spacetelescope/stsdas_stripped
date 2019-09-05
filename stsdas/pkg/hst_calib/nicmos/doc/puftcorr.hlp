@@ -1,0 +1,64 @@
+.help puftcorr Dec2005 stsdas.hst_calib.nicmos
+.ih
+NAME
+puftcorr -- remove "Mr. Staypuft" signal from a NICMOS image
+.ih
+USAGE
+puftcorr input output
+.ih
+DESCRIPTION
+The puftcorr task measures and removes an estimate of the "Mr. Staypuft" signal
+in a NICMOS image. It was written in Python and relies on the Python 
+interface to the IRAF environment, PyRAF, for its operation. As a result, this 
+task can only be run under PyRAF.
+
+The input image to the task must be a raw NICMOS dataset, with no calnica
+processing yet applied. The puftcorr task will, on its own, perform zero-read
+subtraction and dark subtraction, in order to get the data to a point where
+the staypuft signal can be computed. The computed staypuft signal will then
+be subtracted from the original raw data values and the corrected data
+written to the output file in this form. The output file will then require
+full calnica processing.
+
+Puftcorr runs on an entire raw MultiAccum dataset, computing and removing the
+staypuft signal independently for all readouts. The puftcorr task will read
+the value of the "DARKFILE" keyword in the primary header of the input raw
+data file and use that file to perform its internal dark subtraction 
+operation. Note that the current implementation of puftcorr does NOT support
+the use of a temperature-dependent dark. A temperature-dependent dark may be
+used in the subsequent calnica procesing.
+
+.ih
+PARAMETERS
+.ls input [file]
+Input image name.
+This will normally be a raw FITS file (_raw type) that has not had any
+processing yet performed by calnica. The full file name must be given.
+.le
+.ls output [file]
+Output image name.
+Must be a full file name specification.
+.le
+.ih
+EXAMPLES
+1. Estimate and subtract staypuft signal from the raw dataset 
+n41wbfgbq_raw.fits, storing the result in the output image n41wbfgbq_raw1.fits:
+.nf
+
+--> puftcorr n41wbfgbq_raw.fits n41wbfgbq_raw1.fits
+.fi
+.ih
+REVISIONS
+.ls Version 0.1,  07-Dec-2005 (STSDAS v3.4, PyRAF 1.2)
+.le
+.ih
+BUGS
+.ih
+RESTRICTIONS
+.ih
+REFERENCES
+This task was implemented in PyRAF by Howard Bushouse (STScI) based on the IDL 
+implementation by Louis E. Bergeron (STScI).
+.ih
+SEE ALSO
+.endhelp

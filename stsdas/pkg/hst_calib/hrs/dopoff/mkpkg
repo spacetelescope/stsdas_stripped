@@ -1,0 +1,8 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+        t_dopoff.x      <tbset.h>
+        dodopf.x        <imhdr.h> <math.h> <od.h>

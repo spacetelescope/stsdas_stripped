@@ -1,0 +1,4 @@
+The files mkpkg.pipeline and x_calfoc.x are not used for calfoc in the
+focutility package, but they would be used for calfoc in the pipeline
+package or in the pipeline itself.  For the pipeline version, rename
+mkpkg.pipeline to mkpkg.

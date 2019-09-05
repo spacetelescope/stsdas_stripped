@@ -1,0 +1,12 @@
+# Global environment definitions for the POA_FOS package.
+
+reset	  stpoabin	= "stpoa$bin/"
+reset	  poa_foslib	= "poa_fos$lib/"
+reset     poa_fosbin	= "stpoa$bin/"
+reset     poa_spec	= "stpoa$poa_fos/data/"
+reset     pwav	        = "stpoa$poa_fos/pwav/"
+reset     pref	        = "stpoa$poa_fos/pref/"
+reset     ref	        = "stpoa$poa_fos/ref/"
+reset     poa_disp	= "stpoa$poa_fos/disp/"
+
+keep

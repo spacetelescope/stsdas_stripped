@@ -1,0 +1,213 @@
+.help calstis Jul2001 stis
+.ih
+NAME
+calstis -- Process STIS images (imaging and spectrum) through the different
+steps of the STIS Pipeline calibration.
+.ih
+USAGE
+.nf
+calstis input
+.fi
+.ih
+PARAMETERS
+.ls input
+Input file name to be processed through calstis.
+.le
+.ls (wavecal = "")
+Input raw wavecal file.
+If this value is null (the default),
+the name of the wavecal file will be gotten from
+the primary header of the input file, using keyword WAVECAL.
+.le
+.ls (outroot = "")
+Root for output file names.
+If this value is null (the default),
+the output file names will be constructed from the input name.
+If 'outroot' ends in "/" it will be interpreted as a directory,
+and the input file name will be appended
+and used as the basis of the output file names.
+Otherwise, the output file names will be constructed
+by appending such strings as "_flt.fits" to 'outroot'
+(or if 'outroot' ends in "_raw.fits",
+that string will be replaced by "_flt.fits", etc.).
+.le
+.ls (savetmp = no)
+Save all temporary files created by calstis?
+.le
+.ls (verbose = yes)
+Print time stamps at each operation as it takes place?
+.le
+.ih
+DESCRIPTION
+The task 'calstis' provides routine calibration for STIS data.
+The task performs a 2-D image reduction ('basic2d' task),
+cosmic-ray rejection ('crreject' task, for CCD images only),
+1-D extraction ('x1d' task),
+2-D rectification ('x2d' task),
+and processes wavecals ('wavecal' task).
+By setting the appropriate switches in the primary
+header of the input image, either one or all of the functions specified
+above can be performed.
+
+INPUT AND OUTPUT IMAGES.
+
+The input STIS images are contained in extensions in FITS files,
+with three extensions in an image set:  science (EXTNAME=SCI),
+error (ERR), and data quality (DQ).
+There may be multiple image sets (or imsets) in the input file,
+and if so 'calstis' will read each imset, calibrate it,
+and write the resulting three extensions to the output FITS file.
+If performing cosmic-ray rejection (CRCORR = "PERFORM"),
+then the output file will contain only one imset (SCI,ERR,DQ).
+
+The name of the output file is normally set by the task itself
+(but see 'outroot'),
+by appending to the rootname of the input file the appropriate suffix
+that will indicate the last step in the calibration process
+that the file went through.
+The current output filename suffixes are:
+
+.ls _flt
+The flat fielded science data.
+The output file has been 2-D calibrated only (basic2d).
+This suffix is used for all MAMA observations.
+For CCD observations this file contains the individual imsets,
+that is, not CR-rejected or combined,
+but the DQ extensions indicate which pixels were identified
+as being affected by cosmic rays and rejected
+when summing to create the _crj file.
+.le
+.ls _crj
+The cosmic-ray rejected and flat fielded science data.
+Valid only for CCD observations that have been cosmic-ray rejected.
+.le
+.ls _x1d (or _sx1 if CR-rejected)
+One dimensional extracted spectra.  It is a binary table.
+.le
+.ls _x2d (or _sx2 if CR-rejected)
+Two dimensional extracted spectra or geometrically corrected image.
+.le
+
+REFERENCE FILES and PROCESSING STEPS
+
+The names of the reference files (images and tables) to be used by 'calstis'
+(and consequently by all the other processing tasks) are specified in the
+primary header of the input image, under the section CALIBRATION REFERENCE
+FILES.  Refer to the help pages of basic2d, crreject, wavecal, x1d,
+and x2d for a complete explanation of the reference files
+and their related keywords in the primary header of the input image.
+
+When an environment variable is used as part of a reference file name
+(e.g. "oref" in PFLTFILE = "oref$h230851ao_pfl.fits"),
+there are several points that should be borne in mind.
+The environment variable must be set in the Unix shell
+before logging into IRAF,
+and the directory name must include the trailing "/", e.g.:
+
+.nf
+    setenv oref /data/reffiles/stdata/
+.fi
+
+Setting an IRAF environment variable oref will simply not work.
+If the reference files are in the default directory,
+oref can be set to ./
+rather than editing the header
+to remove "oref$" from each of the reference file names.
+Furthermore, note that the file name is specified in the header
+using IRAF notation rather than Unix,
+i.e. "oref$h230851ao_pfl.fits" instead of "$oref/h230851ao_pfl.fits".
+
+Input and output files to this task depend on which steps are set to PERFORM
+in the input parameter switches in the primary header of the input image
+under the section CALIBRATION SWITCHES.
+The acceptable input values for each switch are (PERFORM | OMIT | COMPLETE).
+COMPLETE has the same effect as OMIT.
+In the output image, those keywords which were set to PERFORM in the input
+image and for which processing was succesfully performed are set to COMPLETE.
+
+The following switches are available:
+.le
+.ls For basic 2-D image reduction (see help for basic2d):
+.nf
+
+    ATODCORR         BIASCORR
+    DQICORR          DARKCORR
+    LORSCORR         FLATCORR
+    GLINCORR         SHADCORR
+    LFLGCORR         PHOTCORR
+    BLEVCORR
+
+.fi
+.le
+.ls CRCORR
+Combine observations to reject cosmic rays (crreject).
+Available for CCD images only.
+.le
+.ls WAVECORR
+Use wavecal to adjust wavelength zeropoint.  Set it to PERFORM if wavecals
+will be used to determine the MSM offset.
+.le
+.ls X1DCORR
+Perform 1-D spectral extraction.  If set to PERFORM a 1-D spectral extraction
+will be performed.
+.le
+.ls X2DCORR
+Rectify 2-D spectral image.  If set to PERFORM the input image will be 2-D
+rectified.
+.le
+.ls HELCORR
+If set to PERFORM, the output 1-D extracted spectra and 2-D rectified images
+will be corrected for the earth's heliocentric velocity.
+Note that for medium and high dispersion,
+the Doppler shift due to the spacecraft velocity around the earth
+will already have been corrected by the on-board software.
+.le
+.ls FLUXCORR
+If set to PERFORM, the output 1-D extracted spectra and 2-D rectified images
+will be converted to absolute flux units.
+.le
+.ls DISPCORR
+Apply dispersion solutions during 1-D extraction.
+(This step is always done for 2-D rectification.)
+.le
+.ih
+EXAMPLES
+
+1. To calibrate CCD observations in the data set
+with the rootname "o3s40604o"
+with multiple images per file (i.e. CRSPLIT > 1 or EXTEND > 3).
+To perform basic 2-D image reduction and cosmic-ray rejection only.
+In this case the reference files are in the directory "/data/reffiles/stdata/".
+Note that we must have assigned oref as an environment variable
+before starting the cl, and the value must include the trailing "/".
+First set the appropriate switches in the primary
+header of the input file to PERFORM.
+
+.nf
+    cl> show oref
+    /data/reffiles/stdata/
+    cl> calstis o3s40604o_raw.fits
+
+.fi
+The ouput file will have the suffix _crj (o3s40604o_crj.fits)
+
+2. Calibrate the same file as in the previous example,
+but use "o3s40607o_wav.fits" as the wavecal,
+and write the output files in the directory above the default directory.
+
+.nf
+    cl> calstis o3s40604o_raw.fits outroot="../"  \
+    wavecal="o3s40607o_wav.fits"
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.nf
+Iraf task written by S. Hulbert.
+CALSTIS routines written by P. Hodge, J.C. Hsu, and I. Busko.
+.fi
+.ih
+SEE ALSO
+basic2d, crreject, wavecal, x1d, x2d
+.endhelp

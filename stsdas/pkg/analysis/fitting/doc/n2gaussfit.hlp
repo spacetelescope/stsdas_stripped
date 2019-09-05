@@ -1,0 +1,137 @@
+.help n2gaussfit May91 stsdas.analysis.fitting
+.ih
+NAME
+n2gaussfit -- Fit a 2-dimensional elliptical Gaussian function to image data.
+.ih
+USAGE
+ngaussfit input output
+.ih
+DESCRIPTION
+This task is a simple tool that can be used to fit a 2-dimensional 
+elliptical Gaussian to one or more image sections. Chi-square fitting 
+is performed by either the downhill simplex minimization algorithm 
+("amoeba") or the Levenberg-Marquardt algorithm.
+
+Multiple image sections may be processed simultaneously using wildcard
+characters in the file name template. Fit results will be written to a
+STSDAS table. The table format is described below. If the table does not 
+exist, it will be created. Otherwise, the fit results will be appended as 
+the last row in the table. Any table previously created by other tasks in 
+this package is suitable as output.
+
+The functional form fitted to the data is an elliptical Gaussian
+represented by seven parameters: 'ampl', 'xcent', 'ycent', 'fwhm',
+'ellip', 'theta' and 'a' (the background value).  Amplitudes are specified
+above a constant background. If other background trends are present in
+the data, they must be removed prior to running this task. Positions
+and fwhm are given in pixel units, and are relative to any possible
+image section specification given in 'input'. To force a "round"
+Gaussian fit, 'ellip' must be set to zero, and 'vellip' to 'no'.
+'ellip' is defined as (1 - b/a), where 'a' is the major axis length
+and 'b' is the minor axis length. Position angles are defined in degrees,
+counterclockwise (towards +Y) from the +X direction.
+
+The fitting algorithms need initial guesses for the function coefficients.
+Guesses can be specified through task parameters, or from a previously 
+generated table. A parameter set (pset) is used for function coefficients 
+at startup. See help for the 'tgausspars' pset.
+
+You can specify which coefficients are to be varied and which are
+to be held fixed during the fitting process. This information is entered
+in the 'tgausspars' pset, and is always read by the task, regardless of the
+source from which initial guesses are taken.
+
+Error information, needed for properly computing chi-square, can be
+input in two ways. If the pixel data is subject to counting statistics,
+Poisson error bars can be assigned to each pixel. Or a constant error
+bar, the same for all pixels in the image, can be set. See help page for 
+the 'errorpars' pset.
+
+The STSDAS output table contains the information described below. Each
+particular fit will result in a new line being appended to the table.
+.nf
+
+Column		
+label           Contents
+======          ========
+
+file		Name of the original file for which the fit was performed.
+time		Date and time original fit was performed.
+function	Fitted function, 'twodgauss'.
+ncoeff		7
+unit		'*'
+npoints		Number of data points used in the fit.
+xmin, xmax	Not used.
+chisq		Chi-square of fit
+rms		Root mean square of fit.
+coeff1		First coefficient (background).
+err1		First coefficient error.
+coeff2		Second coefficient (amplitude).
+err2		Second coefficient error.
+...
+...
+
+.fi
+See the 'prfit' task; it shows the table contents in 
+a more user-friendly format. See also the 'funcform' help page; it shows
+the actual function used in computing two-D gaussian values.
+.ih
+PARAMETERS
+.ls input [file name template]
+List of images to be fitted.
+.le
+.ls output [file name]
+Name of the STSDAS table to which fitting information will be written.
+If an empty string is used, no output is written to the table.
+.le
+.ls (rt = no) [boolean]
+Read the initial coefficient guesses from a table?
+.le
+.ls (tablein = "") [string]
+File name of the table from which to read the initial coefficient 
+guesses. 
+.le
+.ls (row) [integer, min=1]
+Table row from which to read initial coefficient 
+guesses.  If more than one image is being fitted, the same values 
+will be used for all images.
+.le
+.ls (tgausspars = "") [string]
+The name of the pset containing the function-dependent Gaussian 
+parameters.
+.le
+.ls (errorpars = "") [string]
+The name of the file containing the error-related parameters (pset).
+.le
+.ls (controlpars = "") [string]
+The name of the file containing the algorithm control parameters (pset).
+.le
+.ls (verbose = yes) [boolean]
+Display results at the terminal?
+.le
+.ls (averbose = no) [boolean]
+Display information about each amoeba iteration?
+.le
+.ih
+EXAMPLES
+1. Fit a Gaussian to a section of the image 'test' and store 
+the fit results in the file 'testfit.db' in the user's home directory:
+
+.nf
+  fi> n2gaussfit test[100:500,256:300] home$testfit.db
+.fi
+.ih
+BUGS
+The iterative "amoeba" algorithm may misbehave in cases when 
+'ellip' is very near zero. In this case, the position angle
+becomes ill-defined, and the algorithm can enter an endless loop.
+Do the fit in steps, keeping 'ellip' fixed while varying
+the position angle, and vice-versa. Also, avoid very large (>500)
+values for 'maxit'.
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+i2gaussfit, errorpars, controlpars, funcform
+.endhelp

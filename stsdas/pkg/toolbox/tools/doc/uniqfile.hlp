@@ -1,0 +1,61 @@
+.help uniqfile Feb90 stsdas.toolbox.tools
+.ih
+NAME
+uniqfile -- Give a file a unique name.
+.ih
+USAGE
+uniqfile filename instr
+.ih
+DESCRIPTION
+This task uses the HST instrument name and the current time to rename a 
+file so that it will be unique over the telescope's lifetime. The file 
+name root has the format 'YMDHHMMSI' where:
+.nf
+
+  Y  denotes the year (where 1981 = 1)
+  M  denotes the month of the year (where January = 1)
+  D  denotes the day (where first day of month = 1)
+  HH denotes the hour (00-23)
+  MM denotes the minutes (00-59)
+  S  denotes (seconds/2) 
+  I  denotes the instrument
+     (f=FGS, v=HSP, w=WFPC, x=FOC, y=FOS, z=HRS, m=multiple)
+.fi
+
+The file name extension and directory of the original file are added to 
+the root name.  If the file is an image, both parts of the image will be 
+renamed and a history record containing the old name, new name, and time 
+will be added to the image header.  The task checks to see if a file by 
+the same name already exists in the current directory and if it does, it 
+creates a new root file name.  The file name generated is not guaranteed 
+to be unique across directories.  The algorithm used to generate the 
+file name has a time granularity of two seconds. 
+.ih
+PARAMETERS
+.ls instr [string, allowed values: fgs | hsp | wfpc | wfp2 | foc | fos | 
+hrs | multi]
+
+HST instrument name. If a file is used by more than one instrument, the 
+value passed to 'instr' should be "multi".
+.le
+.ls fname [file name]
+Original file name.
+.le
+.ls (verbose = yes) [boolean]
+Print a message on the terminal display showing the old and new file 
+names each time a file is processed?
+.le
+.ih
+EXAMPLES
+1. Generate a new filename for a WF/PC flat field.
+
+.nf
+  to> uniqfile wflat001.d0h wfpc
+.fi
+
+.ih
+BUGS
+.ih
+SEE ALSO
+uniqid, uniqname
+.endhelp

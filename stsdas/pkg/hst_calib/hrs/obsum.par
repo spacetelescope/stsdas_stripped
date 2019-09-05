@@ -1,0 +1,6 @@
+input,f,a,,,,"Observation names"
+title,s,a,,,,"Title of summary"
+show_groups,b,h,yes,,,"Show time ordered listing of each group?"
+doppler,b,h,no,,,"Check for doppler and idling conditions?"
+diode,b,h,no,,,"Print diode summary for each science group?"
+version,s,h,"25Jun98",,,"Date of installation"

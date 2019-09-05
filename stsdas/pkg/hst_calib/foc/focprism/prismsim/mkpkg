@@ -1,0 +1,15 @@
+$checkout focprism.a ../
+$update   focprism.a
+$checkin  focprism.a ../
+$exit
+
+focprism.a:
+	calccounts.x	"prismsim.h"
+	mergearr.x
+	merge3.x
+	integratepix.x
+	calcsens.x
+	linterp.x
+	prismsim.x	<imhdr.h> "prismsim.h"
+	readspec.x	<tbset.h>
+	;

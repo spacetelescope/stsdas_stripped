@@ -1,0 +1,7 @@
+# Root task entry for the IMPOL package help tree.
+
+impol		men  = stecf$impol/impol.men,
+                hlp  = stecf$impol/impol.men,
+                sys  = stecf$impol/impol.hlp,
+                pkg  = stecf$impol/impol.hd,
+                src  = stecf$impol/impol.cl

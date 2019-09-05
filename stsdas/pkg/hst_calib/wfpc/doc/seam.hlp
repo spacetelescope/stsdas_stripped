@@ -1,0 +1,84 @@
+.help seam Jul93 stsdas.hst_calib.wfpc
+.ih
+NAME
+seam -- Smooth the boundaries between the 4 WF/PC frames after they are mosaicked into one image.  This task does NOT work for WFPC2 images.
+.ih
+USAGE
+seam infile outfile length width delta npbg
+.ih
+DESCRIPTION
+After the four groups of a WF/PC image are mosaicked (using the task WMOSAIC)
+into one image, brightness discontinuities may still show up near the 
+boundaries between the four frames and thus the name 'seam'.
+This task is trying to 'airbrush' the seams such that the whole image has a
+better integral visual appearance.  This implies that fluxes near the seams 
+after running this task may have little scientific validity and should not be 
+used for precise photometric data reduction.
+
+This task only works on WF/PC images, not WFPC2 images.  The reason is that
+WF/PC has sharp drop-offs at the boundaries and this task is designed to
+smooth out possible discontinuities.  WFPC2 images have smooth role-offs at
+the boundaries and therefore can benefit little from this task.
+
+As an example to explain the algorithm of this task, imagine there are two 
+frames, one on top of the other and the seam between them runs horizontally.
+The smoothing is carried out for each column, i.e. each column contains
+a 'stitch' which is a segment of pixels vertical to the direction of 
+the seam.  The boundary between these two frames crosses all stitches at 
+the middle points.  The length of the stitches is specified by the parameter
+LENGTH. 
+
+We start from the bottom of each stitch: the bottom NPBKGD pixels
+of the stitch are used to determine the 'background' flux level.  
+The median flux of these pixels is regarded as the 'background' and we 
+then examine each pixel upward till one having a flux level of either 
+greater or less than this background flux by a fraction of DELTA.  This 
+pixel will be marked as the beginning of the flux discontinuity.  Repeat 
+the same from the other end and we get the ending point of the discontinuity.  
+Now take the median flux of the NPBKGD pixels just below the beginning point
+(call it F1) and the median flux of the NPBKGD pixels just above the ending
+point (call it F2), replace all fluxes of the 'discontinuity pixels' by 
+linearly interpolating between F1 and F2.
+
+The user can also choose to include more points to determine the background
+level without increasing the stitch length.  This can be done by using a larger
+number of WIDTH.  For example, if WIDTH = 3, one extra stitch on both sides are
+used to determine the background level as well as F1 and F2.
+.ih
+PARAMETERS
+.ls infile [string]
+Input image.  This must be the output image from the task WMOSAIC.
+.le
+.ls outfile [string]
+Output image.  It has the same size and header keywords as the input image.
+.le
+.ls length = 15 [int, min = 3]
+Length of each stitch.  Must be an odd number.  If an even number is 
+specified, the next higher odd number will be used.
+.le
+.ls width = 1 [int, min = 1]
+Total number of stitches used to determine background level.  Must be an odd 
+number.  If an even number is specified, the next higher odd number will be 
+used.
+.le
+.ls delta = 0.1 [real, min = 0.]
+Discrimination level used to detect the beginning of 'bad' pixels.
+.le
+.ls npbg = 3 [int, min = 1]
+Number of pixels used to determine the background level in each stitch.
+.le
+.ih
+EXAMPLES
+1. Use a stitch 21 pixels long, use three stitches for background determination,
+use three pixels in each stitch for background determination, and use 0.05 as 
+the discrimination level.
+
+.nf
+wf> seam wr1mos.hhh wr1seam.hhh length=21 width=3 delta=0.05 npbg=3 
+.fi
+.ih
+REFERENCES
+.ih
+SEE ALSO
+wmosaic
+.endhelp

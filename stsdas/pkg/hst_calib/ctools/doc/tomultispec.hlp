@@ -1,0 +1,235 @@
+.help tomultispec Apr2013 hst_calib.ctools
+.ih
+NAME
+tomultispec - Converts spectra from rows of a FITS 3-D binary
+table to an IRAF multispec image
+.ih
+USAGE
+tomultispec input output
+.ih
+DESCRIPTION
+The 'tomultispec' task will extract the specified rows and columns
+from a FITS 3-D binary table and convert this data into an IRAF
+multispec format image.  Each row extracted from the FITS table is
+written to a line in the output 2-D image. This task is intended
+primarily as a means to convert spectra from the STIS and NICMOS
+instruments to a format that can be used as input to NOAO spectral
+tasks, such as 'splot'. This task is layered upon the
+'mkmultispec' task (also found in the 'ctools' package) which
+performs a similar operation for FOS and GHRS calibrated spectra.
+A majority of the parameters for 'tomultispec' echo those for
+'mkmultispec'.
+
+Note that since the output is an image in imh format, the
+IRAF environment variable imdir must be set, either to a
+directory that exists or to "HDR$" (for example).
+
+The task extracts specified rows, each of which contains a spectral
+order, from the input FITS table, fits a dispersion solution to
+each wavelength array, stores the solutions in the header of the
+output image, and writes the flux arrays to successive lines in the
+output "multispec" image. Type "help specwcs" for details of this
+spectral format. If only a single row is selected from the input
+table, the dispersion solution can be fit interactively.
+
+The rows of interest must be designated by an appropriate row
+selector appended to the input table name.  Type "help selectors"
+for details of the row/column selector syntax for tables. If no
+row selector is used, all the rows will be written to the output
+image.
+
+The columns in the input FITS table containing the flux and
+wavelength arrays are specified via the task parameters "flux_col"
+and "wave_col", respectively. If a column named "SPORDER" is
+present, it will be used to populate the "beam" number of the
+output "multispec" image; it is intended as a means to associate
+the spectrum order number with the beam number.
+
+.ih
+PARAMETERS
+.ls input [file name]
+The name of the FITS file which contains a 3-D BINTABLE. A
+specific range of rows may be specified using the 'selectors'
+syntax for table rows. All rows are extracted by default.
+.le
+.ls output [file name]
+The name of the output Multispec 2-D image, which will have a
+file extension of ".imh" regardless of the specified file
+extension or user's default "imtype".
+
+NOTE that the IRAF environment variable imdir must be set to
+a directory that exists, or to "HDR$" or "HDR$pix" (for example).
+.le
+.ls (flux_col = "FLUX") [string]
+The name of the column in the FITS table containing the arrays
+to be used for the input fluxes. 
+.le
+.ls (wave_col = "WAVELENGTH") [string]
+The name of the column in the FITS table containing the arrays
+to be used for the input wavelengths.
+.le
+.ls (function = "chebyshev") [string]
+The type of function to fit to the wavelength values, which
+must be one of legendre, chebyshev, spline3, spline1, or table.
+A different fit will be performed for each spectrum. If "table"
+is specified, the wavelength arrays, rather than the function
+coefficients, will written into the output file header.
+If interactive mode were chosen, the parameter will be set to the last
+function specified by the ":function" command.
+.le
+.ls (nterms = 4) [integer]
+The number of terms or spline pieces for the fit.  For function
+types "legendre" and "chebyshev," this is the number of fit
+coefficients.  For spline3, the number of coefficients will be
+nterms + 3; for spline1, the number of coefficients will be
+nterms + 1.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":order" command.
+.le
+.ls (label = "Wavelength") [string]
+The label to use for the wavelength axis in plots generated using the
+MULTISPEC information, such as those produced by the task 'splot'.
+.le
+.ls (units = "Angstroms") [string]
+The units of the wavelength solution.  This will be displayed by
+tasks which use the MULTISPEC information, such as 'splot'.
+.le
+.ls (low_reject = 2., high_reject = 4.) [real, min = 0.]
+Rejection limits below and above the fit to the dispersion solution,
+in units of the residual sigma.
+If interactive mode were chosen, the parameters will be set to the last
+values specified by the ":low_reject" and ":high_reject" commands.
+.le
+.ls (niterate = 0) [integer]
+Number of rejection iterations.  If set to 0, then no rejection is done while
+fitting.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":niterate" command.
+.le
+.ls (grow = 1.) [real]
+When a pixel is rejected, pixels within this distance of the rejected pixel
+are also rejected.
+If interactive mode were chosen, the parameter will be set to the last
+value specified by the ":grow" command.
+.le
+.ls (weight = "") [file name template]
+Weight tables to be used during the fitting process. If blank,
+uniform weights will be given to all points.  The weights can be
+stored either in a table or a one dimensional image.  If only one
+weight file is specified, it is applied to every input spectrum.
+If more than one
+is given, there must be the same number of input spectra as weight
+files.  If the file is a table, the column to use for the weight data
+can be specified as follows: filename[columnname1, columnname2,...].
+If no columns are specified, it is assumed that all columns contain weight
+information.
+.le
+.ls (format = "%g") [string]
+The format to use to write the coefficients to the image header.  The
+main use is when the table function has been specified and the user
+wants to conserve header space by specifying a more restrictive
+format.
+.le
+.ls (interactive = no) [boolean]
+Should the 'icfit' task be used to fit interactively the wavelengths?
+It is only valid for this parameter to be set to "yes" when a single
+row is to be extracted from the FITS table.  The task will enforce
+"interactive = no" for multiple row extractions.
+.le
+.ls (verbose = yes) [boolean]
+Display names of input and output files while operating on files?
+.le
+.ls (tempdir = "tmp$") [file name]
+Directory to store temporary output files.
+
+The following parameters apply only for interactive
+fitting which is only allowed for single row (order) conversion.
+.le
+.ls (device = "stdgraph") [string]
+The graphics device to use for the interactive curve fitting.
+.le
+.ls (markrej = yes) [boolean]
+Mark rejected points? 
+
+If you are rejecting many points, you might not want to mark
+rejected points.
+If interactive mode were chosen, this parameter will be set to the last
+value specified by the ":markrej" command.
+.le
+.ih
+EXAMPLES
+1. Extract all rows from the input FITS table, a10b01c2d_x1d.fits,
+and write the output to the OIF file a10b01c2d_ms.imh.
+
+.nf
+   cl> tomultispec a10b01c2d_x1d.fits a10b01c2d_ms.imh
+.fi
+
+2. Extract rows 2, 3, 4, and 12 from the FITS table, a10b01c2d_x1d.fits,
+and write the output to the OIF file a10b01c2d_ms.imh. Note the
+use of the double quotes around the file name+row selector.
+
+.nf
+   cl> tomultispec "a10b01c2d_x1d.fits[r:row=(2:4,12)]" a10b01c2d_ms
+.fi
+
+3. Extract spectral orders 112-116 from a STIS FITS table, stis_x1d.fits,
+and write the output to the OIF file stis_ms.imh.
+
+.nf
+   cl> tomultispec "stis_x1d.fits[r:sporder=(112:116)]" stis_ms
+.fi
+
+4. Extract the gross flux and wavelength columns from row 2 of the FITS
+table, stis_x1d.fits, perform the fit to the wavelength array
+interactively, and write the output to the OIF file stis_ms.imh.
+
+.nf
+   cl> tomultispec "stis_x1d.fits[r:row=2]" flux_col=GROSS \
+   >>> inter+ stis_ms.imh
+.fi
+
+.ih
+LIMITATIONS
+This task creates an "imh" format image.  If you get a segmentation
+violation when running this task, check that the IRAF environment
+variable imdir is set to a directory that exists.  A good alternative
+is to use:  set imdir = "HDR$"
+
+The "function = table" parameter option should be chosen only when necessary
+(i.e, non-monotonic wavelength values) as there is a strict limit on
+the number of wavelengths which can be accommodated in an output image
+header.  Therefore, if multiple rows have been extracted from the input
+FITS table, it is possible that there will not be enough space to store all
+of the required wavelength information.  Depending upon the output format
+of the wavelengths (as specified in the "format" parameter of this task), only
+three or four wavelengths arrays can be accommodated in the header.
+
+'tomultispec' cannot be used correctly as a background job, as 'tomultispec'
+incorporates the use of other tasks which need to be able to update their
+parameter values.
+
+.ih
+BUGS
+This task creates a large number of temporary files in the
+"tempdir" directory. If the task should abort prematurely,
+these files will not be deleted.  In order to identify the
+temporary files created by 'tomultispec', the files have a prefix
+of "tomul_", as well as either an "X" or "Y" indicating if the file
+contains the "wave_col" (X) or "flux_col" (Y) data, a system tag making the
+files unique, and a row identification.
+For example, a temporary file would be "tomul_X_6844c_r0012.hhh",
+indicating the "wave_col" data from row 12 of the input table.
+.ih
+REFERENCES
+This task was written by M.D. De La Pena, SSG. 
+.le
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu
+or call the help desk at 410-338-1082.
+.le
+.ih
+SEE ALSO
+mkmultispec, specwcs, selectors, icfit
+.endhelp

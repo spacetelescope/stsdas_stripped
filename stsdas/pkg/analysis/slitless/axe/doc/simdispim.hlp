@@ -1,0 +1,133 @@
+.help simdispim Nov2007 axesim
+.ih
+NAME
+simdispim -- generate a simulated dispersed image
+.ih
+USAGE
+.nf
+simdispim incat config [dispim_name] [lambda_psf] ...
+.fi
+.ih
+PARAMETERS
+.ls incat
+Name of the model object table
+.le
+.ls config
+Name of the aXe configuration file
+.le
+.ls (dispim_name) [string]
+Name of the simulated dispersed image
+.le
+.ls (lambda_psf) [float]
+Wavelength the object shapes were determined at [nm]
+.le
+.ls (model_spectra) [string]
+The model spectra file name
+.le
+.ls (model_images) [string]
+The model image file name
+.le
+.ls (nx) [int]
+Dimension of the simulated dispersed image in x
+.le
+.ls (ny) [int]
+Dimension of the simulated dispersed image in y
+.le
+.ls (exptime) [float]
+Exposure time for simulated dispersed image
+.le
+.ls (bck_flux=0.0) [float] or [string]
+Background flux rate or background image (both in [e/s])
+.le
+.ls (extraction='yes') [boolean]
+Do a default spectral extraction on the simulated image.
+.le
+.ls extrfwhm [float]
+Factor to set the extraction width.
+.le
+.ls (orient = yes) [boolean]
+Whether to use tilted extracted. This is the default. When set to "no"
+only vertical extraction (along columns) is performed.
+.le
+.ls (slitless_geom = yes) [boolean]
+Whether to use an extraction orientation which is optimized for
+slitless spectroscopy. Default is "yes".
+.le
+.ls (adj_sens = yes) [yes|no]
+Adjust sensitivity for extended objects.
+.le
+.ls (silent='yes') [boolean]
+Suppress low level standard output
+.le
+.ih
+DESCRIPTION
+The task "simdispim" generates a dispersed image containing all objects
+defined in the Model Object Table (MOT) "incat" (located in "$AXE_IMAGE_PATH").
+The objects are positioned at the values given in the MOT columns "X_IMAGE" and
+"Y_IMAGE".
+
+In case that the MOT contains the column "MODSPEC" and "model_spectra" is specified,
+the spectral templates given in this Model Spectra file are used for simulating the object
+spectra. Objects with a "0" in the column "MODSPEC" are simulated with a spectral
+energy distribution defined in the AB-magnitude columns.
+
+In case that the MOT contains the column "MODIMAGE" and "model_images" is specified,
+the image templates given in this Model Images file are used for the shape of
+the simulated objects. Objects with a "0" in the column "MODIMAGE" get a Gaussian
+shape defined in the column entries "A_IMAGE", "B_IMAGE" and "THETA_IMAGE".
+
+For the trace and dispersion definition the aXe configuration file "config",
+located in "$AXE_CONFIG_PATH", is used.
+
+A dispersed image size different than the one deduced from the configuration
+file can be given. Also if "exptime" is set, noise is added to the output image
+using a simple model with Poisson noise (sources and background) and readout noise.
+The background can be given as flux rate or as a background image. Also an extraction
+can be performed on the simulated slitless images, and the properties of the
+extraction are controlled by parameters ('extrfwhm', 'orient', slitless_geom',
+'adj_sens').
+.ih
+FILE NAMING CONVENTION
+The dispersed image is either called "dispim_name" or:
+.nf
+<incat_trunc>.fits
+.fi
+with <incat_trunc>  the Model Object Table filename "incat", truncated after the last ".".
+The dispersed image file is written to "$AXE_OUTSIM_PATH". In case that an exctraction is
+appended to the simulations the spectra and stamp images files:
+.nf
+<disp_image>_2_SPC.fits
+<disp_image>_2_STP.fits
+.fi
+are written to "$AXE_OUTSIM_PATH" (with <disp_image> the name of the dispersed image).
+.ih
+EXAMPLES
+1) Simulate a dispersed images with the objects defined in "sim_stars.lis" and
+a slitless instruments defined in "WFC3_G280.conf"
+.nf
+    --> simdisp sim_stars.lis WFC3_G280.conf
+.fi
+
+2) As in the previous example however use model spectra and templates images.
+Also add noise, according to an exposure time of 2000s.
+.nf
+    --> simdispim sim_stars.lis  WFC3_G280.conf model_spectra="halo_stars.fits"
+                  model_images="G280_PSFs.fits" exptime=2000.0
+.fi
+.ih
+TIME REQUIREMENTS
+Depending on the configuration file and object models, the computation time
+for the simulation of a dispersed image varies from several seconds to
+several minutes per object listed.
+in the MOT.
+.ih
+BUGS
+No known bugs.
+.ih
+REFERENCES
+For further information on this task and aXeSIM, please consult
+the aXeSIM manual at "http://www.stecf.org/software/slitless_software/aXeSIM".
+.ih
+SEE ALSO
+simdata, simdirim
+.endhelp

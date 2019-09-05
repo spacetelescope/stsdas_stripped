@@ -1,0 +1,13 @@
+$checkout hrs.a ../
+$update   hrs.a
+$checkin  hrs.a ../
+$exit
+
+hrs.a:
+	t_reflux.x	<imhdr.h>
+	refluxprc.x	<imhdr.h> <error.h> <syserr.h>
+	fluxcal.x
+	makewave.x
+	getabs.x	<imhdr.h>
+	quadint.x
+	;

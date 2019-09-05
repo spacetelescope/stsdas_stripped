@@ -1,0 +1,74 @@
+# mkpkg for the calstis calibration package
+# Author:  Phil Hodge, 25-Sep-1998
+#
+#   Entry points recognized by this mkpkg file:
+#
+#	mkpkg		this is equivalent to mkpkg relink
+#	mkpkg relink	update object library, update csN.o and link
+#	mkpkg update	update object library, update csN.o, link csN.e,
+#			    and move executables to stsdas$bin
+#	mkpkg install	move executables to stsdas$bin
+#	mkpkg linkonly	update cs0.o and link cs0.e (just that one)
+
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS = "-Inolibc $(XFLAGS)"
+	$update calstis.a
+
+	$echo "-------------------  LINK  ------------------------"
+	$call linkonly2@cs0
+	$call linkonly2@cs1
+	$call linkonly2@cs2
+	$call linkonly2@cs4
+	$call linkonly2@cs6
+	$call linkonly2@cs7
+	$call linkonly2@cs8
+	$call linkonly2@cs11
+	$call linkonly2@cs12
+	;
+
+linkonly:
+	$call linkonly@cs0
+	;
+
+install:
+	$call @cs0
+	$call @cs1
+	$call @cs2
+	$call @cs4
+	$call @cs6
+	$call @cs7
+	$call @cs8
+	$call @cs11
+	$call @cs12
+	;
+
+calstis.a:
+	$echo "-------------------  LIB   ------------------------"
+	@lib
+	$echo "-------------------  CS0   ------------------------"
+	@cs0
+	$echo "-------------------  CS1   ------------------------"
+	@cs1
+	$echo "-------------------  CS2   ------------------------"
+	@cs2
+	$echo "-------------------  CS4   ------------------------"
+	@cs4
+	$echo "-------------------  CS6   ------------------------"
+	@cs6
+	$echo "-------------------  CS7   ------------------------"
+	@cs7
+	$echo "-------------------  CS8   ------------------------"
+	@cs8
+	$echo "-------------------  CS11  ------------------------"
+	@cs11
+	$echo "-------------------  CS12  ------------------------"
+	@cs12
+	;

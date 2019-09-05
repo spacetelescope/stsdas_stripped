@@ -1,0 +1,123 @@
+.help invmetric Jun95 stsdas.hst_calib.wfpc
+.ih
+NAME
+invmetric -- Translate RA/Dec to WF/PC or WFPC2 pixel coordinate with geometric
+corrections.  This is the "inverse" task of metric. 
+.ih
+USAGE	
+invmetric infile[group] ra dec
+.ih
+DESCRIPTION
+This task does the inverse functionality of the task METRIC, i.e. translate
+the celestial coordinate to the WF/PC or WFPC2 pixel coordinate.  This task 
+uses group parameters CRVAL, CRPIX, and CD matrix coefficients from the 
+input image to translate RA/Dec to X/Y.  Thus the epoch of RA and Dec must 
+be the same as these group parameters, usually J2000 for HST data.
+
+This task can take two kinds of inputs: (1) a single pair of (RA,Dec) 
+coordinate, specified by using the 'ra' and 'dec' input parameters; and 
+(2) RA and Dec in table(s), specified by passing the table and column name 
+(separated by a space) for the 'ra' and 'dec' parameters.
+
+Results are sent to the terminal.  The output will contain the following 
+columns:
+.nf
+* original input RA/Dec
+* Output X and Y and the chip number 
+.fi
+
+If you have an image put together by the task wmosaic, you should simply use
+the task rd2xy to convert RA/Dec to X/Y.
+.le
+.ih
+PARAMETERS
+.ls infile [string]
+Input image name.  Only one image at a time can be processed; wild cards
+and image section syntax are not supported.
+The header keyword INSTRUME and group parameter DETECTOR of this file is 
+used to determine which geometric coefficients are to be used.  
+If no group number is specified, the task will find the most appropriate chip,
+i.e. the chip where the point will be in the first quadrant.
+If a group number IS specified, this task will be forced to find X/Y in that
+chip.
+.le
+.ls ra [string]
+The right ascension. Two types of input are possible: 
+
+1) The parameter 'ra' can be a number representing RA, and the 'dec' parameter
+is passed a number representing the declination.
+
+2) 'ra' can be passed a table name (in either ASCII text or STSDAS format)
+with a space between the table name and column name, for example,
+'ra = "file.tbl COLNAME"'. In this case, you can specify a column
+name for the declinations using the 'dec' parameter. If separate tables
+are passed to 'ra' and 'dec' and the two tables have different numbers
+of rows, the task will quit at the end of the shorter table. You can
+also enter values interactively by passing "STDIN" as the table name;
+in this case, you would end input by typing an EOF character (usually
+Control-Z or Control-D).
+.le
+.ls dec [string]
+The declination, see above.
+.le
+.ls (ra_unit) = "auto" [string, "auto|hour|degree"]
+Unit of the input RA.  If this parameter has the value "auto", the task 
+searches the input 'ra' string and assumes the RA is in hours if there is
+any colons, otherwise it assumes RA is in degrees.
+.le
+.ls (x) [string]
+The output X coordinate of the last (RA,Dec) pair.
+.le
+.ls (y) [string]
+The output Y coordinate of the last (RA,Dec) pair.
+.le
+.ls (chip) [string]
+The output chip number of the last (RA,Dec) pair.
+.le
+.ih
+EXAMPLES
+1. Single pair of (RA,Dec) input:
+
+.nf
+cl> invmetric w1234567t.d0h "19:12:23.1" "33:22:11.123" 
+.fi
+
+2. Input positions from a text table where RA (in hms) are in the 3rd column 
+and Dec in the fifth column, send result to the file 'coord.result':
+
+.nf
+cl> invmetric w1234567t.d0h "coord.txt c3" "c5" ra_unit="h" > coord.result
+.fi
+
+3. Input RA from an STSDAS table 'coord.tab' and Dec from a text table 
+'coord.txt'.  RA's are in the column called "raname" and Dec's in the 1st 
+column:
+
+.nf
+cl> invmetric w1234567t.d0h "coord.tab raname" "coord.txt c1" 
+.fi
+
+4. Input RA's and Dec's from the terminal (each line has an RA,Dec pair, first 
+column is RA):
+
+.nf
+cl> invmetric w1234567t.d0h[2] "STDIN c1" "c2" 
+.fi
+.ih
+REFERENCE
+Geometric distortion and camera offset/rotation coefficients for WF/PC were 
+supplied by Roberto Gilmozzi and Shawn Ewald at STScI in November 1992.
+Coefficients for WFPC2 were supplied by Roberto Gilmozzi, Ellyne Kinney, and 
+Shawn Ewald in December 1994.
+.ih
+BUGS
+If the point corresponding to the specified RA/Dec is beyond the nominal range
+of WF/PC or WFPC2, this task may run into a floating error or give inaccurate
+results.  A warning message will be issued.
+
+If the input RA/Dec are from the command line and the RA is in sexagesimal 
+format, make sure the input number is enclosed by double quotes.  
+.ih
+SEE ALSO
+metric, rd2xy
+.endhelp

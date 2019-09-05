@@ -1,0 +1,55 @@
+.help yratio Jun97 stsdas.hst_calib.fos
+.ih
+NAME
+yratio -- Take ratio of each group of an FOS ACCUM with first group.
+.ih
+DESCRIPTION
+This is a prototype task to take the ratio of each group of an FOS
+ACCUM observation with the first group.  The input is the science
+image of an FOS observation.  The output is an image containing the
+same number of groups as the input.  Each group will contain the ratio
+of that group divided by the first group.
+
+'yratio' will determine the level of calibration done to the data.  If
+the input is the raw science, i.e., the '.d0h' image, 'yratio' will assume
+each group had the same exposure time and will multiply the first
+group by the appropriate scale factor.
+
+If the input is the calibrated science data, i.e., the '.c1h' file,
+'yratio' will check to see if CNT_CORR was performed.  If CNT_CORR were
+performed, there is no need for exposure time normalization; the
+calibration has already done it.  If CNT_CORR is not PERFORM, then
+'yratio' will use the value of the keyword EXPOSURE to determine the
+appropriate scale factor to multiply to group 1 before dividing it
+into each subsequent group.
+
+'yratio' will check to see if this is FOS data.  However, it currently
+will not check what ground mode the observation was taken, etc.
+.ih
+PARAMETERS
+.ls input [file list]
+List of FOS science data images to ratio.
+.le
+.ls output [file list]
+List of output image names to place the ratios.  There must be equal
+number of output names specified as input names.
+.le
+.ls (verbose = "yes") [boolean]
+If "yes", 'yratio' will describe its progress.  If "no", 'yratio' runs silently.
+.le
+.ih
+EXAMPLES
+Prototype only.
+.ih
+BUGS
+Need further checking of FOS observation modes.
+
+Needs to be written as a compiled task for speed.
+.ih
+REFERENCES
+Jonathan Eisenhamer
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.endhelp

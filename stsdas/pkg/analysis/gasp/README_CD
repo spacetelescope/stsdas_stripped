@@ -1,0 +1,248 @@
+[The following is the instructions for installing the patch to permit
+reading the GSC CD-ROM for SunOS.  This is from Fred Romelfanger
+(fred@stsci.edu), May 1991.]
+
+
+The way we access the Guide Star Catalog CDs on a Sun is with two Sun
+CD ROM drives connected to a SparcStation running SunOS 4.1 or 4.1.1.
+I haven't tried this yet with 4.1.1b, but it should work.  The only
+really annoying feature is that eject doesn't work properly with an
+argument of "sr1".  You have to use /dev/rsr1 instead.
+
+You can probably also use a Sun CD attached to a SparcServer and only
+have one CD mounted at a time.  The "sun4" version of the CD ROM driver
+(sr.o) that comes with 4.1 and 4.1.1 has some major problems with
+handling more than one CD ROM drive on a single SCSI bus.  This may
+also apply to more than one CD ROM drive on different SCSI buses.
+
+
+
+There is also a minor bug in the HSFS driver from sun in the way it
+handles the Extended Record Attributes in the ISO 9660 format that are
+present on the GSC disks.  You star getting messages about not being
+able to handle a certain record type when you start using ls on the
+mounted disk.  To fix this problem you need to patch the file
+/usr/sys/sun4c/OBJ/hsfs_node.o by doing the following:
+
+login as root or su
+cd to /usr/sys/sun4c/OBJ
+Save a copy of the file hsfs_node.o so that you can go back to it if
+necessary.
+adb -w hsfs_node.o
+hs_parsedir+0x9c?W 0ba0da0e6
+hs_parsedir+0x14c?W 0ba0da0e6
+$q
+
+By doing this you will modify two instructions in the part of the
+driver that handles parsing the directory structure.  Basically it
+causes it to ignore extra information.
+
+If you are running SunOS 4.1.1 on a SparcStation, you can pick up a
+patched copy of hsfs_node.o via anonymous ftp from hoth.stsci.edu in
+the directory pub.  Remember to use binary mode in copying the file.
+
+You will need to check your kernel configuration file and make sure it
+contains a line like:
+
+options	HSFS				# Support for ISO 9660 CDs
+
+and a line like:
+
+        disk sr0 at scsibus0 target 6 lun 0     # CD-ROM device
+
+
+If you are planning on connecting two CD Rom drives, you will ether
+need second SCSI interface for the machine (assuming it is not an SLC),
+to have a Sun supported configuration, or change the SCSI target on the
+second CD, and connect them to the same SCSI bus.  I made sr0 target 6
+and sr1 as target 5.  The lines in to kernel configuration file look
+like:
+
+
+        disk sr1 at scsibus0 target 5 lun 0     # CD-ROM device
+
+After you do this you will need to rebuild the kernel, and make sure
+you save an old copy of the kernel before installing the new one in
+case you have to go back to the old version.
+
+Once the new kernel is installed, you will need to reboot the machine.
+
+
+
+To mount one of the GSC disks, you will need to put it in one of the
+supplied cases that comes with the CD ROM drive, and insert it into the
+CD ROM drive.  To mount the disk you will need to login as root or su
+and issue a command like:
+
+	mount -t hsfs -o ro,noquota /dev/sr0 /data/gsc1
+
+Where /dev/sr0 is the device name and /data/gsc1 is the directory you
+are mounting it on.  The directory you are mounting it on must exist
+prior to issuing the command.   A similar command can be used to mount
+the second volume in another drive.
+
+What we do is do here is mount the disks at system boot assuming the
+correct volumes are in the correct drives.  To do this you will need to
+modify /etc/fstab and add the following lines:
+
+/dev/sr0  /data/gsc1   hsfs ro,noquota 0 0
+/dev/sr1  /data/gsc2   hsfs ro,noquota 0 0
+
+and then add the following line to /etc/rc.local somewhere near where the
+nfs partitions are mounted:
+
+intr -a mount -vat hsfs
+
+
+If you have any problems you can probably find help in the System and
+Networking Administration Guide and in the mount(8), eject(1),
+fstab(5), and sr(4s) man pages.
+
+
+[Addendum from Fred 2/10/93]
+
+The hsfs_node.o-4.1.2 is identical to the 4.1.3 version.  The 4.1.1 and
+Solaris 2.x versions of the driver are different.  To use the
+pre-patched version you should copy down hsfs_node.o-4.1.2 using binary
+mode in ftp and put it in /usr/sys/sun4c/OBJ/hsfs_node.o, rebuild the
+kernel, and then reboot.  Once the kernel module has been patched, you
+should not have to make any additional changes using adb.  This patch
+should not conflict with any other Sun patches that are presently
+available.
+
+
+[Addendum from Fred on 4/12/93]
+
+The ISO9660 patch that I generated for Solaris 2.0 based on the 4.1.3
+patch also works in Solaris 2.1.  With the problem supposedly fixed in
+Solaris 2.2 due out next month, I doubt that there will be much demand
+for Solaris 2.0 and 2.1 support.  A patched version of the hsfs driver
+is available via anonymous ftp from hoth.stsci.edu in the directory
+pub.
+
+[Addendum from Fred on 12/13/93]
+
+The HSFS driver for Solaris 2.2 has changed, but the problem is
+still present.  Under Solaris 2.2, you need to modify /etc/system and
+add the following lines at the bottom of the file and then reboot:
+
+set hsfs:ide_prohibited=0xe6
+set hsfs:hde_prohibited=0xe6
+
+This changes two masks in the driver to allow it to access our CD-ROMs.
+These changes will probably also work in Solaris 2.3 when it is released.
+
+
+
+[The remainder of this document is the file readme.txt in the top level
+directory on the GSC CD-ROM.  It describes the directory structure of
+the disk and provides some information about the catalog.]
+
+
+                             THE GUIDE STAR CATALOG                             
+
+                 An all-sky astrometric and photometric catalog                 
+                 prepared for the operation of the Hubble Space                 
+                                   Telescope.                                   
+
+                 Copyright,  1989,  Association of Universities                 
+                         for Research in Astronomy, Inc.                        
+
+
+    This set of CD-ROMs contains the Guide Star Catalog - Version 1, with an    
+    issue date of 1 June 1989.  The Guide Star Catalog (GSC) was prepared by    
+    the  Space Telescope Science Institute (ST ScI),  3700 San Martin Drive,    
+    Baltimore,  MD 21218,  USA.  ST ScI  is  operated  by the Association of    
+    Universities for Research in Astronomy, Inc. (AURA), under contract with    
+    the National Aeronautics and Space Administration (NASA).                   
+
+    The Guide Star Catalog is subdivided into regions,  which are bounded by    
+    small  circles of right ascension and great circles of declination,  and    
+    which are numbered consecutively from 0001 to 9537. Data for each region    
+    are stored as separate files;  these files are contained in  subdirecto-    
+    ries, each of which subtends a 7.5 degree zone of declination.              
+
+    The Guide Star Catalog is distributed as a two CD-ROM set,  divided at a    
+    declination of -7.5 degrees. This description file and supporting tables    
+    are duplicated on both discs.                                               
+
+    All data files  (i.e., with the exception of this file and the directory    
+    files) are in FITS (Flexible Image Transport System) table format.          
+
+    The root directory contains the following files:                            
+
+
+          ------------------------------------------------------------          
+          README.TXT;1    - This file.                                          
+          GSC             - Directory for GSC region files.                     
+          TABLES          - Directory for GSC supporting tables.                
+          ------------------------------------------------------------          
+
+
+    Directory  GSC  contains  subdirectories  for  the  7.5  degree zones in    
+    declination;  these subdirectories in turn contain the GSC region  files    
+    in  FITS  format  for the respective zone,  with file identifiers of the    
+    form nnnn.GSC;1, where nnnn is the 4-digit decimal region  number,  with    
+    leading  zeroes  used as required to fill the field.  The subdirectories    
+    are named as follows:                                                       
+
+
+          ------------------------------------------------------------          
+          Subdirectory        Declination          Regions        Disc          
+                            From         To      From     To                    
+          ------------------------------------------------------------          
+          N0000           +00d 00m   +07d 30m    0001   0593         1          
+          N0730           +07d 30m   +15d 00m    0594   1177         1          
+          N1500           +15d 00m   +22d 30m    1178   1728         1          
+          N2230           +22d 30m   +30d 00m    1729   2258         1          
+          N3000           +30d 00m   +37d 30m    2259   2780         1          
+          N3730           +37d 30m   +45d 00m    2781   3245         1          
+          N4500           +45d 00m   +52d 30m    3246   3651         1          
+          N5230           +52d 30m   +60d 00m    3652   4013         1          
+          N6000           +60d 00m   +67d 30m    4014   4293         1          
+          N6730           +67d 30m   +75d 00m    4294   4491         1          
+          N7500           +75d 00m   +82d 30m    4492   4614         1          
+          N8230           +82d 30m   +90d 00m    4615   4662         1          
+          S0000           -00d 00m   -07d 30m    4663   5259         1          
+          S0730           -07d 30m   -15d 00m    5260   5837         2          
+          S1500           -15d 00m   -22d 30m    5838   6411         2          
+          S2230           -22d 30m   -30d 00m    6412   6988         2          
+          S3000           -30d 00m   -37d 30m    6989   7522         2          
+          S3730           -37d 30m   -45d 00m    7523   8021         2          
+          S4500           -45d 00m   -52d 30m    8022   8463         2          
+          S5230           -52d 30m   -60d 00m    8464   8839         2          
+          S6000           -60d 00m   -67d 30m    8840   9133         2          
+          S6730           -67d 30m   -75d 00m    9134   9345         2          
+          S7500           -75d 00m   -82d 30m    9346   9489         2          
+          S8230           -82d 30m   -90d 00m    9490   9537         2          
+          ------------------------------------------------------------          
+
+
+    Directory  TABLES  contains  the following supporting files for the GSC,    
+    written in FITS table format:                                               
+
+
+          ------------------------------------------------------------          
+          COMMENTS.TBL;1  - Introduction and general comments.                  
+
+          PLATES.TBL;1    - Information on the plates used in the GSC.          
+          PROCESS.TBL;1   - Image processing parameters.                        
+          ASTR_CAL.TBL;1  - Parameters of astrometric calibrations.             
+          PHOT_CAL.TBL;1  - Parameters of photometric calibrations.             
+          C_UP_POP.TBL;1  - Catalog update population statistics.               
+          ST_POP.TBL;1    - Population statistics for stars.                    
+          NS_POP.TBL;1    - Population statistics for non-stars.                
+
+          REGIONS.TBL;1   - Boundaries of GSC regions.                          
+          C_RE_POP.TBL;1  - GSC region population statistics.                   
+          LG_REG_X.TBL;1  - Index to large regions.                             
+          SM_REG_X.TBL;1  - Index to small regions.                             
+
+          XREF_P2R.TBL;1  - Cross-reference table, plates to regions.           
+          XREF_R2P.TBL;1  - Cross-reference table, regions to plates.           
+          ------------------------------------------------------------          
+
+
+    Additional  information on the Guide Star Catalog may be found in accom-    
+    panying scientific publications and in comments in the FITS  headers  of    
+    the supporting tables.                                                      

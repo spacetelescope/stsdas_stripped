@@ -1,0 +1,33 @@
+# Help directory for the STATISTICS package
+
+$doc		= "stsdas$pkg/analysis/statistics/doc/"
+$bhk 		= "stsdas$pkg/analysis/statistics/bhk/"
+$bj		= "stsdas$pkg/analysis/statistics/bj/"
+$coxreg		= "stsdas$pkg/analysis/statistics/coxreg/"
+$em		= "stsdas$pkg/analysis/statistics/em/"
+$kmestm		= "stsdas$pkg/analysis/statistics/kmestm/"
+$kolmov		= "stsdas$pkg/analysis/statistics/kolmov/"
+$spearman	= "stsdas$pkg/analysis/statistics/spearman/"
+$twokm		= "stsdas$pkg/analysis/statistics/twokm/"
+$twost		= "stsdas$pkg/analysis/statistics/twost/"
+
+bhkmethod		hlp=doc$bhkmethod.hlp,
+			src=bhk$t_bhk.x
+buckleyjames		hlp=doc$buckleyjames.hlp,
+			src=bj$t_bj.x
+censor			hlp=doc$censor.hlp
+coxhazard		hlp=doc$coxhazard.hlp,
+			src=coxreg$t_coxreg.x
+emmethod		hlp=doc$emmethod.hlp,
+			src=em$t_em.x
+kmestimate		hlp=doc$kmestimate.hlp,
+			src=kmestm$t_kmestm.x
+kolmov			hlp=doc$kolmov.hlp,
+			src=kolmov$kolmov.x
+schmittbin		hlp=doc$schmittbin.hlp,
+			src=twokm$t_twokm.x
+spearman		hlp=doc$spearman.hlp,
+			src=spearman$spearman.x
+survival		hlp=doc$survival.hlp
+twosampt		hlp=doc$twosampt.hlp,
+			src=twost$t_twost.x

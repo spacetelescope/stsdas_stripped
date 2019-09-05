@@ -1,0 +1,133 @@
+# Make the calfos package
+#	to include calfos
+#
+# Major revision: 14Jan93, jde
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout calfos.a ../
+	$update   calfos.a
+	$checkin  calfos.a ../
+	$call	calfos
+	;
+
+install:
+	$move xx_calfos.e stsdasbin$x_calfos.e
+	;
+
+calfos:
+linkonly:
+        $omake  x_calfos.x
+	
+        $link   x_calfos.o ../calfos.a ../fos.a \
+                -liraf77 -lf77util -luttables -lstxtools -ltbtables \
+                -o xx_calfos.e
+	;
+
+calfos.a:
+	bfield.f
+	calfos.x
+	cdsort.f
+	geopos.f
+	hstpos.f
+	rotate.f
+	stcomply.f
+        yclacc.f
+	yclais.f
+	yclapr.f
+	yclbck.f
+        yclcpl.f
+        yclcrt.f
+        yclcst.f
+	ycldqi.f
+	yclerr.f
+	yclexp.f
+	yclfcs.f
+	yclflt.f
+	yclfos.f
+        yclinq.f
+	yclivs.f
+        yclmcr.f
+	yclmod.f
+        yclnrm.f
+	ycloff.f
+	yclopn.f
+        yclpcc.f
+	yclpol.f
+	yclppc.f
+	yclprc.f
+	yclrd.f
+	yclrep.f
+        yclrot.f
+	yclrr.f
+	yclsct.f
+	yclsky.f
+	ycltim.f
+	ycltr.f
+        yclucr.f
+	yclwav.f
+	yclwrt.f
+	yconfg.f
+	yerror.x
+	yfname.f
+	ygimp.f
+	ygtorb.f
+	ygtref.f
+	ymagfd.f
+	ymean.f
+	ymedn.f
+	ymissd.f
+	ymnmxr.f
+	ymsput.f
+	yogpar.f
+	yopd0h.f
+	yosize.f
+	ypflag.f
+	ypolar.f
+	ypol2.f
+	ypol3.f
+	yrccg2.f
+	yrccs0.f
+	yrccs1.f
+	yrccs2.f
+	yrccs3.f
+	yrccs4.f
+	yrccs5.f
+	yrccs6.f
+	yrccs7.f
+	yrccs8.f
+	yrccs9.f
+	yrccsa.f
+	yrccsb.f
+	yrccsc.f
+	yrccsd.f
+	yrdais.f
+	yrdbac.f
+	yrdddt.f
+	yrddqi.f
+	yrdflt.f
+	yrdivs.f
+	yrdoff.f
+        yrdpcp.f
+	yrdret.f
+	ysclbk.f
+	ysolve.f
+	yuhead.f
+	ywmnmx.f
+	ywrped.f
+	ywshft.f
+	;

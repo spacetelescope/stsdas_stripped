@@ -1,0 +1,60 @@
+Dear Colleague:
+
+	We are now sending you, by electronic mail, the FORTRAN source code
+for Rev 1.2 of ASURV:  Astronomy Survival Analysis.  Survival analysis
+is a body of statistical techniques for the analysis of censored data; that
+is, datasets where some of the points are known only to be below or above 
+some limit.  This situation occurs frequently in observational astronomy 
+when some objects surveyed are not detected.  Rev. 1.2 provides the same
+statistical techniques as Rev 1.0 and Rev 1.1 did, but with certain flaws 
+that were present in Rev 1.0 and Rev 1.1 removed.  Rev 1.0 is a significant 
+revision and expansion of Rev 0.0 that was distributed between 1987 and 1991.  
+Most of the statistical methods are described in Feigelson and Nelson 
+(Astrophys. J. 293, 192, 1985) and Isobe et al. (Astrophys. J. 306, 490,
+1986).  Information regarding the code appears in Isobe and Feigelson (Bull. 
+Amer. Astr. Soc. 22, 917, 1990) and LaValley et al. (in Astronomical Data 
+Analysis Software and Systems, D. Worrall et al. eds., 1992).
+
+	The ASURV package consists of 59 FORTRAN 77 subroutines sent to you 
+in six files, asurv1.f-asurv6.f.  In addition, we provide files asurv.doc and
+asurv.tex, which give the ASURV Users' Manual in ASCII and LaTeX formats
+respectively, and file asurv.etc with subroutine lists, test files and 
+Bug Report forms.  These test files correspond to the examples in the 
+manual.   To install the package, we suggest removing the mail headers from 
+the nine files, printing the manual, and separating the test files from 
+asurv.etc for initial testing of the code.  A hard copy of the manual, 
+with flow charts useful to those who may wish to modify the code, is 
+available upon request.  Then, one should run a FORTRAN compiler and linker 
+(e.g. `f77 -o asurv asurv1.f .... asurv6.f' in SunOS), and run the code on 
+the test files from asurv.etc.  The output should be checked to ensure 
+that it matches the output in the manual.  At this point the user should 
+be ready for scientific applications.  
+
+	To ensure that all the files have arrived safely, check that the 
+byte lengths match the following list (after removal of the mail headers):
+
+                       file          byte length
+                       ----          -----------
+                     asurv.etc            9709
+                     asurv.tex           74628
+                     asurv.doc           71161
+                     asurv1.f            62909
+                     asurv2.f            64734
+                     asurv3.f            61382
+                     asurv4.f            62185
+                     asurv5.f            60629
+                     asurv6.f            58727
+
+Contact us at code@stat.psu.edu (Internet) if any difficulties arise or 
+if informal advice regarding use of these methods is needed.  Please be 
+sure to send in a Bug Report if any errors are found in the package. 
+
+Good luck!
+
+
+Michael LaValley (Penn State, Dept. of Statistics)
+Takashi Isobe (M.I.T., Center for Space Research)
+Eric Feigelson (Penn State, Dept. of Astronomy & Astrophys)
+
+
+Rev. Jan. 1992

@@ -1,0 +1,16 @@
+input,f,a,"",,,>List with input files 
+output,f,a,"",,,>List with output files
+skysamps,s,a,"",,,>Sky image IMSETs
+nlow,i,h,INDEF,0,,>Number of low sky image pixels to reject
+nhigh,i,h,INDEF,0,,>Number of high sky image pixels to reject
+dqon,b,h,yes,,,>Turn on pixel masking by Data Quality bits?
+nicdqpar,pset,h,"",,,>Data Quality bits (pset)
+fitjumps,b,h,no,,,>Fit bias jumps within quadrants?
+filtsiz,i,h,15,3,127,>Bias jump median filter size
+thresh,r,h,5,0,,>Jump detection threshold (sigma)
+keepsky,b,h,no,,,>Keep sky image?
+keepbias,b,h,no,,,>Keep bias image?
+keepjump,b,h,no,,,>Keep jump log file?
+verbose,b,h,yes,,,>Verbose ?
+Version,s,h,"30Sep2005",,,>Date of installation
+mode,s,h,al

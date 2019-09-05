@@ -1,0 +1,177 @@
+.help hstpos Jun92 stsdas.playpen 
+.ih
+NAME
+hstpos --Plot the position of HST on a map of the world.
+.ih
+USAGE
+hstpos input orbit
+.ih
+DESCRIPTION
+'hstpos' plots the position of the spacecraft at a specific time 
+on a Mollweide projection of the world.
+The task uses the orbital parameters contained in the standard header 
+packet image (the '.shh' file). The time for which the position
+is calculated is taken either from a header keyword in an image
+or a list in a user-created ASCII file.
+
+If an input image is not specified, then both the orbital information
+and time information will be taken from the '.shh' file. 
+
+A variety of markers and a user-sepcified marker size are available
+for identifying postions. Plots containing multiple markers can
+be produced by appending plots to previously drawn plots.
+
+Line of constant geomagnetic latitude can be plotted using the
+parameters 'geomag', 'n_latitudes', and 'latint'.  
+'n_latitudes' specifies how
+many lines of constant latitudes from the equator northward are drawn.
+The number of lines drawn in the north will be mirrored in the south.
+'latint' determines the number of degrees between each line of constant
+latitude.
+
+Contours of the South Atlantic Anomaly (SAA) can be plotted by
+specifying a model number in the parameter 'model'.  The number refers to
+the model number specified in th Project Database (PDB) file 'SVDF.DAT'.
+'hstpos' uses a table version of this file which is specified in the
+parameter 'saa'.  (Refer to the document ICD-26 Part III for more
+information on SAA contour models).
+.ih
+PARAMETERS
+.ls input [file name]
+The input images for which positions are to be plotted. 
+
+Wildcard
+specifications and lists are supported. If no group specification
+is given for a multigroup file, all groups will be processed. The times
+at which to determine positions are extracted from the headers of 
+these images. The header keyword containing the time of interest is
+specified by the parameter 'timekey'.
+
+Instead of image names, this input list may contain specific times at which 
+to determine position. These times may have one of two formats: 
+Modified Julian Date (MJD) or DD-MMM-YYYY HH:MM:SS.SS. 
+.le
+.ls orbit [file name]
+The image name of the standard header packet (the '.shh' file) containing
+the orbital parameters to be used. 
+.le
+.ls (timekey = "pkttime") [string, allowd values: pkttime | fpkttime | 
+lpkttime]
+
+The header keyword that contains the packet time. The positions plotted
+correspond to the position of the spacecraft at the time given in this
+header keyword. This keyword should have the time in Modified Julian Date (MJD)
+but may have (for old-format data) the time expressed as a string with
+the format: DD-MMM-YYYY HH:MM:SS.SS.
+.le
+.ls (position) [file name]
+Name of the table in which the calculated longitude and latitude
+are to be written. If the table already exists, the new information
+is appended, otherwise the file is created.
+.le
+.ls (plot = yes) [boolean]
+Plot positions on the device specified by the 'device' parameter?
+.le
+.ls (allgroups = yes) [boolean]
+Loop through all groups in a GEIS multigroup image?
+
+If 'allgroups = no', only the first or specified group will be processed.
+.le
+.ls (model = INDEF) [integer]
+If specified, this contains the South Atlantic Anomaly model to plot.
+.le
+.ls (saa = "playpen$saa.tab") [file]
+The table containing the Sough Atlantic Anomaly model contours.
+.le
+.ls (device = "stdgraph") [string]
+The output device (e.g., stdgraph, stdplot, lp1).
+.le
+.ls (marker = cross) [string, allowed values: point | box | plus |
+cross | circle | diamond | hline | vline | hebar | vebar]
+
+The marker style for each plotted point. Most are self explanatory, however,
+"hline" is a horizontal line, 
+"vline" is a vertical line, "hebar" is a horizontal
+error bar and "vebar" is a horizontal error bar.
+.le
+.ls (szmarker = 0.01) [real]
+The size of the markers in normalized device coordinates (NDC).
+Anything much larger than the default blots out major land features.
+.le
+.ls (append = no) [boolean]
+Append to an existing plot?  If 'append = yes', the map is not drawn.
+The data are drawn at the scale set by the previous plot. 
+
+Warning: Don't
+try to append to plots that have been sent directly to a printer.
+.le
+.ls (geomag = no) [boolean]
+Draw lines of constant geomagnetic latitude?
+.le
+.ls (n_latitudes=3) [integer]
+The number of lines of constant latitude from the equator northward
+that will be drawn.  What is drawn in the north is then mirrored in
+the south.
+.le
+.ls (latint = 10.) [real]
+The number of degrees between each line of constant geomagnetic
+latitude.
+.le
+.ih
+EXAMPLES
+1. Plot the position of the spacecraft at the time that each group of the
+standard header packet image was dumped. This corresponds to the begin
+time of an HRS observation.
+
+.nf
+  hr> hstpos z00xh903r.shh ""
+.fi
+
+2. Repeat the first example, but only plot group number 5.
+
+.nf
+  hr> hstpos z00xh903r.shh[5] ""
+.fi
+
+3. Use the orbital parameters in 'z00xh903r.shh' but plot the positions at
+the time each group of the unique data log ('.ulh' file) was dumped.
+
+.nf
+  hr> hstpos z00xh903r.shh z00xh903r.ulh
+.fi
+
+4. Use the orbital parameters in 'y00vk108r.shh' but plot the position at
+the time the first group of the science data ('.d0h' file) was dumped.
+
+.nf
+  hr> hstpos y00vk108r.shh y00vk108r.d0h[1] timekey=fpkttime
+.fi
+
+5. Use the orbital parameters in 'z00xh903r.shh' but plot the positions at
+each of the times listed in the ASCII file, 'time.in'.
+.nf
+
+  hr> type time.in
+  # Sample list of times
+  01-JAN-1991 10:23:58.33
+  01-JAN-1991 10:43:00.99
+  48257.07
+  48257.08
+  01-JAN-1991 12:23:58.33
+  01-JAN-1991 01:43:11.25
+  hr> hstpos z00xh903r.shh time.in
+.fi
+
+6. Plot diffenent positions with different markers on the same plot.
+
+.nf
+  hr> hstpos z00xh903r.shh z00xh903r.ulh[1] marker=diamond
+  hr> hstpos z00xh903r.shh z00xh903r.ulh[2] marker=box append+
+  hr> hstpos z00xh903r.shh z00xh903r.ulh[3] marker=cross append+
+  
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

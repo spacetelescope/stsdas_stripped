@@ -1,0 +1,50 @@
+# Make the calwfp task
+#
+#	Last updated: 30 Jan 92 by RAShaw
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$update cwfpc.a
+	$call linkonly
+	;
+
+install:
+	$move	xx_calwfp.e stsdasbin$x_calwfp.e
+	;
+
+cwfpc.a:
+	w_err.x		<error.h> "wrdata.h" "wrincl.h"
+	w_fio.x		<imhdr.h> <imio.h> <tbset.h> <error.h> "wrdata.h"\
+			"wrincl.h"
+	w_grpkw.x	<imhdr.h> <imio.h> <error.h> "wrdata.h" "wrincl.h"
+	w_init.x	<imhdr.h> <imio.h> <error.h> "wrdata.h" "wrincl.h"
+	w_proc.x	<imhdr.h> <imio.h> <mach.h> <tbset.h> <error.h>\
+			"wrdata.h" "wrincl.h"
+	w_phot.x	<imhdr.h> <imio.h> <mach.h> <tbset.h> <error.h>\
+			"wrdata.h" "wrincl.h"
+	w_util.x	<imhdr.h> <imio.h> <error.h> "wrdata.h" "wrincl.h"
+	t_calwfp.x	<imhdr.h> <imio.h> <error.h> "wrdata.h" "wrincl.h"
+	;
+
+linkonly:
+	$omake x_calwfp.x 
+	$link   x_calwfp.o cwfpc.a \
+		-liraf77 -lf77util -luttables -ltbtables \
+		-o xx_calwfp.e
+	;
+
+$exit

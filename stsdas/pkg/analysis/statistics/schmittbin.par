@@ -1,0 +1,14 @@
+# Task parameters for the SCHMITTBIN task
+
+input,s,a,,,,"> Input file(s)"
+nxbins,i,h,10,1,100,"> Number of bins in independent variable"
+nybins,i,h,10,1,100,"> Number of bins in dependent variable"
+xsize,r,h,0.0,,,"> Size of bins in independent variable"
+ysize,r,h,0.0,,,"> Size of bins in dependent variable"
+xorigin,r,h,0.0,,,"> Origin of bins in independent variable"
+yorigin,r,h,0.0,,,"> Origin of bins in dependent variable"
+tolerance,r,h,1.0e-5,0.0,,"> Tolerance for regression fit?"
+niter,i,h,50,1,,"> Maximum number of iterations to allow"
+nboot,i,h,200,0,,"> Number of bootstrap runs"
+verbose,b,h,n,,,"> Full printout desired?"
+mode,s,h,"al",,,

@@ -1,0 +1,21 @@
+$checkout playpen.a ../
+$update   playpen.a
+$checkin  playpen.a ../
+$exit
+
+playpen.a:
+	t_hstpos.x	<ctype.h> <error.h> <gset.h> <imhdr.h> <imio.h> \
+                        <syserr.h> "orbdat.h" "filetype.h"
+	convtime.x	<ctype.h> <ctotok.h> <printf.h> <mach.h> "convtime.h"
+	filetype.x	"filetype.h"
+	getmjd.x	<ctype.h> <ctotok.h> "convtime.h"
+	getorb.x	<imhdr.h> "orbdat.h"
+	getpos.x	<math.h> "orbdat.h"
+        hstgeg.x        <gset.h>
+        hstist.x
+        hstsat.x        <tbset.h>
+	initmarker.x	<gset.h>
+	mwp.x		<math.h> <mii.h> <gset.h> "mapdat.h"
+	tabaccess.x
+        table.x         <tbset.h> "table.h" "table.com"
+	;

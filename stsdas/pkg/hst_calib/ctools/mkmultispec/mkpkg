@@ -1,0 +1,20 @@
+$checkout ctools.a ../
+$update   ctools.a
+$checkin  ctools.a ../
+$exit
+
+ctools.a:
+        t_mkms.x        <error.h> <math/curfit.h> "mkms.h"
+        fit.x           <pkg/gtools.h> "mkms.h"
+        lists.x         "mkms.h"
+        mkadds.x        <math/curfit.h> <imhdr.h> <imio.h> "mkms.h"
+        mkcopy.x        <imhdr.h> "mkms.h"
+        mkcree.x        <imhdr.h> <imio.h> <math/curfit.h> "mkms.h"
+        mkdoft.x        <math/curfit.h> <pkg/gtools.h> <imhdr.h> <imio.h>\
+                        "mkms.h"
+        mkicgd.x        <error.h> <pkg/gtools.h> "names.h" "icfit.h"
+        mklare.x        <imhdr.h> <imio.h> "mkms.h"
+        mkmap.x         <imhdr.h> <imio.h> <tbset.h> "mkms.h"
+        mkms.x          <imhdr.h> <imio.h> "mkms.h"
+        sbuf.x          "sbuf.h"
+	;

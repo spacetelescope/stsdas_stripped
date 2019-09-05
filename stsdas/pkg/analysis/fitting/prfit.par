@@ -1,0 +1,5 @@
+# Parameter file for the prfit task.
+#
+input,s,a,,,,>table name(s)
+version,s,h,"18May91",,,>date of installation
+mode,s,h,ql

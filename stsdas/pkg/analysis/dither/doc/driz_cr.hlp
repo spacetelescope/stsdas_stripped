@@ -1,0 +1,106 @@
+.help driz_cr Jul2000 stsdas.analysis.dither
+.ih
+NAME
+driz_cr -- Create cosmic ray mask based for dithered data
+.ih
+USAGE
+driz_cr images group
+.ih
+PARAMETERS
+.ls images = "" [file name]
+The names of the original data images.  The name can include a full
+or relative path.  An image with a name of the form PATH/file
+will be compared with a blotted image, file_bl, and a derivative
+image, file_bl_deriv, to determine which  pixels are corrupted.
+.le
+.ls group = "" [integer]
+The image group being cleaned.  In the case of WFPC2 this is 1 for
+the PC, 2-4 for the WF chips.  In the case of NICMOS or STIS images,
+this corresponds to the fits extension number of the image to be compared,
+and is typically 1.
+.le
+.ls (gain = 7.) [real]
+The gain, in e- per ADU, of the detector.  The default gain is the
+typical gain of the WFPC2 chips.
+.le
+.ls (rn = 5.) [real]
+The read noise of the detector in e-.  The default read noise is
+the approximate read noise of the WFPC2 detectors.
+.le
+.ls (SNR = 4.0,3.0) [real]
+The significance of the difference between the predicted and observed
+value of a given pixel required for masking.  
+.le
+.ls (scale = 0.8,0.4) [real]
+The multiplication factor applied to the derivative before determining
+if the difference between the data image and blotted image is
+sufficiently great to require masking.
+.le
+.ls (backgrn = "backgrnd") [string]
+The header keyword in which the sky background of the image is stored.
+This value is used to determine the proper noise 
+statistics.
+.le
+.ls (expkey = "exptime") [string]
+Exposure time keyword
+.le
+.ls (corr = "no") [boolean]
+Create corrected image?
+.le
+.ls (flat = "no") [boolean]
+Weight statistics by flat field image?
+.le
+.ls (flt_im = "") [file name]
+Flat field image name
+.le
+.ls (bl_suffix = "_bl") [string]
+Suffix that is appended to the input blotted image.
+.le
+.ls (deriv_suffix = "_bl_deriv") [string]
+Suffix that will be appended to the output derivative image.
+.le
+.ls (cr_suffix = "_cr") [string]
+Suffix that will be appended to the output cosmic ray pixel mask.
+.le
+.ls (cor_suffix = "_cor") [string]
+Suffix that will be appended to the output corrected image.
+.le
+.ls (verbose = "yes" ) [boolean]
+This parameter determines the detail of the output to the user's terminal.
+.le
+.ih
+DESCRIPTION
+This task compares an image with a model image (usually created by
+the task "blot") and the absolute derivative of the model image (usually
+created with the task "deriv") to create
+a mask of cosmic rays (and other blemishes) in the original image.
+The user provides the name of the input image(s).   The 
+model and derivative images are assumed to be in the present
+working directory and to have names of the form FILE_bl and FILE_bl_deriv,
+where the original image has a full pathname PATH/FILE.  
+The program makes two passes over the image.  Pixels adjacent
+to pixels masked in the first pass are tested again with a second
+(usually more rigorous) set of parameters.
+
+A pixel is masked if for a given pixel
+
+.nf
+|data - model| > scale*deriv + SNR*sqrt(rn**2 + gain*abs(model + backg))/gain
+.fi
+
+where rn, scale, and gain are the user supplied parameters, and backg is
+the background value taken from the image header.  
+
+The parameter values provided as defaults to this task will need to be
+adjusted to match the data available.  In particular, the smallest
+feasible (and therefore best) values for the scale parameters will depend
+not only on the detector, but also on the dither pattern and the accuracy
+of the shift determinations.
+
+For an example of the use of this task in reducing dithered WFPC2
+observations, see the paper by Fruchter and Mutchler at
+.nf
+http://www.stsci.edu/~fruchter/dither/ditherII.ps
+.fi
+
+.endhelp

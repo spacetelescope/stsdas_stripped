@@ -1,0 +1,69 @@
+################################################################################
+#   Make the wfpc package
+#
+#   Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+	$set XFLAGS = "-fgqz $(XFLAGS)"
+        $set LFLAGS = "-z $(LFLAGS)"
+	$call relink
+	;
+
+relink:
+	$update wfpc.a
+	$call	wfpc
+	;
+
+install:
+	$move	xx_wfpc.e stsdasbin$x_wfpc.e
+	$call   install@calwfp
+	$call   install@calwp2
+	$call   install@w_calib
+	;
+
+wfpc:
+linkonly:
+	$set    LIBS = "-lapplib -lgflib -lgilib -lstxtools -lxtools \
+		-ltbtables"
+	$set 	LIBS2= "-liminterp"	
+	$omake	x_wfpc.x
+
+	$link	x_wfpc.o wfpc.a $(LIBS) $(LIBS2) -o xx_wfpc.e
+	$call	relink@calwfp
+	$call	relink@calwp2
+	$call   relink@w_calib
+	;
+
+wfpc.a:
+	@lib
+	@bjdetect
+	@combine
+	@crrej
+	@engextr
+	@invmetric
+        @metric
+	@mkdark
+	@noise
+	@pixcoord
+	@qmosaic
+	@seam	
+	@uchcoord
+	@uchscale
+	@warmpix
+	@wfixup
+	@wmosaic
+	@wstat
+	;

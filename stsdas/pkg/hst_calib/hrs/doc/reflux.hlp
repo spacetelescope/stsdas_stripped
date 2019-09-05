@@ -1,0 +1,104 @@
+.help reflux Jun97 stsdas.hst_calib.hrs 
+.ih
+NAME
+reflux -- Apply a new absolute sensitivity correction to previously 
+flux-corrected GHRS spectra.
+.ih
+USAGE
+reflux input output new_abs new_net
+.ih
+DESCRIPTION
+'reflux' performs the FLX_CORR calibration step from 'calhrs' on spectra that
+have already been flux-corrected by 'calhrs'. 
+
+The flux-calibration algorithm in 'calhrs' uses data supplied by two calibration
+reference images: one image containing the absolute 
+sensitivity values and one image 
+containing the corresponding wavelength 
+values. The sensitivities are interpolated onto 
+the wavelength scale of the spectrum using a 
+quadratic (Lagrangian) interpolation. The
+spectrum is then multiplied by the interpolated sensitivities 
+to produce a flux-corrected
+output spectrum.
+
+'reflux' uses the calibration reference files specified in the 
+'.c1h' header by the keywords,  
+ABSHFILE and NETHFILE, to undo the previous flux 
+calibration. Make sure that these images 
+are available before running the task. It is 
+possible that these files are available on 
+disk and that they can be accessed by setting the 
+IRAF alias "zref" to point to the 
+appropriate directory. Otherwise, these 
+files will need to be obtained from the data archive.
+The new flux-calibration is performed using the 
+absolute sensitivity data specified by 
+the input parameters: 'new_abs' and 'new_net'. 
+After the new calibration is performed, the header
+keywords, ABSHFILE and NETHFILE, will 
+contain the names of the new reference files. 
+.ih
+PARAMETERS
+.ls input [file name template]
+The image name(s) of the spectra that are to have the flux recalibrated.
+.le
+.ls output [file name template]
+The image name(s) of the new spectra. The output name may be the same
+as the input name (so be careful). The output name may also be a directory. 
+.le
+.ls new_abs [file name]
+The image name of the new absolute sensitivity data. This image must be a valid
+calibration reference image.
+.le
+.ls new_net [file name]
+The image name of the new wavelength net data corresponding to the new
+absolute sensitivity data specified in 'new_abs'. This image must be a valid
+calibration reference image.
+.le
+.ls (verbose = no) [boolean]
+Generate messages that track the task processing?
+.le
+.ih
+EXAMPLES
+1. Reflux the observation 'z00xh903r.c1h' using the new absolute sensitivity
+and 
+wavelength net data in '7cl1093dz.r3h' and '8hy2098rz.r4h' and producing the new image
+'new903.c1h'.
+.nf
+
+  hr> reflux z00xh903r.c1h new903.c1h new_abs=zref$7cl1093dz.r3h \
+  >>> new_net=zref$8hy2098rz.r4h
+
+.fi
+2. Reflux the list of images in 'imlist.1' and 
+write the new images with the same names to
+the directory 'new_images/'. Use the reference 
+files 'newabs.r3h' and 'newnet.r4h' stored
+in the directory 'myref$'.
+.nf
+
+  hr> reflux @imlist.1 newimages/ new_abs=myref$newabs.r3h \
+  >>> new_net=myref$newnet.r4h
+
+.fi
+3. Reflux the observation 'z00xh903r.c1h' using the new absolute sensitivity
+and 
+wavelength net data in '7cl1093dz.r3h' and '8hy2098rz.r4h' and overwriting the
+image 'z00xh903r.c1h'.
+.nf
+
+  hr> reflux z00xh903r.c1h z00xh903r.c1h new_abs=zref$7cl1093dz.r3h \
+  >>> new_net=zref$8hy2098rz.r4h
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+SEE ALSO
+calhrs
+.endhelp

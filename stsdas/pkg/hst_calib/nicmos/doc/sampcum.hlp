@@ -1,0 +1,61 @@
+.help sampcum May2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+sampcum -- accumulate a MultiAccum image from a set of first differences
+.ih
+USAGE
+sampcum image outimage zeroimage template
+.ih
+DESCRIPTION
+Sampcum is a CL script that sums a series of first differences in a NICMOS
+MultiAccum file into a normal set of accumulating SCI image extensions.
+The output file is initially created as a copy of the template file.
+Next, the zero read SCI image extension in the output file is replaced by
+the image referenced by the "zeroimage" parameter. Then the remaining SCI
+image extensions in the output file are replaced by the accumulating sums
+of the input file SCI image extensions, starting with the first read 
+(IMSET = NSAMP-1) and proceeding through to the last read (IMSET = 1).
+
+The corresponding task "sampdiff" can be used to create first differences.
+.ih
+PARAMETERS
+.ls image [file]
+Input image.
+The full file name must be given. Normally this is a NICMOS _ima.fits file.
+.le
+.ls outimage [file]
+Output image name. The full file name must be given. This file will have the
+same structure and number of IMSETs as the input file.
+.le
+.ls zeroimage [file]
+Image to use for zero read of output image. The zero read SCI image extension
+of the input image may be used. A full image extension specification
+must be provided if the image is contained in a multi-extension FITS file.
+.le
+.ls template [file]
+Image to use as a template for the output image. The output image is initially
+created as an exact copy of the template image, and the SCI image extensions
+are subsequently updated with the accumulated data. The input image may be
+used as the template.
+.ih
+EXAMPLES
+1. Reaccumulate the first differences in the file "n4xj13jwq_fdiff.fits",
+storing the results in file "n4xj13jqd_reacc.fits". The original IMA file
+for this dataset, "n4xj13jwq_ima.fits", is used as the template, and the
+zero read SCI image extension from this file is used for the zero read of the
+output file.
+
+.nf
+ cl> sampcum n4xj13jwq_fdiff.fits n4xj13jwq_reacc.fits \
+ >>> n4xj13jwq_ima[sci,12] n4xj13jwq_ima.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: M. Dickinson, H. Bushouse, STScI
+.ih
+SEE ALSO
+sampdiff
+.endhelp
+

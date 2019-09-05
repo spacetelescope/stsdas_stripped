@@ -1,0 +1,4 @@
+input,f,a,,,,">input file name"
+sect,s,a,,,,">section number"
+guide,s,a,"FOC",,,">guide name for header"
+output,f,a,STDOUT,,,">output file"

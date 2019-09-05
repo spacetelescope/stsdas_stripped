@@ -1,0 +1,12 @@
+# mkapropos mkpkg file (Fri Mar 30 12:35:55 CST 1990)
+
+$checkout tools.a ../
+$update   tools.a
+$checkin  tools.a ../
+$exit
+
+tools.a:
+	t_mkapropos.x	"help.h" "helpdir.h" <error.h> <syserr.h>
+        helpdir.x       "help.h" "helpdir.h" <ctype.h> <error.h>
+	strext.x	<ctype.h>
+	;

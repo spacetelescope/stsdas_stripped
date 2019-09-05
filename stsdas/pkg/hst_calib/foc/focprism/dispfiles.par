@@ -1,0 +1,7 @@
+fuv96,s,h,"focprism$f96_fuv_disp.dat",,,"f/96 far UV dispersion file"
+nuv96,s,h,"focprism$f96_nuv_disp.dat",,,"f/96 near UV dispersion file"
+fuv48,s,h,"focprism$f48_fuv_disp.dat",,,"f/48 far UV dispersion file"
+nuv48,s,h,"focprism$f48_nuv_disp.dat",,,"f/48 near UV dispersion file"
+userprism,s,h,"",,,"user-specified dispersion file"
+Version,s,h,"16March1994",,,"date of installation"
+mode,s,h,"al"

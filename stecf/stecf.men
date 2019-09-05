@@ -1,0 +1,17 @@
+This is a collection of four packages developed by members of the Space
+Telescope European Coordinating Facility (ST-ECF) which closed on 
+31 December 2010. 
+
+ imres - tasks for photometric image restoration with unconstrained star 
+   positions, simulating images with ground-based seeing and making
+   apodizing mask images 
+   
+ impol - package for imaging linear polarization mapping for the 
+    polarimetry modes of HST instruments.  An overview and access to 
+    demos and help files is available http://www.eso.org/~jwalsh/softpol/
+    
+ specres - package for point source extraction and background decomposition 
+    of 2-D (longslit) spectra. An overview is provided 
+    http://www.eso.org/~jwalsh/specres/
+    
+ driztools - package of additional support tools for drizzling

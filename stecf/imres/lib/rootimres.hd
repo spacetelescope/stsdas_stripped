@@ -1,0 +1,7 @@
+# Root task entry for the IMRES package help tree.
+
+imres		men  = stecf$imres/imres.men,
+                hlp  = stecf$imres/imres.men,
+                sys  = stecf$imres/imres.hlp,
+                pkg  = stecf$imres/imres.hd,
+                src  = stecf$imres/imres.cl

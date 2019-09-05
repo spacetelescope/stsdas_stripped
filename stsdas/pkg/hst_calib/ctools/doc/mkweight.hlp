@@ -1,0 +1,115 @@
+.help mkweight Jul93 stsdas.hst_calib.ctools
+.ih
+NAME
+mkweight -- Make a simple weight file by marking regions.
+.ih
+USAGE
+mkweight input output
+.ih
+DESCRIPTION
+The 'mkweight' task  creates a simple, one dimensional, binary weighting file by
+allowing you 
+to graphically mark out regions to be set to zero weighting.  The task
+'specalign' uses this type of input to exclude regions.
+
+By default, all regions of the one dimensional data is given a weight
+of 1.  By using the cursor keys, you can mark regions or single
+points.  In the output, the marked regions and points will have a
+value of 0.
+
+In addition to all of the functions available with the normal "gcur" command,
+the following key commands are added to mark and delete regions:
+
+.ls ?
+Help:  Print the available cursor key commands.
+.le
+.ls a
+Apply to All:  Apply the regions and points marked in the currently
+displayed data to all the remaining input.
+.le
+.ls d
+Delete:  Delete the region or point the graphics cursor is in or near
+to.
+.le
+.ls q
+Quit:  Write the marked regions and points to the output file.  If
+there is more input data, display the next set.
+.le
+.ls r
+Mark Region:  The end point of the region is set to where the graphics
+cursor is currently located.  When executed the first time, "r" marks
+the first boundary of the region and the prompt "again:" appears in
+the status line.  When executed a second time, the second boundary of
+the region is set to where the graphics cursor is currently located,
+and a line representing the region is drawn on the graph.
+
+The graphics cursor can be at any location any time the "r" command is
+invoked.  However, if another key command is executed between two "r"
+commands, the first one is aborted and a new region is started.
+.le
+.ls s
+Mark Single Point:  Mark the point where the graphics cursor is
+located.  An "x" will appear to indicate that the point has been
+marked.
+.le
+.ih
+PARAMETERS
+.ls input [file name template]
+List of one dimensional data files for which the binary weighting will be
+determined.  The list is a comma-separated list of file names, or an
+"at"-file, a file name preceded by an "@" character where the named file
+contains a list of
+files names, one name per line.
+.le
+.ls output [file name template]
+List of output file names that will contain the weight data.  There
+must be the same number of output files as there are input files.
+Character replacement is allowed to create the output names.
+.le
+.ls (device = "stdgraph") [string]
+The name of the graphics device to perform the plotting and region
+marking on.
+.le
+.ls (marker = "cross") [string, Allowed values: point | fill | box |
+plus | cross | diamond | hline | vline | hebar | vebar | circle]
+
+The type of symbol to use when single points are marked with the "s"
+key command.
+.le
+.ls (msize = .01) [real, min= 0. max = 1.]
+Size of the marker used when single points are determined with the "s"
+command.  The units is in fractional size of the display.
+.le
+.ls (cursor = "") [*gcur]
+The input source for the graphics cursor.  By default, the display
+device's graphics cursor is the input.  This can also be a text file.
+.le
+.ih
+EXAMPLES
+1. Mark a region from pixel 100 to 350 and a point at pixel 475 of a
+512 long spectrum
+
+.nf
+        cl> mkweight spec.hhh weight.hhh
+        ... graph of the spectrum appears.
+        ... Graphics cursor is moved to pixel 100 and the "r" key is hit.
+        ... Cursor is moved to pixel 350, and the "r" key is hit
+            again.  A line from 100 to 350 is drawn to show the region
+            marked.
+        ... Cursor is moved to pixel 475 and the "s" key is hit.  A
+            cross appears at the marked position.
+        ... "q" key is hit to save the marked regions.
+.fi
+
+2. Mark regions in all the data files matching the template 'x0l0103*.c1h' and
+write the weight files to 'x0l0103*_wght.hhh'.
+
+.nf
+        cl> mkweight x0l0103*.c1h x0l0103*%%_wght%.hhh
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+cursors, specalign
+.endhelp

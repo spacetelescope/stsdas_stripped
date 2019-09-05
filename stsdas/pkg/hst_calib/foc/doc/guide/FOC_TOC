@@ -1,0 +1,95 @@
+            ######################################################
+            #                                                    #
+            #         FOC_GUIDE Table of Contents                #
+            #                                                    #
+            ######################################################
+
+            # ( * indicates that a section is not yet available) #
+
+0 FOC_GUIDE
+
+1   FOC_INSTRUMENT              General instrument information          *
+
+2   FOC_SIMULATOR               FOC Simulator                           *
+
+3   FOC_CALIBRATION             Calibration discussion
+
+4   FOC_GEOMETRY                Description of geometric calibration
+
+4.1     FOC_GEO                 Geometric calibration           (GEO)
+
+4.2     FOC_MOD                 Models for reseau fitting       (MOD)
+
+4.3     FOC_RES                 Approx reseau locations         (RES)
+
+4.4     FOC_APERTURES           FOC Apertures and their location        *
+
+5   FOC_PHOTOMETRY              Description of photometric calibration
+
+5.1     FOC_DARK                Detector dark count description         *
+
+5.1.1       FOC_BAC             Dark count calibration          (BAC)
+
+5.2     FOC_RELDE               Wavelength dependent flat field overview*
+
+5.2.1       FOC_UNI             Relative DE calibration         (UNI)
+
+5.3     FOC_FORMAT              Format dependent response description   *
+
+5.4     FOC_PATTERN             Pattern noise in images description     *
+
+5.5     FOC_ABSDE               Absolute sensitivity (DE) description   *
+
+5.5.1       FOC_ABS             Absolute DE calibration         (ABS)
+
+5.6     FOC_LINEARITY           Photometric nonlinearity description    
+
+5.6.1       FOC_ITF             ITF calibration                 (ITF)
+
+5.7     FOC_SPECTRO             FOC long slit spectrograph photometry   *
+
+5.7.1       FOC_SDE             Spectrograph calibration        (SDE)   *
+
+5.8     FOC_CROSSDISP           Spectrograph with cross disperser photom*
+
+5.9     FOC_OBJPRISM            Objective prism photometry              *
+
+5.10    FOC_POLARIZERS          FOC Polarizers                          *
+
+5.11    FOC_DATA_QUAL           Data quality flagging                   *
+
+5.11.1      FOC_QIN             Data quality images             (QIN)   *
+
+6   FOC_OPPAR                   FOC Operational parameters              *
+
+7   FOC_OPGUIDE                 Operators guide for RSDP related calibrations
+
+7.1     FOC_VERIFY              Verification of calibration parameters  *
+
+7.2     FOC_DELIVERY            Delivery of cal. parameters to RSDP     *
+
+7.3     FOC_REF_DATA            Reference data                          *
+
+8   FOC_USERCAL                 Calibrations done by user               *
+
+8.1     FOC_USER_GEO		User geometric calibration and correction
+
+9   FOC_CORRECTION              Image correction                        *
+
+9.1     FOC_RSDP_CORR           Image correction as done by RSDP        *
+
+9.2     FOC_USER_CORR           Image correction - non-RSDP type        *
+
+10  FOC_ANALYSIS                Data analysis                           *
+
+11  FOC_PACKAGES                FOC packages in IRAF
+
+11.1    FOC_GEOM                focgeom package
+
+11.2    FOC_PHOT                focphot package
+
+11.3    FOC_UTILITY             focutility package
+
+12  FOC_GLOSSARY		glossary of FOC terms
+
+13  REFERENCES                  Other documentation                     *

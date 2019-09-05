@@ -1,0 +1,20 @@
+$checkout stplot.a ../
+$update stplot.a
+$checkin stplot.a ../
+$exit
+
+stplot.a:
+	t_newcont.x	<config.h> <fset.h> <imhdr.h> <gset.h>\
+			<xwhen.h> newcont.h newcont_global.h
+	farb2d.x
+	getdata.x	<imhdr.h>
+	ncclgn.x
+	nccont.x	<ctotok.h> newcont.h
+	ncdrae.x	<gset.h> newcont.h
+	ncgetn.x	newcont.h
+	nclocx.x	<gset.h> newcont.h newcont_global.h
+        ncrain.x        <psiescape.h>
+	ncsetr.x	<gset.h>
+	ncsets.x	<gset.h> newcont.h
+	perim.x		<gset.h> <mach.h>
+	usrplt.x	newcont.h newcont_global.h

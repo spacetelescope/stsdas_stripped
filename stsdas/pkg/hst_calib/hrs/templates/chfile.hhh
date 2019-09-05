@@ -1,0 +1,54 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                  512 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    6 /                                                
+PSIZE   =                  256 /                                                
+PTYPE1  = 'DATAMIN '           /                                                
+PDTYPE1 = 'REAL*4  '           /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'DATAMAX '           /                                                
+PDTYPE2 = 'REAL*4  '           /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'CRPIX1  '           /                                                
+PDTYPE3 = 'REAL*4  '           /                                                
+PSIZE3  =                   32 /                                                
+PTYPE4  = 'CRVAL1  '           /                                                
+PDTYPE4 = 'REAL*8  '           /                                                
+PSIZE4  =                   64 /                                                
+PTYPE5  = 'CTYPE1  '           /                                                
+PDTYPE5 = 'CHARACTER*8'        /                                                
+PSIZE5  =                   64 /                                                
+PTYPE6  = 'CD1_1   '           /                                                
+PDTYPE6 = 'REAL*4  '           /                                                
+PSIZE6  =                   32 /                                                
+DATE-OBS= '          '
+RA      = '00:00:00'
+DEC     = '00:00:00'
+EPOCH   =                1990.
+UT      = '00:00:00'
+ST      = '00:00:00'
+ZT      =                   0.
+AIRMASS =                   1.
+EXPTIME =                   1.
+INSTRUME= 'IRAF/ARTDATA'
+W0      =                4000.                                                  
+WPC     =             7.827789                                                  
+CDELT1  =             7.827789                                                  
+DC-FLAG =                    0                                                  
+BEAM-NUM=                    1                                                  
+COMMENT   # Tue 16:58:24 29-Sep-92                                              
+COMMENT   begin	mk1dspec                                                        
+COMMENT   	ap             1                                                
+COMMENT   	rv             0.                                               
+COMMENT   	z              no                                               
+COMMENT   	wstart         4000.                                            
+COMMENT   	wend           8000.                                            
+COMMENT   	continuum      1.                                               
+COMMENT   	slope          1.                                               
+COMMENT   	temperature    0.                                               
+COMMENT   	fnu            no                                               
+END                                                                             

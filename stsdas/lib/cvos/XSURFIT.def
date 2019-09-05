@@ -1,0 +1,45 @@
+xsurfit
+
+# Library $iraf/math/surfit
+
+/h/# include <c_iraf.h>
+/h/
+
+/c/# include <xsurfit.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+iscoeff.x:procedure iscoeff (sf, coeff, ncoeff)
+iseval.x:real procedure iseval (sf, x, y)
+isfree.x:procedure isfree (sf)
+isinit.x:procedure isinit (sf, surf_type, xorder, yorder, xterms, ncols, nlines)
+islaccum.x:procedure islaccum (sf, cols, lineno, z, w, ncols, wtflag)
+islfit.x:procedure islfit (sf, cols, lineno, z, w, ncols, wtflag, ier)
+islrefit.x:procedure islrefit (sf, cols, lineno, z, w)
+islsolve.x:procedure islsolve (sf, lineno, ier)
+islzero.x:procedure islzero (sf, lineno)
+isreplace.x:procedure isreplace (sf, fit)
+isresolve.x:procedure isresolve (sf, lines, ier)
+issave.x:procedure issave (sf, fit)
+issolve.x:procedure issolve (sf, lines, nlines, ier)
+isvector.x:procedure isvector (sf, x, y, zfit, npts)
+iszero.x:procedure iszero (sf)
+sf_b1eval.x:procedure sf_b1leg (x, order, k1, k2, basis)
+sf_b1eval.x:procedure sf_b1cheb (x, order, k1, k2, basis)
+sf_b1eval.x:procedure sf_b1spline1 (x, npieces, k1, k2, basis, left)
+sf_b1eval.x:procedure sf_b1spline3 (x, npieces, k1, k2, basis, left)
+sf_beval.x:procedure sf_bcheb (x, npts, order, k1, k2, basis)
+sf_beval.x:procedure sf_bleg (x, npts, order, k1, k2, basis)
+sf_beval.x:procedure sf_bspline1 (x, npts, npieces, k1, k2, basis, left)
+sf_beval.x:procedure sf_bspline3 (x, npts, npieces, k1, k2, basis, left)
+sf_f1deval.x:procedure cv_evcheb (coeff, x, yfit, npts, order, k1, k2)
+sf_f1deval.x:procedure cv_evleg (coeff, x, yfit, npts, order, k1, k2)
+sf_f1deval.x:procedure cv_evspline1 (coeff, x, yfit, npts, npieces, k1, k2)
+sf_f1deval.x:procedure cv_evspline3 (coeff, x, yfit, npts, npieces, k1, k2)
+sf_feval.x:procedure sf_evcheb (coeff, x, y, zfit, npts, xterms, xorder, yorder, k1x, k2x, k1y, k2y)
+sf_feval.x:procedure sf_evleg (coeff, x, y, zfit, npts, xterms, xorder, yorder, k1x, k2x, k1y, k2y)
+sf_feval.x:procedure sf_evspline3 (coeff, x, y, zfit, npts, nxpieces, nypieces, k1x, k2x, k1y, k2y)
+sf_feval.x:procedure sf_evspline1 (coeff, x, y, zfit, npts, nxpieces, nypieces, k1x, k2x, k1y, k2y)
+sfchomat.x:procedure sfchofac (matrix, nbands, nrows, matfac, ier)
+sfchomat.x:procedure sfchoslv (matfac, nbands, nrows, vector, coeff)

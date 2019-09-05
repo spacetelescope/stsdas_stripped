@@ -1,0 +1,55 @@
+:
+#
+
+# make sure we are invoked correctly
+if [ "$0" != ./install_helper ]
+then
+	echo 'Read the instructions in Install.rst'
+	exit 1
+fi
+
+# make sure we have iraf available
+if [ "$iraf" = "" ]
+then
+	if [ -d /iraf/iraf/ ]
+	then
+		iraf=/iraf/iraf
+	else
+		echo 'The "iraf" environment variable is not set, and iraf is not in /iraf/iraf/'
+		echo 'You must set the iraf environment variable first.'
+		exit 1
+	fi
+fi
+
+# where are we now?
+here=`pwd`
+
+# customize the local extern.pkg fragment
+sed 's?ROOT?'$here'?' < release_tools/extern.pkg.proto > extern.pkg
+
+# get iraf.h for stsdas to use
+rm -f stsdas/iraf.h
+ln -s $iraf/unix/hlib/libc/iraf.h stsdas/
+
+# where is our localized extern.pkg fragment?
+extern_pkg=$here/extern.pkg
+
+# see if IRAF is using our localized extern.pkg ...
+	{
+	# ... no, tell the user how to fix it
+	echo ''
+	echo 'Edit the file'
+	echo '        '${iraf}unix/hlib/extern.pkg
+	echo ''
+	echo 'Copy/paste these lines just before where it says "Do not modify below this line"'
+	echo ''
+	if grep -q 'reset.*helpdb.*=.*"' ${iraf}unix/hlib/extern.pkg
+	then
+		:
+	else
+		echo 'reset helpdb = " "'
+	fi
+	cat extern.pkg
+	echo ''
+	} >&2
+

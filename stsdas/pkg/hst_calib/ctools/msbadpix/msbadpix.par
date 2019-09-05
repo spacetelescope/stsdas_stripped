@@ -1,0 +1,10 @@
+input,f,a,"",,,>Images template/list 
+output,f,a,"",,,>Output MASK image
+window,i,h,7,3,,>Window size where to compute local stats
+threshold,r,h,3.,0.,,>Threshold in sigma units
+badfrac,r,h,0.8,0.,1.,>Bad pixel detection fraction
+cleanfrac,r,h,0.,0.,1.,>Fraction of outliers to clean off from window
+kclip,r,h,4.,0.,,>Threshold for sigma-clip algorithm
+nclip,i,h,0,0,,>No. of iterations in sigma-clip algorithm
+verbose,b,h,yes,,,>Verbose ?
+version,s,h,"07Feb97",,,>Date of installation

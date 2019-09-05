@@ -1,0 +1,56 @@
+.help censor Sept2002 stsdas.analysis.statistics
+.ih
+NAME
+censor -- Information about the censoring indicator in Survival 
+Analysis.
+.ih
+USAGE
+help censor
+.ih
+DESCRIPTION
+Censoring can be categorized in three groups: detection, upper limit,
+and lower limit. In general, if the data point is detected, the
+indicator is zero; for an upper limit, the indicator will be less than
+zero; and for a lower limit, the indicator will be greater than zero.
+The following table gives possible values and their meaning:
+.nf
+
+   Indicator          Independent variable   Dependent variable
+      0                   detection              detection
+      1                   detection             lower limit
+     -1                   detection             upper limit
+      2                  lower limit             detection
+     -2                  upper limit             detection
+      3                  lower limit            lower limit
+     -3                  upper limit            upper limit
+      4                  upper limit            lower limit  
+     -4                  lower limit            upper limit
+
+
+.fi
+For the univariate problems, the indicators that you need are -1, 0, and 1.
+If you have more than one data column, you must assign indicators
+to each column. Mixing upper and lower limits is not allowed in
+any method (i.e., 'kmestimate' and 'twosampt'). 
+
+For the correlation and regression problems, the problem is a bit more
+complicated. The tasks 'coxhazard', 'emmethod', and 'buckleyjames' can take 
+censored points only in the dependent variable; the indicators that you can
+use are -1, 0, 1.  Although 'coxhazard' and 'buckleyjames' cannot treat
+data with mixed censoring, 'emmethod' can (e.g., you can have -1, 
+0, and 1 in the same data set).
+These methods all may have multiple independent variables.
+
+The 'bhkmethod' task (i.e., generalized Kendall's tau), generalized
+Spearman's rho, and 'schmittbin' can treat censoring in the
+independent variable.  The indicators you may use are -4, -3, -2, -1,
+0, 1, 2, 3, 4.  Although mixed censoring in one variable (e.g., lower
+and upper limits in the X variable) are not allowed, the cases with
+lower(or upper) limits in the X variable and upper (or lower) limits
+in the Y variable can be done.
+
+Note:  'emmethod' is supposed to be able to take confined data points,
+using a censor indicator of 5.
+Currently, however, this option does not work and should not be used.
+
+.endhelp

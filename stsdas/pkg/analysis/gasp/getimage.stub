@@ -1,0 +1,18 @@
+	*****************************************************************
+	|								|
+	| 		GETIMAGE EXECUTABLE NOT INSTALLED!		|
+	|								|
+	|  In order for the getimage task to work, you will need the    |
+	|  Guide Star Digitized Sky Survey on CD-ROM. The source for    |
+	|  xgtimage and other files required to run the task are on the |
+	|  CD-ROMs.  For more information on ordering the DSS, please   |
+	|  see the file gasp$README.DSSOrder. For information on        |
+	|  installing the Software, see gasp$README.DSSInstall.  Note   |
+	|  that after installing the software you will need to edit     |
+	|  gasp$gasp.cl in order to have the real task come up and not  |
+	|  this banner.							|
+	|  								|
+	|  Information about DSS can also be obtained by reading the    |
+	|  WWW home page:						| 
+	|	http://www-gsss.stsci.edu/DSS/dss_home.htm		|
+	*****************************************************************

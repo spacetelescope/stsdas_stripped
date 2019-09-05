@@ -1,0 +1,19 @@
+# Update the streakflat application code in the wfpc package library
+# Author: HSU, 25-MAY-1992
+
+$checkout w_calib.a ../
+$update   w_calib.a
+$checkin  w_calib.a ../
+$exit
+
+w_calib.a:
+	t_streakflat.x	streakflat.h
+	flat_in.x    	streakflat.h
+	flat_do.x	streakflat.h	<imhdr.h> <mach.h>	
+	flat_check.x	streakflat.h	<imhdr.h>	
+	flat_median.x	streakflat.h	
+	flat_smooth.x	streakflat.h	<math.h>
+	piksrt.x
+	streak_angle.x	streakflat.h	<math.h>
+	next_num.x	<ctype.h>
+	;

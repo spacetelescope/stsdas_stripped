@@ -1,0 +1,12 @@
+# Update the uchscale application code in the wfpc package library
+# Author: HSU, 03-Oct-1994
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_uchscale.x 	<mach.h>	<math.h>	"uchscale.h"
+	uchscale_in.x	
+	;

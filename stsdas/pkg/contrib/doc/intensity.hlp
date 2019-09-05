@@ -1,0 +1,334 @@
+.help intensity Apr91 stsdas.contrib.vla
+.ih
+NAME 
+intensity - Compute a plane of total intensity from an input cube; also
+compute mask and masked-image cubes, channel map after initial thresholding,
+and channel map after corrections.
+.ih
+USAGE
+intensity image mimage nthresh nrchan mask imask timap
+              (threshold) (noneg) (nmin) (logfile)
+.ih
+DESCRIPTION
+This script computes the zero moment of a three-dimensional
+data cube along the velocity axis, i.e., a two-dimensional map of the
+velocity-integrated total intensity.  Other output products include the
+mask cube and the map of the number of channels included in the
+computation at each (x,y) position.  These "channel maps" indicate at a
+glance how well-determined the other products are for a given profile.
+
+The three-dimensional mask cube is formed from one of the input
+data cubes, presumably a smoothed version of the high-resolution input
+data cube.  Points in this smoothed input data cube where the absolute
+value lies above the user-supplied threshold are set to value 1.0,
+those below are set to value 0.0.  The mask planes are then summed to
+produce a "channel map" indicating how many channels have survived the
+thresholding operation at every pixel.
+
+Corrections are applied to the output intensity products: an
+outlier correction to the mask, a correction for the minimum number of
+channels passed, and, if desired, a correction to the mask to pass only
+the positive intensities of the input image.
+
+The single outlier correction is performed on the mask whenever
+a profile has a single channel which survives but adjacent channels of
+the mask did not.  Channels may have been rejected for different
+reasons: they may have been rejected during thresholding or during the
+elimination of negative intensity values.
+
+For example, suppose a 10-point profile from the input image
+ looks like:
+ 
+.nf
+
+         IMAGE  [2.5,3.2,3.3,-2.9,0.9,-0.2,-2.0,0.6,2.7,2.2]
+.fi
+
+If 'noneg' is set to "no", and the threshold is 2.5, then the
+mask and masked intensity image profiles, respectively, are as follows:
+ 
+.nf
+         MASK   [1.,1.,1.,1.,0.,0.,0.,0.,1.,0.]
+         IMASK  [2.5,3.2,3.3,-2.9,0.0,0.0,0.0,0.0,2.7,0.0]
+.fi
+
+Note that this particular profile has one channel which is
+negative and large enough to survive thresholding.
+
+The same three profiles after the correction for single
+outliers will look like:
+ 
+.nf
+         IMAGE  [2.5,3.2,3.3,-2.9,0.9,-0.2,-2.0,0.6,2.7,2.2]
+         MASK   [1.,1.,1.,1.,0.,0.,0.,0.,0.,0.]
+         IMASK  [2.5,3.2,3.3,-2.9,0.0,0.0,0.0,0.0,0,0,0.0]
+.fi
+
+Note that the IMAGE profile will remain untouched.
+
+If 'noneg' had been set to "yes" instead, the three profiles
+after the  single outlier correction would instead look like:
+ 
+.nf
+         IMAGE  [2.5,3.2,3.3,-2.9,0.9,-0.2,-2.0,0.6,2.7,2.2]
+         MASK   [1.,1.,1.,0.,0.,0.,0.,0.,0.,0.]
+         IMASK  [2.5,3.2,3.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+.fi
+
+After all corrections are made to the mask, the final channel
+map is computed by counting the remaining channels in a profile.  The
+total intensity map is computed by summing up the intensities in those
+channels.
+.ih
+PARAMETERS
+.ls image [file name]
+Filename of the input data cube.
+.le
+.ls mimage [file name]
+Input cube which will be thresholded to make the mask.
+Typically this will be a smoother version of te input image.
+.le
+.ls nthresh [file name]
+Filename of the output 2-D channel map which, for every 
+profile, has the sum of the number of channels surviving the 
+thresholding operation when making the mask.
+.le
+.ls nrchan [file name]
+Filename of the output channel map which, for every 
+profile, is the sum of the number of channels surviving in  
+the final mask.
+.le
+.ls mask [file name]
+Output mask cube.  This is the final mask cube after
+all corrections are made.
+.le
+.ls imask [file name]
+Output masked intensity cube.  This is just the final mask
+cube multiplied by the input image cube.
+.le
+.ls timap [file name]
+Total intensity map.  This 2-D image is formed by summing
+the masked intensity cube values along each velocity profile.
+The result is multiplied by the channel width in km/sec.
+.le
+.ls (threshold = 1.0) [real]
+Real value (in the same units as the image intensities) which 
+will be used to threshold mimage to make the mask cube.
+.le
+.ls (noneg = no) [boolean]
+Include negative image intensities when computing intensity products?
+
+If 'noneg=yes', the mask will be modified so that negative image 
+intensities will not be included in further processing of the data.
+.le	
+.ls (nmin = 2) [integer]
+Minimum number of channels acceptable 
+for determining the velocity products, specifically the velocity
+dispersion.  
+
+Profiles with fewer surviving channels will 
+have mask values set to zero, and an 'nrchan' value of zero.
+Fewer channels would be expected to give a poor estimate of the
+dispersion.  Usually this value is determined by considering the
+velocity resolution of the receiver and the sampling in velocity.
+.le
+.ls (logfile = "") [file name]
+A filename for the output message file.  If the value is a 
+null string, printed output will appear on the screen.
+.le
+.ih
+NOTES
+.ls *
+To run this script, you should first load the following
+packages:
+.nf
+	images
+	noao.proto	
+	stsdas.toolbox.tools
+.fi
+.le
+.ls *
+You must specify full file names (i.e., including the extension).
+.le
+.ls * 
+To run the task in batch mode, you must specify all script parameters,
+especially the 'logfile' parameter.  Then the job can be
+executed in batch by typing after the ">cl" prompt:
+
+.nf
+	   intensity mode="h" & batch
+.fi
+
+.le
+.ls *
+Because this task will not overwrite existing files, you should
+either rename output files on successive runs, or delete the
+files between runs. Setting 'clobber=yes' will overwrite
+existing ASCII files.
+.le
+.ls *
+This task assumes that the header parameters NAXIS, and CDELT3 are
+present in the input data cube.  They may be put into the header 
+using the task 'hedit' if necessary.
+.le
+.ls *
+This task took about 25 minutes on an uninterrupted SparcStation 
+for a 256 x 256 x 31 input image cube.
+.ih
+EXAMPLE
+1. To compute the total intensity of the image image.hhh which is 
+a 12 arcsec per pixel image cube in coordinates of (RA,DEC,VEL)
+having intensity units of mJy/beam with a mask determined from 
+thresholding a 20 arcsec per pixel smoothed version of the image 
+at a level of 2.5 mJy/beam:
+
+.nf
+	cl> intensity image.hhh smoothim.hhh nthr.hhh nrch.hhh \
+	>>> mask.hhh imask.hhh toti.hhh thresh=2.5 
+.fi
+
+In this example, 'nmin' and 'noneg' were left at their default values
+of `2' and `no', respectively.  This means that negative intensity 
+values may be included in the sum for the total intensity 
+calculation.  Also, the profiles whose mask had less than three
+channels are set to zero total intensity, and the corresponding 
+mask values and nrchan map values are set to zero.
+
+
+.nf
+	     Flowchart for Intensity Products Calculations
+ 	     =============================================	
+
+1) Parameters to iraf tasks/scripts:  `parameter'
+2) 3D data cube: CUBE
+3) 2D data image: PLANE
+
+
+			      START
+
+	  MIMAGE CUBE		|
+	input image from       	|               `threshold'
+        which mask will		|		 value
+	be determined           |             /
+		      \         |            /
+                       \        |  	    /
+			\		   /
+                        do threshold operation
+				            \
+				| 	     \
+				|	      \
+				|	     MASK CUBE
+				|	       /
+				|	      /
+					     /
+			    compute # channels
+ 			 /  in the mask cube 
+			/
+		       /	|
+		      /		|
+        NTHRESH PLANE    	|
+    copy into NTMP plane	|
+				|
+
+			    exclude negative  ------- NO ---------------
+			    values ?				       |
+								       |
+	 IMAGE CUBE		|				       |
+	input image             |				       |
+	for final data          Y				       |
+	and velocity            E				       |
+	products                S				       |
+		    \		|				       |
+		     \		|				       |
+		      \						       |
+		        check for negative			       |
+		        values in IMAGE and			       |
+			calculate new mask		 	       |
+                      /                                                |
+		     /		|                                      |
+		    /	 	|                                      |
+	  MASK CUBE             |                                      |
+	   modified            	|                                      |
+		     \		|				       |
+		      \		|				       |
+		       \					       |
+		         compute # channels			       |
+ 			 in the current mask 			       |
+			       cube	   \			       |
+					    \ 	 	               |
+        			|	     \  rewrite		       |
+				|		NTMP PLANE	       |
+				|			               |
+				* --------------------------------------
+				|			
+				|			
+				|			
+				|			
+				|			
+        MASK CUBE 		|                     NTMP PLANE 
+	current version		|		    current version
+		    \		|		  /
+		     \		|	         /   
+		      \		|	        /   `nmin' value
+		       \	|              /  /
+			\		      /  /
+		       check for minimum number
+			    of channels
+	   	          /
+			 /	|
+		        /	|
+		       /	|
+	   MASK CUBE   	        |
+	further modified 	|
+		      \		|
+		       \	|
+			\	|
+			 \
+			    eliminate 
+			  single outliers
+					   \
+				|           \
+				|	     \
+				|	      \
+				|	        MASK CUBE
+	                        |             further modified
+				|		/
+				|	       /
+					      /
+			    compute # channels
+			    passed through all
+			    filters	      \
+					       \
+				|		\
+				|		 \
+				|		 NRCHAN PLANE
+				|
+				|	
+				|
+				|
+	MASK CUBE               |                IMAGE CUBE
+	current version		|	      input data cube
+		      \		|	      /
+		       \	|	     /
+		 	\		    /
+		 	  compute plane of
+			  total intensity
+					  \
+				|	   \
+				|	    \		
+				|	     \		
+				|	         IMAP PLANE
+				|            of total intensity
+				|
+				|
+				|
+
+			      FINISH
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+smooth, velocity
+.endhelp

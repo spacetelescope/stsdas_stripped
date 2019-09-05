@@ -1,0 +1,566 @@
+.help drizzle Oct04 stsdas.analysis.dither
+.ih
+NAME
+drizzle v3.4 -- Linear Image Reconstruction by "drizzling"
+.ih
+USAGE
+drizzle data outdata 
+.ih
+PARAMETERS
+.ls data = "" [file name]
+The name of the input image file which is to be "drizzled".
+.le
+.ls outdata = "" [file name]
+The name for the output data image onto which the data will be "drizzled".
+If this image already exists the data will be drizzled on top of it, 
+otherwise it will be created. 
+.le
+.ls (outweig = "") [file name]
+Output weighting image. If this is null then no output weighting image
+will be created. If outdata is a file which exists and is to be updated
+then outweig must also exist and be specified.
+.le
+.ls (outcont = "") [file name]
+Output context image. If this is null then no output context image
+will be created. Context images are new in V2.6 of Drizzle and are
+described in more detail below. 
+.le
+.ls (in_mask = "") [file name]
+The optional weight image for the input data.   This image will be multiplied
+by the wt_scl parameter before use.  Weights should be positive
+real numbers and are used in the optimal linear combination with other
+images. Bad data points may be flagged here using zeroes and hence given
+zero weight when combined with other images. If this array is not present  
+all values in in_mask are set equal to 1.0.
+The normal mode of use is to set all values in this array to either 1. or
+0. and then scale the final weight using the wt_scl parameter.
+.le
+.ls (wt_scl = "exptime") [real]
+Weighting factor for input image. If wt_scl=exptime then the scaling 
+value will be set equal to the exposure time found in the image header. 
+This is the default behavior and is recommended. It is also possible to give
+wt_scl=expsq for weighting by the square of exposure time. The latter is
+optimal for read-noise dominated images.
+.le
+.ls (outnx = 800) [integer]
+The size in X of the output pixel grid if there is no old data array, i.e., if
+one is drizzling onto an empty array. If there is an old data array this
+number is ignored.
+.le
+.ls (outny = 800) [integer]
+The size in Y of the output pixel grid if there is no old data array, ie, if
+one is drizzling onto an empty array. If there is an old data array this
+number is ignored.
+.le
+.ls (kernel = "square") [string]
+The form of the kernel function used to distribute flux onto the output
+image. 
+The options are currently square|point|gaussian|turbo|tophat|lanczos2|lanczos3. Square is the default and corresponds
+to the behavior of earlier versions of the code. More information about
+the different kernels is given below.
+.le
+.ls (pixfrac = "1.0") [real]
+A real number between 0 and 1 giving the
+size of the footprint, or "dropsize", of a pixel in units of the
+input pixel size.   If pixfrac is set
+to less than 0.01 the kernel is changed to "point" for processing. 
+In the case of kernels which are not "square" this parameter is used
+to define the FWHM of the kernel function in units of the input pixels.
+For the "point" kernel this value is meaningless and is ignored.
+.le
+.ls (scale = 1.0) [real]
+The size of the output pixels relative to the input pixels.  Thus, setting
+scale=0.5 puts the output image on a grid with pixels half the (linear) size
+of the input pixels.
+.le
+.ls (coeffs = "") [file name]
+The name of a text file containing the coefficients for the geometrical
+transformation to be applied.   
+
+The transformations derived by John Trauger for removal of geometric 
+distortion from the WFPC2 camera on HST as well as suitable
+files for HST/NICMOS and STIS are supplied in the standard distribution 
+and will be installed in the directory
+drizzle$coeffs/ by default. The files are named pc1-trauger, wf2-trauger
+etc for WFPC2, nic-1, nic-2 and nic-3 for NICMOS and stis-ccd, stis-nuv-mama
+and stis-fuv-mama for STIS.
+
+It should be noted that the nic-3 file has been derived from data covering the
+same time periods as the nic-1 and nic-2 files, ie times during which the NIC3
+camera was mostly out of focus. Users who have NIC3 data from one of the NICMOS
+refocus campaigns can access a distortion file appropriate for in-focus NICMOS3
+data, by specifying it explicitly as: coeffs=drizzle$coeffs/nic-3-infocus
+
+These geometric transformations are always applied
+before the shifts, rotations and scale changes specified by other parameters.
+
+If coeffs=header is specified the header of the image will be searched for the
+keywords "INSTRUME", "DETECTOR" and possibly "PHOTPLAM". The first will be 
+used to find out which instrument is in use, at present this is either
+WFPC2, NICMOS or STIS. The detector keyword is used to establish the chip of 
+WFPC (1=PC,2-4 are WFC) or which of the NICMOS or STIS cameras is in use.
+For the WFPC2 case the PHOTPLAM keyword is used to find the pivotal
+wavelength. These will then be used to select the appropriate file in the
+drizzle$coeffs directory and the appropriate wavelength. Note that this only
+works for the three instruments mentioned. The value of wavelength found 
+this way (for WFPC2) overrides that set in the "lambda" parameter.
+.le
+.ls (lambda = 555.0) [real]
+The wavelength (in nm) associated with the image. This is used for the
+"Trauger" style coefficients for which the distortion is a weak function of 
+wavelength. It is only relevant for WFPC2 and is otherwise ignored.
+
+If the coeffs=header option is in use and the instrument is WFPC2 this 
+value for the wavelength is ignored and the one found in the header used 
+instead.
+.le
+.ls (xsh = 0.0) [real]
+A shift in X to be applied to the input image after the geometric transform.
+This shift may be defined either in the input or output frame, according to
+the value of the "shft_fr" parameter. Shifts are always along the axes of 
+the image. Positive values shift the image to the right. Units are 
+determined by the "shft_un" parameter. See notes below for a definition of the
+center of rotation.
+.le
+.ls (ysh = 0.0) [real]
+A shift in Y to be applied to the input image after the geometric transform.
+This shift may be defined either in the input or output frame, according to
+the value of the "shft_fr" parameter. Shifts are always along the axes of 
+the image. Positive values shift the image upwards. Units are 
+determined by the "shft_un" parameter. See notes below for a definition of the
+center of rotation.
+.le
+.ls (rot = 0.0) [real]
+The rotation in degrees anti-clockwise to be applied to the input image after
+the non-linear part of the transform has been performed.  Whether or not
+the rotation is applied after or before the shifts is determined by
+the value of the "shft_fr" parameter.  See notes below for a definition 
+of the center of rotation.
+.le
+.ls (sh_units = "input") [string]
+Whether the shifts are specified in units of "input" or "output" pixels.
+.le
+.ls (shft_fr = "input") [string]
+The frame in which the shifts are applied, or to put it another way,
+whether to apply the rotation before the shifts. If "output" the input
+image center is mapped to the center of the output grid, rotated about
+that center and then shifted along the grid of the output image. If "input" 
+then the input image center is mapped to the center of the output 
+image, shifted along the grid of the output image and then rotated about the 
+center of the output image. See notes below for a definition of the center of 
+rotation.
+.le
+.ls (xgeoim = "") [file name]
+The name of an additional distortion correction image, in the X-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the X direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (ygeoim = "") [file name]
+The name of an additional distortion correction image, in the Y-direction.
+This is a real array, the same size as the input image, which represents
+an additional shift in the Y direction which is applied after the polynomial
+distortion coefficients but before the linear transformation.
+.le
+.ls (align = "center") [string]
+Whether the reference point used in transforming the input image
+coordinates to the output ones is aligned on the corner or center of
+a pixel. If the task is being used to mimic shift-and-add this should
+be set to "corner" otherwise, and particularly when performing interlacing,
+it should be set to "center". More details of the definition of the
+image centers are given below.
+.le
+.ls (dr2gpar = "") [pset]
+This is a new feature in V2.6. A pset with this name is used to define
+optional, additional "secondary" geometrical parameters within Drizzle.
+More details about this feature are given below.
+.le
+.ls (expkey = "exptime") [string]
+The keyword in the header which specifies the exposure time (in seconds)
+of the image. The default is suitable for HST images. The value of the
+exposure time will be used for the image weighting if wt_scl=exptime.
+.le
+.ls (in_un = "counts|cps") [string]
+Whether the units of the input image are counts or counts-per-second.
+The choice of this parameter should match the units of the input data
+file.  In the case of HST, WFPC2 and STIS images are in counts, while
+NICMOS images are in cps. Note that in the case of mosaicing it is most
+efficient to work in units of cps for input and output.
+.le
+.ls (out_un = "counts|cps") [string]
+Whether the units of the output image are counts or counts-per-second.
+The user may set this according to preference, without regard to the
+nature of the input image. Note that in the case of mosaicing it is most
+efficient to work in units of cps for input and output.
+.le
+.ls (fillval = "INDEF") [string]
+This value is assigned to points in the output image which either have
+a weight of zero or which have remained "dry" during the drizzling process.
+If fillval="INDEF", and the weight in both the input and output images
+at a given point are zero, that point will be set to the value it would
+have had had the input had a non-zero weight.   
+.ih
+DESCRIPTION
+This task is an implementation of the image combination method known
+formally as variable-pixel linear reconstruction and informally as "drizzling".
+Users are referred to one of the references given below for a detailed
+description of the method and its properties.
+
+Drizzling takes the input pixel grid and associates with each pixel a 
+kernel, typically a square whose size can vary between that of the 
+original input pixel (pixfrac = 1.) down to a point (pixfrac=0). 
+The form of the kernel is determined by the "kernel" parameter.
+The default behavior is to use a square.  With uniform, equal 
+weight images pixfrac=1 is equivalent to "shift-and-add".  
+If input images are shifted so that,
+with a very small pixfrac, only one input pixel is drizzled onto an output
+pixel, the method is  equivalent to interlacing. This can also be
+very efficiently done using "kernel=point".  
+
+Drizzle has a rather daunting number of parameters to allow it
+to handle many different cases. However, the majority of applications
+can be handled by using the default values and it is recommended
+that the parameters "outcont", "kernel", "dr2gpar", "wt_scl",
+"shft_un", "shft_fr", "align","in_un" and "out_un" should only be changed 
+from the defaults after 
+carefully reading the notes about then in this help file and considering the
+consequences.
+
+For many applications it is more convenient to drizzle images using
+higher level scripts, such as PyDrizzle and MultiDrizzle rather than
+using drizzle itself.
+
+The input image may be shifted and rotated with respect to the
+output image, and a geometric transform can be applied to the
+input images before combination.  In this version, the geometric
+transforms appropriate for removing the geometric distortion
+of the HST WFPC2, NICMOS and STIS (imaging modes) cameras are 
+implemented. The "coeffs=header" option
+allows a convenient way of selecting the correct geometric transformation
+for these instruments based on header keywords.
+In the case of ACS a suitable coefficients file is normally created
+by PyDrizzle and supplied directly to drizzle.
+
+It is important to understand and define the "center" of the image. 
+This is controlled by the value of the parameter "align". If "align" is
+"center" then the center is defined as the point (real(nx/2)+1.0,
+real(ny/2)+1.0) - ie, (401.0,401.0) for a normal WFPC2 frame when the
+standard IRAF convention is used (center of bottom left-hand pixel at 1.0,1.0).
+If "align" is "corner" then the center is defined as the point 
+(real(nx/2)+0.5, real(ny/2)+0.5) - ie, (400.5,400.5) for a normal WFPC2 frame.
+The center of the input image defined in this way is mapped onto the
+center of the output. Note that the division operations (nx/2 etc) are done
+in integer arithmetic.
+
+Each input image can have associated with it a weight image.   An output
+weight image is also created but is saved only at the request of the user.
+Multiple images are combined successively, with each image after the
+first drizzled onto the output of the previous run of drizzle.   
+If multiple images are to be drizzled (which is the usual case), the
+output weights of the intermediate drizzle operations must be saved.
+
+The input weight images (in_mask)
+should contain only non-negative real numbers.
+The input weight image is multiplied by the parameter wt_scl before
+being used.  This allows the user to set the input weight image to
+a pixel mask (good=1; bad=0) and then determining the final weight
+by supplying a scale factor. Note that this weight image is NOT the
+same as a data quality image in which zero normally means good and
+non-zero values indicate various kinds of nasty failures of a given
+pixel. A data quality file may be converted into a mask suitable for
+drizzle using a command such as:
+.nf
+imcalc dq-image mask-image "if im1 .ne. 0.0 then 0.0 else 1.0"
+.fi
+More complex expressions can be used to isolate specific data quality
+flags.
+
+   If the image header contains an
+exposure time keyword, the user may set wt_scl=exptime (the user
+must then also supply drizzle with the appropriate keyword).  This
+weighting is optimal when errors are Poisson (shot noise) and
+is recommended. Alternatively it is possible to set wt_scl=expsq so that
+the weighting is set to the square of the exposure time. This is
+appropriate for read-noise limited data.
+
+When performing photometry on the final output image from drizzling one
+should, in theory, weight the image pixels by the values in the
+weight image.  However, few photometry packages make such weighting
+a simple matter.  One can largely avoid the need for such weighting,
+by choosing drizzle parameters (in particular pixfrac and scale) such
+that the standard deviation of the weight image is not a large fraction
+of the final output weight.  A rule of thumb is that one should produce
+an output weight image whose standard deviation is less than thirty percent of
+the average weight value.  If this rule is followed, then use of 
+the weight image in photometry adds little to the final signal-to-noise.
+
+The drizzling method only works on images which have been scaled to 
+counts per unit time.  The scaling is done internally if the input is 
+not in units of counts-per-second (specified by the "in_un" parameter) 
+making use of the exposure time in the image header.  The output image 
+can be either supplied in units of counts or counts-per-second according
+to the value of the "out_un" parameter. In the former case the output
+is the weighted sum of the inputs and in the latter it is the weighted
+average. The output image header exposure
+time keyword is updated to the sum of the input exposure times.
+After allowing for re-scaling between counts and cps, Drizzling preserves 
+total counts, not counts per pixel.   Therefore, if scale != 1, then
+the counts per pixel will be reduced by the ratio of the areas of
+the pixels.  
+
+All the parameters used in the processing are appended to the output image 
+header each time a drizzling operation is performed. The world coordinate 
+system is also modified to reflect the shifts,
+scale changes and rotations applied. This is done when the output file is
+created, subsequent drizzle runs "on top" of the same file will not modify the 
+WCS items in the header further.
+
+If the output image exists the parameters used for the previous drizzle
+are read and compared to the current ones. The user is alerted to
+possibly incompatible combinations. A total of 999 images may be drizzled
+onto the same output image without causing confusion of header information.
+
+If the input image is defined as an image section the WCS information
+in the outputs may be wrong as well as the geometrical correction incorrectly
+applied. 
+
+The drizzle task is a collaborative effort between Andy Fruchter and
+Richard Hook.  The task was written by Richard Hook (ST-ECF, rhook@eso.org). 
+Andy Fruchter (STScI, fruchter@stsci.edu) 
+thought up most of the ideas used. For more information see:
+.nf
+
+http://www.stsci.edu/~fruchter/dither/drizzle.html
+
+or one of the following references, the last of these should be
+given when citing the method in a publication which makes
+use of it:
+
+Fruchter, A.S. & Hook, R.N., 1997, "A novel image reconstruction method
+applied to deep Hubble Space Telescope Images", Invited paper, in
+Applications of Digital Image Processing XX, ed. A.  Tescher,
+Proc. S.P.I.E. vol. 3164, 120
+
+Hook, R.N., Fruchter, A.S., 1997 "Variable Pixel Linear Reconstruction",
+in Proceedings of the 6th annual conference on Astronomical Software
+and Systems (ADASS 96), Charlottesville, VA., 147
+
+Fruchter, A.S., Hook, R.N., Busko, I.C. & Mutchler, M., 1998, "A
+Package for the Reduction of Dithered Undersampled Images",
+in Proceedings of 1997 HST Calibration Workshop, STScI, S. Casertano, et al,
+eds., 518
+
+A.S. Fruchter & R. N. Hook, 2002, "Drizzle: A Method for the Linear 
+Reconstruction of Undersampled Images", PASP, 114, 144
+
+.fi
+.ih
+MOSAICING
+Drizzle includes facilities for
+preparing mosaics where the output image is much larger than the input.
+The task allocates memory, and accesses the image on disk, for
+the appropriate subset of the output, not the whole image. As a result it is 
+possible to use Drizzle to create large output mosaic images on a typical 
+workstation. It should be noted that it is important that the output images 
+should be in units of "cps" in these cases to avoid the need for rescaling 
+the entire image to the new output exposure time. The exposure time in the 
+header of the output will be the sum of the exposure times of the input 
+images, as before, although this will of course not be the effective exposure 
+time of a pixel in the output in the case of a mosaic.
+.ih
+CONTEXT IMAGES
+Drizzle also includes the capability to produce
+so-called "context" images as an optional data product. Context images
+encode information about which input image contributes to a specific
+output pixel. This is done using a simple bitmask where "bit set" means
+that that image, in the order they were combined, contributed with non-
+zero weight to that output pixel. The context image starts as a 32bit
+integer but is extended as a cube with additional 32 bit deep planes as
+required. The values for each pixel rely on signed 32-bit integers defined
+by Fortran.  This results in the pixel value for the first 31 input images 
+being set to 2**(n-1), yet due to the signed nature of the Fortran integer,
+the 32'nd image will be given a value of -2**31.   
+
+Context images are intended to allow the reconstruction of information
+about the input images which contributed to a particular output pixel.
+For many purposes they will not be needed.
+.ih
+KERNELS
+Drizzle includes has a parameter
+"kernel" which determines the form of the kernel function which
+distributes weight in the output. The original classical drizzling
+corresponds to "kernel=square". Currently available additional
+options for the value of "kernel" are:
+.nf
+
+   "point"      the kernel is a point so each input pixel
+                can only contribute to the single pixel which is
+                closest to the output position. It is equivalent
+                to the limit pixfrac -> 0. It is very fast.
+
+   "gaussian"   the kernel is a circular gaussian with FWHM equal
+                to the value of pixfrac, measured in input pixels.
+
+   "turbo"      this is similar to kernel="square" but the box is
+                always the same shape and size on the output grid and
+                always aligned with the X and Y axes. This results
+                in a significant speed increase in some cases.
+
+   "tophat"     the kernel is a circular "top hat" shape of width
+                pixfrac. In effect only output pixels within pixfrac/2
+                of the output position are affected.
+
+   "lanczos2"   a Lanczos style kernel extending 2 pixels from the center.
+                The Lanczos kernel is a damped, bounded form of the "sinc"
+                interpolator and is very effective for resampling single
+                images when scale=pixfrac=1. It leads to less resolution
+                loss than the other kernels, and also less correlated noise
+                in outputs. It is however much slower. It should never be
+                used for pixfrac != 1.0 and is not recommended for scale != 1.0.
+
+   "lanczos3"   a Lanczos style kernel extending 3 pixels from the center.
+                This is the recommended form of the Lanczos.
+
+It should be noted that none of these new kernels have been extensively
+tested and they should be used with care. If in doubt stick with the
+default.
+.fi
+
+.ih
+SECONDARY GEOMETRIC PARAMETERS
+When combining dithered images one normally begins by measuring the offsets
+between all the images in a set so that one can combine them. However, quite
+often one then needs to apply a transformation to the result - for example
+a small "tweak" in X,Y or a large rotation to put north at the top. It is
+very tricky to combine these two operations by directly modifying the 
+drizzle input parameters, particularly if rotations are present. To ease
+these operations the secondary geometric parameter pset has been introduced
+in Drizzle V2.6. It is called "dr2gpar" (DRizzle 2ndary Geometrical PARameters)
+and may be set either using "epar dr2gpar" or via the ":e" command from
+the dr2gpar line whilst in "epar drizzle".
+.nf
+
+The parameters and their default values are:
+
+dr2gpar.xscale = 1.
+dr2gpar.yscale = 1.
+dr2gpar.xsh = 0.
+dr2gpar.ysh = 0.
+dr2gpar.rot = 0.
+dr2gpar.shft_fr = "output"
+
+.fi
+The parameters are in two groups: xscale/yscale and the rest. The scaling
+parameters are applied on the original pixel grid, before distortion 
+correction or the primary linear geometrical transformations.
+This is really a "tweak" for rare occasions and should not normally be used.
+
+The four remaining parameters define a shift and rotation which is applied
+after all other geometrical transformations. They are defined in the same
+was as the primary geometrical parameters of the same name.
+
+If these parameters are set to anything other than the defaults Drizzle
+will write out a warning message to prevent them being forgotten about.
+.ih
+EXAMPLES
+.nf
+
+First example:
+
+A typical sequence of drizzles for combining a set of dithered
+WFPC images would start as:
+
+1. Drizzle the first input image using the standard "Trauger" 
+   transformation for a WF2 image.  Were the image from one of the
+   other cameras, wf1, wf3 or pc1 would be substituted for wf2 below.
+
+cl> drizzle image[2] wf2-corr outweig="wf2-corrw" 
+    coeffs="dither$wf2-trauger" in_mask="mask[2]" lambda=606  
+    pixfrac=0.65 scale=0.5 outnx=1800 outny=1800
+
+The image "image[2]" will be weighted using the image "mask[2]".  There 
+is no extant data or weighting image.  The result will be put into the 
+image "wf2-corr" and the corresponding output weighting image will be 
+written to "wf2-corrw".  The wf2-trauger coefficient set will be used and 
+is assumed to be in the "dither" directory, for a wavelength of 606nm.
+The image will be drizzled onto an image with a pixel grid twice as fine
+as the input image.  The output image has been made slightly larger than
+twice the input image to allow shifted images to be placed on the output
+without truncation.  A pixfrac=0.65 gives nearly all the resolution gain
+of a pixfrac of 0 yet fills in the image nicely, especially when one has
+only a handful of images.
+
+2. Drizzle another, shifted image onto the result of the first:
+
+cl> drizzle image2[2] wf2-corr outweig="wf2-corrw" 
+    coeffs="dither$wf2-trauger" in_mask="mask2[2]" lambda=606 xsh=17.3 
+    ysh=-10.3 pixfrac=0.65 scale=0.5 
+
+In this case the second image will be drizzled onto the result of the first
+after being shifted by 17.3 and -10.3 pixels in X and Y respectively.
+
+Both of the above examples could have been simplified by specifying
+coeffs="header" which automatically selects the correct wavelength and
+coefficients file name for standard WFPC data.
+
+Second example:
+
+In another case a user has observed using a two-point dither along a
+diagonal line.  The points were offset by 2.5 pixels in x and y.  The
+user wishes to interlace the data on a new grid with pixel size root two
+of the original pixel size and rotated by 45 degrees.  In the new coordinate 
+system the shift is aligned with the y axis and has a size of 5 pixels. 
+The offset is small enough that geometric distortion is not a concern.  
+
+drizzle image1[2] wf2-dr outweig=wf2-drc in_mask=im1_mask rot=45 
+        scale=0.7071
+
+drizzle image2[2] wf2-dr outweig=wf2-drc in_mask=im2_mask rot=45 shft_fr=input
+        scale=0.7071 pixfrac=0.6 xsh=2.5 ysh=2.5 shft_un=input 
+
+Note that the shft_fr=input has been selected so that the shifts are
+applied in the more natural input coordinate system before the images
+are rotated by 45 degrees.  A pixfrac of 0.6 has been chosen so that a drizzled 
+pixel slightly affects the value in neighboring pixels (remember that 
+the input pixels are now rotated by 45 degrees w.r.t. the output pixels).  
+As a result, a pixel whose primary input has been masked out will be 
+given a value equal to the average of the adjacent good pixels.
+.fi
+
+.ih
+CITATION
+We request that authors using Drizzle cite it in resulting
+publications. The following citation is strongly recommended:
+
+Fruchter A.S. & Hook R.N. 2002, PASP, 114, 144
+
+.ih
+TIMINGS
+A single 4096x2048 ACS chip can be drizzled onto a 4500x4500 output,
+using the scale=pixfrac=1.0 with the "square" kernel and geometric distortion 
+correction in about 90s on a SUN Blade 1000, 750MHz, machine. The 
+"lanczos3" kernel is significantly slower and the "turbo" and "point" 
+kernels much faster, although the latter is not appropriate in most cases. 
+About 90Mbytes of memory is used for this test.
+.ih
+BUGS
+.nf
+1. WCS implementation is not comprehensive and will not work
+   correctly on image sections. 
+
+2. The method of storing the coefficients is not compatible with other
+   IRAF tasks such as geomap/geotran.
+
+3. The geometrical distortion correction may be incorrectly applied
+   if the input image is an image section.
+
+4. Grouped data must be handled image by image.
+.fi
+.ih
+SEE ALSO
+PyDrizzle and MultiDrizzle provide convenient higher-level interfaces
+to Drizzle and are strongly recommended.
+
+The stsdas.dither package contains many additional support tasks for the
+combination of dithered HST imaging data.
+.endhelp

@@ -1,0 +1,84 @@
+.help buckleyjames Nov92 stsdas.analysis.statistics
+.ih
+NAME
+buckleyjames -- Compute linear regression based on Kaplan-Meier residuals
+.ih
+USAGE
+buckleyjames input
+.ih
+DESCRIPTION
+The 'buckleyjames' task calculates a regression with Kaplan-Meier 
+residuals. It can treat several independent variables if the 
+dependent variable contains only one kind of censoring (i.e., upper 
+or lower limits).  The task requires only that the censoring 
+distribution about the fitted line is random. Of the three linear 
+regression methods available in this package, `buckleyjames' is 
+probably the most reliable.
+
+If the iterations reach their limit (the default is 50), there are 
+three possibilities: 1) The computation was done exactly at the 
+limit; 2) The convergence has not been reached; or 3) The results 
+are trapped in an oscillation.  In the second case, you should 
+increase the iteration limit and compute the results again.  If the 
+results are the same, then you have an oscillation.  The result 
+shown is the average of the last values and, because the difference 
+between the values is much smaller than the errors, you can use it 
+as the final estimate.
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files.  Following each file 
+name is a list of column names in brackets. These column names 
+specify which columns in the file contain the information used by 
+this task. The brackets MUST contain at least three names in the
+following format: [censor_indicator, independent_vars, 
+dependent_var].  If there is more than one independent variable, 
+the column names all follow the censor indicator. The censor 
+indicator specifies the censorship of the data point.  The 
+different kinds of censorship are explained in the `censor' help 
+file.  If the input file is an STSDAS table, the names in brackets 
+are the table column names.  If the input file is a text file, the 
+names in brackets are the column numbers.  A title string will be 
+printed if the input file is a table containing the header 
+parameter "TITLE".
+.le
+.ls (tolerance = 1.0000000000000E-5) [real, min=0.]
+Tolerance for regression fit.  If the sum of the square of the 
+difference between the coefficients of two successive iterations is 
+less than this value, the iteration stops. 
+.le
+.ls (niter = 50) [integer, min=1]
+Maximum number of iterations.  The computation stops when the 
+maximum number of iterations is performed even if convergence has 
+not been achieved.
+.le
+.ls (verbose = no) [boolean]
+Provide detailed output?  The detailed output includes the number 
+of data points and the number of censored points and type of 
+censorship.
+.le
+.ih
+EXAMPLES
+1. Apply `buckleyjames' to the data in the table "kriss.tab", using 
+the columns "Censor" for the censoring indicator, "LogL1mu" for the 
+first independent variable column, "LogL2500A" for the second 
+independent variable column, and "LogL2keV" for the dependent 
+variable column.  Then use the file "iraslum.dat" (text file), 
+columns 1, 2, and 3 (censor, independent, dependent).  Several 
+files can be processed sequentially.  The following example will 
+compute the Buckley-James linear regression fit for the two files 
+indicated:
+
+.nf
+cl> buckleyjames kriss.tab[Censor,LogL1mu,LogL2500A,LogL2keV], \
+>>> iraslum.dat[1,2,3]
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the `statistics' package.
+.endhelp

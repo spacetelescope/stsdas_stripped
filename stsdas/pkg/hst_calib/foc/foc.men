@@ -1,0 +1,8 @@
+Menu for the package 'stsdas.hst_calib.foc':
+
+         calfoc - Pipeline calibration code for FOC data.
+       focprism - FOC prism package.
+        newgeom - Geometrically correct an image.
+
+For more information about the FOC calibration process, type "help 
+foc opt=sys" or "help calfoc".

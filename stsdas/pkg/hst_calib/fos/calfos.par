@@ -1,0 +1,4 @@
+input,s,a," ",,,">Rootname of the FOS observation"
+output,s,a," ",,,">Rootname of the output files"
+Version,s,h,"3.7,Mar2002",,,"Date of installation"
+mode,s,h,a

@@ -1,0 +1,44 @@
+#################################################################################
+#										#
+#   Special keywords recognized:						#
+#	mkpkg debug		update object library, link w/debug options	#
+#	mkpkg linkonly		skip object library updates and just link	#
+#	mkpkg relink		update object library and link			#
+#										#
+#	Development version:							#
+
+$call	relink
+$exit
+
+update: 
+	$call	relink
+	$call	install
+	;
+
+debug:
+	$set XFLAGS = "$(XFLAGS) -fgq"
+	$set LFLAGS = "$(LFLAGS) -xz"
+	$call relink
+        ;
+
+relink:
+	$update	sharp.a
+	$call linkonly
+	;
+
+install:
+	$move xx_sharp.e stsdasbin$x_sharp.e
+	;
+
+sharp.a:
+	s_section.x	<ctype.h>
+	s_rtparse.x	<imio.h>
+	t_sharp.x	<imhdr.h> 
+	;
+
+linkonly:
+	$omake	x_sharp.x
+	$link	x_sharp.o sharp.a -o xx_sharp.e
+	;
+
+$exit

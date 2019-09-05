@@ -1,0 +1,24 @@
+# ACS SBC (MAMA) imaging mode
+dqicorr,  s,h, " ", "| |perform|omit|complete|",,"initialize data quality?"
+glincorr, s,h, " ", "| |perform|omit|complete|",,"correct global nonlinearity?"
+lflgcorr, s,h, " ", "| |perform|omit|complete|",,"flag nonlinearity?"
+darkcorr, s,h, " ", "| |perform|omit|complete|",,"dark correction?"
+flatcorr, s,h, " ", "| |perform|omit|complete|",,"flat field correction?"
+photcorr, s,h, " ", "| |perform|omit|complete|",,"fill photometry keywords?"
+rptcorr,  s,h, " ", "| |perform|omit|complete|",,"add individual repeat obs?"
+dithcorr,  s,h, " ", "| |perform|omit|complete|",,"rectify/dither-combine 2-D image?"
+
+bpixtab,  s,h, " ", "", ,"bad pixel table"
+mlintab,  s,h, " ", "", ,"MAMA linearity correction table"
+darkfile, s,h, " ", "", ,"dark reference file"
+pfltfile, s,h, " ", "", ,"flat field reference file"
+dfltfile, s,h, " ", "", ,"delta flat reference file"
+lfltfile, s,h, " ", "", ,"low order flat reference file"
+idctab,   s,h, " ", "", ,"image distortion correction table"
+graphtab, s,h, " ", "", ,"HST graph table"
+comptab,  s,h, " ", "", ,"HST components table"
+
+instrument,s,h,"acs","|acs",,"Instrument represented by this pset"
+detector,s,h,"sbc","|sbc",,"Detector represented by this pset"
+
+Version,s,h,"16Apr2002",,,"Date of Installation"

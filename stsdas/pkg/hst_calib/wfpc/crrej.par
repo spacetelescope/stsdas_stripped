@@ -1,0 +1,22 @@
+input, f, a, "", , , 		Input images
+output, f, a, "", , ,		Output image name
+masks, f, a, "", , ,		Input/output masks (optional)
+sigmas, s, a, "8,6,4", , ,	Rejections levels in each iteration
+
+radius, r, h, 1.5, 0., ,	CR expansion radius in pixels
+pfactor, r, h, 0.5, 0., ,	CR expansion discriminator reduction factor
+initial, s, h, "min", "min|med", , Initial value estimate scheme (min or med)
+lower, r, h, -99., , ,		Lower limit of usable data
+upper, r, h, 4096., , ,		Upper limit of usable data
+sky, s, h, "none", "mode|none", ,	How to compute the sky
+expname, s, h, "exptime", , ,	Exposure time keyword name
+readnoise, s, h, "0.72", , ,	Read noise(s) (in DN) of the detector(s)
+atodgain, s, h, "7", , ,	Detector gain(s) in electrons/DN
+scalenoise, s, h, "3,1", , ,	Multiplicative term (in PERCENT) from noise model
+dq, pset, h, , , ,   		Data quality filter pset
+skyname, s, h, "BACKGRND", , ,	Name of the group parameter to be updated with the sky value
+crdqval, i, h, 128, , ,		Data quality value for pixels flagged as cosmic ray
+fillval, r, h, 0., , ,		Fill value for pixels having no good values in all input images
+verbose, b, h, yes, , ,		Print out verbose messages?
+
+mode, s, h, "al"

@@ -1,0 +1,13 @@
+image,f,a,,,,input image
+pass_dir,i,a,,1,2,pass direction to plot
+normalize,b,h,yes,,,normalize the spectra?
+refpos,i,h,1,1,16,reference waveplate position
+wave,f,h,,,,wavelength image
+stats,b,h,yes,,,compute statistics?
+sample,s,h,"*",,,statistics sample region
+wx1,r,h,0,,,left  world x-coord if not autoscaling
+wx2,r,h,0,,,right world x-coord if not autoscaling
+wy1,r,h,0,,,lower world y-coord if not autoscaling
+wy2,r,h,0,,,upper world y-coord if not autoscaling
+device,s,h,"stdgraph",,,output device
+Version,s,h,"02Dec93",,,Date of installation

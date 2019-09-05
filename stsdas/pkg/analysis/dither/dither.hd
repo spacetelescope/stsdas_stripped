@@ -1,0 +1,36 @@
+# Help for the DITHER package
+
+$dither		= "stsdas$pkg/analysis/dither/"
+$doc		= "dither$doc/"
+
+avshift		hlp=doc$avshift.hlp,	src=dither$avshift.cl
+blot		hlp=doc$blot.hlp,	src=dither$drizzle/blot.f
+cdriz		hlp=doc$cdriz.hlp
+crossdriz	hlp=doc$crossdriz.hlp,	src=dither$crossdriz.cl
+deriv		hlp=doc$deriv.hlp,	src=dither$deriv.cl
+driz_cr		hlp=doc$driz_cr.hlp,	src=dither$driz_cr.cl
+dq		hlp=doc$dq.hlp
+dunlearn	hlp=doc$dunlearn.hlp
+drizzle		hlp=doc$drizzle.hlp,	src=dither$drizzle/drizzle.f
+gprep		hlp=doc$gprep.hlp,	src=dither$gprep.cl
+imextreme	hlp=doc$imextreme.hlp,	src=dither$imextreme.x
+loop_blot	hlp=doc$loop_blot.hlp,	src=dither$loop_blot.cl
+loop_driz	hlp=doc$loop_driz.hlp,	src=dither$loop_driz.cl
+mask_head	hlp=doc$mask_head.hlp,	src=dither$mask_head.cl
+offsets		hlp=doc$offsets.hlp,	src=dither$offsets.cl
+precor		hlp=doc$precor.hlp,	src=dither$precor.cl
+rotfind		hlp=doc$rotfind.hlp,	src=dither$rotfind.cl
+shiftfind	hlp=doc$shiftfind.hlp,	src=dither$shiftfind.cl
+sky		hlp=doc$sky.hlp,	src=dither$sky.cl
+wfpc2_chips	hlp=doc$wfpc2_chips.hlp
+
+#cgsky		hlp=doc$cgsky.hlp,	src=dither$cgsky.cl
+#gsky		hlp=doc$gsky.hlp,	src=dither$gsky/t_gsky.x
+tranback    hlp=doc$tranback.hlp
+traxy       hlp=doc$traxy.hlp
+wcs2dr      hlp=doc$wcs2dr.hlp
+wdrizzle    hlp=doc$wdrizzle.hlp
+tran        hlp=doc$tran.hlp
+wtranback   hlp=doc$wtranback.hlp
+wtraxy      hlp=doc$wtraxy.hlp
+wblot		hlp=doc$wblot.hlp,	src=dither$drizzle/wblot.f

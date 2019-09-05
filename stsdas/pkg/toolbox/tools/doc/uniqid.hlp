@@ -1,0 +1,55 @@
+.help uniqid Feb90 stsdas.toolbox.tools
+.ih
+NAME
+uniqid -- Create a unique identifier from the current time.
+.ih
+USAGE
+uniqid
+.ih
+DESCRIPTION
+This task uses the current time to create an identifier that will be 
+unique over the telescope's lifetime. The identifier has the format 
+YMDHHMMS where:
+ 
+.nf
+  Y  denotes the year (1981 = 1)
+  M  denotes the month of the year (January = 1)
+  D  denotes the day of the month
+  HH denotes the hour (00-23)
+  MM denotes the minutes 
+  S  denotes seconds/2
+.fi
+.le
+
+All characters in the identifier are in lower case. The identifier can 
+be modified with the CL concatenation operator, e.g.,
+
+.nf
+  to> s1 = "id" // uniqid.value
+.fi
+
+If two different people call this task at the same time or two different 
+processes are running at the same time, there is no guarantee that the 
+identifier is unique. However, if this task is called several times in a 
+script, the identifier will be unique. The time granularity on the 
+identifier name is two seconds.
+.ih
+PARAMETERS
+.ls (value) [string]
+The unique identifier produced by this task.  This is an output 
+parameter.
+.le
+.ih
+EXAMPLES
+1. Print a unique identifier.
+
+.nf
+to> uniqid
+to> print(uniqid.value)
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+uniqfile, uniqname
+.endhelp

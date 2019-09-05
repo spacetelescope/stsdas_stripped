@@ -1,0 +1,347 @@
+.help ils Feb94 stsdas.playpen
+.ih
+NAME
+ils -- Iterative Least Squares image restoration.
+.ih
+USAGE
+ils  input psf output
+.ih
+DESCRIPTION
+This task restores images by the Least Squares (or minimum residual norm) 
+criterion. The implemented algorithm has as its main features:
+.ls o
+Smoothness constraint (Miller) regularization through a 2-D Laplacian 
+operator and fixed regularization parameter.
+.le
+.ls o
+Either spatially-invariant regularization, or spatially-adaptive
+regularization using an "eye-model" weight function.
+.le
+.ls o
+Projection into the set of meaningful solutions, which takes the form
+of a positivity constraint.
+.le
+.ls o
+Multiple input images and PSFs. 
+.le
+.ls o
+Bad pixel masking.
+.le
+.ls o
+Edge extension.
+.le
+.ls o
+Iterative solution by the fast "conjugate gradients" algorithm. 
+.le
+
+The basic input consists of one degraded image to be restored, and one 
+image which contains the (isolated) PSF. Their sizes in x and y may be
+different, and the output image may have either the same size as the 
+degraded image, or a (larger) size specified by the `xsizeout' and 
+`ysizeout' parameters. In this way, edge effects that come from the 
+Fourier transforms used internally by the algorithm can be overcome.
+
+The PSF does not have to be centered in the PSF image; the task will
+look for the brightest pixel in that image and take it as the PSF center.
+Alternatively, the PSF may come from an image populated by several stars,
+including the degraded image itself. In this case parameters `px0', 
+`py0' and `mask' are used to isolate the desired PSF star from the full data 
+frame. `px0' and `py0' must point to the central PSF pixel, and `mask' 
+defines the radius (in pixels) of a circular area extracted around that pixel
+and apodized by a smooth taper function.
+If the PSF comes from an actual, noisy, non-synthetic image, parameter 
+`nlpsf' must be set to "no". 
+These PSF-related parameters are resident in the `ilspars' pset.
+ 
+In the case where more than one degraded version of the same scene is
+available, the algorithm can combine simultaneously all degraded images
+into one single restored image.  In this case the solution
+will benefit from complementary 
+information available in each single input image and PSF. The task
+may accept either one single PSF image, which will be applyed to all 
+input images, or one separate PSF image for each input degraded image. 
+In this case, the input lists for the `input' and `psf' task parameters
+must present a one-to-one relationship. Also, parameters `px0' and `py0'
+should be set to -1, and each input PSF should be shifted according to its
+corresponding input image.
+
+Parameter `mask' does not apply in this case. All degraded images must have
+the same size; the PSF images however may be of any size. No provision exists
+to date to include variable weighting among the input images; all of them
+will contribute with the same weight to the final result.
+
+Iterations usually depart from a constant, zeroed, first-guess image
+generated internally, and proceed up to the number specified by task
+parameter `niter', or until current chi-square becomes smaller than
+task parameter `limchisq'. 
+If however a previously computed image estimate is 
+already available, this image may be input to the algorithm via task 
+parameter `model'. In this way the algorithm may be run in an incremental 
+way. If edge extension is not enabled (xsizeout = ysizeout = 0), 
+the model image must have the same size as the input image(s). If edge 
+extension is enabled, the model image must have the same size as specified 
+by task parameters `xsizeout' and `ysizeout'.
+
+Notice, however, that since the conjugate direction information is 
+not saved in the output file, when restarting iterations from a previously 
+computed solution, the algorithm may follow a slightly different path 
+to the minimum. Thus, a solution from a total of N iterations obtained in M
+incremental runs may look slightly different than one obtained in a single 
+N-iteration run. This effect can be minimized if, at each incremental run, a
+minimum of about 5 iterations is performed; in this way the algorithm may 
+have enough time at each run to catch up with the same path to the minimum.
+The fastest way to the minimum is always by a single, N-iteration run.
+
+The task may optionally perform bad pixel masking. Masks are images with 
+same size as input image(s), which contain pixel values to be used as 
+weights in restoration (do not confuse with the weights used in 
+regularization !). Weights must be in the range of zero to one. 
+The larger the weight, the more the associated pixel will contribute to
+the final result. A zero weight totally masks out the corresponding pixel's
+contribution. Notice that this definition is NOT the same as used in HST
+data quality files. To convert a data quality image to the format used by
+this task, task `imcalc' may be used as, for example, with command string 
+
+.nf
+equals = "if im1 .gt. 0. then 0. else 1.".
+.fi
+
+The mask image(s) is(are) specified by task parameter `wmask'.
+Either one single mask image, which will be applyed to all 
+input images, or one separate mask image for each input degraded image,
+are acceptable. In this case, the lists for the `input' and  `wmask' task
+parameters must present a one-to-one relationship.
+
+When using edge extension, task parameter `center' may be used to specify
+where in the output array the restored image will be put. If center=yes,
+the restored image will be centered. If center=no, it will be put with its
+[1,1] corner coincident with the [1,1] corner of the output array, and
+the (extended) edges will be laid out in a wrap-around configuration in
+the output array's remaining space. This makes it easier to trim out 
+the edges with a imcopy operation.
+
+An image with the current estimate may be output at each `nsave'-th 
+iteration, updating the contents of the file specified by task parameter
+`output'.
+
+Algorithm control and regularization details are specified by parameters 
+inside pset `ilspars'. The remaining paragraphs explain these details.
+
+The conjugate gradients algorithm works by computing, at each iteration,
+the conjugate direction based on the previous iteration's direction and the
+current (steepest-descent) gradient. A line minimization routine is used 
+next to compute the "step" (or gain) `beta' to be used over the conjugate 
+direction to find a minimum. This operation mode, the default, is specified 
+by task parameter `auto' set to "yes", and in this case the value of
+task parameter `beta' is disregarded.
+
+For certain types of images, typically of low dynamic range but rich in
+spatial structures of many scales, it was found empirically that the
+line minimization routine can be skipped, and a fixed gain used instead.
+The number of iterations must be larger than when using line minimization,
+but nevertheless results in substantial savings in CPU time.
+This mode is enabled by setting task parameter `auto' as "no", and in this
+case parameter `beta' will be used as the (fixed) step. Too large values
+(>> 1) may lead to divergency, however. When auto = no, chi-square computation
+is disabled.
+
+Noise regularization is available through two techniques:
+standard Miller regularization and projection into the set of physically
+meaningful solutions. Miller regularization usually works better in
+scenes with complex and intrinsically smooth structures, but tends to impair
+convergency on images where most of the signal energy is concentrated in
+stellar images. The regularization parameter `alpha' describes the ratio
+between the observation noise and the maximum allowable power present 
+in the solution's spatial high frequencies. For typical images, its
+value may be in the range of a few 1.E-3. A value of zero disables 
+regularization by this mechanism. If `alpha' is set to zero
+and simultaneously the step `beta' is fixed as 1., the resulting algorithm 
+is identical to the "modified VanCittert" or "Landweber" iteration, except
+that it uses conjugate directions instead of steepest-descent.
+
+The inverse behavior is observed in what regards the projection 
+technique, which in the current implementation takes the form of a 
+positivity constraint. It has little effect on terrestrial images with
+strong signals, but is very effective in controlling sky background
+noise buildup in astronomical images with dark sky.
+
+Standard regularization by smoothness constraint tends to impair restoration 
+quality near edges (regions were there is a large intensity gradient), 
+with generation of artifacts (ringing). This behavior may be minimized
+by weighting the regularization term, with weights that allow full
+regularization in smooth image regions, but damp regularization near
+edges. The edge information ("spatial activity") is obtained by comparing 
+the measured local variance at each pixel, with the expected variance derived
+from a noise model. Local variance information can be derived either from the 
+input degraded image (the first in the list), or from an external, 
+independent image.
+
+Task parameter `adap' control the spatial adaptivity mechanism. If set
+as "none", standard space-invariant smoothing will be performed. If set
+as "fixed", local variance information will be computed before the first
+iteration, and kept fixed along the iteration sequence. If set as "update",
+local variance information will be updated at each iteration, based on
+the current estimate.
+
+The optional external image from which to derive local variance information
+is defined by task parameter `activity'. This image must have the same size
+as the input image(s). If using an external activity image, the usual
+procedure is to set adap="fixed". If not using an external image, use
+adap="update" instead.
+
+The sensitivity of regularization weights to the local variance
+may be adjusted by task parameter `atune'. Larger values will increase
+sensitivity, smaller values decrease it. In the limit atune=0, no spatial
+adaptivity is performed at all.
+
+The noise model used in spatial activity computations includes both Poisson
+and Gaussian terms, derived from task parameters `adu' and `noise'. These
+are also used to compute chi-squared. If no Poisson noise is present, set
+adu=0 and `noise' in DN instead of electrons.
+If no Gaussian noise is present, set noise=0. If the input image
+has no noise, set both parameters to zero. In this case, the chi-square
+value printed at output will be the average of squared residuals.
+
+Some caution must be exercised in specifying the output image size.
+The FFT algorithm used by the task is faster when the axis sizes are 
+composite numbers, faster yet when rich in factors of 2, and even faster 
+with exact powers of two. So it may be worth to extend the edges of a, say,
+200 X 200 image to 256 X 256 output size. For efficiency reasons,
+odd-sized output sizes will be trimmed off to even size.
+
+Memory usage may be of concern, in particular when working with multiple 
+input images. The maximum data memory M (in bytes) needed by the task can 
+be estimated by
+.nf
+
+    M = Nin + Npsf + 10
+    if (alpha > 0.)                 M = M + 2
+    if (spatial adaptivity)         M = M + 1
+    if (edge extension)             M = M + 1
+    if (masks)                      M = M + Nmask
+    if (write intermediate result)  M = M + 1
+    M = M * 4 * Npix
+
+.fi
+where Nin is the number of input degraded images, Npsf the number of PSF 
+images, Nmask the number of mask images, and Npix the number of pixels in 
+the output image (assuming real numbers use 4 bytes each).
+.ih
+PARAMETERS
+.ls input [file name template/list]
+2-d image section(s) to be restored.
+.le
+.ls psf [file name template/list]
+2-d PSF(s) image section(s).
+.le
+.ls output [file name]
+Output restored image.
+Always type real, regardless of input image type.
+.le
+.ls (model = "") [file name]
+Model image to start iterations. 
+If left as a null string (""), no model image is read.
+.le
+.ls (wmask = "") [file name template/list]
+Bad pixel mask(s) / weight image(s).
+.le
+.ls (ilspars) [pset]
+Pset with regularization controls, algorithm controls and PSF specs.
+.le
+.ls (niter = 10) [int, min=1]
+Number of iterations.
+.le
+.ls (limchisq = 1.) [real]
+Chi-square for stopping iterations.
+.le
+.ls (xsizeout,ysizeout = 0) [int, min=0]
+The size of the output image along each axis. A (default) value
+of 0 means that the output image will have the same size as the input image.
+If a non-zero value is specified, it must be larger than the size of the
+input image.
+.le
+.ls (center = no) [boolean]
+Center the output image in the output array ?
+.le
+.ls (nsave = 0) [int, min=0]
+The interval with which to write out intermediate results. If set to zero,
+no output of intermediate results is performed.
+.le
+.ls (verbosity = 2) [int, min=0, max=2]
+Verbosity level. If set to 2, detailed information from the conjugate
+gradient computation is output at STDOUT. If set to 1, only current
+iteration number is output. Zero disables all output.
+.le
+.ls (auto = yes) [boolean]
+Turn on conjugate gradients algorithm ? If set to "no", steepest-descent
+is used, if set to "yes", full conjugate gradient with line minimization
+is used instead.
+.le
+.ls (beta = 1.0) [real, min=0.]
+Iteration gain. Only used in steepest-descent mode.
+.le
+.ls (alpha = 0.0) [real, min=0.]
+Miller regularization parameter. If set to zero, disables this form of
+regularization.
+.le
+.ls (positivity = yes) [bool]
+Turn on positivity constraint ?
+.le
+.ls (adap = "update") [string]
+Allowed values: none | fixed | update.
+Type of spatial adaptivity. 
+"none": no spatial adaptivity; 
+"fixed": compute regularization weights only once, at start of iteration 
+sequence; 
+"update": update regularization weights at each iteration, based on current 
+estimate.
+.le
+.ls (activity = "") [file name]
+Image from which to derive spatial adaptivity information (local variance).
+If left as a null string (""), no activity image is read and the needed
+information is derived from the (first) input image.
+.le
+.ls (atune = 1.0) [real]
+"Eye-model" tuning parameter.
+.le
+.ls (adu = 1.0) [real, min=0.]
+Conversion constant from data numbers to electrons. 
+Typical values are 7.5 for WF/PC and 1.0 for FOC. 
+If only Gaussian noise is present, set adu=0.
+.le
+.ls (noise = 0.) [real, min=0.]
+Additive Gaussian noise, or read-out noise, given in electrons.
+Typical values are 13 for WF/PC and 0 for FOC. 
+If only Gaussian noise is present, noise must be specified in data number
+units.
+.le
+.ls (nlpsf = yes) [boolean]
+Is(are) the PSF image(s) noiseless ?
+If PSFs are taken from an observed image, this parameter must be set to 
+"no", in which case, a "pruning" noise filter will be used in their
+Fourier transforms. If the PSFs are synthetic and without noise, this 
+parameter must be set to "yes".
+.le
+.ls (px0, py0 = INDEF) [real, min=1.]
+Center coordinates, in pixels, of PSF in 'psf' image section(s). If either
+one, or both, are left as INDEF, the task will locate the maximum pixel
+value in the PSF image section(s), and use its coordinates instead. If set
+to -1, this instructs the task to not change the PSF image(s) in any way.
+This should be used when restoring multiple data sets that have relative
+shifts between them. Each PSF image should then be shifted to match its
+associated input image shifts.
+.le
+.ls (mask = INDEF) [real, min=1.]
+PSF masking radius, in pixels. If INDEF, no masking is performed.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+.endhelp
+

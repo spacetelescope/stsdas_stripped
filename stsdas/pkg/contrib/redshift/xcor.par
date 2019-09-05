@@ -1,0 +1,18 @@
+templates,s,a,,,,List of template stars
+spectra,s,a,,,,List of input spectra
+obj_plot,b,h,yes,,,Plots the raw object data
+window_plot,b,h,yes,,,Plots the windowed object data
+fft_plot,b,h,no,,,Plots the power spectrum of the data
+fit_plot,b,h,yes,,,Plots the correlation function
+intermediate,b,h,yes,,,Displays intermediate results
+order,i,h,4,1,10,Order of polynomial fit to spectrum
+bell_window,r,h,0.1,,,Fraction of spectrum to taper
+low_bin,i,h,5,,,Bin number of low frequency cutoff
+nrun,i,h,100,,,Bin number of high frequency cutoff
+sig0,r,h,0.,,,Velocity dispersion coefficient 0
+sig1,r,h,1.,,,Velocity dispersion coefficient 1
+sig2,r,h,0.,,,Velocity dispersion coefficient 2
+sig3,r,h,0.,,,Velocity dispersion coefficient 3
+logfiles,s,h,"STDOUT,xcor.log",,,List of log files
+cursor,*gcur,h,"",,,Graphics cursor input
+mode,s,h,"ql",,,

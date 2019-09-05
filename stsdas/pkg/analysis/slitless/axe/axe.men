@@ -1,0 +1,18 @@
+Menu for the package axe
+
+   af2pet     - Generate a PET from a grism image and an OAF
+   axecore    - Generate a PET from grism image, object list and direct image
+   axedrizzle - Drizzle DPP's to deep 2D grism images
+   axegps     - Give spectral information for pixel in grism image
+   axeprep    - Prepare grism images for aXe reduction
+   backest    - Genarate background or mask image for a grism image
+   drz2pet    - Create PET from a list of deep 2D grism images
+   drzprep    - Generate DPP files from PET's
+   fcubeprep  - Generate fluxcube files for a set of grism images
+   iolprep    - Generate Input Object Lists for a set of grism images
+   gol2af     - Generate an OAF from a GOL
+   pet2spc    - Create 1D spectra from a PET
+   petcont    - Compute contamination in a PET
+   petff      - Flatfield a PET
+   sex2gol    - Generates a GOL file  from  an object list
+   stamps     - Generate stamp images from a PET

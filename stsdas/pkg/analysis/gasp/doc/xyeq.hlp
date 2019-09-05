@@ -1,0 +1,219 @@
+.help xyeq Feb95 stsdas.analysis.gasp
+.ih
+NAME
+xyeq -- Get equatorial coordinates from pixel positions.
+.ih
+USAGE
+xyeq  iminfo  image coeffile  xyfile
+.ih
+DESCRIPTION
+This task will compute the equatorial coordinates for a given 
+set of (X,Y) coordinates based on the plate solution 
+coefficients taken from the following sources: image header, 
+original coefficients, new coefficients, the CD matrix, or 
+the ASCII file ('coeffile') containing coefficients.
+
+Output is sent to the terminal screen and consists of the X,Y 
+input pixel values; the 'RA_nsol','DEC_nsol' from the new plate solution; 
+'RA_osol','DEC_osol' from the original plate solution; or 'RA_cd','DEC_cd' from 
+the CD matrix values.
+
+It is convenient to use 'epar' to set up the parameters 
+because the flags made the arguments position difficult to 
+handle.
+.ih
+PARAMETERS
+.ls iminfo [boolean]
+Is there an input image containing plate solution 
+coefficients in its header file?
+.le
+.ls image [file name]
+Name of the input image. This image has a set of coefficients 
+in the image header containing plate solution values. 
+The keyword names for 
+these values  are AMDX1, AMDX2, AMDY1, AMDY2, etc.,
+also, if the task 'pltsol' has been run then the values
+will include NAMDX1, NAMDY1, etc.
+(the values are in units of arcseconds per millimeter).
+.le
+.ls coeffile [file name]
+Name of the astrometic solution file. This file is created 
+with the 'pltsol' task.  The following example shows a 
+representative astrometric solution file. 
+.nf
+
+Astrometic solution file  Mon 15:43:16 16-Jan-89
+
+CRPIX1     256.				# X reference pixel
+CRPIX2     256.				# Y reference pixel
+CRVAL1     15.858809471130371		# RA of ref. point [degrees]
+CRVAL2     36.877372741699219		# DEC of ref. point [degrees]
+XPIXELSZ   25.284451028631174		# X pixel size [microns]
+YPIXELSZ   25.28445104137063		# Y pixel size [microns]
+PLATESCL   67.199989318847656		# plate scale [arcs/mm]
+XCOEFF1    -67.165285989700821		# 1st coeff [arcs/mm] in X
+XCOEFF2    -0.12163416492744184		# 2nd
+XCOEFF3    8.3026349034598379E-4
+YCOEFF1    67.166110959926988		# 1st coeff [arcs/mm] in Y
+YCOEFF2    -0.25883516231503645		# 2nd
+YCOEFF3    0.16833370472960918		# 
+
+.fi
+All keywords should start in the first column. The file 
+begins with a title line followed by a blank line. The 
+'XCOEFF' and 'YCOEFF' values are analogous to the 'NAMDX' and 
+'NAMDY' values in the image header. The 'YCOEFF' should 
+follow the 'XCOEFF' and the indexing is in ascending order 
+(but not necessarily sequential).
+.le
+.ls xyfile [file name]
+Name of the input file (i.e., containing 'X', 'Y', 'MAG', and 'COLOR' 
+values). This can be an ASCII file in column format (there 
+should be at least one blank between columns and the row 
+length should not be longer than 162 characters). Notice that 
+you can define the input file to be 'STDIN' and then enter 
+the values directly from the keyboard; at least two values 
+must be entered on each input line. Press CTRL-Z to finish.
+.le
+.ls pixel_center ("iraf") [string]
+Which convention your X,Y values have? If 'iraf' then the center of the
+lower left pixel is (1,1). If 'dss' (Digital Scan Survey) then the 
+center of the lower left pixel is (1.5,1.5). If 'cos', then you
+are using the COSMOS convention which is (0.5,0.5).
+.ls xcolnum [integer]
+Column number in the ASCII file containing X pixel values.
+.le
+.ls ycolnum [integer]
+Column number in the ASCII file containing Y pixel values.
+.le
+.ls magcolnum [integer]
+Column number in the ASCII file containing magnitude values.
+.le
+.ls colcolnum [integer]
+Column number in the ASCII file containing color values.
+.le
+.ls nskip [integer]
+Number of lines to skip before reading the first value.
+.le
+.ls (original=no) [boolean]
+Use the original plate solution from the input image header?
+.le
+.ls (new = yes) [boolean]
+Base (RA,DEC) values on new plate solution coefficients 
+produced by 'pltsol'? 
+.le
+.ls (cdmatx = no) [boolean]
+Compute (RA,DEC) positions using the input image CD matrix? 
+.le
+.ls ra_format = "", dec_format = ""
+The default output format for the output RA and DEC. If ra_format or dec_format
+are undefined, then xyeq uses a default format of %11.2h.
+
+.ih
+FORMATS
+A  format  specification has the form "%w.dCn", where w is the field
+width, d is the number of decimal places or the number of digits  of
+precision,  C  is  the  format  code,  and  n is radix character for
+format code "r" only.  The w and d fields are optional.  The  format
+codes C are as follows:
+    
+.nf
+b       boolean (YES or NO)
+c       single character (c or '\c' or '\0nnn')
+d       decimal integer
+e       exponential format (D specifies the precision)
+f       fixed format (D specifies the number of decimal places)
+g       general format (D specifies the precision)
+h       hms format (hh:mm:ss.ss, D = no. decimal places)
+m       minutes, seconds (or hours, minutes) (mm:ss.ss)
+o       octal integer
+rN      convert integer in any radix N
+s       string (D field specifies max chars to print)
+t       advance To column given as field W
+u       unsigned decimal integer 
+w       output the number of spaces given by field W
+x       hexadecimal integer
+z       complex format (r,r) (D = precision)
+    
+    
+Conventions for w (field width) specification:
+    
+    W =  n      right justify in field of N characters, blank fill
+        -n      left justify in field of N characters, blank fill
+        0n      zero fill at left (only if right justified)
+absent, 0       use as much space as needed (D field sets precision)
+    
+    
+Escape sequences (e.g. "\n" for newline):
+    
+\b      backspace   (not implemented)
+\f      formfeed
+\n      newline (crlf)
+\r      carriage return
+\t      tab
+\"      string delimiter character
+\'      character constant delimiter character
+\\      backslash character
+\nnn    octal value of character
+    
+Examples
+    
+%s          format a string using as much space as required
+%-10s       left justify a string in a field of 10 characters
+%-10.10s    left justify and truncate a string in a field of 10 characters
+%10s        right justify a string in a field of 10 characters
+%10.10s     right justify and truncate a string in a field of 10 characters
+    
+%7.3f       print a real number right justified in floating point format
+%-7.3f      same as above but left justified
+%15.7e      print a real number right justified in exponential format
+%-15.7e     same as above but left justified
+%12.5g      print a real number right justified in general format
+%-12.5g     same as above but left justified
+
+%h	    format as nn:nn:nn.n
+%15h	    right justify nn:nn:nn.n in field of 15 characters
+%-15h	    left justify nn:nn:nn.n in a field of 15 characters
+%12.2h	    right justify nn:nn:nn.nn
+%-12.2h	    left justify nn:nn:nn.nn
+    
+%H	    / by 15 and format as nn:nn:nn.n
+%15H	    / by 15 and right justify nn:nn:nn.n in field of 15 characters
+%-15H	    / by 15 and left justify nn:nn:nn.n in field of 15 characters
+%12.2H	    / by 15 and right justify nn:nn:nn.nn
+%-12.2H	    / by 15 and left justify nn:nn:nn.nn
+
+\n          insert a newline
+.fi
+.ih
+EXAMPLES
+1. Set your parameters with 'epar', and then direct the 
+output from this task to a file. 
+.nf
+
+  ga>  xyeq  mode=h > outfile
+
+.fi
+2. Output the RA and DEC coordinates for an image in sexagesimal degrees.
+
+.nf
+    cl> xyeq ra_format=%12.2h dec_format=%12.2h
+    19:47:12.25 33:15:03.66
+    19:43:12.10 33:14:38.06
+    19:45:12.40 33:15:56.03
+.fi
+3. Output the RA in sexagesimal hours and DEC in sexagesimal degrees for an
+image.
+
+.nf
+    cl> xyeq ra_format=%12.2H dec_format=%12.2h
+    13:47:12.25 47:15:03.66
+    13:47:12.10 47:15:38.06
+    13:47:12.40 47:15:56.03
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+eqxy, makewcs, pltsol
+.endhelp

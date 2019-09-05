@@ -1,0 +1,43 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_pedsky.c ../lib/nicmos.h
+	$update	libpedsky.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_pedsky.o libpedsky.a ../lib/libnicmos.a \
+		-lhstio -lcvos -lxtools -lc \
+		-o xx_pedsky.e
+		;
+
+install:
+	$move xx_pedsky.e stsdasbin$x_pedsky.e
+	;
+
+libpedsky.a:
+	fsky_iter.c		"pedsky.h"
+	fsky_quick.c		"pedsky.h"
+	findped.c		"pedsky.h"
+	n_getstatr.c		"pedsky.h"
+	n_history.c		"pedsky.h"
+	n_inputpar.c		"pedsky.h"
+	n_pedsky.c		"pedsky.h"
+	n_singlefile.c		"pedsky.h"
+	pedstats.c		"pedsky.h"
+	storeped.c		"pedsky.h"
+	storesky.c		"pedsky.h"
+	subped.c		"pedsky.h"
+	subsky.c		"pedsky.h"
+	transform.c		"pedsky.h"
+	;

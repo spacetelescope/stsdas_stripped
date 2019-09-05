@@ -1,0 +1,77 @@
+###############################################################################
+#   Special keywords recognized:				
+#	mkpkg debug		update object library, link w/debug options
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg relink		update object library and link	
+#								
+#	Development version:					
+
+$call	relink
+$exit
+
+update: 
+	$call	relink
+	$call	install
+	;
+debug:
+	$set XFLAGS = "$(XFLAGS) -fgq"
+	$set LFLAGS = "$(LFLAGS) -xz"
+	$call relink
+        ;
+
+relink:
+	$update	gcombine.a
+	$call linkonly
+	;
+
+install:
+	$move xx_gcombine.e stsdasbin$x_gcombine.e
+	;
+
+gcombine.a:
+	$call generic
+	@generic		# Update ./generic
+	t_gcombine.x	<imhdr.h> <error.h> <mach.h> "gcombine.com"\
+			"gcombine.h" 
+	gc_util.x	<imhdr.h> <imset.h> <mach.h> <ctype.h> <syserr.h>\
+			"gcombine.com" "gcombine.h"
+	gc_scale.x	<imhdr.h> <error.h> <mach.h> "gcombine.com" "gcombine.h" 
+	;
+
+# Generate source for generic if needed
+generic:
+	$set GEN = "$$generic -k"
+
+	$ifolder (generic/g_combine.x, g_combine.gx) 
+	    $(GEN) g_combine.gx -o generic/g_combine.x $endif
+	$ifolder (generic/gc_gdata.x, gc_gdata.gx) 
+	    $(GEN) gc_gdata.gx -o generic/gc_gdata.x $endif
+	$ifolder (generic/gc_mm.x, gc_mm.gx) 
+	    $(GEN) gc_mm.gx -o generic/gc_mm.x $endif
+	$ifolder (generic/gc_asclip.x, gc_asclip.gx) 
+	    $(GEN) gc_asclip.gx -o generic/gc_asclip.x $endif
+	$ifolder (generic/gc_rsclip.x, gc_rsclip.gx) 
+	    $(GEN) gc_rsclip.gx -o generic/gc_rsclip.x $endif
+	$ifolder (generic/gc_cclip.x, gc_cclip.gx) 
+	    $(GEN) gc_cclip.gx -o generic/gc_cclip.x $endif
+	$ifolder (generic/gc_eclip.x, gc_eclip.gx) 
+	    $(GEN) gc_eclip.gx -o generic/gc_eclip.x $endif
+	$ifolder (generic/gc_sort.x, gc_sort.gx) 
+	    $(GEN) gc_sort.gx -o generic/gc_sort.x $endif
+	$ifolder (generic/gc_stat.x, gc_stat.gx) 
+	    $(GEN) gc_stat.gx -o generic/gc_stat.x $endif
+	$ifolder (generic/gc_average.x, gc_average.gx) 
+	    $(GEN) gc_average.gx -o generic/gc_average.x $endif
+	$ifolder (generic/gc_median.x, gc_median.gx) 
+	    $(GEN) gc_median.gx -o generic/gc_median.x $endif
+	$ifolder (generic/gc_sigma.x, gc_sigma.gx) 
+	    $(GEN) gc_sigma.gx -o generic/gc_sigma.x $endif
+	;
+
+linkonly:
+	$set    LIBS = "-lxtools -lstxtools -lgflib -lgilib"
+	$omake	x_gcombine.x
+	$link	x_gcombine.o gcombine.a $(LIBS) -o xx_gcombine.e
+	;
+
+$exit

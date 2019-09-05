@@ -1,0 +1,8 @@
+igi_output, f, a, "", , ,	Output igi script file name
+x, r, a, , , ,			X position of the compass
+y, r, a, , , ,			Y position of the compass
+size, r, a, , , ,		size of the compass
+orientat, r, a, , , ,		orientation of the position angle
+mir_revr, b, a, , , ,		mirror reverse?
+
+mode, s, h, "al"

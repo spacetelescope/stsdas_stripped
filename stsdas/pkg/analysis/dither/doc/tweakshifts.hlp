@@ -1,0 +1,512 @@
+.help tweakshifts Aug10 stsdas.analysis.dither
+.ih
+NAME
+tweakshifts v0.8.1 -- Task for computing residual shifts between images
+.ih
+USAGE
+tweakshifts input
+.ih
+PARAMETERS
+.ls input = "" [string]
+The input for MultiDrizzle can be provided in any of several forms:
+.nf
+ - filename of a single image
+ - filename of an association (ASN)table
+ - wild-card specification for files in directory (using *, ? etc)
+ - comma-separated list of filenames
+ - '@file' filelist containing list of desired input filenames
+   (and optional inverse variance map filenames)
+
+.fi
+The '@file' filelist needs to be provided as an ASCII text file containing
+a list of filenames for all input images, with one filename on each line
+of the file. If inverse variance maps have also been created by the user
+and are to be used (by specifying 'IVM' to the parameter 'final_wht_type' 
+described further below), then these are simply provided as a second
+column in the filelist, with each IVM filename listed on the same line
+as a second entry, after its corresponding exposure filename.
+.le
+.ls (shiftfile = "") [file name]
+The optional shiftfile can provide initial corrections to the image combination 
+to improve the alignment prior to object identification or cross-correlation.
+This file could have been generated from a previous run of 'tweakshifts'
+in working towards an iteratively better solution. This ASCII file must conform
+to the same format as the shiftfiles used with MultiDrizzle, or output from
+this task.
+.le
+.ls (reference = "tweak_wcs.fits") [file name]
+Filename to be given to the OUTPUT reference WCS file created by tweakshifts. 
+This reference WCS defines the WCS in which the shifts get measured, and will be
+used by MultiDrizzle to interpret the shifts.  This reference WCS file will be a
+FITS file that only contains the WCS keywords in a Primary header with no image
+data itself.  The values will be derived from the FIRST input image specified.  
+.le
+.ls (output = "shifts.txt") [file name]
+The name for the output shift file created by tweakshifts.  This shiftfile
+will be formatted for use as direct input to MultiDrizzle (or PyDrizzle). If
+an input shiftfile has been specified, this output will only contain the
+residual shifts determined after applying the input shiftfile.
+.le
+.ls (findmode = "catalog") [string]
+This parameter specifies what method to use in computing the shifts.  The
+options are:
+.nf
+    catalog  |  cross-corr
+.fi
+The 'catalog' option generates object catalogs from each input observation using
+'daofind', matches them up using 'xyxymatch', and finally computes the shifts
+by fitting the matched positions using 'geomap'.  Alternatively, the user can
+specify their own catalogs for use with this option with the 'catfile'
+parameter (described later).
+
+The 'cross-corr' option turns on use of cross-correlation to determine the
+offset between images using the 'crossdriz' task.
+.le
+.ls (gencatalog = "daofind") [string]
+This parameter specifies what task should be used to generate the object catalog
+when 'findmode=catalog'.  Selection of 'sextractor' only specifies that should
+the 'sextractor' executable be found on the user's system, it will be used., 
+otherwise, 'tweakshifts' will default to using IRAF's 'daofind' task. 
+.le
+.ls (sextractpars) [pset]
+This pset provides access to a majority of the most commonly used parameters
+for 'sextractor' for use when 'gencatalog = sextractor'.  Each parameter
+has the same name as the 'sextractor' parameter and is a direct pass-through
+to the corresponding 'sextractor' parameter in the executable.
+.le
+.ls (undistort = yes) [boolean]
+Specify whether or not distortion needs to be removed from the object positions
+found in the catalogs.  This would apply if the input exposures were calibrated
+FLT images, as opposed to distortion-corrected '*single_sci.fits' files. 
+.le
+.ls (computesig = yes) [boolean]
+This parameter controls whether or not to automatically compute a sigma value
+to be used for object identification.  If set to 'yes', then the value computed
+will override any user input for the parameter 'sigma'.  
+The automatic sigma value gets computed from the first input exposure as:
+
+    1.5 * imstatistics(image,nclip=3,fields='stddev')
+
+This single value will then be used for object identification for all input
+exposures.
+.le
+.ls (idckey = "idctab") [string]
+The 'idckey' parameter allows the user to specify what should be used to 
+extract the distortion coefficients from the input image headers when 
+'undistort = yes'.  The primary options are:
+.nf
+    idctab  |  cubic  |  trauger  |  None 
+.fi
+.le
+.ls (clean = yes) [boolean]
+Specify whether or not to remove the temporary files created by 'tweakshifts',
+including any catalog files generated for the shift determination.
+.le
+.ls (updatehdr = no) [boolean]
+Specify whether or not to update the headers of each input image directly with
+the shifts that were determined. This will allow the input images to be combined
+by MultiDrizzle without having to provide the shiftfile as well.  
+.le
+.ls (verbose = no) [boolean]
+Specify whether or not to print extra messages during processing.
+.le
+.ls (catfile = "") [string]
+Name of file which contains list of input images and associated catalog
+files generated by the user.  Each line of this file will contain the
+name of an input image in the first column and the name of the catalog
+file for that image in the second column.
+.le
+.ls (xcol = 1) [integer]
+Column number of X position from the user-generated catalog files specified in
+the catfile.
+.le
+.ls (ycol = 2) [integer]
+Column number of Y position from the user-generated catalog files specified in
+the catfile.
+.le
+.ls (fluxcol = 3) [integer]
+Column number for the flux values from the user-generated catalog files specified
+in the catfile.  These values will only be used if a flux limit has been specified
+by the user using the 'fluxmax' or 'fluxmin' parameters.  
+.le
+.ls (fluxmax ) [real]
+Limiting flux value for selecting valid objects in the input image's
+catalog.  If specified, this flux will serve as the upper limit of a range
+for selecting objects to use in matching with objects identified in the
+reference image.  If INDEF, all objects with fluxes brighter than the
+minimum specified in 'fluxmin' will be used.  If both are set to INDEF,
+all objects will be used.
+.le
+.ls (fluxmin ) [real]
+Limiting flux value for selecting valid objects in the input image's catalog. 
+If specified, this flux will serve as the lower limit of a range for selecting 
+objects to use in matching with objects identified in the reference image.
+If INDEF, all objects fainter than the limit specified by 'fluxmax' will
+be used. If both are set to INDEF, all objects will be used.
+.le
+.ls (fluxunits ) [string]
+Flux units can be given as either:
+.nf
+    counts  |  cps  |  mag
+.fi
+This allows the task to correctly interpret the flux limits specified by 
+'fluxmax' and 'fluxmin' when sorting the object list for trimming of the
+fainter objects.
+.le
+.ls (nbright = INDEF) [integer]
+Number of brightest objects to keep after sorting the full object list.
+If set to INDEF, all objects will be used.
+.le
+.ls (refcat = "") [string]
+Name of external reference catalog file to use instead of the catalog extracted from one of the input
+ images. 
+.le
+.ls (refxcol = 1) [integer]
+Column number of RA in the external catalog file specified by the refcat.
+.le
+.ls (refycol = 2) [integer]
+Column number of Dec in the external catalog file specified by the refcat.
+.le
+.ls (rfluxcol = 3) [integer]
+Column number of flux/magnitude values in the external catalog file specified by the refcat.
+.le
+.ls (rfluxmax ) [real]
+Limiting flux value for selecting valid objects in the external catalog.  
+If specified, this flux will serve as the upper limit of a range
+for selecting objects to use in matching with objects identified in the
+reference image.  If INDEF, all objects with fluxes brighter than the
+minimum specified in 'rfluxmin' will be used.  If both are set to INDEF,
+all objects will be used.
+.le
+.ls (rfluxmin ) [real]
+Limiting flux value for selecting valid objects in the external catalog. 
+If specified, this flux will serve as the lower limit of a range for selecting 
+objects to use in matching with objects identified in the reference image.
+If INDEF, all objects fainter than the limit specified by 'rfluxmax' will
+be used. If both are set to INDEF, all objects will be used.
+.le
+.ls (rfluxunits ) [string]
+Flux units can be given as either:
+.nf
+    counts  |  cps  |  mag
+.fi
+This allows the task to correctly interpret the flux limits specified by 
+'rfluxmax' and 'rfluxmin' when sorting the object list for trimming of the
+fainter objects.
+.le
+.ls (refnbright = INDEF) [integer]
+Number of brightest objects to keep after sorting the full object list.
+If set to INDEF, all objects will be used. Used in conjunction with refcat.
+.le
+.ls (minobj = 15) [integer]
+Minimum number of identified objects from each input image to use in matching
+objects from other images.   
+.le
+.ls (nmatch = 30) [integer]
+The maximum number of reference and input coordinates used by the 'triangles'
+pattern matching algorithm in \fIxyxymatch\fR.  This parameter is passed directly
+to the IRAF task \fIxyxymatch\fR.  If either list contains more coordinates than 
+nmatch, the lists are subsampled.  The value of this parameter should be kept
+small as the computation and memory requirements for the 'triangles' algorithm
+depend on a high power of the lengths of the respective lists.
+.le 
+.ls (matching = 'tolerance' ) [string]
+The matching algorithm used in \fIxyxymatch\fR. The options available for this parameter are:
+.nf 
+    tolerance | triangles
+.fi
+.le
+.ls (xyxin = INDEF) [real] The X origin of the input list as used in
+\fIxyxymatch\fR.  This \fIa priori\fR initial offset in X gets used by
+\fIxyxymatch\fR when attempting to match sources between the input and
+reference images.  This parameter can only specify a single offset and
+therefore will only be useful where (all) the input image(s) have the same
+shift relative to the reference image.  
+.le 
+.ls (xyyin = INDEF) [real] The Y origin of the input list as used in
+\fIxyxymatch\fR.  This \fIa priori\fR initial offset in Y gets used by
+\fIxyxymatch\fR when attempting to match sources between the input and
+reference images.  This parameter can only specify a single offset and
+therefore will only be useful where (all) the input image(s) have the same
+shift relative to the reference image.  
+.le
+.ls (tolerance = 1) [real] 
+The matching tolerance in pixels after applying an initial solution derived
+from the 'triangles' algorithm.  This parameter gets passed directly to 
+\fIxyxymatch\fR for use in matching the object lists from each image with
+the reference image's object list. 
+.le
+.ls (separtion = 0.0) [real] 
+The  minimum  separation  for objects in the input and reference
+coordinate lists. Objects closer together than separation pixels
+are  removed from the input and reference coordinate lists prior
+to matching.
+This parameter gets passed directly to \fIxyxymatch\fR for use in matching the object lists from each image with the reference image's object list.
+.le
+.ls (fwhmpsf = 2.0) [real]
+The full-width at half-maximum of the point spread function in scale units.
+This parameter gets passed directly to DAOFIND's \fIdatapars\fR 
+parameter set for use in running the \fIdaofind\fR object finding task.  
+.le
+.ls (sigma = 0.0) [real]
+The standard deviation of the sky pixels. This parameter gets passed directly to DAOFIND's \fIdatapars\fR 
+parameter set for use in running the \fIdaofind\fR object finding task. 
+.le 
+.ls (datamin = INDEF) [real]
+The minimum good pixel value to be considered when examining the image for 
+objects.  This parameter gets passed directly to DAOFIND's \fIdatapars\fR 
+parameter set for use in running the \fIdaofind\fR object finding task. 
+.le
+.ls (datamax = INDEF) [real]
+The maximum good pixel value to be considered when examining the image for 
+objects.  This parameter gets passed directly to DAOFIND's \fIdatapars\fR 
+parameter set for use in running the \fIdaofind\fR object finding task.  
+.le
+.ls (threshold = 4.0) [real]
+The object detection threshold above the local background in units of 
+\fIdatapars.sigma\fR.  This parameter gets passed directly to DAOFIND's 
+\fIfindpars\fR parameter set for use in running the \fIdaofind\fR object
+finding task. 
+.le
+.ls (nsigma = 1.5) [real]
+The semi-major axis of the Gaussian convolution kernel used to compute
+the density enhancement and mean density images in Gaussian sigma. 
+This parameter gets passed directly to DAOFIND's \fIfindpars\fR 
+parameter set for use in running the \fIdaofind\fR object finding task. 
+.le
+.ls (fitgeometry = 'rscale') [string]
+The fitting geometry to be used for fitting the matched object lists. 
+The options available for this parameter are: 
+.nf 
+
+    shift | xyscale | rotate | rscale | rxyscale | general
+
+.fi
+This parameter gets passed directly to the \fIfitgeometry\fR parameter
+in \fIgeomap\fR for use in fitting the offsets, rotations and/or scale
+changes from the matched object lists.
+.le
+.ls (function = 'polynomial') [string]
+The type of analytic surface to be fit.  The options are:
+.nf 
+
+    legendre | chebyshev | polynomial
+
+.fi
+This parameter gets passed directly to the \fIfunction\fR parameter
+in \fIgeomap\fR for use in fitting the offsets, rotations and/or scale
+changes from the matched object lists.
+.le
+.ls (maxiter = 3) [integer]
+The maximum number of rejection iterations used by \fIgeomap\fR when 
+fitting for the shifts/rotations/scale.
+.le
+.ls (reject = 3.0) [real]
+The rejection limit in units of sigma used by \fIgeomap\fR when fitting
+for the shifts.
+.le 
+.ls (crossref = "") [filename]
+Filename of a distortion-corrected image which should be used as the reference
+for cross-correlation against the input images.   
+.le
+.ls (margin = 50) [integer, min=0]
+To avoid using the image edges, which in WFPC2 images are often quite noisy,
+the cross-correlation can be computed from a
+subsection of the input and reference images. The task uses a 
+subsection which is the original image stripped down of this margin size.
+The cross-correlation images will have their size smaller than the input
+images, by the same amount.
+This parameter gets passed directly to the \fImargin\fR parameter
+in \fIcrossdriz\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+.le
+.ls (tapersz = 50) [integer, min=1]
+Size of cosine bell tapering window used in the (already sectioned) image.
+This parameter gets passed directly to the \fItapersz\fR parameter
+in \fIcrossdriz\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+
+.le
+.ls (pad = no) [boolean]
+Pad images with zeros to prevent wraparound effects ? If selected, this will
+increase the amount of memory and execution time use by the task.
+This parameter gets passed directly to the \fIpad\fR parameter
+in \fIcrossdriz\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+
+.le
+.ls (fwhm = 7.0) [real]
+FWHM of the Gaussian used to fit cross-correlation peaks.
+This parameter gets passed directly to the \fIfwhm\fR parameter
+in \fIshiftfind\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+
+.le
+.ls (ellip = 0.05) [real]
+Ellipticity (1 - b/a) of the Gaussian used to fit cross-correlation peaks.
+This parameter gets passed directly to the \fIellip\fR parameter
+in \fIshiftfind\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+.le
+.ls (pa = 45.) [real]
+Position angle (in degress) of the Gaussian used to fit cross-correlation 
+peaks. Position angle increases counterclockwise from the +x direction.
+This parameter gets passed directly to the \fIpa\fR parameter
+in \fIshiftfind\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+.le
+.ls (fitbox = 7) [int]
+Size of box where the 2-D Gaussian fit takes place.
+This parameter gets passed directly to the \fIfitbox\fR parameter
+in \fIshiftfind\fR for use in fitting the offsets, rotations and/or scale
+changes from the cross-correlation of the input image with a reference image.
+.le
+.ih
+DESCRIPTION
+Tweakshifts provides an automated interface for computing residual shifts
+between input exposures being combined using MultiDrizzle or PyDrizzle. The
+shifts computed by Tweakshifts correspond to pointing differences after
+applying the WCS information from the input image's headers.  Such errors 
+would, for example, be due to errors in guide-star positions when 
+combining observations from different observing visits or from slight offsets
+introduced upon re-acquiring the guide stars in a slightly different position.
+
+This task was written using Python and relies on the Python 
+interface to the IRAF environment, PyRAF, for its operation. As a result, 
+this task can only be run under PyRAF.
+ 
+The primary implementation of 'tweakshifts' involves using existing
+IRAF tasks such as DAOFIND, GEOMAP, and CROSSDRIZ to compute the shifts.
+Tweakshifts automates the operation of these tasks to produce a shiftfile and
+reference WCS file which can serve as input to MultiDrizzle.  The shiftfile
+will contain the residual shifts for each input image, while the reference
+WCS file consists of a FITS header with all the WCS keywords appropriate
+for the reference image without any image data.  The reference WCS will
+then be used by MultiDrizzle to properly interpret the shifts from the
+shiftfile for the final alignment of the images.
+
+Tweakshifts supports multiple methods for determining the residual shifts
+between images: primarily, catalog matching and cross-correlation.  Each mode
+of operation has its own requirements for input file formats in order to
+properly compute the shifts between the images.
+
+
+.ih
+Catalog Matching
+A widely utilized method for computing offsets between images consists of
+identifying sources in each image, matching them up and fitting the matched
+sets of positions. This method will be selected for use by setting
+\fIfindmode\fR parameter to \fIcatalog\fR.
+This method requires that the image contain recognizable
+sources which are point-sources or similar enough to point-sources to be
+identified by the software as a source.  In addition, there has to be enough
+overlap between the sources identified from each input exposure to positively
+identify the same target in each image and allow the production of a sorted
+matched list of targets. Tweakshifts relies on the \fIdaofind\fR task as the
+default object identification routine.  Unless specified by the \fIrefcat\fR 
+parameter (as described below), the first input image gets selected as
+the reference image for the final product.  This results in each of the
+remaining image's source lists being matched to the reference image source
+list using \fIxyxymatch\fR producing an output matched list for each image
+(except the first) relative to the reference image positions.  These matched
+lists will, of course, only contain sources that are found in common between
+each image and the reference image.  The matched lists will then be used as
+input to \fIgeomap\fR to compute the final shift, and/or rotation and/or
+scale change for each input image relative to the (first) reference image.
+The fit by \fIgeomap\fR will be performed using coordinates which have been
+shifted so that the center of the frame will be at (0,0).  This insures that
+the resulting computed shift and rotation can be used by \fIMultidrizzle\fR
+without leaving any residual offsets, as the \fIdrizzle\fR algorithm applies
+all transformations relative to the image center not the corner of the frame.
+
+Using the \fIrefcat\fR parameter, the user can optionally specify an external 
+reference catalog to be used instead of
+using the first input as the reference image for the final product. The parameters 
+which apply to this reference catalog have the same general definitions as the 
+parameters for the coordinate file description, with the exception that the external 
+catalog is assumed to provide positions in RA/Dec. 
+
+Normally, distortion-free input images would be required as input in order to
+allow positive identification of sources relative to the reference image. For
+ACS, this would require the use of \fImultidrizzle\fR (or \fIpydrizzle\fR) to
+generate distortion-corrected images, such as the singly-drizzled images from
+\fImultidrizzle\fR.  
+ 
+However, Tweakshifts supports the use of calibrated, distorted images (such as
+FLT images for ACS, or .c0h images for WFPC2) as input
+images.  The use of distorted input images requires that the \fIundistort\fR
+parameter be set to \fIyes\fR to turn on distortion correction of 
+the source objects positions from each image.  This removes the necessity to
+actually run \fImultidrizzle\fR, \fIpydrizzle\fR, or \fIdrizzle\fR on each
+input.  
+
+Several other parameters act to directly control the operation of
+the underlying \fIdaofind\fR, \fIxyxymatch\fR and \fIgeomap\fR tasks to allow
+the user to fine-tune the results.  The \fIcomputesig\fR parameter, for
+example, sets Tweakshifts so that it will compute a global value for the sigma
+based on the sky value found in the reference image.  This value will then be
+used in \fIdaofind\fR to tune the object finding algorithm for the images
+being combined.  Since it is a global value, all input exposures need to be
+normalized to the same units, either count rates or counts or electrons, in
+order for the object identification to work the same on all input images.  
+
+The source lists from each image generally will include cosmic-rays as
+detected sources, sometimes significantly confusing object identification
+between images.  Long-exposure observations often have more cosmic-ray events
+that source objects, so weeding them out in those cases would improve the
+efficiency of identifying common sources between images.  One such method for
+trimming potentially bad or confusing sources from each source list would be
+to set a flux limit and only use sources above that limit.  The fluxes
+reported in the default \fIdaofind\fR source object lists are given as
+magnitude values.  Thus, setting a limit based on the \fIdaofind\fR magnitudes
+for the reference image as the \fIfluxmax\fR or \fIfluxmin\fR parameters and setting the
+\fIascend\fR parameter to \fIyes\fI would allow the source lists to be trimmed
+of all sources fainter than the provided limit.  This new trimmed source list
+would then be used in matching sources between images and for the final
+fitting for the shifts. 
+
+.ih 
+Cross-Correlation
+The use of cross-correlation to determine shifts can be selected by setting
+the parameter \fIfindmode\fR to \fIcross-corr\fR.  This technique allows
+shifts to be computed between images which consist primarily of large extended
+sources with few or no point-sources.  The algorithm implemented by
+Tweakshifts relies on running the tasks \fIcrossdriz\fR to perform the
+cross-correlations between the images and then \fIshiftfind\fR to determine
+the shifts from the cross-correlation images.  As with the catalog finding method, several parameters have been provided to
+directly control the operation of these underlying IRAF tasks.
+
+The inputs for this step, however, \fIMUST\fR be distortion-free images which
+all share the same WCS.  These can be generated as the single-drizzle products
+from \fImultidrizzle\fR by turning off all steps past the Single Drizzle
+processing.    
+
+
+.ih
+Acknowledgements
+This task was written by Warren Hack (STScI) based on an algorithm provided by
+Anton Koekemoer (STScI). 
+
+.fi
+.ih
+EXAMPLES
+.nf
+
+1: Compute the residual shifts for the images in the ACS association 
+'j8c0b2010_asn.fits'. The images in this association are calibrated, 
+distorted FLT images and contain enough point-like sources to support
+use of the catalog matching algorithm.  
+
+--> tweakshifts j8c0b2010_asn.fits undistort=yes mode=h
+
+This will read in all the FLT images listed in the association table, 
+select the first as the reference image, and use PyDrizzle to apply the
+distortion models to each images source object positions.  The output
+shiftfile, by default, will be written out as the file 'shifts.txt' while the
+reference WCS will be written out, by default, as 'tweak_wcs.fits'.  
+
+
+.ih
+SEE ALSO
+multidrizzle, pydrizzle, daofind, xyxymatch, geomap, crossdriz, shiftfind
+.endhelp

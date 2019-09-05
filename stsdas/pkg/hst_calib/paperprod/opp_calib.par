@@ -1,0 +1,5 @@
+rootname, f, a, "", , , 	Input root name
+filename, f, a, "", , , 	Input file name
+igi_output, f, a, "", , ,	Output igi file name
+
+mode, s, h, "al"

@@ -1,0 +1,45 @@
+.help mask_head Jun98 stsdas.analysis.dither
+.ih
+NAME
+mask_head -- attach mask names to image headers; invert mask if requested
+.ih
+USAGE
+mask_head images masks
+.ih
+PARAMETERS
+.ls imlist = "" [image names or @list]
+The names of the images.  
+.le
+.ls masklist = "" [mask names or @list]
+The names of the masks.  
+.le
+.ls (invert = "yes") [boolean]
+Determines whether the masks are inverted before being saved.
+.le
+.ls (verbose = "yes" ) [boolean]
+This parameter determines the detail of the output to the users terminal.
+.le
+.ih
+DESCRIPTION
+This task prepares images and masks for the use of imcombine,
+primarily by placing the name of the associated pixel mask
+in the header of an image 
+under the keyword "BPM".  
+The original input mask is copied to a mask of the same name, but saved
+pixel list (.pl) format.  If "invert" is set to "yes", then any value
+greater than 0 is set to 0 and all other values are set to 1.  If
+"invert" is "no", then all values greater than 0 are set to 1, and all
+others are set to 0.  
+
+For an example of the use of this task in reducing dithered WFPC2
+observations, see the paper by Fruchter and Mutchler at
+.nf
+http://www.stsci.edu/~fruchter/dither/ditherII.ps
+.fi
+.le
+.ih
+BUGS
+This task will fail if the original mask is already in pixel list
+format (i.e. has the image suffix ".pl").
+
+.endhelp

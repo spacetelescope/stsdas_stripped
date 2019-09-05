@@ -1,0 +1,20 @@
+#  COS data quality parameters
+#
+#  For now, this is just a copy of the STIS dqpars.
+#
+# These are still fake parameters, just for testing.
+#
+rs,b,h,yes,,,"Reject Reed-Solomon errors ?"
+brush,b,h,yes,,,"Reject brush mark pixels ?"
+grid,b,h,yes,,,"Reject grid shadow marks ?"
+nearedge,b,h,yes,,,"Reject pixels near a detector edge?"
+dead,b,h,yes,,,"Reject pixels on a dead spot?"
+hot,b,h,yes,,,"Reject pixels on a hot spot ?"
+burst,b,h,yes,,,"Reject pixels in a burst (FUV only) ?"
+outbounds,b,h,yes,,,"Reject pixels outside a subarray ?"
+datafill,b,h,yes,,,"Reject data filled pixels ?"
+phlow,b,h,yes,,,"Reject low pulse height ?"
+phhigh,b,h,yes,,,"Reject high pulse height ?"
+badtime,b,h,yes,,,"Reject pixels taken during a bad time ?"
+badwave,b,h,yes,,,"Reject pixels below min_wavelength ?"
+mode,s,h,al

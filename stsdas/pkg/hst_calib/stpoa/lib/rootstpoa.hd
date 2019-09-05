@@ -1,0 +1,8 @@
+# Root entry for the STPOA help tree
+
+stpoa		men = stpoa$stpoa.men,
+		hlp = stpoa$stpoa.men,
+		pkg = stpoa$stpoa.hd,
+		sys = stpoa$stpoa.hlp,
+		src = stpoa$stpoa.cl
+

@@ -1,0 +1,59 @@
+.help controlpars Oct96 stsdas.analysis.fitting
+.ih
+NAME
+controlpars -- Edit parameters related to the non-linear fitting algorithm.
+.ih
+USAGE
+controlpars
+.ih
+DESCRIPTION
+The basic parameter is 'method', which allows selection of the chi-square 
+minimization method to be used. Currently the package supports two
+methods: amoeba (downhill simplex) and Levenberg-Marquardt.
+
+The amoeba minimization algorithm looks for a minimum of the chi-square 
+between function and data using a systematic, iterative, albeit 
+time-consuming, direct search in coefficient space. It does not use 
+derivatives of the function being fitted, but just the chi-square as a 
+function of the coefficients. The Levenberg-Marquardt method uses a more
+subtle technique that relies on the function derivatives to optimize its
+search steps. Because of that it is in principle faster than the amoeba
+method, but the derivative computation can introduce instabilities that
+may impair convergency.
+
+Because both methods are iterative, it is advisable to restart the fit
+once they find a minimum, restarting from the last point found in 
+coefficient space. This might help the methods to escape from secondary
+minima.
+
+Two parameters are  provided to control the iteration sequence. 'maxit' is the 
+maximum number of iterations before the algorithm attempts a restart. 
+'restart' is the maximum number of restarts. If execution time is at a 
+premium, it is advisable to allow at least a couple of restarts, at the 
+expense of a smaller number of iterations between restarts.
+
+The three parameters 'alpha', beta' and 'gamma' apply only to the 
+amoeba method, and control the relative amount of simplex 
+expansion/contraction when searching coefficient space. Care must be 
+exercised when changing these parameters. They should be modified only
+when very erratic behavior is detected in the fitting process, and even 
+so only by small (~20%) amounts.
+.ih
+PARAMETERS
+.ls (method = "amoeba") [char]
+Allowed values: amoeba | Levenberg-Marquardt. 
+Selects the minimization method.
+.le
+.ls (maxit = 500) [integer, min=10] 
+Maximum number of iterations in between restarts.
+.le
+.ls (restart = 3) [integer, min=1] 
+Maximum number of restarts.
+.le
+.ls (alpha = 1.0, beta = 0.5, gamma = 2.0) [real]
+Parameters for controlling simplex expansion/contraction.
+.le
+.ih
+SEE ALSO
+nfit1d, ngaussfit, n2gaussfit
+.endhelp

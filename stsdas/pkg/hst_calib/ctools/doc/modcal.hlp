@@ -1,0 +1,99 @@
+.help modcal Dec92 stsdas.hst_calib.ctools
+.ih
+NAME
+modcal -- Edit a calibration pset.
+.ih
+USAGE
+modcal keywords
+.ih
+DESCRIPTION
+'modcal' is a utility task used by 'chcalpar' to change the
+values of header keywords; the task can also be used directly by users.  
+
+The data produced by the science instruments on HST are stored in GEIS 
+(multigroup) data files.  The headers are populated with a large number 
+of FITS-style keywords that describe the data and the state of the 
+instrument at the time of the observation.  A subset of these keywords, 
+called "calibration parameters", govern which calibration operations to 
+perform during pipeline processing, and which reference files data to 
+access.  Since these calibration parameters are the only means of 
+selecting options during the pipeline calibration, and since editing 
+GEIS headers requires a certain amount of expertise, the `chcalpar' task 
+was created.
+
+The `chcalpar' family of tasks use what are known as "psets", or named 
+parameter sets.  These are very similar to IRAF task parameters, but are 
+often used by groups of tasks for passing information.  Any of the
+parameter-specific tasks, such as `eparam' or `lparam' can be used on
+a pset.  (Type "help eparam" for further information.)  In the context 
+of 'chcalpar' and 'modcal', there is a pset defined for each of HST's science 
+instruments.  The names of the psets are of the form "ckwxxx", where 
+"xxx" is the instrument identification, e.g., 'ckwhrs' for the Goddard 
+High Resolution Spectrograph.
+
+'modcal' uses the task `eparam' to modify the values of the calibration
+pset. After exiting 'eparam', 'eparam' will resume, displaying only the
+modified values---all other parameters are blank. You can then make
+more changes or exit. When you exit 'eparam' for the second time,
+the task will prompt you to accept the modifications:
+
+.nf
+        Accept the current parameters? (|no|yes|abort) (yes):
+.fi
+
+If you answer "yes", then the displayed parameters are written back to
+the calibration pset.  If you say "no", the editing process starts
+over with an 'eparam' showing the original values of the calibration
+parameters.  If you answered "abort", `modcal' exits without
+changing the pset.
+.ih
+PARAMETERS
+.ls keywords [pset]
+The calibration pset to edit.  A pset must be specified.  The pset can
+be any one of the standard instrument calibration psets (psets with
+the name "ckwxxx" where "xxx" is the name of the instrument).
+.le
+.ls accept [string, allowed values: yes | no | abort]
+This is *NOT* a user parameter...it is the response that you make
+when exiting the 'eparam' editor, as described in DESCRIPTION above.
+.le
+.ls (result = "no") [string, allowed values: yes | no | abort ]
+This is *NOT* a user parameter, it is set by the task to
+the value of 'accept' as a flag for other tasks.
+.ih
+EXAMPLES
+1. Modify a set of HRS data to change the reference file PHCHFILE, the
+photocathode response reference file, and to set the calibration
+switch PHC_CORR to PERFORM to perform the photocathode response
+calibration.  The image 'z06i5601m.d0h' will be used to load in all the
+calibration parameters.
+
+.nf
+        cl> getcal z06i5601m.d0h
+        cl> modcal ckwhrs
+.fi
+
+`eparam' then appears with the calibration parameters and their
+values.  Modify the parameters PHCFILE to 'zref$abc0123dz.r1h' and
+PHC_CORR to PERFORM.  Exit `eparam' as one would normally (usually
+Control-Z or ':q').  `eparam' then appears again with all the parameters
+blanked out except PHCFILE and PHC_CORR.  Confirm that these were set
+correctly; you can make additional changes now if you want, and exit
+`eparam' again.  Then you will see the prompt:
+
+.nf
+        Accept the current parameters? (|no|yes|abort) (yes):
+.fi
+
+If you answer "yes", the pset `ckwhrs' will be modified.  If
+you answer "no", the editing process will start over with the original
+set of calibration values.  If you say "abort", then the process ends.
+
+.ih
+BUGS
+Do NOT attempt to exit the "eparam" portion of this task with ":g".  The 
+results will confuse the CL, and may not give you the desired result.  
+.ih
+SEE ALSO
+chcalpar, eparam, lparam, getcal, parameters, putcal, unlearn, ckwxxx
+.endhelp

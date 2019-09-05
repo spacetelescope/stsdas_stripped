@@ -1,0 +1,12 @@
+infile, f, a, "", , , 	Input files
+outtable, f, a, "", , ,	Output tables
+
+errval, i, h, FFFFx, , ,Fill value in the output HEX column for masked data
+loc_execute, i, h, 93, 93, 101,    	Pixel location of the EXECUTE command
+loc_infrequent, i, h, 95, 93, 101, 	Pixel location of the INFREQUENT command
+loc_prepare, i, h, 97, 93, 101,	Pixel location of the PREPARE/READOUT command
+loc_riua, i, h, 99, 93, 101,	Piexl location of the RIU A command
+loc_riub, i, h, 101, 93, 101,	Pixel location of the RIU B command
+verbose, b, h, no, , ,		Verbose message on screen?
+
+mode, s, h, "al"

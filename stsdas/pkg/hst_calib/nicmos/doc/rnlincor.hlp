@@ -1,0 +1,116 @@
+.help rnlincor Sep06 stsdas.hst_calib.nicmos
+.ih
+NAME
+rnlincor -- Correct NICMOS data for count rate dependent nonlinearity
+
+.ih
+USAGE
+rnlincor input output
+.ih
+DESCRIPTION
+The rnlincor task corrects for the countrate-dependent nonlinearity in a
+NICMOS image. It was written in Python and relies on the Python
+interface to the IRAF environment, PyRAF, for its operation. As a result, this
+task can only be run under PyRAF. It uses the numpy array package in Python; 
+therefore, the numpy package must be available. To ensure this, the NUMERIX 
+environment variable must be set to numpy.
+
+The input image to the task must be a NICMOS science image in units  of DN/s
+that has been processed through CALNICA, and preferably has also been 
+corrected for
+pedestal with either the pedsky or pedsub tasks.
+Grism and polarimetry images are not supported by this task.
+
+The countrate dependent nonlinearity can be modeled by a powerlaw,
+
+.nf
+          CR(x,y)    proportional to     (Ftot(x,y))**alpha
+.fi
+
+where CR(x,y) is the measured count rate in DN/s and Ftot(x,y) is the
+total flux falling on a detector pixel. The amount of non-linearity as
+parameterized by alpha depends on wavelength.
+
+To correct the images for the nonlinearity, each pixel must be raised  to the
+power 1/alpha. This presents a problem for pixels with negative count  rates.
+To preserve a symmetric noise distribution near the sky level, the  absolute
+values of the pixels are used in the correction:
+
+.nf
+ CRcorrected(xy)     proportional to     |CRmeasured(x,y)|**(1/alpha)
+.fi
+
+The nonlinearity correction constants alpha are obtained from the  CDBS file
+ nref$*_nlz.fits table, and interpolated to get the correction at the
+pivot wavelength of the bandpass. If the image has been sky- subtracted, the
+sky value (stored in header keyword SKYVAL) is added back into the  image to
+compute the correction, then removed after the correction has been  applied.
+The correction is computed independently for each pixel in the image. By
+default, this includes the adjustment necessary to ensure that the  output
+image has the same photometric zeropoint (PHOTFNU/PHOTFLAM) as the input
+image. This additional correction can be disabled with the nozpcorr  parameter.
+
+The primary header of the output image will be updated with new keywords
+RNLCDONE set to PERFORMED and RNLCALPH containing the powerlaw of the
+nonlinearity correction. If no zeropoint corrections have been included,
+the additional keyword RNLCZPRT will contain the ratio necessary to  correct
+the data to match PHOTFNU.
+
+
+.ih
+PARAMETERS
+.ls input = "" [filename]
+Input filename (typically the _cal.fits file).
+.le
+.le
+.ls output = "" [filename]
+Name of the output corrected file. If omitted, the output filename  will be
+constructed by replacing or adding _nlc before the .fits filename  extension.
+If the output file already exists, it will be overwritten.
+.le
+.ls (nozpcorr = no) [boolean]
+Disable zeropoint correction? If set to yes, the correction is  applied without
+correcting for the PHOTFNU photometric zeropoint calibration. The pre-existing
+PHOTFNU/PHOTFLAM values will be incorrect for the output data. This  parameter
+should only be used for testing and development.
+.le
+
+.ih
+EXAMPLES
+1. Correct the NICMOS image n8sqannaq_cal.fits for countrate-dependent
+nonlinarity, with output written to the default output filename
+n8sqannaq_nlc.fits.
+
+.nf
+--> rnlincor n8sqannaq_cal.fits
+Output cleaned datafile (''):
+Using non-linearity correction 0.0480 mag/dex
+Applying zeropoint correction
+.fi
+
+2. Correct the same image, but without the zeropoint correction. Specify
+a separate filename.
+
+.nf
+--> rnlincor n8sqannaq_cal.fits n8sqanna_nzp.fits nozpcorr+
+Using non-linearity correction 0.0480 mag/dex
+NOT applying zeropoint correction
+.fi
+.ih
+REVISIONS
+Initial implementation: Sep 2006.
+.ih
+BUGS
+Presently works only for Cycle 11+ observations; calibration tables for
+Cycle 7 are still being computed.
+.ih
+REFERENCES
+This task was written by V. Laidler based on prototype code by R. de  Jong.
+The algorithm is described in more detail in ISR NICMOS 2006-003 by  de Jong.
+.ih
+SEE ALSO
+
+.ih
+
+.endhelp
+

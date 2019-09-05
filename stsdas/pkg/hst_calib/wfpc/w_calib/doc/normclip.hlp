@@ -1,0 +1,63 @@
+.help normclip Dec92 stsdas.hst_calib.wfpc.w_calib
+.ih
+NAME
+normclip -- Normalize WF/PC flat fields among chips. 
+.ih
+USAGE
+normclip infile inmask outfile outmask flatmin flatmax
+.ih
+DESCRIPTION
+This task takes the output of the task 'streakflat' and normalizes among all CCD
+detectors such that the overall average of all four chips is one.
+This task also clips out extremely low or high flat field values
+and does the final inversion so the output file can be used in the Calibration 
+Data Base.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input flat field file template.  
+.le
+.ls inmask = "" [string]
+Name of the input flat field data quality file template.  
+Each input file should have one corresponding data quality file.  
+.le
+.ls outfile = "" [string]
+Name of the output file template.  
+Each input file should have one corresponding output file.  
+.le
+.ls outmask = "" [string]
+Name of the output data quality file template.  
+Each output file should have one corresponding output data quality file.  
+.le
+.ls flatmin = 0. [real]
+Minimum value allowed in the normalized flat field.  If the flat field value
+is lower than the value of this parameter, a fill value (1.0) will be put in 
+its place and the corresponding pixel in the output data quality file will
+be flagged.
+.le
+.ls flatmax = 10. [real]
+Maximum value allowed in the normalized flat field.  If the flat field value
+is higher than the value of this parameter, a fill value (1.0) will be put in 
+its place and the corresponding pixel in the output data quality file will
+be flagged.
+.le
+.ls (verbose) = no [boolean]
+Print out detailed messages as the task progresses?
+.le
+.ih
+EXAMPLES
+1. Normalize the flat field file in.r6h. Use flat field values between 0.1 
+and 10.0.
+
+.nf
+w_> normclip in.r6h in.b6h normalize.r6h normalize.b6h \
+>>>  flatmin=0.1 flatmax=10.
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+.ih
+SEE ALSO
+streakflat
+.endhelp

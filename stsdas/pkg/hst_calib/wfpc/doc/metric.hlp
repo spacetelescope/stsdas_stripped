@@ -1,0 +1,145 @@
+.help metric Jun95 stsdas.hst_calib.wfpc
+.ih
+NAME
+metric -- Translate WF/PC or WFPC2 pixel coordinate to RA and Dec with geometric corrections and optional centroiding.
+.ih
+USAGE	
+metric infile[group] x y
+.ih
+DESCRIPTION
+This task corrects for geometric distortions of the specified CCD chip (i.e.,
+the chip corresponding to the specified file group) and transforms to the 
+reference chip's coordinate.  The reference chip is always at group 2, 
+i.e., for WF (or WFPC2) it is WF2 and for PC it is PC6.  It then 
+uses the reference chip's group parameters CRVAL, CRPIX, and CD matrix 
+coefficients to translate the corrected pixel coordinate to RA and Dec.
+Thus the epoch of RA and Dec is the same as these group parameters, usually 
+J2000 for HST data.
+
+This task can take three kinds of inputs: (1) a single pair of (X,Y) coordinate,
+specified by using the 'x' and 'y' input parameters; (2) X and Y
+in table(s), specified by passing the table and column name (separated by 
+a space) for the 'x' and 'y' parameters; and (3) interactive cursor
+input, specified by setting 'x' to "", which will cause the image
+to be displayed. You can then move the cursor to the desired
+position and press a key to get the coordinates. Pressing "q" will
+end the task; pressing "c" will enable centroiding; any other
+key will return the X,Y coordinate at the cursor position. 
+
+Centroiding is used to calculate a refined center position of a point source 
+in the image by using the given position as an approximate initial 
+value.  Choosing a proper box size for centroiding is important: for 
+example, if there is another star close to the target star, a large box will 
+make the centroid lie between these two stars, instead of at the center of the
+target star. The algorithm used here is identical to the IRAF task 'imcntr'.
+(Refer to the help file of 'imcntr' for details of the algorithm.)
+
+Results are sent to the terminal.  The output will contain the following columns:
+.nf
+* original input pixel coordinates
+* pixel coordinates after centroiding (if applicable)
+* coordinates after geometric corrections
+* coordinates after transformation to the reference chip
+* RA and Dec
+.fi
+.le
+.ih
+PARAMETERS
+.ls infile [string]
+Input image name.  Only one image at a time can be processed; wild cards
+and image section syntax are not supported.
+The header keyword INSTRUME and group parameter DETECTOR of this file is 
+used to determine which geometric coefficients are to be used.  
+If no group number is specified, it assumes the default group of 1.
+.le
+.ls x [string]
+X pixel coordinate specification. Three types of input are possible: 
+
+1) X can be a number representing the X coordinate, and the 'y' parameter
+is passed a number representing the corresponding Y coordinate.
+
+2) A null value ("") can be passed to 'x', meaning that pixel coordinates (both
+X and Y)
+are taken from interactive cursor location on the displayed image.
+In this case, any value passed to 'y' is ignored.
+
+3) 'x' can be passed a table name (in either ASCII text or STSDAS format)
+with a space between the table name and column name, for example,
+'x = "file.tbl COLNAME"'. In this case, you can specify a column
+name for the Y coordinates using the 'y' parameter. If separate tables
+are passed to 'x' and 'y' and the two tables have different numbers
+of rows, the task will quit at the end of the shorter table. You can
+also enter values interactively by passing "STDIN" as the table name;
+in this case, you would end input by typing an EOF character (usually
+Control-Z or Control-D).
+.le
+.ls y [string]
+Y pixel coordinate specification, see above.
+.le
+.ls (hms) = yes [boolean]
+Print the output RA in hour-minute-second and Dec in degree-minute-second?
+
+If this parameter is set to "no", output is printed in decimal degrees
+for RA and Dec.
+.le
+.ls (centroid) = no [boolean]
+Use centroiding around the specified pixel coordinates?
+
+This parameter is ignored if cursor input is used, as centroiding in 
+cursor input is controlled by the "c" keystroke (see DESCRIPTION above).
+.le
+.ls (boxsize) = 7 [integer]
+The number of pixels on each side of the square box used in centroiding.
+.le
+.ls (ra) [string]
+The output right ascension of the last (X,Y) pair.
+.le
+.ls (dec) [string]
+The output declination of the last (X,Y) pair.
+.le
+.ih
+EXAMPLES
+1. Single pair of (X,Y) input, with decimal degree output for RA and Dec:
+
+.nf
+cl> metric w1234567t.d0h[3] 19 53 hms- 
+.fi
+
+2. Input positions from a text table where X are in the 3rd column and Y 
+in the fifth column, send result to the file 'coord.result':
+
+.nf
+cl> metric w1234567t.d0h "coord.txt c3" "c5" > coord.result
+.fi
+
+3. Input X from an STSDAS table 'coord.tab' and Y from a text table 'coord.txt'.
+X's are in the column called "xname" and Y's in the 1st column:
+
+.nf
+cl> metric w1234567t.d0h "coord.tab xname" "coord.txt c1" 
+.fi
+
+4. Input X's and Y's from the terminal (each line has an X,Y pair, first 
+column is X), do the centroiding:
+
+.nf
+cl> metric w1234567t.d0h[2] "STDIN c1" "c2" cen+
+.fi
+
+5. Input position(s) from the cursor:
+	
+.nf
+cl> metric u1234567t.d0h[1] ""
+.fi
+.ih
+REFERENCE
+Geometric distortion and camera offset/rotation coefficients for WF/PC were 
+supplied by Roberto Gilmozzi and Shawn Ewald at STScI in November 1992.
+Coefficients for WFPC2 were supplied by Roberto Gilmozzi, Ellyne Kinney, and 
+Shawn Ewald in December 1994.
+.ih
+BUGS
+.ih
+SEE ALSO
+xy2rd, imcntr, wmosaic, invmetric
+.endhelp

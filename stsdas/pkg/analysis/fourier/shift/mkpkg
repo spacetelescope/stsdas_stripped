@@ -1,0 +1,11 @@
+# Update the shift task in the fourier package library.
+# Author:  Phil Hodge, 20-Jul-1988
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	shift.x      		<imhdr.h> <ctotok.h>
+	;

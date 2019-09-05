@@ -1,0 +1,49 @@
+There are a few things to watch out for in using the STSDAS gasp
+package with the HST Guide Star Catalog CD-ROMs.  Some of these have
+been fixed in later versions and patches to STSDAS, but older
+installations may need to be especially careful.
+
+
+o  Apply the hsfs patch to allow the CD-ROM to be mounted and accessed
+   as part of the file system.  See the file README_CD in the STSDAS
+   gasp package directory (gasp$README_CD) for instructions.
+
+o  The cdrom task is obsolete and no longer available, even though it
+   may appear in the package menu.  You can read or copy files directly
+   from the CD-ROMs once the hsfs patch has been applied and the disks
+   have been mounted.  The gasp tasks access the files directly.
+
+o  You need to extract the "index table" from the CD and reformat it as
+   an STSDAS binary table.  This table provides the location of every
+   GSC region on the sky and permits the gasp tasks (particularly
+   sgscind) to determine which files to read on the CDs.  Use the task
+   stgindx to get the file from the disk.  This is a "hidden" task that
+   does not appear in the package menu.  The help for stgindx in older
+   versions of STSDAS is incorrect.  There are two task parameters:
+
+   index -- specifies the location of the output index file in STSDAS
+   binary table format.  This is normally "gasp$index" specifying the
+   gasp "package directory" part of the STSDAS system.  You can put it
+   anywhere, but you then also need to change the index parameter in
+   the sgscind task to match.  You need not (and indeed should not)
+   include the file name extension (".tab") on the index table name
+   although the file name will have this extension when it's created.
+
+   cdfile -- specifies the name of the FITS format table on either
+   GSC CD-ROM disc.  The path depends on how the CD-ROM was installed
+   in your particular system.  For example, at ST ScI, both discs are
+   available, on "/data/gsc1" and "/data/gsc2".  The path to the index
+   table is then "/data/gsc1/tables/regions.tbl" (the default value for
+   the index parameter).  This does require the full path name and the
+   extension ".tbl".
+
+o  Make sure the parameters cdrom_north and cdrom_south for the sgscind
+   task specify the correct path to the root directory of the GSC disks
+   as mounted in the file system.  And make sure the index parameter
+   specifies the correct location for the index table (see the previous
+   bullet).  As indicated above, these depend on the installation.  At
+   ST ScI, the discs are available on "/data/gsc1" and "/data/gsc2".
+
+o  Before running regions or targets, make sure you use
+   "set imtype=hhh" in the cl to work around a problem in the FITS
+   conversion task.  You can put this in the login.cl file.

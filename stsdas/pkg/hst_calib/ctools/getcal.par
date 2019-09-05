@@ -1,0 +1,3 @@
+input,f,al,,,,"Input science data header file name"
+keywords,pset,al,,,,"Pset for calibration parameters"
+Version,s,h,"21Jul97",,,"Date of Installation"

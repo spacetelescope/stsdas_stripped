@@ -1,0 +1,21 @@
+# Make the STANDALONE library from the iraf77 library deleting the cl
+# and graphics routines from it.
+# Nelson Zarate Feb 1988.
+
+$call copy
+$update   stalone.a
+$checkin  stalone.a ../
+$purge ../stalone.a
+$purge ../stalone.mlb
+$exit
+
+copy:
+
+!copy [-]libiraf77.olb stalone.olb
+!library/delete=(ucl*,ug*)/compress stalone.olb
+;
+
+stalone.a:
+	uuprlg.c			pvms.h
+	irafmn.x
+	;

@@ -1,0 +1,269 @@
+.help pedsky May2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+pedsky -- subtract sky and pedestal signal from a NICMOS image
+.ih
+USAGE
+pedsky input output
+.ih
+DESCRIPTION
+The pedsky task measures and removes an estimate of the sky background and
+quadrant-dependent residual bias (or "pedestal") in a NICMOS image.
+The input image to the task must be at least partially calibrated, including
+zero-read subtraction, dark subtraction, and linearization. The input image
+may also be flatfielded, but this is not required.
+
+Pedsky runs on a single science image (i.e. not on all the separate readouts
+of a NICMOS MULTIACCUM file).  It operates only on the [SCI,1] extension,
+which is appropriate when the task is run on, e.g., the _cal type images
+that are the final product of the "calnica" calibration pipeline.
+The task's internal algorithms are designed to operate on an unflatfielded
+image, but a fully-calibrated (including flatfielding) image may be used as
+input, as the task will check the status of the flatfielding (via the value
+of the FLATDONE keyword in the input image header) and will temporarily
+remove and, at the end of processing, reapply the flatfield if necessary. 
+
+The task works by assuming that the signal in the image that is near the
+background level is composed of the actual sky signal, modulated by the
+spatially-varying quantum efficiency of the detector, plus a DC bias signal
+that is constant over an image quadrant.
+The task can estimate the sky and bias levels by any of several available
+methods. The user can select the method via the "salgorithm" parameter.
+In all methods, a single sky value is applied to the entire image, while
+indepedent bias values are determined for each image quadrant.
+
+The fastest method (salgorithm=quick) performs a direct least-squares solution
+to the equation "signal = flat*sky + bias", where "signal" is the value of
+each pixel in the input image, "flat" is the corresponding flatfield value
+for each pixel, and "sky" and "bias" are the sky background and residual bias
+signals. Only those pixels near the background level of the image are used
+in the fitting process. The range of pixel values to be used can be set via
+the smin and smax parameters. If set to INDEF, the task will use a range of
+values within a few sigma of the image median.
+
+The second method (salgorithm=iter) iteratively subtracts trial sky and bias
+values from the image, seeking the optimal combination that produces an image
+with the minimum rms deviation in pixel values.
+When using this method, the smin and smax task parameters may be used to set
+the range of trial sky values. If left set to INDEF, the task will again
+compute default values based on statistics of the input image.
+For each iteration of trial sky values, the task performs the following steps:
+.nf
+  1. Scale the reciprocal flatfield image by the test sky value
+  2. Subtract the scaled flatfield image from the input image
+  3. Calculate the clipped median of each quadrant of the resulting
+     image (this is assumed to be the pedestal level)
+  4. Subtract the pedestal level from each image quadrant
+  5. Optionally perform a ring median filtering of the resulting
+     image to remove pixel-to-pixel noise and attempt to filter out
+     objects
+  6. Calculate the rms residuals of the remaining image fluctuations
+.fi
+The search for the optimal sky value uses the Brent minimization algorithm to
+hunt down the minimum of the function rms vs. sky scaling value. When the rms
+is minimized, the final sky scaling and quadrant pedestal values are subtracted
+from the image to produce a sky- and bias-subtracted output image.
+
+A third alternative (salgorithm=constant) allows the user to supply a
+predetermined sky value (via the skyvalue parameter) to be subtracted.
+Following the sky subtraction, the remaining quadrant-dependent pedestal is
+estimated and subtracted.
+
+Finally, if salgorithm=none, no sky signal is determined or subtracted. In
+this case only the bias is estimated and removed. This is accomplished by
+simply computing and subtracting the clipped median of each quadrant
+(assumed to be equivalent to the bias signal).
+
+The sky and pedestal values determined by all methods are stored
+in the output image header in the keywords 'SKYVAL' and 'PEDQUAD1' through
+'PEDQUAD4'.
+
+Before performing any sky or pedestal estimates, the task searches for and
+flags pixels in the input image suspected of containing signal from a source.
+This is accomplished by making a rough estimate of the background level in
+the image and then identifying pixels with signal greater than a few sigma
+above the background as potentially containing a source. Internally, these
+pixels are flagged in the DQ image extension that is carried through the
+remaining calculations, and is used to exclude the flagged pixels from all
+computations. If the "keepflags" parameter is yes, the task will save these
+source flags in the DQ image extension of the output image.
+The process of flagging and excluding source-contaminated pixels usually
+obviates the need for the optional ring median filtering that is available
+for the salgorithm=iter mode.
+
+In principle, any image may be used to represent the spatial
+structure of the sky, i.e. one does not need to use a standard NICMOS
+flatfield reference file.  In particular, for some NICMOS images the 
+two-dimensional structure of the sky may not exactly resemble that of the 
+flatfield.  A good example is data taken at wavelengths > 1.8 microns, 
+where thermal background generated within the telescope may illuminate
+the detector differently than does the zodical sky.  In cases like this, 
+the user may want to provide his or her own "sky" image (e.g. constructed 
+from the median of many dithered science or background exposures) instead 
+of using the standard flatfield image.  This can sometimes improve the quality
+of the sky + pedestal fitting even for data taken at shorter wavelengths.  
+Note, however, that because pedsky assumes (by default) that the "flatfield" 
+image is really a standard pipeline inverse flat image, then if a different 
+image is supplied it should actually be the reciprocal of the expected sky 
+image.  Optimally it should also be normalized to have approximately 
+unit mean.
+
+Note that the methods used by pedsky will only work for images which are
+relatively "blank", i.e. free of extended, bright objects that dominate the
+field of view.
+The "quick" and "iter" procedures, for example, must have a sufficiently large
+number of pixels containing only sky signal in order to arrive at a good
+solution.
+Also, since the bias estimate for all methods other than "quick" is arrived
+at by simply computing the clipped median of each image quadrant, these
+estimates will be biased if a majority of pixels contain source signal.
+The source-flagging and ring median filtering procedures can not be relied
+upon in these cases to remove the effects of the source(s).
+The source-flagging procedure will not work well since it will be difficult
+accurately estimate the image background.
+Similarly, the ring median filtering is only helpful for removing objects with
+scale sizes smaller than the inner radius of the filter.  The ring median
+feature considerably slows the operation of the task, and users should
+experiment to see if its use significantly improves the quality of the pedestal
+subtraction.
+
+A task that is effective at removing pedestal from crowded images is pedsub.
+.ih
+PARAMETERS
+.ls input [file]
+Input image name(s).
+This will normally be a single IMSET file (_cal type) that has been processed
+through "calnica".  The full file name must be given.
+.le
+.ls output [file]
+Output image name(s).
+Must be a full file name specification and the numbers of input and output
+images must be equal.
+.le
+.ls (salgorithm = "quick") [string, values: quick|iter|constant|none]
+Sky fitting algorithm. The "quick" mode performs a least-squares linear fit to
+the data to directly solve for sky and pedestal values. The "iter" mode
+performs an iterative search for the combination of sky and pedestal values
+that minimize the resulting image residuals. In the "constant" mode the task
+will subtract a user-supplied sky value, given by the task parameter
+"skyvalue". If set to "none", no sky determination or subtraction is performed.
+.le
+.ls (skyvalue = 0.) [real]
+User-supplied constant sky value. Only used if salgorithm = "constant".
+.le
+.ls (smin = INDEF) [real]
+Minimum scaling factor for automatic sky determination. Only used if
+salgorithm = "quick" or "iter". If INDEF, the task will set smin to the
+minimum of zero or the image median - 2*stddev.
+.le
+.ls (smax = INDEF) [real]
+Maximum scaling factor for automatic sky determination. Only used if
+salgorithm = "quick" or "iter". If INDEF, the task will set smax to the
+image mean + stddev.
+.le
+.ls (maxiter = 12) [integer]
+Maximum number of iterations for iterative sky determination. Only used if
+salgorithm = "iter".
+.le
+.ls (tol = 0.002) [real]
+Fractional tolerance criterion for convergence test in iterative sky
+determination. Only used if salgorithm = "iter".
+.le
+.ls (keepflags = yes) [boolean]
+Keep the source flags found by the task in the output image? If set to "yes",
+the task will add the source flags (DQ value = 1024) that it sets during
+operation to the DQ image extension of the output image. If set to "no", the
+output image DQ extension is unchanged.
+.le
+.ls (flatfield = "") [file]
+Flatfield file to use for subtracting sky or pedestal signals. If left blank,
+the task will read the name of the flatfield image from the FLATFILE keyword
+in the input image header. Any "inverse sky" image may be supplied here;
+see comments above.
+.le
+.ls (statregions = "") [pset]
+Pset containing image section specifications for computing statistics.
+The "quad1" through "quad4" parameters specify the boundaries to use for each
+quadrant when computing the pedestal levels. The "statsec" parameter specifies
+the image section to use when computing the whole-image residuals after
+sky and pedestal subtraction.
+.le
+.ls (dqon = yes) [boolean]
+Turn on pixel masking by data quality bits? If yes, then pixels with DQ bits
+corresponding to those listed in the dqpar pset (see below) will not be used
+in any statistical computations.
+.le
+.ls (dqpar = "") [pset]
+Data quality bits parameter set. Pixels with DQ bits corresponding to those
+bits turned on in this pset will be rejected from statistical computations
+if dqon=yes.
+.le
+.ls (rmedian = no) [boolean]
+Do ring median filtering of image before computing residuals and pedestal
+values?
+.le
+.ls (rin = 6.) [real]
+Inner radius, in pixels, for ring median filter.
+.le
+.ls (rout = 12.) [real]
+Outer radius, in pixels, for ring median filter.
+.le
+.ls (verbose = yes) [boolean]
+Verbose output during task execution?
+.le
+.ih
+EXAMPLES
+1. Estimate and subtract sky and pedestal from the calibrated image
+n3z302g7m_cal.fits, storing the resulting image in the file n3z302g7m_ped.fits.
+The sky determination is performed using the default "quick" least-squares
+fitting method and the flatfield image named in the input image header is used:
+
+.nf
+cl> pedsky n3z302g7m_cal.fits n3z302g7m_ped.fits
+.fi
+
+2. Correct the same image, filtering sources with the rmedian operation:
+
+.nf
+cl> pedsky n3z302g7m_cal.fits n3z302g7m_ped.fits rmedian+
+.fi
+
+3. Correct the image n4ls01i1q_cal.fits using a predetermined sky value of 1.34:
+
+.nf
+cl> pedsky n4ls01i1q_cal.fits n4ls01i1q_ped.fits salg="constant" \
+>>> skyval=1.34
+.fi
+
+4. Process the images listed in the file "cal.lis", using all default
+parameter settings.  The corresponding list of output file names is contained
+in the file "ped.lis":
+
+.nf
+cl> pedsky @cal.lis @ped.lis
+.fi
+.ih
+REVISIONS
+.ls Version 19-May-2000 (STSDAS v2.2)
+CL script version of task replaced with ANSI-C native IRAF task. Changes in
+functionality include: input image may have flatfield correction already
+applied (in fact, this is encouraged); routine added to find and flag sources;
+keepflags parameter added to allow saving of source flags;
+salgorithm parameter setting "auto" split into two settings "quick" and "iter";
+dqon and dqpar parameters added; inter parameter eliminated (interactive
+graphics not possible from IRAF C interface).
+.le
+.ls Version 11-Jun-1999 (STSDAS v2.1)
+First release of original CL script version of task. Input image was
+required to be in unflatfielded form.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Author: H. Bushouse, STScI
+.ih
+SEE ALSO
+biaseq, pedsub
+.endhelp
+

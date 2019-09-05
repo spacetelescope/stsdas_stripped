@@ -1,0 +1,41 @@
+xsynphot
+# This is the input file for the STSDAS SYNPHOT library.
+# Relative to directory /usr/stsci/stsdasx/lib/synphot
+
+/h/# include <c_iraf.h>
+
+# SYNPHOT defines
+/h/
+
+# SYNPHOT includes and private routines
+/c/# include <xsynphot.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+
+
+compband.x:procedure compband (command:i, iw:i, graphtab:i, comptab:i, nwave:i, wave, band:o)
+# Problem here with output char array -- no maximum length
+compspec.x:procedure compspec (command:i, iw:i, graphtab:i, comptab:i, nwave:i, wave, spec:o, form:o[15])
+opnsyntab.x:procedure inisyntab ()
+opnsyntab.x:procedure clssyntab ()
+syncompile.x:procedure syncompile (expr:i, pcode:o, maxcode:i)
+# In syncalc, getvar is a pointer to a function, i. e., an operating system
+# address.  It is used in a call to zcall2.  It should not be converted.
+syncalc.x:procedure syncalc (pcode:i, maxcode:i, getvar:i, nwave:i, wave:i, graphtab:i, comptab:i, output:o, units:o)
+calcrange.x:procedure calcrange (pcode:i, maxcode:i, graphtab:i, comptab:i, minwave:o, maxwave:o)
+getphotx.x:procedure getphotx (mode:i, graphtab:i, comptab:i, path:o, mxpath:i, phot:o)
+getbandx.x:procedure getbandx (mode:i, graphtab:i, comptab:i, logspace:i, nwave:i, wave:o, thruput:o, thruerr:o) 
+evalbandx.x:procedure evalbandx (mode:i, nwave:i, wave:i, graphtab:i, comptab:i, thruput:o, thruerr:o)
+phopar.x:procedure phopar (nwave:i, wave:i, thruput:i, phot:o)
+anytoang.x:int procedure anytoang (units:i, wave, nwave:i)
+angtoany.x:int procedure angtoany (units:i, wave, nwave:i)
+anytophot.x:int procedure anytophot (units:i, nwave:i, wave:i, flux)
+phottoany.x:int procedure phottoany (units:i, nwave:i, wave:i, flux)
+avglam.x:real procedure avglam (nwave:i, wave:i, thruput:i)
+pivlam.x:real procedure pivlam (nwave:i, wave:i, thruput:i)
+rmslam.x:real procedure rmslam (nwave:i, wave:i, thruput:i)
+fwhmlam.x:real procedure fwhmlam (nwave:i, wave:i, thruput:i)
+funit.x:real procedure funit (area:i, nwave:i, wave:i, thruput:i)
+getvega.x:procedure getvega (nwave:i, wave:i, spec:o)
+listpath.x:procedure listpath (mode:i, graphtab:i, comptab:i, path:o, mxpath:i)
+graffiles.x:procedure graffiles (mode:i, graphtab:i, comptab:i, maxname:i, maxthru:i, nthru:o, thruput:o[maxname:maxthru])

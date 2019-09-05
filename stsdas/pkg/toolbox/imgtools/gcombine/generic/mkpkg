@@ -1,0 +1,22 @@
+##############################################################################
+# Make GCOMBINE object library						
+#									
+$checkout	gcombine.a	../
+$update		gcombine.a
+$checkin	gcombine.a	../
+$exit
+
+gcombine.a:
+	g_combine.x	<imhdr.h> "../gcombine.h" "../gcombine.com" 
+	gc_asclip.x	"../gcombine.h" "../gcombine.com"
+	gc_cclip.x	"../gcombine.h" "../gcombine.com"
+	gc_rsclip.x	"../gcombine.h" "../gcombine.com"
+	gc_eclip.x	"../gcombine.h" "../gcombine.com"
+	gc_average.x	"../gcombine.h" "../gcombine.com"
+	gc_median.x	"../gcombine.h" "../gcombine.com"
+	gc_mm.x		"../gcombine.h" "../gcombine.com"
+	gc_gdata.x	<imhdr.h> "../gcombine.h" "../gcombine.com"
+	gc_sigma.x	"../gcombine.h" "../gcombine.com"
+	gc_stat.x	"../gcombine.h" "../gcombine.com"
+	gc_sort.x	"../gcombine.h" "../gcombine.com"
+	;

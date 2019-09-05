@@ -1,0 +1,22 @@
+# Help directory for the STECF package
+
+# DRIZTOOLS
+steep        hlp=stecf$driztools/doc/steep.hlp
+satmask      hlp=stecf$driztools/doc/satmask.hlp
+
+# IMPOL 
+hstpolima    hlp=stecf$impol/doc/hstpolima.hlp
+hstpolpoints hlp=stecf$impol/doc/hstpolpoints.hlp
+hstpolsim    hlp=stecf$impol/doc/hstpolsim.hlp
+polimodel    hlp=stecf$impol/doc/polimodel.hlp
+polimplot    hlp=stecf$impol/doc/polimplot.hlp
+
+# SPECRES
+specholucy    hlp=stecf$specres/doc/specholucy.hlp
+specpsf       hlp=stecf$specres/doc/specpsf.hlp
+specinholucy  hlp=stecf$specres/doc/specinholucy.hlp
+
+# IMRES
+cplucy       hlp=stecf$imres/doc/cplucy.hlp
+apomask      hlp=stecf$imres/doc/apomask.hlp
+seeing       hlp=stecf$imres/doc/seeing.hlp

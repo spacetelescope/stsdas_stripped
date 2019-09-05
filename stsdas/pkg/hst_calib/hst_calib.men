@@ -1,0 +1,17 @@
+Menu for the package stsdas.hst_calib
+
+        acs - Tasks for calibrating ACS data.
+     hstcos - Tasks for calibrating COS data.
+     ctools - General calibration tools.
+        foc - Tasks for calibrating FOC data.
+        fos - Tasks for calibrating FOS data. 
+        hrs - Tasks for calibrating HRS data. 
+     nicmos - Tasks for calibrating NICMOS data.
+  paperprod - Tasks for generating paper products.
+       stis - Tasks for calibrating STIS data.
+    synphot - Tasks for synthetic photometry and modelling instrument response. 
+       wfc3 - Tasks for calibrating WFC3 data. 
+       wfpc - Tasks for calibrating WFPC and WFPC-2 data. 
+
+(Type "help hst_calib option=sysdoc" for detailed information about the 
+`hst_calib' package.)

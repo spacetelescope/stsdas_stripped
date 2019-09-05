@@ -1,0 +1,7 @@
+rootname, f, a, "", , , 	Input root name
+fsci, f, a, "", , , 		Input science file name
+igi_output, f, a, "", , ,	Output igi file name
+
+jitter, f, h, "", , ,		jitter file name (output)
+
+mode, s, h, "al"

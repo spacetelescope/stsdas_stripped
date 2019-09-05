@@ -1,0 +1,4 @@
+ext	ch*4	a4
+fitsname	ch*5	a10
+Pextnam	ch*4	a4
+extver	i 	i6

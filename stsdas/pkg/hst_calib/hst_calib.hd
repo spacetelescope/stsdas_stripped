@@ -1,0 +1,84 @@
+# Help directory for the HST_CALIB package
+
+$acs		= "stsdas$pkg/hst_calib/acs/"
+$hstcos		= "stsdas$pkg/hst_calib/hstcos/"
+$ctools		= "stsdas$pkg/hst_calib/ctools/"
+$foc		= "stsdas$pkg/hst_calib/foc/"
+$fos		= "stsdas$pkg/hst_calib/fos/"
+$hrs		= "stsdas$pkg/hst_calib/hrs/"
+$nicmos		= "stsdas$pkg/hst_calib/nicmos/"
+$paperprod	= "stsdas$pkg/hst_calib/paperprod/"
+$stis		= "stsdas$pkg/hst_calib/stis/"
+$synphot	= "stsdas$pkg/hst_calib/synphot/"
+$wfc3		= "stsdas$pkg/hst_calib/wfc3/"
+$wfpc		= "stsdas$pkg/hst_calib/wfpc/"
+
+acs		men=acs$acs.men,
+		hlp=..,
+        pkg=acs$acs.hd,
+		src=acs$acs.cl
+
+hstcos	men=hstcos$hstcos.men,
+		hlp=..,
+        pkg=hstcos$hstcos.hd,
+		src=hstcos$hstcos.cl
+
+ctools		men=ctools$ctools.men,
+		hlp=..,
+		sys=ctools$ctools.hlp,
+		pkg=ctools$ctools.hd,
+		src=ctools$ctools.cl
+
+foc		men=foc$foc.men,
+		hlp=..,
+		sys=foc$foc.hlp,
+		pkg=foc$foc.hd,
+		src=foc$foc.cl
+
+fos		men=fos$fos.men,
+		hlp=..,
+		sys=fos$fos.hlp,
+		pkg=fos$fos.hd,
+		src=fos$fos.cl
+
+hrs		men=hrs$hrs.men,
+		hlp=..,
+		sys=hrs$hrs.hlp,
+		pkg=hrs$hrs.hd,
+		src=hrs$hrs.cl
+
+nicmos		men=nicmos$nicmos.men,
+		hlp=..,
+		sys=nicmos$nicmos.hlp,
+		pkg=nicmos$nicmos.hd,
+		src=nicmos$nicmos.cl
+
+paperprod	men=paperprod$paperprod.men,
+		hlp=..,
+		sys=paperprod$paperprod.hlp,
+		pkg=paperprod$paperprod.hd,
+		src=paperprod$paperprod.cl
+
+stis		men=stis$stis.men,
+		hlp=..,
+		sys=stis$stis.hlp,
+		pkg=stis$stis.hd,
+		src=stis$stis.cl
+
+synphot		men=synphot$synphot.men,
+		hlp=..,
+		sys=synphot$synphot.hlp,
+		pkg=synphot$synphot.hd,
+		src=synphot$synphot.cl
+
+wfc3		men=wfc3$wfc3.men,
+		hlp=..,
+		sys=wfc3$wfc3.hlp,
+		pkg=wfc3$wfc3.hd,
+		src=wfc3$wfc3.cl
+
+wfpc		men=wfpc$wfpc.men,
+		hlp=..,
+		sys=wfpc$wfpc.hlp,
+		pkg=wfpc$wfpc.hd,
+		src=wfpc$wfpc.cl

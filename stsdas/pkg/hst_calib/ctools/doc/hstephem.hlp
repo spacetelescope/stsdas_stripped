@@ -1,0 +1,74 @@
+.help hstephem Sep2005 stsdas.hst_calib.ctools
+.ih
+NAME
+hstephem -- Convert the Space Telescope orbit ephemeris file to an STSDAS table.
+.ih
+USAGE
+hstephem infile outtable
+.ih
+DESCRIPTION
+This task converts the archived ST definitive orbit ephemeris file
+(an ORB file) to a FITS or STSDAS table.
+At the present time,
+ORB files can be delivered from the archive in FITS format,
+in which case the files should be used directly in 'odelaytime',
+and 'hstephem' cannot be used to convert the format.
+Prior to April 2000,
+ORB files were archived in ORX format,
+which is a VAX binary format,
+and it is necessary to run 'hstephem' to convert these files
+to either a FITS table or an STSDAS table before using with 'odelaytime'.
+ORX-format files have the extension ".orx".
+
+The ephemeris contains spacecraft positions and velocities.
+They are recorded every minute, and each file covers either two days
+(i.e. 2881 points) or three days (i.e. 4321 points).
+All files before Oct 24, 1995 are two-day ephemeris,
+all files after Nov 7, 1995 are three-day ephemeris,
+files between these two dates are either two-day or three-day ephemeris.
+
+This task has been successfully tested on SUN, VAX, DEC-station and Linux.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input file template.  If there is more than one file, they must
+be contiguous, i.e. the first entry of the second file must be the same as the
+last entry of the first table, etc.
+.le
+.ls outtable = "" [string]
+Name of the output table.  It contains the following columns:
+
+.nf
+TIME    Time for X, Y, Z, VX, VY, VZ, relative to header keyword
+            FIRSTMJD, in days (double)
+X       X component of the state vector, in km (double)
+Y       Y component of the state vector, in km (double)
+Z       Z component of the state vector, in km (double)
+VX      X component of the orbital velocity, in km/s (double)
+VY      Y component of the orbital velocity, in km/s (double)
+VZ      Z component of the orbital velocity, in km/s (double)
+.fi
+
+The output table also contains the following header keywords:
+
+.nf
+FIRSTMJD  The epoch of the first row in the table, in MJD
+HISTORY   The name(s) of the input file(s) used to generate this table
+.fi
+.le
+.ih
+EXAMPLES
+1. Combine all '.orx' files beginning with the string "pba" to an ephemeris table:
+
+.nf
+to> hstephem pba*.orx orbit.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by J.-C. Hsu.
+.ih
+SEE ALSO
+odelaytime
+.endhelp

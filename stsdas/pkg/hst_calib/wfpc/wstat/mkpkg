@@ -1,0 +1,20 @@
+#################################################################################
+# Update the WSTATISTICS task in the WFPC package.				#
+#										#
+#   Special keywords recognized:						#
+#										#
+#	Development version:	10/91 by RAShaw					#
+
+$checkout	wfpc.a ../
+$update		wfpc.a 
+$checkin	wfpc.a ../
+$exit
+
+wfpc.a:
+	histogr.x	<mach.h> "wstat.h"
+	moment.x	<mach.h> "wstat.h"
+	wsprint.x	"wstat.h" "wstat.com"
+	t_wstat.x	<imhdr.h> <mach.h> "wstat.h" "wstat.com"
+	;
+
+$exit

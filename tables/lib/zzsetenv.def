@@ -1,0 +1,16 @@
+# Global environment definitions for the TABLES packages.
+
+set	pkglibs		= "tables$bin(arch)/,tables$lib/"
+set	tablesbin	= "tables$bin(arch)/"  
+set	tableslib	= "tables$lib/"
+set	tablespkg	= "tables$pkg/"
+
+set	fitsio		= "tablespkg$fitsio/"
+set	tbplot		= "tablespkg$tbplot/"
+set	tobsolete	= "tablespkg$tobsolete/"
+set	ttools		= "tablespkg$ttools/"
+
+# IGI environment
+set	igi_buflen	= 10000
+
+keep

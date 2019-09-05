@@ -1,0 +1,46 @@
+# Make the CDGASP package
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+debug:
+    $set XFLAGS = "-cfgq $(XFLAGS)"
+    $set LFLAGS = "-xz $(LFLAGS)"
+	$call relink
+	;
+gasp:
+	$update gasplib.a
+	$call linkgasp
+	;
+relink:
+	$update	gasplib.a
+	$call	relink@pltsol
+	$call	linkgasp
+	;
+
+install:
+	$move xx_cdgasp.e stsdasbin$x_cdgasp.e
+	$call install@pltsol
+	;
+
+linkgasp:
+	$omake	x_cdgasp.x
+	$link	x_cdgasp.o gasplib.a -ltbtables -lstxtools -o xx_cdgasp.e
+	;
+
+gasplib.a:
+	@gasplib
+	t_extgst.x	<tbset.h> <math.h>
+	t_intrep.x	<ctype.h> <mach.h> <tbset.h> <imhdr.h> <error.h>
+	t_pxcoord.x	<tbset.h> <math.h> <mach.h> "wcs.h"
+	t_sgscind.x	<tbset.h> <math.h>
+	t_xyeq.x
+	t_eqxy.x
+	t_makewcs.x     <error.h> <imhdr.h> <math.h> <syserr.h> \
+			<imhdr.h> <imio.h> <mach.h>
+	;

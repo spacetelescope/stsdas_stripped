@@ -1,0 +1,46 @@
+.help checkwfpc Apr03 stsdas.hst_calib.wfpc
+.ih
+NAME
+checkwfpc -- Check a WFPC2 or WF/PC reference file.
+.ih
+USAGE
+checkwfpc input
+.ih
+DESCRIPTION
+This task checks the correctness of the image header of a WFPC2 or WF/PC
+reference file and its associated data quality mask. The task prints
+several keywords from the reference file header for identification. It
+also will print lines from the reference file or data quality file
+that it thinks are incorrect. These are keywords in the data quality
+file that differ from those in the reference file and header keywords
+in the reference file that are out of range or inconsistent with each
+other. 
+
+Because this task is a script which calls 'hcheck' and 'hdiff', 
+the STSDAS 'tools' package must be loaded before using this task. The list 
+of header keywords that will be checked are contained in the file 
+'wfpc$checkwfpc.dat' or 'wfpc$checkwfpc2.dat'.
+
+.ih
+PARAMETERS
+.ls input [file name template]
+List of images whose headers will be checked.
+.le
+.ih
+EXAMPLES
+1. Check the image 'a451212ow.r0h':
+
+.nf
+  wf> checkwfpc a451212ow.r0h
+
+.fi
+2. Check all the reference files in the directory 'deliver':
+
+.nf
+  wf> checkwfpc deliver$*.r?h
+
+.fi
+.ih
+SEE ALSO
+hcheck, hdiff
+.endhelp

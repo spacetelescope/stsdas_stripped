@@ -1,0 +1,25 @@
+# This mkpkg file builds infostis as a native IRAF task.
+
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+linkonly:
+	$set XFLAGS = "-DNATIVE_IRAF -Inolibc \
+		'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake infostis.c	<xclio.h> <ximio.h>
+
+	$set LFLAGS = "-H -z -p tables -p stsdas $(LFLAGS)"
+	$link infostis.o \
+		-lcvos -lc \
+		-o xx_infostis.e
+	;
+
+install:
+	$move xx_infostis.e stsdasbin$x_infostis.e
+	;

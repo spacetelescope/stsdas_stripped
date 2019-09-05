@@ -1,0 +1,174 @@
+.help wx2d Oct2006 stis
+.nj
+.ih
+NAME
+wx2d -- Resample a 2-D image in the Y direction, based on spectral trace.
+.ih
+USAGE	
+.nf
+wx2d input output wavelengths
+.fi
+.ih
+DESCRIPTION
+This task uses wavelets to resample a 2-D spectral image.
+The output is resampled in the cross-dispersion direction
+so that the spectral trace will be at a constant row number.
+Unlike the 'x2d' task, however,
+the output from 'wx2d' will not be resampled in the dispersion direction.
+
+It is possible to run the 'x2d' task on the output of 'wx2d'.
+This could be done in order to resample in the dispersion direction,
+for example, or to perform flux calibration.
+'wx2d' adds a keyword WX2DCORR = 'COMPLETE'
+to the primary header of the output file.
+If 'x2d' finds this keyword and value,
+'x2d' does not apply either the spectral trace or the SHIFTA2 offset,
+since these will have both been done by 'wx2d'.
+.ih
+PARAMETERS
+.ls input [string]
+Input file name.
+Wildcards are not supported;
+the task reads just one file at a time.
+If the file contains more than one image set,
+all image sets will be processed.
+
+The input image may be binned in the dispersion direction,
+but 'wx2d' will not accept data binned in the cross-dispersion direction.
+The input image may be a subimage in the cross-dispersion direction, however.
+.le
+.ls output [string]
+Output file name.
+.le
+.ls wavelengths = "" [string]
+If a value is given,
+an output FITS file will be written with the specified name.
+Each extension will be an image of the same size as 'output',
+but the value at each pixel will be
+the wavelength at the corresponding pixel of 'output'.
+There will be as many extensions in the 'wavelengths' file
+as there are image sets in the 'output' file.
+
+The wavelengths are computed from the dispersion relation,
+as given in the table specified by the DISPTAB primary header keyword.
+The dispersion relation will be corrected using the following information.
+The incidence angle correction (reference table INANGTAB)
+depends on the offset between
+the aperture that was used for the observation
+and the aperture that was used to measure the dispersion relation;
+the latter is given in the REF_APER column in the DISPTAB.
+The tilt of the aperture from the reference is
+the ANGLE column in the APDESTAB minus 0.315 degrees.
+The Mode Select Mechanism (MSM) offset in the dispersion direction
+is given by the SHIFTA1 extension header keyword.
+See also the 'helcorr' parameter.
+.le
+.ls (helcorr = "perform") [string, allowed values: perform | omit]
+This parameter is needed only if a wavelengths file was specified.
+If 'helcorr' is "perform"
+and the primary header keyword SCLAMP is "NONE"
+(the observation was not a wavecal or flat field),
+the target position will be read from RA_TARG and DEC_TARG,
+and the wavelengths will be corrected for
+the velocity of the Earth around the Sun.
+In this case the HELCORR keyword in 'wavelengths' will be set to "COMPLETE".
+.le
+.ls (trace = "") [string]
+Name of a file containing a spectral trace table.
+The default ("") means that wx2d should get
+the name of the trace table from the SPTRCTAB keyword
+in the primary header of the input file.
+.le
+.ls (order = 7) [int, min=1]
+Order of the polynomial for interpolation (e.g. 5 or 7).
+.le
+.ls (subdiv = 8) [int, min=2]
+Number of subpixels (e.g. 8 or 16).
+Each pixel will be subdivided into this many slices
+in the Y (cross-dispersion) direction.
+'subdiv' must be a power of two.
+.le
+.ls (psf_width = 0.) [real, min=0.]
+Width of the PSF for convolution (e.g. 1.3).
+The default (0.) means that no convolution will be done.
+The convolution kernel has the following
+functional form:  (1. + (x/psf_width)**2)**-2,
+where x is the cross-dispersion pixel offset from
+the middle of the spectral trace.
+Only the SCI array will be convolved with a PSF;
+neither the ERR array nor the DQ array will be
+affected by the value of 'psf_width'.
+.le
+.ls (rows = "") [string]
+A string containing two integers,
+giving the range of rows to be processed.
+Because this task is fairly CPU intensive,
+it runs signficantly faster if the range of rows is reduced.
+The values in rows outside this range
+will be set to zero in the output image.
+If a 'wavelengths' file was specified,
+the wavelength at every pixel will be computed,
+not just those within the range specified by 'rows'.
+
+To be consistent with IRAF conventions,
+the row numbers are one indexed and inclusive (see below).
+The default ("") means that all rows in the input should be processed.
+If a value is given,
+there must be exactly two integers,
+and they may be separated either by a comma or a blank (or both).
+
+As an example,
+if the number of rows (NAXIS2) in the image is 1024,
+then rows = "" is equivalent to rows = "1,1024".
+As another example,
+rows = "480, 544" means process zero-indexed row numbers 479 through 543
+inclusive, which is equivalent to 479:544 in Python slice notation.
+.le
+.ls (subsampled = "") [string]
+If a value is given,
+the subsampled image will be written to
+a FITS file of that name.
+There will be as many extensions in the 'subsampled' file
+as there are image sets in the 'output' file.
+.le
+.ls (convolved = "") [string]
+If a value is given,
+the subsampled and convolved image will be written to
+a FITS file of that name.
+There will be as many extensions in the 'convolved' file
+as there are image sets in the 'output' file.
+.le
+.ih
+EXAMPLES
+1. Resample o4qp9g010_flt.fits, writing the output to o4qp9g010_wx2d.fits.
+
+.nf
+  st> wx2d o4qp9g010_flt.fits o4qp9g010_wx2d.fits ""
+.fi
+
+2. As example 1, but process only rows 480 through 544,
+and convolve with a PSF width of 1.3 pixels.
+Write an image of wavelengths to o4qp9g010_wl.fits.
+
+.nf
+  st> wx2d o4qp9g010_flt.fits o4qp9g010_wx2d.fits o4qp9g010_wl.fits \
+  >>>     psf_width=1.3 rows="480,544"
+.fi
+
+3. Resample o4qp9g010_flt.fits,
+and then run 'x2d' to resample in the dispersion direction
+and perform flux calibration.
+
+.nf
+  st> wx2d o4qp9g010_flt.fits o4qp9g010_wx2d.fits ""
+  st> x2d o4qp9g010_wx2d.fits o4qp9g010_wx2d_x2d.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+The 'wx2d' task was written by Paul Barrett,
+with a wrapper written by Phil Hodge.
+.ih
+SEE ALSO
+.endhelp

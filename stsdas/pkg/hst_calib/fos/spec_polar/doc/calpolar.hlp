@@ -1,0 +1,95 @@
+.help calpolar May99 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+calpolar -- Process calibrated FOS spectropolarimetric datasets.
+.ih
+USAGE
+calpolar input output badwp
+.ih
+DESCRIPTION 
+The 'calpolar' task performs the routine spectropolarimetric 
+processing of FOS data and is equivalent to the special mode processing
+performed by the 'calfos' task when the keywords "MOD_CORR=YES" and
+"GRNDMODE=SPECTROPOLARIMETRY". This task provides the
+additional freedom to manipulate or massage the flux calibrated data 
+(the 'c1h' file) prior to polarization processing and to exclude spectra at
+individual waveplate positions through the use of the task parameter 'badwp', 
+which accepts a list of "bad" waveplate positions. Bad waveplate positions
+can be identified in individual datasets using the 'comparesets' task.
+Also, multiple flux calibrated datasets for a given object can be averaged
+using the 'pcombine' task, and then reprocessed with 'calpolar' to recompute
+the polarization spectra from the averaged flux data.
+
+The input data must be flux calibrated files ('c1h'), along with the 
+corresponding wavelength ('c0h'), error ('c2h'), and data quality ('cqh') files.
+The root names of all of these files must agree with the root name specified 
+in the 'input' parameter. The output of this task is an FOS special mode
+file ('c3h') which is in the standard format of FOS polarimetry data files.
+
+If the spectropolarimetry data were acquired during the post-COSTAR epoch 
+as indicated by the Science header keyword/value pair, KYDEPLOY=T, and a 
+post-COSTAR calibration file is available, the post-COSTAR polarimetry 
+corrections will be applied.  However, it should be noted that if no 
+post-COSTAR polarimetry calibration file for the 'PCPHFILE' calibration file 
+keyword is provided,  'calfos' will not abort.  Instead, warning 
+messages will be issued and the data in the output 'c3h' file will still be
+calibrated, but the additional post-COSTAR correction will not have been
+applied.
+.ih
+PARAMETERS
+.ls input [file name]
+The filename of the input FOS observation data set.  
+If only the rootname is specified, then the extension is assumed to be 'c1h'.
+Using the same rootname as the specified 'c1h' file, the task also looks for the 
+calibrated wavelength file, which must have the 
+extension 'c0h', the calibrated error file, which must have the extension
+'c2h', and the calibrated data quality file, which must have the extension
+'cqh'.
+.le
+.ls output [file name]
+The rootname of the output FOS polarimetry data file. If no value is 
+specified for this parameter, the default will be to use the value
+passed to 'input'. The output file produced is the "special
+statistics" file which will have the extension 'c3h'.
+.le
+.ls (badwp = "0") [string]
+List of bad waveplate positions.  Spectra from these waveplate positions will 
+not be used in the calculation of the polarization spectra.
+.ih
+EXAMPLES 
+1. Perform polarimetry processing for the dataset 'y00vk108r'. All files 
+for this dataset are in the directory 'spec$'.  Output files are to 
+have the same root name as the input files.
+
+.nf
+  sp> calpolar spec$y00vk108r ""
+.fi
+
+2. Process the dataset 'y00vk901r' and produce output files 
+with a root name of 'test186' in the subdirectory 'temp'.  Exclude
+waveplate positions 7 and 8 from the processing.
+
+.nf
+  sp> calpolar y00vk901r temp/test186 badwp="7,8"
+.fi
+.ih
+NOTES
+Version 3.2 (May 1999) of 'calpolar' incorporates changes to the way that
+post-COSTAR POLSCAN = 4 data is processed.  No post-COSTAR instrumental
+polarization correction can be made for this data.  Consequently, the 
+results contain significant instrumental polarization.  Please refer to FOS
+Instrument Science Report 150 for a discussion of the magnitude and 
+uncertainties of instrumental polarization introduced by COSTAR.
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+calfos, comparesets, pcombine, plbias, polbin, polnorm
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry. 
+.endhelp

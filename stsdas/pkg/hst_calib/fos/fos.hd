@@ -1,0 +1,41 @@
+# Help directory for the FOS package
+
+$doc		= "stsdas$pkg/hst_calib/fos/doc/"
+$aperlocy	= "stsdas$pkg/hst_calib/fos/aperlocy/"
+$apscale	= "stsdas$pkg/hst_calib/fos/apscale/"
+$bspec          = "stsdas$pkg/hst_calib/fos/model/"
+$calfos		= "stsdas$pkg/hst_calib/fos/calfos/"
+$countspec      = "stsdas$pkg/hst_calib/fos/model/"
+$deaccum	= "stsdas$pkg/hst_calib/fos/deaccum/"
+$fitoffsety	= "stsdas$pkg/hst_calib/fos/fitoffsety/"
+$gimpcor	= "stsdas$pkg/hst_calib/fos/gimpcor/"
+$spec_polar	= "stsdas$pkg/hst_calib/fos/spec_polar/"
+$unwrap		= "stsdas$pkg/hst_calib/fos/unwrap/"
+$waveoffset	= "stsdas$pkg/hst_calib/fos/waveoffset/"
+
+
+spec_polar	men=spec_polar$spec_polar.men,
+		hlp=..,
+		sys=spec_polar$spec_polar.hlp,
+		pkg=spec_polar$spec_polar.hd,
+		src=spec_polar$spec_polar.cl
+
+addnewkeys	hlp=doc$addnewkeys.hlp,	src=fos$addnewkeys.cl
+aperlocy	hlp=doc$aperlocy.hlp,	src=aperlocy$ytamod.f
+apscale		hlp=doc$apscale.hlp,	src=apscale$ytascl.f
+bspec           hlp=doc$bspec.hlp,      src=model$bspec.f
+calfos		hlp=doc$calfos.hlp,	src=calfos$yclfos.f
+countspec       hlp=doc$countspec.hlp,  src=model$countspec.x
+deaccum		hlp=doc$deaccum.hlp,	src=deaccum$deaccum.x
+fitoffsety	hlp=doc$fitoffsety.hlp,	src=fitoffsety$yofit.f
+foswcorr        hlp=doc$foswcorr.hlp,   src=fos$foswcorr.cl
+gimpcor		hlp=doc$gimpcor.hlp,	src=gimpcor$gmpfos.f
+unwrap		hlp=doc$unwrap.hlp,	src=unwrap$unwrap.x
+waveoffset	hlp=doc$waveoffset.hlp,	src=waveoffset$waveoffset.x
+yd2p		hlp=doc$yd2p.hlp,	src=fos$yd2p.cl
+yddintplot	hlp=doc$yddintplot.hlp,	src=fos$yddintplot.cl
+yfluxcal	hlp=doc$yfluxcal.hlp,	src=fos$yfluxcal.cl
+ymkmu		hlp=doc$ymkmu.hlp,	src=fos$ymkmu.cl
+yp2d		hlp=doc$yp2d.hlp,	src=fos$yp2d.cl
+ypeakup		hlp=doc$ypeakup.hlp,	src=fos$ypeakup.cl
+yratio		hlp=doc$yratio.hlp,	src=fos$yratio.cl

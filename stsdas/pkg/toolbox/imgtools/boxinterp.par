@@ -1,0 +1,12 @@
+input,s,a,,,,"input files"
+output,s,a,,,,"output files"
+coords,s,a,,,,"file with coordinates"
+innerx,i,h,1,0,,"x side of inner box to fill"
+outerx,i,h,5,1,,"x side of outer box to use in filling"
+innery,i,h,1,0,,"y side of inner box to fill"
+outery,i,h,5,1,,"y side of outer box to use in filling"
+entry,s,h,"*",,,"entry name to use if coords is reseau file"
+xcol,s,h,"c1",,,"name of x column if coords is table"
+ycol,s,h,"c2",,,"name of y column if coords is table"
+verbose,b,h,yes,,,"print each image pair?"
+mode,s,h,al

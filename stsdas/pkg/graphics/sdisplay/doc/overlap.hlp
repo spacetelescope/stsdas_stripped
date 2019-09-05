@@ -1,0 +1,60 @@
+.help overlap Dec91 stsdas.graphics.sdisplay
+.ih
+NAME
+overlap -- Overlaps two images in X or Y, by a certain amount of
+columns or lines.
+.ih
+USAGE
+overlap  input1 input2 output dx dy
+.ih
+DESCRIPTION
+This task creates a composite 2-D output image from two input 2-D 
+images.
+The composite is the result of overlapping the two input images
+by a certain amount of lines or columns. The amount is specified
+by task parameters 'dx' and 'dy'. If 'dx>0' and, 'dy=0', the input
+images are overlapped columnwise: last 'dx' columns of 'input1'
+are overlapped with first 'dx' columns of 'input2'.
+The input images must have the same number
+of lines. 
+If 'dx=0' and 'dy>0', the images are overlapped linewise, and
+they must have the same number of columns. 
+
+The overlapped region is built as a weighted average of the relevant
+regions in the input images, and the weight function is specified
+by task parameter 'weight'. It can be either a linear or a cos 
+tapering function.
+.ih
+PARAMETERS
+.ls input1 [file name]
+First input 2-d image section.
+.le
+.ls input2 [file name]
+Second input 2-d image section.
+.le
+.ls output [file name]
+Output image. Always type real, regardless of input image type.
+.le
+.ls dx = 0 [integer, min=0]
+Amount of overlap in X direction (pixels).
+.le
+.ls dy = 0 [integer, min=0]
+Amount of overlap in Y direction (pixels).
+.le
+.ls (weight = "cos") [string, Allowed values: cos | linear]
+Type of weighting function used in overlapped region.
+.le
+.ih
+EXAMPLES
+1. Overlap in X images 'image1' and 'image2' by 100 pixels, using 
+linear weighting:
+
+.nf
+  pl> overlap image1.hhh image2.hhh output.hhh dx=100 dy=0 weight="linear"
+.fi
+
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

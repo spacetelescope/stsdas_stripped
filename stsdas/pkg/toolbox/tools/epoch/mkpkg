@@ -1,0 +1,24 @@
+# Update the epoch application code in the tools package library
+# Author: HSU, 10-AUG-1990
+
+$checkout tools.a ../
+$update   tools.a
+$checkin  tools.a ../
+$exit
+
+tools.a:
+	epoch.x 
+	epoch_get.x		<ctype.h> epoch.h
+	custom_parse.x		<ctype.h> <ctotok.h> epoch.h
+	to_mjd.x		epoch.h
+	from_mjd.x		epoch.h
+	fracd.x
+	next_num.x		<ctype.h>
+	which_class.x		<ctype.h> epoch.h
+	qual_code.x		<ctype.h> epoch.h
+	month_parse.x		<ctype.h> <ctotok.h> epoch.h
+	three_num.x		<ctype.h> <ctotok.h> epoch.h
+	epoch_back.x		epoch.h
+	name_month.x		epoch.h
+	engineering.x		<ctype.h> epoch.h
+	;

@@ -1,0 +1,275 @@
+include	<mach.h>
+include "wpdef.h"
+
+.help mmrej
+.nf ----------------------------------------------------------------------------
+         COMBINING IMAGES: MINMAX REJECTION ALGORITHM
+
+If there is only one input image then it is copied to the output image.
+If there are two input images then it is an error.  For more than two
+input images they are combined by scaling and taking a weighted average 
+excluding the minimum and maximum values.  The exposure time of the output 
+image is the scaled and weighted average of the input exposure times.  The 
+average is computed in real arithmetic with trunction on output if the 
+output image is an integer datatype.  
+
+PROCEDURES:
+
+    MMREJ --	Combine image lines after rejecting the minimum and maximum 
+		values, with no weighting or scaling.  
+    DQMMREJ --	Combine image lines after rejecting the minimum, maximum and 
+		flagged values, with weighting or scaling.  
+    WTMMREJ --	Combine image lines after rejecting the minimum and maximum 
+		values, with weighting or scaling.  
+
+.endhelp -----------------------------------------------------------------------
+
+#$for (silrdx)
+$for (silrd)
+
+#################################################################################
+# MMREJ --	Combine image lines after rejecting the minimum and maximum 	#
+#		values, without weighting or scaling. 	This routine is based 	#
+#		upon the `images.imcombine' package.  				#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure mmrej$t (data, output, nimages, npts)
+
+# Calling arguments:
+pointer		data[nimages]		# IMIO data pointers
+$if (datatype == sil)
+real		output[npts]		# Output line (returned)
+$else
+PIXEL		output[npts]		# Output line (returned)
+$endif
+int		nimages			# Number of images to combine
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Dummy indexes
+int		k			# Index of minimum value
+int		m			# Index of maximum value
+int		nims			# Number of non-rejected images
+$if (datatype == sil)
+real		sumval			# Sum of non-rejected values @pixel
+real		val			# Data value
+real		minval			# Minimum value @pixel
+real		maxval			# Maximum value @pixel
+$else
+PIXEL		sumval			# Sum of non-rejected values @pixel
+PIXEL		val			# Data value
+PIXEL		minval		 	# Minimum value @pixel
+PIXEL		maxval			# Maximum value @pixel
+$endif
+
+begin
+	nims = nimages - 2
+	do i = 1, npts {
+	    sumval = 0.
+	    minval = +MAX_REAL
+	    maxval = -MAX_REAL
+	    k      = 1
+	    m      = 1
+	    do j = 1, nimages {
+		val = Mem$t[data[j]+i-1]
+#	        $if (datatype == x)
+#		if (abs(val) < abs(minval)) {
+#	        $else
+		if (val < minval) {
+#		$endif
+		    minval = val
+		    k = j
+		} 
+#	        $if (datatype == x)
+#		if (abs(val) > abs(maxval)) {
+#	        $else
+		if (val > maxval) {
+#		$endif
+		    maxval = val
+		    m = j
+		} 
+		sumval = sumval + val
+	    }
+
+# Save output value and set min/max values in working data array to INDEF for 
+# future use (e.g., in SIGMA routine).  
+	    output[i] = (sumval - minval - maxval) / nims
+	    Mem$t[data[k]+i-1] = INDEF
+	    Mem$t[data[m]+i-1] = INDEF
+        }
+end
+
+
+#################################################################################
+# DQMMREJ --	Combine image lines after rejecting the minimum, maximum and 	#
+#		flagged values, with weighting or scaling.  This routine is 	#
+#		based upon the `images.imcombine' package.  			#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure dqmmrej$t (data, dqfdata, output, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# IMIO data pointers
+int		dqfdata[nimages]	# Data Quality File pointers
+$if (datatype == sil)
+real		output[npts]		# Output line (returned)
+$else
+PIXEL		output[npts]		# Output line (returned)
+$endif
+int		nimages			# Number of images to combine
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		bflag[IMS_MAX]		# 
+int		i, j			# Dummy indexes
+int		k			# Index of minimum value
+int		m			# Index of maximum value
+int		ncount			# Total of non-rejected pixels
+real		netwt			# Sum of weights minus min & max weight
+real		sumwt			# Sum of weights for each pixel 
+$if (datatype == sil)
+real		sumval			# Sum of non-rejected values @pixel
+real		val			# Data value
+real		minval			# Minimum value @pixel
+real		maxval			# Maximum value @pixel
+$else
+PIXEL		sumval			# Sum of non-rejected values @pixel
+PIXEL		val			# Data value
+PIXEL		minval		 	# Minimum value @pixel
+PIXEL		maxval			# Maximum value @pixel
+$endif
+
+begin
+	do i = 1, npts {
+
+# Select user-chosen Data Quality bits
+	    do j = 1, nimages
+		bflag[j] = Memi[dqfdata[j]+i-1]
+	    call aandki (bflag, BADBITS, bflag, nimages)
+
+# Initialize other variables
+	    sumval = 0.
+	    sumwt  = 0.
+	    minval = +MAX_REAL
+	    maxval = -MAX_REAL
+	    ncount = 0
+	    k      = 1
+	    m      = 1
+	    do j = 1, nimages {
+		if (bflag[j] == 0) {
+		    val = Mem$t[data[j]+i-1] / SCALES[j] - ZEROS[j]
+#		    $if (datatype == x)
+#		    if (abs(val) < abs(minval)) {
+#		    $else
+		    if (val < minval) {
+#		    $endif
+			minval = val
+			k = j
+		    } 
+#		    $if (datatype == x)
+#		    if (abs(val) > abs(maxval)) {
+#		    $else
+		    if (val > maxval) {
+#		    $endif
+			maxval = val
+			m = j
+		    } 
+		    sumval = sumval + val * WTS[j]
+		    sumwt  = sumwt + WTS[j]
+		    ncount = ncount + 1
+		} else 
+		    Mem$t[data[j]+i-1] = INDEF
+	    }
+
+# Save output value and set min/max values in working data array to INDEF for 
+# future use (e.g., in SIGMA routine).  
+	    netwt = sumwt - WTS[k] - WTS[m]
+	    if (netwt <= 0.) 
+		output[i] = BLANK
+	    else {
+		output[i] = (sumval - minval * WTS[k] - maxval * WTS[m]) / netwt
+		Mem$t[data[k]+i-1] = INDEF
+		Mem$t[data[m]+i-1] = INDEF
+	    }
+        }
+end
+
+
+#################################################################################
+# WTMMREJ --	Combine image lines after rejecting the minimum and maximum 	#
+#		values, with weighting or scaling.  This routine is based 	#
+#		upon the `images.imcombine' package.  				#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure wtmmrej$t (data, output, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# IMIO data pointers
+$if (datatype == sil)
+real		output[npts]		# Output line (returned)
+$else
+PIXEL		output[npts]		# Output line (returned)
+$endif
+int		nimages			# Number of images to combine
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Dummy indexes
+int		k			# Index of minimum value
+int		m			# Index of maximum value
+$if (datatype == sil)
+real		sumval			# Sum of non-rejected values @pixel
+real		val			# Data value
+real		minval			# Minimum value @pixel
+real		maxval			# Maximum value @pixel
+$else
+PIXEL		sumval			# Sum of non-rejected values @pixel
+PIXEL		val			# Data value
+PIXEL		minval		 	# Minimum value @pixel
+PIXEL		maxval			# Maximum value @pixel
+$endif
+
+begin
+	do i = 1, npts {
+	    sumval = 0.
+	    minval = +MAX_REAL
+	    maxval = -MAX_REAL
+	    k = 1
+	    m = 1
+	    do j = 1, nimages {
+		val = Mem$t[data[j]+i-1] / SCALES[j] - ZEROS[j]
+#		$if (datatype == x)
+#		if (abs(val) < abs(minval)) {
+#		$else
+		if (val < minval) {
+#		$endif
+		    minval = val
+		    k = j
+		} 
+#		$if (datatype == x)
+#		if (abs(val) > abs(maxval)) {
+#		$else
+		if (val > maxval) {
+#		$endif
+		    maxval = val
+		    m = j
+		} 
+		sumval = sumval + WTS[j] * val
+	    }
+
+# Save output value and set min/max values in working data array to INDEF for 
+# future use (e.g., in SIGMA routine).  
+	    output[i] = (sumval - minval * WTS[k] - maxval * WTS[m]) / 
+			(1. - WTS[k] - WTS[m])
+	    Mem$t[data[k]+i-1] = INDEF
+	    Mem$t[data[m]+i-1] = INDEF
+        }
+end
+$endfor

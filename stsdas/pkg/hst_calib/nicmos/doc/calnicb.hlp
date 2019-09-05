@@ -1,0 +1,454 @@
+.help calnicb Sep99 stsdas.hst_calib.nicmos
+.ih
+NAME
+calnicb -- Process NICMOS associated data.
+.ih
+USAGE
+calnicb input
+.ih
+DESCRIPTION 
+The CALNICB task produces combined, or "mosaiced", images from the
+multiple images contained in a NICMOS associated data set.
+The task also performs background subtraction and source identification
+on the images in the association.
+CALNICB is generally run after all images that make up an associated set
+have been calibrated individually using the CALNICA task.
+
+Associations are created at the proposal stage via two mechanisms: setting
+the parameter "NUM_ITER" (number of exposure iterations) to a value greater
+than 1; setting the parameter "PATTERN" so that a series of exposures
+are executed over a predefined sky pattern.
+Both PATTERN and NUM_ITER > 1 may be set simultaneously, which results in a
+pattern of exposures with NUM_ITER exposures obtained at each pattern position.
+CALNICB combines the NUM_ITER exposures at each pattern position into a single
+image and produces a mosaic out of the entire pattern sequence.
+
+The CALNICB task has two levels of both input and output data.
+Input data is in the form of an association table, which contains the names
+of each member of the association, and the files containing the individual
+member images.
+Only the name of the input association (ASN) table is used as input to the task.
+The ASN table usually has a filename of the form "<assoc_id>_asn.fits".
+More details about the contents of the ASN table are given below.
+
+Output data is in the form of an updated copy of the association table,
+and the combined or mosaiced images.
+The output association (ASC) table has a filename of the form
+"<assoc_id>_asc.fits".
+The ASC table contains all the information from the input ASN table, as well
+as additional information about the processing that took place (see below).
+There are one or more output mosaic (MOS) images produced, the exact number
+depending on the type of pattern used, if any.
+There will always be one MOS image produced for the target field.
+Some patterns also result in observations of one or more offset or "chop"
+pointings for measurements of the background.
+As these are distinct observations, each one results in a separate output
+MOS image.
+The MOS filenames are of the form "<assoc_id>n_mos.fits", where n can run
+from 0 to 8.
+The MOS file containing the target field always has n = 0, while the
+background observations, if any, will have 1 < n < 8.
+
+CALNICB versions 2.2 and later allow for the reuse of a previously created
+ASC table as input to the task on subsequent processing runs.
+This allows the user to adjust the image background and/or offset values
+contained in the ASC table and use that information to override the normal
+computation of those values by CALNICB (see below).
+
+The CALNICB task is completely data driven, in that the calibration steps
+carried out by CALNICB are determined by the values of certain keywords
+contained in the input image headers and in the input association (ASN) table.
+CALNICB determines what processing is necessary, as well as parameters
+that control the processing, from information contained in the ASN table
+and the input images.
+.ih
+PARAMETERS
+.ls input [filename]
+The name of the input NICMOS association table.
+.le
+.ls (subbkg = yes) [boolean]
+Subtract the scalar background from all images?
+.le
+.ls (meanbkg = yes) [boolean]
+When subtracting the scalar background, use the mean background computed
+from all images, or subtract the scalar background of each individual image
+from itself? When processing an association that contains any type of chop
+pattern, this parameter must be set to yes, as the mean scalar background must
+be used to perform the subtraction from target images.
+.le
+.ls (readbkg = no) [boolean]
+Read the scalar background values for each image from the input association
+table, instead of computing them?
+.le
+.ls (readoffsets = no) [boolean]
+Read the image offsets to be used for mosaicing from the input association
+table, instead of computing them?
+.le
+.ls (crthresh = 5.0) [real, min=0]
+Cosmic ray rejection threshold, in units of sigma, to be used during image
+combination steps.
+.le
+.ls (xcwin = 3) [int, min=1]
+Cross-correlation search window half-width, in pixels, to be used when
+determining image registrations.
+.le
+.ih
+PROCESSING STEPS
+The processing steps, briefly, are:
+.nf
+1) Read the input ASN table and input images
+2) Determine processing parameters from keyword values
+3) Identify sources in the images
+4) Combine multiple images at individual pattern positions
+5) Estimate and remove the background signal
+6) Create a mosaic image from all pattern positions
+7) Write the output ASC table and mosaic images
+.fi
+
+The processing steps, in more detail, are:
+.ls READ INPUT ASN TABLE
+The first thing CALNICB does is read the list of association image names
+from the input ASN table.
+The input ASN table contains three columns of information:
+1) the root name (ipppssoot) of each image in the association
+(hereafter referred to as the association "members");
+2) the role or type of each member; and
+3) a flag indicating whether or not each member is present.
+The names of these columns are "MEMNAME", "MEMTYPE", and "MEMPRSNT".
+The task builds complete filenames from the rootnames in the MEMNAME column
+by appending the suffix and extension "_cal.fits" to the rootnames.
+Therefore the input image filenames must conform to this syntax.
+
+In addition to the list of input members, the ASN table also contains
+the rootnames of the output mosaic (MOS) products.
+CALNICB uses these rootnames to build complete output MOS filenames by
+appending the suffix and extension "_mos.fits" to each rootname.
+
+The MEMTYPE column values are used by CALNICB to determine whether a
+member name refers to an input or an output file.
+The possible values for MEMTYPE are: "EXP-TARG", "EXP-BCKn", "PROD-TARG",
+and "PROD-BCKn".
+The prefix "EXP" indicates an input exposure, while "PROD" indicates an
+output product.
+The suffix "TARG" indicates a member that contains the target of interest,
+while "BCKn" refers to one of n background images that may be present
+in the association.
+Background images only exist in patterns that contain a CHOP to one or
+more off-target sky locations.
+
+The MEMPRSNT column data are really only necessary for processing that takes
+place in the Routine Science Data Processing (RSDP) pipeline at STScI.
+CALNICB will quit if this information indicates that any one of the input
+members is not present.
+
+If the task parameter readbkg=yes, scalar background values for each input
+image will be read from the MEANBCK column of the input association table.
+Similarly, if the task parameter readoffsets=yes, image offsets will be read
+from the XOFFSET and YOFFSET columns.
+
+The keywords that control the background illumination pattern correction
+(ILLMCORR) step are read from ASN table header keywords.
+The keywords that are read are: ILLMCORR - which can be set to either "PERFORM"
+or "OMIT" and determines whether or not to perform the ILLMCORR step;
+ILLMFILE - which contains the name of the illumination pattern reference image
+that will be used by the ILLMCORR step.
+.le
+.ls READ INPUT IMAGES
+The next step is to simply read the input member images that were listed in
+the ASN table.
+It is assumed that these will be calibrated ("cal") files produced by the
+CALNICA task.
+Hence if the input observations were obtained in MultiAccum mode, only the
+final, combined image files produced by CALNICA will be used as input to
+CALNICB.
+.le
+.ls DETERMINE PROCESSING PARAMETERS
+Many input image header keywords are read and evaluated in order to guide the
+processing.
+One set of keywords pertains to the association as a whole and therefore
+are read only once from the first input member image.
+They are:
+.nf
+----------------------------------------------------
+| Keyword  | Purpose                               |
+----------------------------------------------------
+| INSTRUME | Is this NICMOS data?                  |
+| CAMERA   | What camera?                          |
+| FILTER   | If "BLANK", then they're DARK images  |
+| IMAGETYP | Are they FLAT field images?           |
+| NUMITER  | What was NUM_ITER set to?             |
+| PATTERN  | What pattern was used?                |
+| NUMPOS   | How many pattern positions were used? |
+----------------------------------------------------
+.fi
+If the images are DARKs or FLATs, the ILLMCORR step is turned off.
+
+A second set of keywords are unique for each member and are therefore
+read from each input CAL file:
+.nf
+---------------------------------------------------------------
+| Keyword  | Purpose                                          |
+---------------------------------------------------------------
+| PATT_POS | What pattern position does this image belong to? |
+| BACKESTn | What were the CALNICA background estimates?      |
+| CRPIXn   | World                                            |
+| CRVALn   |       Coordinate                                 |
+| CDn_n    |                  System                          |
+| CTYPEn   |                         (WCS) Information        |
+---------------------------------------------------------------
+.fi
+Based on this information, an "inventory" is taken of what input
+images exist, where they belong in the pattern, how many there are at each
+pattern position, which images are from the target field, which ones are from
+background fields, and which output MOS image each one will eventually end up
+in.
+A summary of this information is printed to the screen during processing.
+.le
+.ls READ CALIBRATION REFERENCE DATA
+The ILLMFILE reference file, used by the ILLMCORR step (see below), is
+loaded.
+A check is performed to make sure that the chosen ILLMFILE matches the
+CAMERA and FILTER of the images being processed.
+.le
+.ls IDENTIFY SOURCES
+The images at each pattern position are searched for pixels suspected to
+contain signal from a source.
+This is done by first computing the median signal level in the image and then
+searching for pixels that are more than 4.5 sigma above this level.
+Spurious results, such as pixels containing cosmic-ray hits, are filtered
+out by searching neighboring pixels and only retaining those that have 2 or
+more neighbors that are also above the threshold.
+Surviving pixels have a data quality (DQ) flag value of 1024 turned on.
+This step is not performed for DARK or FLAT images.
+.le
+.ls COMBINE NUM_ITER IMAGES AT EACH PATTERN POSITION
+If there is more than one image at any of the pattern positions, the multiple
+images at each position are combined into a single image.
+Before combining the images at a given position, the registration of those
+images is checked.
+The coordinates (as determined by the WCS keywords) of the first image at a
+given pattern position are used as a reference and offsets to all other images
+at that pattern position are computed by comparing their WCS data.
+The offsets computed from the WCS are then refined using a cross-correlation
+technique.
+The cross-correlation uses only those pixels previously flagged as containing
+a source and refines the offsets down to a level of 0.15 pixels.
+The computed offsets, in units of pixels, are printed to the screen during
+processing and are also recorded in the output ASC table.
+
+If the task parameter readoffsets=yes, then the offsets from the input
+association table are used, and the cross-correlation of the images is skipped.
+
+After determining the relative offsets, the images are aligned using
+bilinear interpolation and are then combined on a pixel-by-pixel basis.
+The combined pixel values are computed as a weighted mean of all unflagged
+(i.e. DQ = 0) samples, using the input image ERR values as weights.
+If 3 or more samples are present, iterative sigma-clipping is performed to
+reject outliers.
+The number of samples used at each pixel and the total integration time
+are retained.
+
+If processing DARK or FLAT images, the determination of offsets is
+skipped and all offsets are set to zero so that these images will be aligned
+and combined in pixel space.
+
+From this point forward, all further processing is performed on the
+combined images only.
+.le
+.ls BACKGROUND ESTIMATION AND REMOVAL
+Background signal is estimated and removed from the images at each
+pattern position.
+The removal of background is a two-step process: 1) a constant (one-dimensional)
+background signal level is estimated and subtracted from all images; and 2)
+the two-dimensional residual signal that may exist due to spatial variations
+in the thermal emission of the telescope and instrument is removed by
+subtracting the ILLMFILE reference image.
+Note that this second step can be turned on or off via the ILLMCORR keyword
+in the ASN table header.
+
+The constant background signal level is estimated and removed as follows.
+1) If a pattern was used that includes chopping the field-of-view to background
+sky regions, the median and average deviation of the signal in the image at
+each chop position is computed.
+In addition to excluding bad and source-flagged pixels, the calculation of
+the median also uses iterative sigma-clipping to reject outliers.
+If there are no background-only images in the association (i.e. a CHOP
+pattern was not used) the median and sigma of the target images is computed.
+A warning is issued in this case, which alerts the user to the fact that
+the background calculation may be biased by the presence of the target.
+2) If target images had to be used in the calculation of the constant
+background level, the result for each image is compared to the estimate
+provided by CALNICA, which is stored in the BACKEST1 header keyword of
+each image. If the value computed by CALNICB is more than 5 sigma deviant
+from that of CALNICA, it is assumed that the CALNICB value has been
+biased by the presence of sources and the CALNICA value is substituted for it.
+3) The mean and sigma of all the background values computed for each image is
+computed, using iterative sigma-clipping to reject outliers.
+4) The final mean background value is subtracted from all images (both target
+and background images, if present).
+
+If the task parameter readbkg=yes, then the scalar background values read from
+the input association table are used, and the computation of the backgrounds
+is skipped.
+
+Following the subtraction of the constant background signal, the background
+illumination pattern reference file ILLMFILE is subtracted from all images.
+
+Background estimation and removal is not performed for DARK or FLAT images.
+.le
+.ls CONSTRUCT MOSAICS
+A mosaic (MOS) image is created for each independent pointing within the
+pattern.
+For example, a pure DITHER pattern will produce one MOS image, made up of
+the images at all the pattern positions.
+A CHOP pattern will produce one MOS image for the target pointing and one
+MOS image for each CHOP (background) pointing; a ONE-CHOP produces one
+target and one background MOS image, a TWO-CHOP produces one target and two
+background MOS images, etc.
+A combination DITHER-CHOP pattern will produce one MOS image out of the
+dithered pattern at each CHOP location on the sky.
+
+Each MOS image is created as follows.
+1) The relative offsets between images within the mosaic are computed from
+their WCS information.
+The first image in the list for each mosaic is used as a reference image;
+the offsets of all others are computed relative to the reference image.
+2) The computed offsets are refined using a cross-correlation technique.
+This is the same technique used to align the NUM_ITER images at individual
+pattern positions (see above).
+The computed offsets are printed to the screen during processing.
+Note: The offsets for DARK and FLAT images are set to zero so that these
+images will be aligned and combined in pixel space.
+3) An empty mosaic image is created with x and y dimensions large enough to
+encompass the maximum offsets in each direction.
+4) Pixel values in the mosaic image are computed by combining samples from
+overlapping images.
+The individual images are aligned using bilinear interpolation and the value
+at a given MOS pixel location is computed from the error-weighted mean of
+the samples at that location.
+Samples flagged as bad are excluded and, if 3 or more samples are present,
+iterative sigma-clipping is used to reject remaining outliers.
+The number of samples retained for a given pixel and their total integration
+time is recorded in the MOS SAMP and TIME images.
+If all samples are rejected for a pixel, the MOS image SCI, ERR, SAMP, and
+TIME values are set to zero and a combination of all DQ flags is retained.
+
+If the task parameter readoffsets=yes, then steps 1) and 2) above are skipped,
+and the image offsets read from the input association table are used instead.
+.le
+.ls CREATE OUTPUT ASC TABLE
+The output ASC table contains the 3 columns of information from the
+input ASN table, as well as 4 new columns of information derived during
+processing.
+The 4 new columns are named "BCKIMAGE", "MEANBCK", "XOFFSET", and "YOFFSET".
+The BCKIMAGE column contains boolean flags indicating whether or not a
+given association image was used in the computation of the scalar background.
+The MEANBCK column contains the mean background value (in units of DN/second)
+computed for each image.
+The XOFFSET and YOFFSET columns contain the pixel offsets computed for
+each image relative to its reference image.
+Offsets are in the sense that a positive value indicates that the image
+frame (not sources) is shifted in the positive axis direction relative to its
+reference.
+
+The constant background signal level that was subtracted from all images
+is recorded in the ASC table header keyword "MEAN_BKG".
+.le
+.ih
+EXAMPLES 
+
+1. Create mosaics for the association "n3t102010".
+The input ASN table is in file "n3t102010_asn.fits":
+.nf
+
+  ni> calnicb n3t102010
+.fi
+
+2. Create mosaics for the association images listed in "n3uw01010_asn.fits",
+performing the scalar background subtraction by using the values computed
+for each individual image, rather than the mean of all images:
+.nf
+
+  ni> calnicb n3uw01010_asn.fits meanbkg-
+.fi
+
+3. Rerun calnicb on the association n3gx32030, using the table
+"n3gx32030_new.fits" as input, which is a new version of the table
+"n3gx32030_asc.fits" produced by a previous run of calnicb, with modified
+image offsets, having calnicb use these offsets rather than computing them:
+.nf
+
+  ni> calnicb n3gx32030_new.fits readoff+
+.fi
+.ih
+REVISIONS
+.ls Version 2.3.1
+Bug fix that was causing data in the BCKIMAGE, MEANBCK, XOFFSET, and YOFFSET
+columns of the output "asc" table to be written as "INDEF" if an input "asn"
+table was used that already had any one or more of these columns defined.
+.le
+.ls Version 2.3
+Modified to update and populate the DATAMIN and DATAMAX keywords in output
+"mos" file extension headers.
+Modified to accept use of new universal pattern keywords in headers of
+reprocessed data sets.
+.le
+.ls Version 2.2.1
+Modification of internal library interface.
+.le
+.ls Version 2.2
+Implemented use of the new task parameters subbkg, meanbkg, readbkg,
+readoffsets, crthresh, and xcwin.
+Modified all routines that compute scalar image values (e.g. the source
+finding and background computation routines) to compute the median, rather
+than the mean image value.
+Implemented special handling for the new ZEROSIG and GROT DQ flag values.
+The ZEROSIG value is considered to be a warning only and data are not
+rejected.
+Pixels with the GROT flag set, however, are rejected during image combining.
+Switched the order of processing so that sources are identified before any
+image combining, so that the cross-correlation routine can use the
+source-flagged pixels.
+Added computation of output image median statistics to populate the new
+image header keywords GOODMEDN, QAMEDN, QBMEDN, QCMEDN, and QDMEDN.
+.le
+.ls Version 2.1.2
+Modified the cross-correlation routine to trap input pixel values that would
+cause arithmetic overflows.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, Science Software Group, STScI
+
+The following additional references are available from STScI and the
+NICMOS instrument group and describe in more detail the NICMOS calibration
+process and general usage of STSDAS:
+
+.nf
+	"The STScI NICMOS Pipeline: CALNICB, Reduction of Image
+		Associations", Instrument Science Report NICMOS-029
+        "HST Data Handbook"
+        "NICMOS Instrument Handbook"
+        "STSDAS Users Guide"
+        "Phase II Proposal Instructions"
+.fi
+    
+The following are technical references meant for internal usage and
+are not written as "end-user" products. However, these documents
+can be retrieved if a detailed understanding of the instrument is required.
+    
+The reference tables and images are controlled by CM.
+The document describing the contents and form of the reference data is
+"Post Observation Data Processing System to Calibration Database System
+Interface Control Document", (ICD-47).
+    
+The header keywords found in the data files are controlled by CM.
+The document describing the keywords is "Post Observation Data
+Processing System to Space Telescope Science Data Analysis Software
+Interface Control Document", (ICD-19).
+.ih
+SEE ALSO
+tprint, tupar, calnica
+.endhelp

@@ -1,0 +1,317 @@
+.help hstpolpoints V2.00 February00 
+.ih
+NAME
+hstpolpoints  -- Reduce linear polarization data for HST instruments for
+a set of apertures
+
+USAGE
+hstpolpoints  imalis errlis instpoltab pointab iterej sigsky outtab
+
+.ih
+PARAMETERS
+.ls imalis = "" [list of file names]
+The list of input sky-subtracted images to be reduced. Upto
+64 images can be input. They must all be of the same dimensions
+and are assumed to be aligned.
+.le
+.ls errlis = "" [list of file names]
+The list of input error files corresponding to the sky-subtracted images.
+They must be of the same dimensions and the same as the
+input sky-subtracted images. 
+.le
+.ls instpoltab = "" [table file name]
+Name of STSDAS table file giving the parameters for polarization 
+determination for the instrument corresponding to the input 
+images. The table lists the polarizer filter name, 
+the polarizer angle, the transmission for the
+components parallel and perpendicular to the polarizer axis,
+the transmission of the s and p rays (parallel and perpendicular
+to the pick-off mirror surface for the WFPC2 case) and the retardation 
+of the s ray relative to the p ray, the instrumental polarization and
+its instrumental position angle. 
+.le
+.ls pointab = "" [table file name]
+Name of the STSDAS table detailing the input apertures for
+summing flux and sky. The table lists the aperture name, X and Y
+pixel centre, radius of object aperture, gap radius between
+object circle and sky annulus and width of sky annulus.
+.le
+.ls iterej = "" [integer]
+Number of iterations for sigma clipping of mean sky.
+.le
+.ls sigsky = "" [real]
+Factor times rms on mean for rejecting points from inclusion in the mean
+for the sky aperture.
+.le
+.ls outtab = "" [name]
+Name of the STSDAS table for the output results. A 13 column table 
+is produced listing the aperture names, X and Y positions (from the
+input pointab table) together with the normalised Stokes I, Q and U 
+parameters and errors, the linear polarization and position angle and 
+errors.
+.fi
+
+.le
+.ih
+DESCRIPTION
+This task is a tool for performing aperture polarimetry for data 
+from those HST instruments with imaging polarizer facilities 
+(currently FOC, WFPC2 and NICMOS and in future ACS). A non-HST 
+instrument can also be handled -  called 'SPECIAL'. The error 
+frames are required to produce output error files and should 
+contain all sources of error (photon noise, systematics (e.g. 
+flat fielding errors) and read-out noise). 
+
+All instrument specific parameters are picked up from the header and
+the telescope rotation angle is read from the PA_V3 or ORIENTAT
+descriptor (see below for details and also examples).
+The polarizer and or colour filter name in the header is matched with
+values found in the instpoltab table file and these are used to
+set the instrument specific polarization parameters required to
+compute the Stokes parameter and linear polarization data.
+The correction for polarizer transmission and pick-off mirror
+induced polarization follows closely the treatment for WFPC2
+by Biretta and McMaster (WFPC2 ISR 97-11). The instrumental
+polarization is included for effects that are not
+collected by these physically based parameters. If the values 
+of the polarizer efficiences for calculating each Stokes parameter 
+are equal for all input images (such as by specifying the same 
+polarizer orientation and instrument position angle), then no 
+calculation of polarization is possible. The task exits 
+with an error in this case.
+
+All errors are computed by Gaussian error propagation. To correct
+for the bias in linear polarization values which occurs when
+the Stokes parameter errors are large and the determination
+of linear polarization is no longer Gaussian error dominated, 
+the method advocated by Wardle & Kronberg (ApJ, 194, 249, 
+1974) is employed, using the solution of the Rice 
+distribution (see also Simmons & Stewart, A&A, 142, 10, 1985 
+for a discussion). Tests with synthetic data show that this 
+correction does an adequate job to pol/sigma(pol) of about 2. Below 
+that value it is best to use Monte Carlo methods which are not 
+directly dealt with here. The method of computing the errors on 
+the polarization position angle depends on the polarization
+signal-to-noise (i.e. pol/sigma(pol)). If pol/sigma(pol) is
+greater than 8 then the simple method (sigma(theta) =
+28.65*sigma(pol)/pol) is employed (Serkowski, Adv. in Astron. & 
+Astrophys. 1, 289, 1962); if pol/sigma(pol) is
+less than 8 then the distribution function of the position angle
+errors is integrated to derive the 1 sigma error (see
+Naghizadeh-Khouei & Clarke, A&A, 274, 968, 1993). Of course if
+the input error frames are all zero, no correction for bias is 
+performed and all output errors are set to zero.
+
+The parameters of the apertures for performing polarimetry 
+are read from an input STSDAS table. Circular apertures are specified by
+an X and Y centre (currently only pixel coordinates are supported),
+the radius of the circle over which to sum counts for the object,
+the distance between the outer radius of the object circle and
+the inner radius of the sky annulus and the width of the sky annulus.
+A name for identification purposes can be given for each aperture.
+
+The mean value of the sky/background per pixel is calculated and
+subtracted from the object signal. The mean sky can be determined
+by sigma clip iterations where values differing by greater
+than SIGSKY*rms on the mean are excluded at each iteration.
+
+The following header keywords are required in order that the 
+instrumental polarization parameters can be matched against the
+instrument table files:
+.nf
+for FOC - INSTRUME, FILTNAM1, FILTNAM2, ORIENTAT
+for NICMOS - INSTRUME, FILTER, ORIENTAT
+for WFPC2 - INSTRUME, FILTNAM1, FILTNAM2, DETECTOR, PA_V3
+for ACS - INSTRUME, FILTNAM1, FILTNAM2, ORIENTAT 
+for SPECIAL - INSTRUME, FILTER, POLANG, ORIENTAT
+.fi
+
+.ih
+EXAMPLES
+.nf
+1. To reduce a set of FOC aperture polarimetry data:
+
+cl> hstpolpoints imalis="@focim.lis" errlis="@focer.lis" 
+    instpoltab="foc-pol-filt-001.tab" pointab="focap1.tab"
+    nrej=3 sigsky=2.5 outtab="focapol1"
+
+FOC polarization data usually consist of a set of three images 
+taken at the three rotation angles of the polarizer of 0, 60 and 
+120 degrees at approximately the same ORIENTAT. See the HST Data 
+Handbook, Section 8-7).
+
+
+2. To reduce a set of NICMOS polarimetry images in a set of
+apertures:
+
+cl> hstpolpoints imalis="@nicim.lis" errlis="@nicer.lis" 
+    instpoltab="nicmos-pol-filt-001.tab" pointab="nicap1.tab"
+    nrej=7 sigsky=3.0 outtab="nicpolap.tab"
+
+NICMOS polarization data usually consist of a set of three images
+taken at the three rotation angles of the polarizer which are close
+to 0, 120 and 240 degrees (depending on the polarizer used short 
+(S) or long wavelength (L)) at a similar ORIENTAT. See the HST Data 
+Handbook Section 18-12 and Hines, D. C., 1998, NICMOS and the VLT 
+Workshop proceedings, eds. Freduling, W. & Hook, R., p. 63.  
+
+
+3. To reduce the aperture polarization for a set of WFPC2 
+polarimetry images:
+
+cl> hstpolpoints imalis="@wfpcim.lis" errlis="@wfpcer.lis" 
+    instpoltab="wfpc2-pol-filt-001.tab" pointab="wfpcap2"
+    nrej=1 sigsky=2.7 outtab="wfpc_1.tab"
+
+WFPC2 polarization data can consist of three or four images taken 
+with three or four rotation angles of the polarizer quad filter at 
+a given PA_V3, or three or more images taken on the same chip at 
+differing values of PA_V3 and covering a range of rotation of at 
+least 90 degrees. See the HST Data Handbook Section 28-16 and 
+Biretta, J. & McMaster, M., WFPC2 Instrument Science Report 97-11. 
+The header parameters FILTNAM1 and FILTNAM2 are translated to 
+provide the polarizer position angle in conjunction with the chip 
+number (for POLQ only).
+
+
+4. To reduce the aperture polarization for a set of ACS 
+polarimetry images:
+
+cl> hstpolpoints imalis="@acsim.lis" errlis="@acser.lis" 
+    instpoltab="acs-pol-hrc-v-filt-001.dat" pointab="specaper.tab"
+    nrej=1 sigsky=3.0 outtab="acs_aper.tab"
+
+ACS polarization data usually consist of a set of three images
+taken at the three rotation angles of the polarizer, which are
+0, 60 and 120 degrees, for a given camera (WFC or HRC), 
+polarizing filter (POLV or POLUV) and colour filter.
+See the ACS Instrument Handbook, Chapter 5 for details.
+
+5. To reduce a set of polarimetry images originating from a
+non-HST instrument and determine the polarization for a set of 
+sources:
+
+cl> hstpolpoints imalis="@specim.lis" errlis="@specer.lis" 
+    instpoltab="special-pol-001" pointab="specaper.tab"
+    nrej=0 sigsky=0.0 outtab="specpol_2"
+
+
+If the parameter INSTRUME is set to SPECIAL then non-HST imaging 
+polarimetry data can be reduced. The filter name given by the 
+header parameter FILTER must match the name in the instrument 
+table file. The polarizer angle is indicated by the header 
+parameter POLANG. The instrument rotation is indicated by the 
+ORIENTAT parameter which may need to be translated into the 
+instrumental system. 
+.fi
+
+.ih
+Format of the instrument specific table file
+.nf
+The STSDAS table file is a nine column file with the following
+columns:
+Name of colour/polarizing filter 
+Position angle of polarizer filter
+Normalised transmission parallel to polarizer axis 
+Normalised transmission perpendicular to polarizer axis 
+Reflectance of mirror E-vector parallel to surface (s wave)
+Reflectance of mirror E-vector normal to surface (p wave)
+Retardance (deg.) of s wave relative to p wave  
+Instrumental polarization (%) 
+Position angle (deg.) of instrumental polarization (in 
+instrument frame)
+
+with the following column names and format:
+FILTER     CH*16 
+POLANG     R     F6.2
+TRANSPAR   R     E10.4
+TRANSPER   R     E10.4
+REFLECTRS  R     F6.4
+REFLECTRP  R     F6.4
+RETARDPHI  R     F8.4
+INSTPOL    R     F6.2
+INSTPA     R     F6.2
+
+Thus table files for different instruments can be produced for use
+with this routine.
+.fi
+
+.ih
+Format of the aperture parameters table file
+.nf
+The STSDAS table file defining the apertures for which the 
+polarization is to be determined has the following columns:
+Identification name for aperture 
+X centre of aperture (pixels)
+Y centre of aperture (pixels)
+Radius of aperture over which to sum object counts (pixels)
+Width of the gap between the object circle and the annulus for 
+determining background counts (pixels)
+Width of the annulus for measuring the mean background (pixels)  
+
+with the following column names and format (the latter
+mandatory only for OBJECT_NAME):
+OBJECT_NAME   CH*16 
+POS_X         R     F7.2
+POS_Y         R     F7.2
+RADIUS        R     F7.2
+GAP           R     F7.2
+ANNULUS       R     F7.2
+.fi
+
+.ih
+Format of the output aperture polarimetry table
+.nf
+The output STSDAS table file listing the derived Stokes 
+parameters, linear polarization and position angle and 
+all propagated errors has the following columns:
+Identification name for aperture 
+X centre of aperture (pixels)
+Y centre of aperture (pixels)
+Stokes I (ADU)
+Stokes I error (ADU)
+Normalised Stokes Q 
+Error on normalised Stokes Q
+Normalised Stokes U
+Error on normalised Stokes U
+Linear polarization (%)
+Error on linear polarization (%)
+Polarization position angle (degrees)
+Error on polarization position angle (degrees).
+
+The first three columns are simply copied from the input 
+aperture definition table.
+
+The output table has the following column names and format:
+OBJECT_NAME       CH*16 
+POS_X             R     F10.3
+POS_Y             R     F10.3
+Stoke_I           R     E12.5
+Stoke_I_Error     R     E12.5
+Stoke_Q           R     E12.5
+Stoke_Q_Error     R     E12.5
+Stoke_U           R     E12.5
+Stoke_U_Error     R     E12.5
+Lin._Poln.        R     F8.4
+Lin._Poln.Error   R     F8.4
+Poln._PA          R     F8.4
+Poln._PA_Error    R     F8.4
+
+.fi
+
+.ih
+BUGS
+.nf
+Some care should be taken if ORIENTAT is much different between 
+the input images and there is substantial instrumental polarization,
+since the position angle of instrumental polarization is (probably)
+fixed in the reference frame of the instrument. This situation is
+not correctly handled.
+
+.fi
+
+.ih
+SEE ALSO
+hstpolima, hstpolsim, polimodel
+.fi
+.endhelp

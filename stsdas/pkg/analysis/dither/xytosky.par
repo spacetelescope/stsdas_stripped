@@ -1,0 +1,13 @@
+input,s,a,"",,,"Input image file name" 
+x,r,h,,,,"X pixel coordinate"
+y,r,h,,,,"Y pixel coordinate"
+coords,s,h,"",,,"ASCII file or FITS table with multiple positions"
+colnames,s,h,"",,,"Names of columns for x and y positions"
+linear,b,h,yes,,,"Return only linearly transformed coordinates?"
+idckey,s,h,"IDCTAB","",,"Keyword used for selecting IDC table"
+hms,b,h,"no",,,"Output positions in hms or dms?" 
+output,s,h,"",,,"Output file for multiple positions"
+ra,r,h,,,,"Output right ascension"
+dec,r,h,,,,"Output declination"
+verbose,b,h,yes,,,"Print out results?"
+mode,s,h,"al",,,

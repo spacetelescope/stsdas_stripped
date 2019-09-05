@@ -1,0 +1,195 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                   19 /                                                
+PSIZE   =                  832 /                                                
+PTYPE1  = 'CRVAL1  '           / pixel number                                   
+PDTYPE1 = 'REAL*8  '           /                                                
+PSIZE1  =                   64 /                                                
+PTYPE2  = 'CRPIX1  '           / pixel number of reference pixel                
+PDTYPE2 = 'REAL*4  '           /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'CD1_1   '           / pixel increment                                
+PDTYPE3 = 'REAL*4  '           /                                                
+PSIZE3  =                   32 /                                                
+PTYPE4  = 'DATAMIN '           / the minimum value of the data                  
+PDTYPE4 = 'REAL*4  '           /                                                
+PSIZE4  =                   32 /                                                
+PTYPE5  = 'DATAMAX '           / the maximum value of the data                  
+PDTYPE5 = 'REAL*4  '           /                                                
+PSIZE5  =                   32 /                                                
+PTYPE6  = 'RA_APER '           / right ascension of aperture (deg)              
+PDTYPE6 = 'REAL*8  '           /                                                
+PSIZE6  =                   64 /                                                
+PTYPE7  = 'DEC_APER'           / declination of aperture (deg)                  
+PDTYPE7 = 'REAL*8  '           /                                                
+PSIZE7  =                   64 /                                                
+PTYPE8  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE8 = 'INTEGER*4'          /                                                
+PSIZE8  =                   32 /                                                
+PTYPE9  = 'ERRCNT  '           / the error count of the data                    
+PDTYPE9 = 'INTEGER*4'          /                                                
+PSIZE9  =                   32 /                                                
+PTYPE10 = 'FPKTTIME'           / the time of the first packet                   
+PDTYPE10= 'REAL*8  '           /                                                
+PSIZE10 =                   64 /                                                
+PTYPE11 = 'LPKTTIME'           / the time of the last packet                    
+PDTYPE11= 'REAL*8  '           /                                                
+PSIZE11 =                   64 /                                                
+PTYPE12 = 'CTYPE1  '           / the first coordinate type                      
+PDTYPE12= 'CHARACTER*8'        /                                                
+PSIZE12 =                   64 /                                                
+PTYPE13 = 'APER_POS'           / aperture used                                  
+PDTYPE13= 'CHARACTER*8'        /                                                
+PSIZE13 =                   64 /                                                
+PTYPE14 = 'PASS_DIR'           / polarization pass direction                    
+PDTYPE14= 'INTEGER*4'          /                                                
+PSIZE14 =                   32 /                                                
+PTYPE15 = 'YPOS    '           / y-position on photocathode                     
+PDTYPE15= 'REAL*4  '           /                                                
+PSIZE15 =                   32 /                                                
+PTYPE16 = 'YTYPE   '           / observation type: OBJ, SKY, BCK                
+PDTYPE16= 'CHARACTER*4'        /                                                
+PSIZE16 =                   32 /                                                
+PTYPE17 = 'EXPOSURE'           / exposure time per pixel (seconds)              
+PDTYPE17= 'REAL*4  '           /                                                
+PSIZE17 =                   32 /                                                
+PTYPE18 = 'X_OFFSET'           / x_offset for GIMP correction (diodes)          
+PDTYPE18= 'REAL*4  '           /                                                
+PSIZE18 =                   32 /                                                
+PTYPE19 = 'Y_OFFSET'           / y_offset for GIMP correction (defl.units)      
+PDTYPE19= 'REAL*4  '           /                                                
+PSIZE19 =                   32 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / GROUP PARAMETERS: PODPS                                      
+                                                                                
+                 / FOS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'SDQ               ' / file type                                      
+BUNIT   = 'n/a               ' / brightness units                               
+                                                                                
+                 / GENERIC CONVERSION KEYWORDS                                  
+HEADER  =                    F / science header line exists                     
+TRAILER =                    F / reject array exists                            
+YWRDSLIN=                 -999 / science words per packet                       
+YLINSFRM=                 -999 / packets per frame                              
+                                                                                
+                 / CALIBRATION FLAGS AND INDICATORS                             
+GRNDMODE= 'n/a               ' / ground software mode                           
+DETECTOR= 'n/a               ' / detector in use: amber, blue                   
+APER_ID = 'n/a               ' / aperture id                                    
+POLAR_ID= 'n/a               ' / polarizer id                                   
+POLANG  =        0.0000000E+00 / initial angular position of polarizer          
+FGWA_ID = 'n/a               ' / FGWA id                                        
+FCHNL   =                 -999 / first channel                                  
+NCHNLS  =                 -999 / number of channels                             
+OVERSCAN=                 -999 / overscan number                                
+NXSTEPS =                 -999 / number of x steps                              
+                                                                                
+                 / CALIBRATION REFERENCE FILES AND TABLES                       
+DEFDDTBL=                    T / UDL disabled diode table used                  
+BACHFILE= 'yref$n/a          ' / background header file                         
+FL1HFILE= 'yref$n/a          ' / first flat-field header file                   
+FL2HFILE= 'yref$n/a          ' / second flat-field header file                  
+IV1HFILE= 'yref$n/a          ' / first inverse sensitivity header file          
+IV2HFILE= 'yref$n/a          ' / second inverse sensitivity header file         
+RETHFILE= 'yref$n/a          ' / waveplate retardation header file              
+DDTHFILE= 'yref$n/a          ' / disabled diode table header file               
+DQ1HFILE= 'yref$n/a          ' / first data quality initialization header file  
+DQ2HFILE= 'yref$n/a          ' / second data quality initialization header file 
+CCG2    = 'mtab$n/a          ' / paired pulse correction parameters             
+CCS0    = 'ytab$n/a          ' / aperture parameters                            
+CCS1    = 'ytab$n/a          ' / aperture position parameters                   
+CCS2    = 'ytab$n/a          ' / sky emission line regions                      
+CCS3    = 'ytab$n/a          ' / big and sky filter widths and prism X0         
+CCS4    = 'ytab$n/a          ' / polarimetry parameters                         
+CCS5    = 'ytab$n/a          ' / sky shifts                                     
+CCS6    = 'ytab$n/a          ' / wavelength coefficients                        
+CCS7    = 'ytab$n/a          ' / GIMP correction scale factores                 
+CCS8    = 'ytab$n/a          ' / predicted background count rates
+                                                                                
+                 / CALIBRATION SWITCHES                                         
+CNT_CORR= 'OMIT              ' / count to count rate conversion                 
+OFF_CORR= 'OMIT              ' / GIMP correction                                
+PPC_CORR= 'OMIT              ' / paired pulse correction                        
+BAC_CORR= 'OMIT              ' / background subtraction                         
+GMF_CORR= 'OMIT              ' / scale reference background
+FLT_CORR= 'OMIT              ' / flat-fielding                                  
+SKY_CORR= 'OMIT              ' / sky subtraction                                
+WAV_CORR= 'OMIT              ' / wavelength scale generation                    
+FLX_CORR= 'OMIT              ' / flux scale generation                          
+ERR_CORR= 'OMIT              ' / propagated error computation                   
+MOD_CORR= 'OMIT              ' / ground software mode dependent reductions      
+                                                                                
+                 / PATTERN KEYWORDS                                             
+INTS    =                 -999 / number of integrations                         
+YBASE   =                -9999 / y base                                         
+YRANGE  =                 -999 / y range                                        
+YSTEPS  =                 -999 / number of y steps                              
+YSPACE  =                -999. / yrange * 32 / ysteps                           
+SLICES  =                 -999 / number of time slices                          
+NPAT    =                 -999 / number of patterns per readout                 
+NREAD   =                 -999 / number of readouts per memory clear            
+NMCLEARS=                 -999 / number of memory clears per acquisition        
+YSTEP1  = 'n/a               ' / first ystep data type: OBJ, SKY, BCK, NUL      
+YSTEP2  = 'n/a               ' / second ystep data type: OBJ, SKY, BCK, NUL     
+YSTEP3  = 'n/a               ' / third ystep data type: OBJ, SKY, BCK, NUL      
+XBASE   =                 -999 / X-deflection base                              
+XPITCH  =                -9999 / X-deflection pitch between diode               
+YPITCH  =                -9999 / Y-deflection pitch                             
+                                                                                
+                 / CALIBRATION KEYWORDS                                         
+LIVETIME=                 -999 / accumulator open time  (unit=7.8125 microsec)  
+DEADTIME=                 -999 / accumulator close time (unit=7.8125 microsec)  
+MAXCLK  =                 -999 / maximum clock count                            
+PA_APER =                -999. / position ang of aperture used with target (deg)
+NOISELM =                 -999 / burst noise rejection limit                    
+OFFS_TAB= 'n/a               ' / GIMP offsets (post-pipeline processing only)   
+MINWAVE =        0.0000000E+00 / minimum wavelength (angstroms)                 
+MAXWAVE =       -0.1000000E+01 / maximum wavelength (angstroms)                 
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+PKTFMT  =                  101 / packet format code                             
+PODPSFF = 'n/a               ' / 0=(no podps fill), 1=(podps fill present)      
+STDCFFF = 'n/a               ' / 0=(no st dcf fill), 1=(st dcf fill present)    
+STDCFFP = 'n/a               ' / st dcf fill pattern (hex)                      
+                                                                                
+                 / APERTURE POSITION                                            
+RA_APER1=                -999. / right ascension of the aperture (deg)          
+DECAPER1=                -999. / declination of the aperture (deg)              
+                                                                                
+                 / EXPOSURE INFORMATION                                         
+EQUINOX = 'n/a               ' / equinox of the celestial coordinate system     
+SUNANGLE=                -999. / angle between sun and V1 axis (deg)            
+MOONANGL=                -999. / angle between moon and V1 axis (deg)           
+SUN_ALT =                -999. / altitude of the sun above Earth's limb (deg)   
+FGSLOCK = 'n/a               ' / commanded FGS lock (FINE,COARSE,GYROS,UNKNOWN) 
+                                                                                
+DATE-OBS= 'n/a               ' / UT date of start of observation (yyyy-mm-dd)   
+TIME-OBS= 'n/a               ' / UT time of start of observation (hh:mm:ss)     
+EXPSTART=                -999. / exposure start time (Modified Julian Date)     
+EXPEND  =                -999. / exposure end time (Modified Julian Date)       
+EXPTIME =                -999. / exposure duration (seconds)--calculated        
+EXPFLAG = 'n/a               ' / Exposure interruption indicator                
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

@@ -1,0 +1,23 @@
+image,f,l,,,,Direct Image
+grism,f,l,,,,Grism image
+output,f,l,,,,Output File
+outfits,b,h,no,,,Output also in FITS format
+skysub,b,h,yes,,,Substract Sky
+mingood,r,h,INDEF,,,Minimum value to consider good
+maxgood,r,h,INDEF,,,Maximum value to consider good
+auto,b,h,no,,,Automatic Mode
+gdatin,i,h,1,,,Extension number of the data
+gdtqin,i,h,INDEF,,,Extension number of the DTQ
+dtqstr,s,h,"0000000000000000",,,Bits of DTQ used to accept a pixel 
+width,i,h,7,3,,Width of default extraction box
+swidth1,i,h,8,,,Inner radius for background
+swidth2,i,h,10,,,Outer radius for background
+autofilter,b,h,yes,,,Use filter definition file
+step_lambda,r,h,INDEF,,,Wavelength step per pixel
+zero_lambda,r,h,INDEF,,,Wavelength zero point
+ccx,r,h,INDEF,,,X OVERWRITE of offset between grism and direct images 
+ccy,r,h,INDEF,,,Y OVERWRITE of offset between grism and direct images
+angle,r,h,INDEF,-5,5,Angle of dispersion wrt x axis
+maxx1,i,h,INDEF,5,,Left extent of spectra in pixels
+maxx2,i,h,INDEF,5,,Right extent of spectra in pixels
+

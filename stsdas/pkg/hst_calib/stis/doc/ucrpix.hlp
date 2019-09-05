@@ -1,0 +1,143 @@
+.help ucrpix Oct2004 stis
+.nj
+.ih
+NAME
+ucrpix -- Update reference pixel, based on pixel and celestial coordinates
+at one point.
+.ih
+USAGE	
+.nf
+ucrpix input "x y" "ra dec"
+.fi
+.ih
+DESCRIPTION
+This task modifies the reference pixel keywords
+CRPIX1 and CRPIX2 of the input image,
+based on user-specified pixel and celestial coordinates
+of one point in the image.
+The reference pixel keywords are adjusted (iteratively)
+so that the specified pixel coordinates
+(after being corrected for distortion)
+correspond to the specified celestial coordinates.
+The correction therefore only accounts for a zero-point offset,
+not for any error in scale or rotation.
+.ih
+PARAMETERS
+.ls input [string]
+Name of the 2-D image to be updated in-place.
+Wildcards are not supported;
+the task processes just one image at a time.
+For a FITS file, the extension must be specified explicitly,
+unless the image is in the primary header/data unit
+and there are no extensions.
+
+The coordinate parameter keywords CRPIX1 and CRPIX2 will be modified,
+and by default a history record will be added to the header.
+No change will be made to the image data.
+.le
+.ls pixels [string]
+This is a pair of numbers (separated by one or more blanks),
+which will be read as the X and Y pixel coordinates
+of a point in the image.
+Unlike the 'coords' parameter of 'trxyeq',
+'pixels' may not be a file name;
+an explicit pair of numbers is expected.
+This is the actual location of the point,
+that is, not corrected for distortion.
+
+This point does not have to be within the image boundaries.
+'input' may have been extracted as an image section
+from a larger image, for example,
+in which case the point identified by 'pixels'
+could be within the original image but outside the current image.
+.le
+.ls celestial [string]
+This is a pair of numbers (separated by one or more blanks),
+which will be read as the right ascension and declination
+of a point in the image,
+the point with pixel coordinates given by 'pixels'.
+
+The right ascension may be given either in hours, minutes and seconds
+or in decimal degrees.
+These two cases are distinguished by the presence or absence
+of a colon in the first "word" (the right ascension) of the string.
+For example, if the right ascension were given as 18:43:11.807
+it would be interpreted to be hours, minutes, and seconds,
+while 18.719946388888889 would be read as decimal degrees
+(and 18:43.1967833 would be hours and minutes).
+The declination may be given either in degrees, minutes and seconds
+or in decimal degrees.
+
+The IRAF CL converts numbers given in HH:MM:SS.d notation
+to a decimal value.
+By putting the right ascension and declination in a quoted string,
+the 'ucrpix' task gets the values exactly as entered by the user,
+which makes it possible to distinguish between
+hours, minutes, seconds and decimal degrees.
+.le
+.ls (idctab = "") [string]
+The name of a table of image distortion coefficients.
+
+If 'idctab' is null (the default),
+the task will read the IDCTAB keyword in the primary header
+and use that table for the distortion coefficients.
+If there is no IDCTAB keyword in the primary header,
+no correction for geometric distortion will be applied.
+'idctab' may be used to override the value in the header
+or to specify a table for an image that lacks this keyword.
+See the description of 'select' for the row selection criteria.
+See ISR ACS 2001-08 for a description of the format
+of this reference table.
+
+If idctab = "none",
+no IDC table will be used,
+and no correction for geometric distortion will be applied.
+.le
+.ls (select = "filter") [string]
+Row selection column.
+
+The IDC table may contain more than one row.
+The row to use will be selected by the value in the DIRECTION column;
+DIRECTION must be "FORWARD".
+A second column, as given by the 'select' parameter,
+can be used as an additional selection criterion.
+If 'select' is not null,
+both an image header keyword and an IDC table column with that name must exist;
+the header and column values will be compared (case insensitive)
+and used in addition to DIRECTION to select the table row.
+The header and column values of 'select' are expected to be strings.
+.le
+.ls (verbose = yes) [boolean]
+Print output?  The default is to print the offsets
+that are added to CRPIX1 and CRPIX2.
+.le
+.ls (history = yes) [boolean]
+By default, a history record giving
+the change that is made to CRPIX1 and CRPIX2 will be added to the header.
+If 'input' is in an extension of a FITS file,
+the history record will be added to that extension,
+not to the primary header.
+.le
+.ih
+EXAMPLES
+1. Update the reference pixel in the first extension of o4qp9g010_flt.fits:
+
+.nf
+  st> ucrpix o4qp9g010_flt.fits[1] \
+          "509.38  159.73" "18:43:11.807 -32:17:45.97"
+(-5.870,-14.991) added to (crpix1,crpix2)
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+ISR ACS 2001-08, W. Hack and C. Cox,
+"Revised IDCTAB Definition:  Application to HST Data."
+
+The 'ucrpix' task was written by Phil Hodge.
+.ih
+SEE ALSO
+The 'trxyeq' task prints celestial coordinates at specified pixel coordinates,
+taking distortion into consideration,
+and 'treqxy' prints pixel coordinates at specified celestial coordinates.
+.endhelp

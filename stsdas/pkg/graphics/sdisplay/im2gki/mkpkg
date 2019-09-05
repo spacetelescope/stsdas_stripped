@@ -1,0 +1,10 @@
+$checkout sdisplay.a ../
+$update sdisplay.a
+$checkin sdisplay.a ../
+$exit
+
+sdisplay.a:
+        t_im2gki.x      <imhdr.h> <psiescape.h> "im2gki.h"
+        i2gdiy.x        
+        i2gsce.x        "im2gki.h"
+        spreap.x        <ctotok.h> <ctype.h> <psiescape.h>

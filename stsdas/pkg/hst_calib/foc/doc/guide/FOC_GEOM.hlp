@@ -1,0 +1,30 @@
+.help FOC_GEOM Apr88 "FOC 11.1"
+
+.ih
+SUMMARY
+
+tasks in the focgeom package:
+
+.nf
+   geomcorrx - geometrically correct an image
+    rappendx - append reseau entries from one file to another
+    rdifferx - take differences between reseau entries and plot histogram
+ rdirectoryx - print directory of entries in reseau file
+   revalfitx - evaluate fit produced by rfitx at specified points
+      rfindx - locate reseau marks in an image
+       rfitx - fit distortiion field with a choice of functions
+       rfixx - fix holes in reseau file entries
+       rgenx - generate reseau file or entry
+     rinterx - perform simple interpolation between reseau grids
+    rmarkerx - interactive approximate location of reseau marks
+      rplotx - plot magnified vector differences between reseaux
+     rprintx - print out reseau data
+      rtodbx - print reseau data suitably for images package geometry tasks
+ rtransformx - perform linear transformations on reseau(x) coordinates
+  slitanglex - measure angle of long slit spectrum to axis 1
+
+(Type help focgeom opt=sys for more information about the focgeom package     )
+(     help reseau_files    for more information about reseau files            )
+(     help foc_conventions for more information about foc specific conventions)
+.fi
+.endhelp

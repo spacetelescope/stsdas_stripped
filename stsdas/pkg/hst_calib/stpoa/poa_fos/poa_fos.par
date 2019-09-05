@@ -1,0 +1,5 @@
+# poa_fos - Package parameters
+
+version,s,h,"POA_FOS V1.2.2: Feb 2002"
+mode,s,h,"al"
+

@@ -1,0 +1,12 @@
+$checkout hrs.a ../
+$update hrs.a
+$checkin hrs.a ../
+$exit
+
+hrs.a:
+	t_mkwave.x	<imhdr.h> <cif.h> <error.h> "mkw.h"
+	mkw.x		"mkw.h"
+	mkw_mkwave.x	"mkw.h"
+	mkw_rtab.x	<tbset.h>
+	;
+

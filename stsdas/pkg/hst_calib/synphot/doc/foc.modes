@@ -1,0 +1,69 @@
+FOC
+
+The FOC keywords consist of a list of detectors, filters, and miscellaneous
+keywords. The f/48 has two filter wheels and the f/96 detector has four
+filter wheels. Some of the filters have aliases: "fuvop" is an alias for
+PRISM1, "nuvop" is an alias for PRISM2, "fopcd" is an alias for PRISM3,
+"g450m" is an alias for F305LP, "g225m" is an alias for F220W, and "g150m"
+is an alias for F140W.
+
+The miscellaneous keywords include the COSTAR and the occulting fingers.
+An example of an FOC observation mode string would be "FOC,COSTAR,F/96,F410M".
+
+Detector: f/48 f/96 f/288 spec
+
+f/48 Wheel 1: f140w (g130m) f150w (g150m) f175w f195w f220w (g225m) 
+              f305lp (g450m) prism3 (fopcd) (grat-prism)
+
+f/48 Wheel 2: f130lp f180lp f275w f342w f430w prism1 (fuvop) prism2 (nuvop)
+
+f/96 Wheel 1: f600m f630m f2nd f4nd f6nd f8nd pol0 pol0_par pol0_per pol0_unp
+              pol60 pol60_par pol60_per pol60_unp pol120 pol120_par pol120_per
+              pol120_unp prism1  (fuvop) prism2 (nuvop)
+
+f/96 Wheel 2: f140w f175w f220w f275w f320w f342w f370lp f430w f480lp f486n
+              f501n
+
+f/96 Wheel 3: f120m f130m f140m f152m f165w f170m f190m f195w f210m f231m f1nd
+
+f/96 Wheel 4: f130lp f253m f278m f307m f346m f372m f410m f437m f470m f502m 
+              f550m
+
+f/48 Image Formats: x48n256 x48n256d x48n512 x48nlrg x48zlrg x48zrec
+
+f/96 Image Formats: x96n128 x96n256 x96n512 x96nlrg x96z512 x96zlrg
+
+Spectral Order: order1 order2 order3 order4
+
+Occulting Fingers: occ0p23 occ0p4 occ0p8
+
+Detector Formats: x48n256 x48n256d x48n512 x48nlrg x48zlrg x48zrec x96n128
+                  x96n256 x96n512 x96z512 x96nlrg x96zlrg
+
+Note that the spectroscopic capabilities, and hence the related keywords 
+spec, order1, order2, order3, and order4, are only available for the f/48
+camera. Furthermore, the occ0p23 keyword is only available with the f/48
+camera, and the occ0p4 and occ0p8 keywords are only available with the f/96
+camera.
+
+The x48* and x96* keywords are used to account for the known dependency of 
+DQE on the detector format (see the FOC Instrument Handbook for more details).
+These keywords invoke throughput tables that contain the
+(wavelength-independent) relative sensitivities for each format, where the
+512x512 format (x48n512 and x96n512) is set to 1.0. The following table lists
+the associations between formats and synphot keywords.
+
+Camera  Format        Keyword
+------  -----------   -------
+f/96    128  x  128   x96n128
+	256  x  256   x96n256
+	512  x  512   x96n512
+	512z x  512   x96z512
+	512z x 1024   x96zlrg
+
+f/48    256  x  256   x48n256
+	512  x  512   x48n512
+	256z x 1024   x48zrec
+	512  x 1024   x48nlrg
+	512z x 1024   x48zlrg
+

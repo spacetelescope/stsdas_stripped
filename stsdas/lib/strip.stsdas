@@ -1,0 +1,12 @@
+# STRIP.STSDAS -- Rmfiles command script, used to strip the STSDAS directories
+# of all files not required for ordinary runtime use of the system.
+
+data		-all
+doc		-allbut .hlp
+osprocs		-all
+pkg  	-allbut .hlp .hd .men .mip .cl .par .key .dat .hhh .sys .header .cel .py .msg
+
+# Sun/IRAF only.
+# ---------------
+#-file bin.68881/OBJS.arc
+#-file bin.ffpa/OBJS.arc

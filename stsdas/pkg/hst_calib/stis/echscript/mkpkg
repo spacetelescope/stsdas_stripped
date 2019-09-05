@@ -1,0 +1,41 @@
+# Updated 23 July 1999 M.D. De La Pena: Added header include files.
+#
+$call relink
+$exit
+
+debug:
+	$set XFLAGS = "-gqz $(XFLAGS)"
+	$set LFLAGS = "-z $(LFLAGS)"
+	$call relink
+	;
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-DNATIVE_IRAF -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	techscript.c
+	$update	libechscript.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z -p tables -p stsdas $(LFLAGS)'
+	$link   techscript.o libechscript.a \
+		-lcvos -lc -lxtools -ltbtables \
+		-o xx_echscript.e
+		;
+
+install:
+	$move xx_echscript.e stsdasbin$x_echscript.e
+	;
+
+libechscript.a:
+        echscript.c   echscript.h <c_iraf.h> <xselector.h> <xclio.h> <xtables.h>
+        igisetup.c    echscript.h <c_iraf.h> <xtables.h>
+	errors.c      echscript.h <c_iraf.h>
+        linkedlist.c  echscript.h <c_iraf.h>
+	;

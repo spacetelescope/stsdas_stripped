@@ -1,0 +1,5 @@
+image,s,a,,,,Image name
+mask,s,a,,,,Mask name
+expr,s,a,,,,Boolean expression
+value,r,a,,,,Fill value
+mode,s,h,"a",,,

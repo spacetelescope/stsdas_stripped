@@ -1,0 +1,107 @@
+.help dopoff Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+dopoff -- Determine Doppler compensation magnitude for GHRS data.
+.ih
+USAGE
+dopoff input
+.ih
+DESCRIPTION
+This task calculates the magnitude of the Doppler compensation for Goddard
+High Resolution Spectrograph (GHRS) data.  The values are used by the 
+'specalign' task as a measure of the granularity shift (see the help
+for 'specalign' for more information).
+
+Input for this task is a table (normally produced by the 'poffsets'
+task) that contains a list of file names used by the 'specalign' task
+for combining spectral data. 'dopoff' adds a column---specified by
+the 'gran_col' parameter---containing Doppler compensation magnitudes
+for the data. This name of this column is later used when running
+the 'specalign' task, and consequently, is the input value for the 'goff_col' 
+parameter of 'specalign'.
+
+The table should have two columns defined:
+.nf
+'file_col' - Names of the data files.
+'group_col' - Group numbers for data in corresponding files.
+.fi
+
+Also as input, the task assumes that the ULH files exist; it will
+construct the ULH file names by changing the extension of the
+input files from the 'file_col' file to ".ulh".
+
+Output is written to the column specified by the 'gran_col' parameter.
+If the column does not exist, it is created. If the column already
+exists, two options are available:
+.nf
+'overwrite = yes' - If the column exists, existing values 
+                    are overwritten. 
+'overwrite = no'  - If the column exists, an error message
+                    is displayed.
+.fi
+
+Values written to the 'gran_col' are the relative Doppler compensation
+values. The values are determined as:
+
+.nf
+	offset = doppler(current) - doppler(reference)
+.fi
+
+The reference data is specified in the parameter 'reference'.  If the
+parameter is blank, the first file from the input table is used
+as the reference.
+.ih
+PARAMETERS
+.ls input [file name]
+Name of the input table containing the file names and group numbers of
+the data for which Doppler compensation magnitudes will be determined.
+.le
+.ls (reference = "") [file name]
+Name of the reference data file for which the Doppler compensation
+will be computed.  If not specified, the first file from the input
+table will be used as the reference.  The column is then filled with
+the relative Doppler compensation shifts.
+.le
+.ls (gran_col = "goff") [string]
+Name of the column to create or overwrite with the calculated Doppler
+compensation offsets.
+.le
+.ls (file_col = "file") [string]
+Name of the column that contains the data file names.
+.le
+.ls (group_col = "group") [string]
+Name of the column that contains the group numbers for the
+corresponding data files.
+.le
+.ls (overwrite = no) [boolean]
+Overwrite any existing values in the 'gran_col' column?
+
+If this is set to "no" and the column specified by the parameter 'gran_col' 
+exists,
+the program will abort.  If "yes" is specified, then the contents of the column
+will be overwritten.
+.le
+.ih
+EXAMPLES
+1. Determine the Doppler compensation offsets for the observation
+'z1x23456m'.
+
+.nf
+	cl> poffsets z1x23456m shift.tab
+	cl> dopoff shift.tab
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+The document describing the GHRS is "SI Systems
+Description and User's Handbook for the High Resolution Spectrograph
+(HRS) for the Hubble Space Telescope (HST)", Ball Aerospace, SE-01.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO	
+specalign, poffsets
+.endhelp

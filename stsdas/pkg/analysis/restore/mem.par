@@ -1,0 +1,31 @@
+input,s,q,,,,"Input degraded image"
+psf,s,q,,,,"Input PSF file"
+model,s,q,,,,"Input model image (enter space for none)"
+output,s,q,,,,"Output restored image"
+noise,r,q,13.,0.,,"Readout noise (electrons)"
+adu,r,q,7.5,1.,,"A/D conversion constant (electrons/DN)"
+poisson,b,h,no,,,"Poisson noise only (or plus Gaussian noise)?"
+tp,r,h,0.,0.,,"Total power (flux) of image (0: auto calculatn)"
+nsub,i,h,1,1,8,"Factor of subpixelization"
+blksum,b,h,yes,,,"Block sum nsub**2 subpixels to get a normal one?"
+guess,s,h,"",,,"Input first guess image (enter space for none)"
+icf,s,h,"",,,"Input ICF file (enter space for none)"
+sigma,ar,h,1,2,1,0.,,"Sigmas of Gauss. fn. (ICF) (0: entering FWHM)",0.,0.
+fwhm,ar,h,1,2,1,0.,,"Full widths at half max of Gauss. fn. (ICF)",0.,0.
+hidden,b,h,no,,,"Output the hidden (or visible) image?"
+aim,r,h,1.,0.,,"Factor for setting actual target chi-sq"
+maxiter,i,h,100,1,100000,"Max total number of iterations"
+message,i,h,1,1,3,"Verboseness of output mess., 1(least) - 3(most)
+
+** NORMALLY USE DEFAULTS FOR FOLLOWING PARAM'S"
+m_update,i,h,1,1,,"Model updating interval"
+method,i,h,0,0,3,"0_auto, 1_appx.Newton, 2_conj., 3_acc.Newton"
+cj_on,i,h,2,1,1000,"Inner iter. No. to turn on conj. method"
+opt,i,h,3,1,3,"Opt. 1-D search (1_no, 2_quadr/cubic, 3_accurate)"
+damping,r,h,1.,0.,100.,"Normalized damping factor (1-100)"
+a_sp,r,h,10.,0.,,"Speed factor for renewing alpha"
+a_rate,r,h,0.5,0.,1.,"Decrease rate of a_sp"
+b_sp,r,h,3.,0.,,"Speed factor for renewing beta"
+tol,ar,h,1,4,1,0.,,"Converg. tols. for ME solutn, chi-sq, tp, l.eq._solutn",\
+0.05,0.05,0.1,0.1
+mode,s,h,"ql",,,

@@ -1,0 +1,2 @@
+# censor.cl
+phelp ("censor")

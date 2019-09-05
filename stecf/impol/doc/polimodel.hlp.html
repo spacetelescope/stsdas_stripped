@@ -1,0 +1,147 @@
+<!-- Translated by iraftex version 0.15 -->
+<html>
+<title>POLIMODEL (V2.00) --- November00 --- POLIMODEL (V2.00)</title>
+<h1>NAME</h1>
+<blockquote>
+polimodel  -- Produce model linear polarization and position angle images
+<p>
+USAGE
+polimodel inint simlis coincid intclip pacorr random seed polran paran modpol
+modpa
+<p>
+</blockquote>
+<h1>PARAMETERS</h1>
+<blockquote>
+<dl>
+<dt>inint = &quot;&quot; [name]
+<dd>
+Input total signal (Stokes I) image to model.
+<dt>simlis = &quot;&quot; [name]
+<dd>
+Name of STSDAS table file listing the parameters of the polarization models.
+The central polarization (in %), x and y pixel coordinates of the centre,
+the exponent for change of polarization with distance and the scaling radius
+for the exponent are required. Any number of distinct models can be 
+listed.
+<dt>coincid = &quot;&quot; [integer]
+<dd>
+Method used to treat pixel values where the polarization from two models
+coincides. Options for combining the polarization and position angle are: 
+1=maximum; 2=minimum; 3=vector sum.
+<dt>intclip = &quot;&quot; [real]
+<dd>
+Minimum value of signal in input image to produce model polarization values.
+<dt>pacorr = &quot;&quot; [real]
+<dd>
+Additive correction for position angle values.
+<dt>random = &quot;&quot; [boolean]
+<dd>
+Whether to apply random errors to output polarization and position angle
+values.
+<dt>seed = &quot;&quot; [integer]
+<dd>
+Seed for random number generator.
+<dt>polran = &quot;&quot; [real]
+<dd>
+Fractional value of 1 sigma linear polarization error.
+<dt>paran = &quot;&quot; [real]
+<dd>
+Fractional value of 1 sigma polarization position angle error.
+<dt>modpol = &quot;&quot; [name]
+<dd>
+File name for output linear polarization (%) image.
+<dt>modpa = &quot;&quot; [name]
+<dd>
+File name for output position angle (degrees) image.
+<p>
+</dl>
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+This task produces a model linear polarization image and corresponding
+position angle image from an input image assumed to represent
+intensity (Stokes I parameter). The input image could be a model
+image or real data. The linear polarization image
+is produced from the parameters read from a table file listing:
+<pre>
+polarization at fiducual position 
+X,Y pixel coordinates of the fiducial position of polarization
+radial exponent of variation of polarization 
+radial scale factor 
+The ouput polarization is calculated thus:
+Pol. = Peak Pol. * (R/R0)**EXP
+where R = SQRT( (X-X0)**2 + (Y-Y0)**2 )
+<p>
+</pre>
+The position angle at a given pixel is the direction perpendicular 
+to the vector from the position of fiducial polarization to the 
+current pixel. This is understood as the centre of a
+centro-symmetric polarization pattern (e.g. for single
+Rayleigh scattering). A threshold for the input image can be defined
+such that polarization and position angle are not computed for
+input values less than this threshold.
+<p>
+If the input table specifies more than one polarization model
+then some rules are required to deal with pixels having
+polarization contributions from both models. Three cases are
+implemented:
+<pre>
+Maximum value of polarization and position angle corresponding
+to this maximum value are output;
+Minimum value of polarization and position angle corresponding
+to this minimum  value are output;
+The output polarization is formed from the vector sum of the
+individual Q and U Stokes parameters of the models.
+</pre>
+<p>
+An attempt to produce ouput polarization and position
+angle images with random errors is made. Normally distributed
+polarization and position angle values can be produced by 
+specifying sigma(pol)/pol and sigma(theta)/theta 
+respectively. The normally distributed values are formed
+before combination of pixel values when more than one model
+is input.
+<p>
+</blockquote>
+<h1>EXAMPLES</h1>
+<blockquote>
+<pre>
+1. To form the linear polarization and position angle images
+for an image of a reflection nebula centred at pixel 256,256
+of fiducial polarization 5% and increasing linearly with a 
+doubling distance of 20 pixels plot. Values are only calculated 
+for signal values greater than 20 and no random error are 
+applied.
+<p>
+cl&gt; polimodel inint=&quot;nebint.fits&quot; simlis=&quot;modrefl.tab&quot;
+    coincid=0 intclip=20.0 pacorr=0.0 random=no seed=0
+    polran=0.0 paran=0.0 modpol=&quot;nebpol.fits&quot; modpa=&quot;nebpa.fits&quot;
+<p>
+2. To form the linear polarization and position angle images
+for an image of a galaxy cluster with individual models of the
+polarization and its radial dependence. Coincident values in 
+the polarization and position angle images from the different
+models are combined vectorially. Output values are calculated 
+for input values greater than 100 and random errors are applied 
+with sigma(pol)/pol of 0.1 and sigma(theta)/theta of 0.1. 
+<p>
+cl&gt; polimodel inint=&quot;galclust.fits&quot; simlis=&quot;galclust.tab&quot;
+    coincid=3 intclip=100.0 pacorr=-10.0 random=yes seed=99
+    polran=0.10 paran=0.10 modpol=&quot;galclustpol.fits&quot; 
+    modpa=&quot;galclustpa.fits&quot;
+<p>
+</pre>
+<p>
+</blockquote>
+<h1>BUGS</h1>
+<blockquote>
+<pre>
+None known.
+</pre>
+<p>
+</blockquote>
+<h1>SEE ALSO</h1>
+<blockquote>
+mkobjects, polimplot, fieldplot 
+</blockquote>
+</html>

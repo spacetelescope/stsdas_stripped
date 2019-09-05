@@ -1,0 +1,34 @@
+# This mkpkg file builds asnexpand as a native IRAF task.
+
+$call	relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+debug:
+	$set XFLAGS="-g -q $(XFLAGS)"
+	$set LFLAGS="$(LFLAGS) -/Bdynamic"
+	$call relink
+	;
+
+relink:
+	$set XFLAGS="-DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake asnexpand.c ../lib/nicmos.h <xclio.h> <xtables.h>
+	$call linkonly
+	;
+
+linkonly:
+	$set LFLAGS = "-H -z $(LFLAGS)"
+	$link asnexpand.o ../lib/libnicmos.a \
+	      -lhstio -lcvos -ltbtables -lc \
+	      -o xx_asnexpand.e
+	;
+
+install:
+	$move xx_asnexpand.e stsdasbin$x_asnexpand.e
+	;
+

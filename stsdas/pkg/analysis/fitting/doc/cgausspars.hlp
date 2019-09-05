@@ -1,0 +1,90 @@
+.help cgausspars Jun90 stsdas.analysis.fitting
+.ih
+NAME
+cgausspars -- Edit the parameters for fitting a constrained Gaussian 
+function.
+.ih
+USAGE
+cgausspars
+.ih
+PARAMETERS
+.ls (a = 0.) [real]
+Initial guess for the baseline zero point.
+.le
+.ls (b = 0.) [real]
+Initial guess for the baseline slope.
+.le
+.ls (ampl1 = INDEF) [real]
+Initial guess for the first component amplitude above baseline.
+If INDEF, the task will set it to the maximum value in the dependent
+variable.
+.le
+.ls (cent1 = INDEF) [real]
+Initial guess for the first component center position. If INDEF, the
+task will set it to the position of the maximum value in the independent
+variable.
+.le
+.ls (fwhm1 = INDEF) [real]
+Initial guess for the first component full width, half-maximum (FWHM).
+If INDEF, the task will set it to be 1/100 of the independent variable
+range.
+.le
+.ls (ampl2 = INDEF) [real]
+Initial guess for the second component amplitude above baseline 
+(relative).
+.le
+.ls (cent2 = INDEF) [real]
+Initial guess for the second component center position (relative).
+.le
+.ls (fwhm2 = INDEF) [real]
+Initial guess for the second component FWHM.
+.le
+.ls (ampl3 = INDEF) [real]
+Initial guess for the third component amplitude above baseline 
+(relative).
+.le
+.ls (cent3 = INDEF) [real]
+Initial guess for the third component center position (relative).
+.le
+.ls (fwhm3 = INDEF) [real]
+Initial guess for the third component FWHM.
+.le
+.ls (va = no) [boolean]
+Vary the baseline zero point?
+.le
+.ls (vb = no) [boolean]
+Vary the baseline slope?
+.le
+.ls (vampl1 = yes) [boolean]
+Vary the first component amplitude?
+.le
+.ls (vcent1 = yes) [boolean]
+Vary the first component center position?
+.le
+.ls (vfwhm1 = no) [boolean]
+Vary the first component FWHM?
+.le
+.ls (vampl2 = yes) [boolean]
+Vary the second component amplitude?
+.le
+.ls (vcent2 = yes) [boolean]
+Vary the second component center position?
+.le
+.ls (vfwhm2 = no) [boolean]
+Vary the second component FWHM?
+.le
+.ls (vampl3 = yes) [boolean]
+Vary the third component amplitude?
+.le
+.ls (vcent3 = yes) [boolean]
+Vary the third component center position?
+.le
+.ls (vfwhm3 = no) [boolean]
+Vary the third component FWHM?
+.le
+.ih
+SEE ALSO
+ngaussfit, funcform
+.endhelp
+                                                 
+                           

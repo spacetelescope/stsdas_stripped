@@ -1,0 +1,7 @@
+input,f,a,,,,"Images containing encoded data"
+output,f,a,,,,"Table of extracted data"
+definition,f,a,"ctools$eng2tab/ghrs_udl_def.db",,,"Bit field definition table"
+items,s,h,"*",,,"Items to extract"
+defext,s,h,"",,,"Default extension for input files"
+format,b,h,yes,,,"Format the output table?"
+Version,s,h,"15Dec95",,,"Date of installation"

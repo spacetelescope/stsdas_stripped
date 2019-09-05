@@ -1,0 +1,5 @@
+#  noisepar parameters
+#
+readnoise,r,h,1.73,0.,,Read noise (in DN) of the detector
+gain,r,h,7.5,1.e-6,,Detector gain in electrons/DN
+scalenoise,r,h,0.,0.,,Multiplicative term (in percent) from noise model

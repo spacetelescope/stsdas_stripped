@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  Finding keywords in a FITS keyword list.</TITLE>
+<meta name="description" value="  Finding keywords in a FITS keyword list.">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html67 HREF="node5.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html65 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html59 HREF="node3.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html68 HREF="node5.html">  Accessing and changing </A>
+<B>Up:</B> <A NAME=tex2html66 HREF="node2.html"> 
+Manipulating FITS Header </A>
+<B> Previous:</B> <A NAME=tex2html60 HREF="node3.html">  Making a FITS </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00022000000000000000>  Finding keywords in a FITS keyword list.</A></H2>
+<P>
+<PRE>    347:    FitsKw findKw(Hdr *, char *name);
+    348:    FitsKw findnextKw(Hdr *, char *name);
+    349:    FitsKw first(Hdr *);
+    350:    FitsKw next(FitsKw);
+    351:    FitsKw getKw(Hdr *, int n);
+    352:    FitsKw insertfirst(Hdr *);</PRE>
+<P>
+The ``find'' function starts at the beginning of the list and finds the 
+first occurence of the desired keyword.  The ``findnext'' function  
+begins at the current position and returns the next occurence of the 
+keyword.  NotFound is returned if no such keyword is found.  The ``first'' 
+function sets the current position to the beginning of the list.
+The ``next'' function sets the position to the next keyword in the list.
+``Next'' returns NotFound after the last keyword in the list.  ``GetKw''
+returns the n-th keyword.  The special function ``insertfirst'' is used to
+position the cursor prior to the first item in the list so that a new
+keyword may be inserted at the beginning of the list.  (Insert functions
+always insert keywords at a position after the cursor.)
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

@@ -1,0 +1,140 @@
+.help intrep Jul93 stsdas.analysis.gasp
+.ih
+NAME
+intrep -- Find guide star coordinates for an image.
+.ih
+USAGE
+intrep gsctab image
+.ih
+DESCRIPTION
+This task will reposition the initial guesses of guide star positions
+on an image.  Users can select marked stars and specify better
+positions for them. Pixel positions will be centered based on the peak
+value in a sub-raster of the image at the cursor location.  The plate
+solution will also be fitted to the coordinates.  The output will
+consist of the equatorial coordinates of cursor locations, based on the
+computed fit.
+
+This task is interactive and uses the image display server (imtool or
+SAOimage) and the image display cursor.  See the man pages for the
+appropriate display server for more information on its operation.
+The image must be displayed using the 'display' task in the 'images.tv'
+package.  When 'intrep' starts, the image cursor (i.e., a blinking
+circle in imtool and a plus symbol in SAOimage) will appear in the
+display window.  The user interacts with 'intrep' by moving the image
+cursor with the mouse and entering values with the keyboard.
+
+The plate solution option (the "f" command key) attempts to fit a set
+of points (X,Y,RA) and (X,Y,DEC) with a model F(X,Y).  The fit routine
+is a version of the Single Value Decomposition (SVD) method used in the
+routine 'svdfit' (and is described the book "Numerical Recipes", by
+Press, et al.); this version is modified for double precision.
+Positions (X,Y) are offsets from the lower left corner, which is
+defined as (1,1).
+
+Pixel values are first converted to millimeters, with respect to the
+given reference point (CRPIX1,CRPIX2) and the pixel size (in microns).
+The equatorial coordinates values (RA,DEC) are converted to standard
+coordinates (XI,ETA) in arcseconds, given the equatorial coordinates
+for the reference point.  The coordinates used in 'intrep' can be
+written to an output file in a format that can be used by more complete
+fitting tasks, such as 'pltsol'.  The fit coefficients computed by
+'intrep' can also be written in a format suitable for the 'xyeq' task,
+which computes equatorial coordinates for a list of pixel (X,Y)
+coordinates based on the fit.
+
+After obtaining the plate solution, coordinates can be computed for any
+point by evaluating the fit.  The "c" command finds the coordinates of
+the star from the input list nearest the cursor.  The "p" command key
+finds the coordinates at the peak value in a small subraster of the
+image near the cursor.  Colon commands (i.e., those preceded by the ":"
+character) can accept arguments.
+
+The following command keys are recognized by this task:
+.nf
+
+	c	Show the star closest to the cursor.
+	d	Delete a star (i.e., flag as not valid).
+	f	Plate solution.
+	l	List the stars.
+	p	Find the peak of the subimage bounded by the 
+                search box.
+	q	Quit.
+	s	Select a star to be repositioned.
+	u	Undelete a star (i.e., flag as valid).
+
+	:b size   Set or show the search box size (in pixels).
+	:d row    Delete the listed star by number.
+	:D        Delete all stars.
+	:f file   Write the fit coefficients to a file.
+	:n num    Set or show the number of fit coefficients.
+	:s file   Write the valid coordinates to a file.
+	:u row    Restore the listed star by number.
+	:U        Undelete all stars.
+.fi
+.ih
+PARAMETERS
+.ls gsctab [file name]
+Guide Star Catalog table name.  This table is assumed to 
+consist of columns containing right ascension, declination, X 
+and Y pixel coordinates, and a validity flag.  One row is 
+used for each star selected from the guide star catalog.
+.le
+.ls image [file name]
+Image name; this should be the original unmarked image---not 
+the output from 'overlay'.  The "s" and "p" commands 
+(explained above) use a subraster of pixels from the image to 
+compute the peak value.
+.le
+.ls (boxsize = 7) [integer, min = 3]
+Box size in which to search for the center of the star.
+.le
+.ls (valid = 0) [integer, min = -1, max = 1]
+Initialize validity of all stars?  The following values are 
+used:
+.nf
+
+	-1	Set all flags to not valid.
+	 0	Don't change flags.
+	 1	Set all flags to valid.
+.fi
+.le
+.ls (xcrpix) [real]
+X reference pixel.
+.le
+.ls (ycrpix) [real]
+Y reference pixel.
+.le
+.ls (racen) [real]
+Right ascension at the reference pixel (in degrees).
+.le
+.ls (deccen) [real]
+Declination at the reference pixel (in degrees).
+.le
+.ls (xpxsize) [real]
+X pixel size (in microns).
+.le
+.ls (ypxsize) [real]
+Y pixel size (in microns).
+.le
+.ls (pltscl) [real]
+Plate scale (in arcseconds per millimeter).
+.le
+.ls (solout = no) [boolean]
+Write equatorial and pixel coordinates in a text table 
+suitable as input to the 'pltsol' task?
+.le
+.ls (coord) [file name]
+Name of the image display cursor file.
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+overlay, targets, pltsol, xyeq
+
+Type "help gasp opt=sys" for more information about the 'gasp' package
+and the Guide Star Catalog.
+.endhelp

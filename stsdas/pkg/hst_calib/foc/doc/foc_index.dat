@@ -1,0 +1,162 @@
+		INDEX for FOC_GUIDE
+
+
+FOC_ANALYSIS		data analysis
+FOC_ANALYSIS		scientific analysis of FOC data
+FOC_CALIBRATION		calibration
+FOC_CORRECTION		foc image correction - including pipeline RSDP
+FOC_GEO			geometric reference files
+FOC_GUIDE		the on-line FOC guide, see fochelp and focapropos
+FOC_PRINT_GUIDE		print the whole FOC_GUIDE
+FOC_PROPOSAL		proposal preparation
+FOC_SPECTOGRAPH		spectrograph data
+focgeom.geomcorrx	geometric correction
+focgeom.geomcorrx   	geometrically correct an image
+focgeom.rappendx   	append reseau entries from one file to another
+focgeom.rdifferx   	take diffs between reseau entries and plot histogram
+focgeom.rdirectoryx   	print directory of entries in reseau file
+focgeom.revalfitx   	evaluate fit produced by rfitx at specified points
+focgeom.rfindx   	locate reseau marks in an image
+focgeom.rfitx   	fit distortiion field with a choice of functions
+focgeom.rfixx   	fix holes in reseau file entries
+focgeom.rgenx   	generate reseau file or entry
+focgeom.rinterx   	perform simple interpolation between reseau grids
+focgeom.rmarkerx   	interactive approximate location of reseau marks
+focgeom.rplotx   	plot magnified vector differences between reseaux
+focgeom.rprintx   	print out reseau data
+focgeom.rtodbx   	print reseau data suitably for images package geom tasks
+focgeom.rtransformx   	perform linear transformations on reseau(x) coordinates
+focgeom.slitanglex   	measure angle of long slit spectrum to axis1 
+focphot.darkx   	create FOC dark count image
+focphot.dezoomx   	split FOC zoomed pixels into two
+focphot.dqenormx   	normalise FOC flat field image
+focphot.fixnoise   	create fixed pattern noise image
+focphot.formatdepx   	create FOC format dependent non uniformity image
+focphot.ratiox   	take ratio of flat fields
+focphot.rremovex   	fill reseau marks with cosmetic data
+focphot.wfactorx   	calculate absolute sensitivity scaling factors for RSDP
+focutility.calfoc   	simulates RSDP pipeline corrections 
+focutility.cloadrsdpx   examine, alter and then load RSDP pars into image header
+focutility.dumprsdpx   	dump RSDP parameters from image header to pset par file
+focutility.focapropos	help on topics about FOC - by keyword
+focutility.fochelp	help from the FOC_GUIDE
+focutility.loadrsdpx   	load RSDP parameters from par file into an image header
+focutility.overflowx   	correct image for 8 bit overflow
+focutility.rsdp2resx   	converts a RSDP GEO format file to a reseau file
+focutility.rsdpbacx   	creates RSDP format BAC file for FOC
+focutility.rsdpfmtx   	creates RSDP format FMT file for FOC
+focutility.rsdpgeox   	creates RSDP format GEO file for FOC
+focutility.rsdpmodx   	creates RSDP format MOD file for FOC
+focutility.rsdpparx   	pset task with RSDP parameters
+focutility.rsdpresx   	creates RSDP format RES file for FOC
+focutility.rsdpsdex   	creates RSDP format SDE file for FOC
+focutility.rsdpunix   	creates RSDP format UNI file for FOC
+focutility.satsinx   	reads SATS format data from tape
+focutility.sdsinx   	reads SDS  format data from tape
+focutility.sdsoutx   	writes FOC images to tape in SDS format 
+focutility.testimx   	generates FOC test data images with RSDP like labels
+help foc_conventions 	for more information about foc specific conventions
+help focgeom opt=sys 	for more information about the focgeom package     
+help focphot opt=sys 	for more information about the focphot package
+help reseau_files    	for more information about reseau files            
+images.blkavg 		Block average or sum a list of images
+images.blkrep 		Block replicate a list of images
+images.boxcar 		Boxcar smooth a list of 2-D images
+images.convolve 	Convolve a list of 2-D images with a rectangular filter
+images.fit1d 		Fit a function to image lines or columns
+images.fmedian 		Quantize and median filter a list of 2-D images
+images.fmode 		Quantize and modal filter a 2-D image or list of images
+images.gauss 		Convolve a list of 2-D images with an ellipt Gaussian
+images.geomap 		Calculate a coordinate transformation
+images.geotran 		Geometrically transform a set of 2-D images
+images.gradient 	Convolve a list of 2-D images with a gradient operator
+images.hedit 		Header editor
+images.hselect 		Select a subset of images satisfying a bool expression
+images.imarith 		Simple image arithmetic
+images.imcopy 		Copy an image
+images.imdebug 		Image debugging package (currently undocumented)
+images.imdelete 	Delete a list of images
+images.imdivide 	Image division with zero checking and rescaling
+images.imgets 		Return the value of an image parameter as a string
+images.imheader 	Print an image header
+images.imhistogram 	Compute image histogram
+images.imlintran 	Linearly transform a list of 2-D images
+images.imrename 	Rename one or more images
+images.imshift		Shift a list of 2-D images 
+images.imstatistics 	Compute and print statistics for a list of images
+images.imsum 		Compute the sum, average, or median of a set of images
+images.imsurfit		Fit a surface to a 2-D image
+images.imtranspose 	Transpose a 2-D image
+images.laplace 		Laplacian filter a list of 2-D images
+images.lineclean 	Replace deviant pixels in image lines
+images.listpixels 	Convert an image section into a list of pixels
+images.magnify 		Interpolate 2-D images
+images.median 		Median filter a 2-D image or list of images
+images.minmax 		Compute the minimum and maximum pixel values in an image
+images.mode 		Modal filter a 2-D image or list of images
+images.register 	Register a set of images
+images.rotate 		Rotate and shift a list of 2-D images
+images.sections 	Expand an image template on the standard output
+images.shiftlines 	Shift image lines
+images.tv 		Image display load and control package
+plot.calcomp 		Plot metacode on a Calcomp pen plotter
+plot.contour 		Make a contour plot of an image
+plot.crtpict 		Generate greyscale plots of IRAF images
+plot.gkidecode 		Decode metacode on the standard output
+plot.gkidir 		Directory listing of metacode file
+plot.gkiextract 	Extract individual frames from metacode file
+plot.gkimosaic 		Condense metacode frames to fit on one page
+plot.graph 		Graph one or more image sections, lists, or tables
+plot.hafton 		Generate half-tone plots of an image
+plot.igi 		Interactive Graphics Interpreter (MONGO emulator)
+plot.implot 		Plot lines and columns of images using cursors
+plot.pcol 		Plot a column of an image
+plot.pcols 		Plot the average of a range of image columns
+plot.prow 		Plot a line (row) of an image
+plot.prows 		Plot the average of a range of image lines
+plot.sgidecode 		Decode an SGI format metacode file
+plot.sgikern 		Simple graphics interface (SGI) graphics kernel
+plot.showcap 		Show and decode graphcap entries
+plot.stdgraph 		Plot metacode on the standard graphics device
+plot.stdplot 		Plot metacode on the standard plotter device
+plot.surface 		Make a surface plot of an image
+plot.velvect 		Plot representation of a velocity field
+tools.gfit1d   		interactive curve fit to images, tables or lists
+tools.gfunction   	apply gfit1d curve fit to data in image, table or list
+tools.imcalc   		general arithmetic operations on images
+tools.insertx   	insert one image into another by add, repl or multiply
+tools.interleave   	interleave images to form one of one higher dimension
+tools.listarea   	print area of image 
+tools.marker   		prints coords of pixels with values outside given range
+tools.mgrfits   	create multigroup image from many FITS disk files
+tools.mgwfits   	copy multigrp ime to remote dir as many FITS disk files
+tools.project   	project image along one axis giving one of 1 less dim
+tools.rsmooth   	fill in areas with smooth interpol from surroundings
+tools.thistogram   	plot histogram of data from table, image or text file
+tools.uniqfile   	create an unique file name for archiving
+tools.uniqid   		create a unique character string identifier
+ttools.told 		convert tables from SDAS/MIDAS format to "new" format
+ttools.tmidas 		convert tables between MIDAS and SDAS format
+ttools.tcalc 		perform arithmetic operations on table columns
+ttools.tchsize 		change allocated sizes of various sections of a table
+ttools.tcopy 		copy tables
+ttools.tcreate 		convert an ASCII table into an SDAS table
+ttools.tdelete 		delete tables
+ttools.tdump 		dump the contents of a table (user pars and table data)
+ttools.tedit 		edit a table
+ttools.tinfo 		display info about a table, e.g. no. of rows & columns
+ttools.tintegrate 	numerically integrate one column with respect to another
+ttools.tjoin 		relational join of two tables
+ttools.tlcol 		list column information for a table
+ttools.tmerge 		either merge or append tables
+ttools.tprint 		print the contents of a table
+ttools.tprint 		table data may be printed
+ttools.tproduct 	Cartesian product of two tables
+ttools.tproject 	select columns from a table
+ttools.tquery 		select rows and columns from a table and sort
+ttools.tread 		edit a table readonly
+ttools.trename 		rename tables
+ttools.tselect 		select rows from a table
+ttools.tsort 		sort a table
+ttools.tupar 		list, add to, or replace user (header) pars in a table
+tvdisplay.load		image display on deanza

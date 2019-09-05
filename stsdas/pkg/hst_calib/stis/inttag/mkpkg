@@ -1,0 +1,24 @@
+$call	relink
+$exit
+
+update:
+	$call	relink
+	$call	install
+	;
+relink:
+	$call linkonly
+	;
+
+linkonly:
+	$set XFLAGS = "-Inolibc $(XFLAGS)"
+	$omake inttag.c
+
+	$set LFLAGS = "-H -z $(LFLAGS)"
+	$link inttag.o \
+		-lhstio -lcvos -ltbtables \
+		-o inttag.e
+	;
+
+install:
+	$move inttag.e stsdasbin$inttag.e
+	;

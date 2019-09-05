@@ -1,0 +1,262 @@
+.help polbin Jun97 stsdas.hst_calib.fos.spec_polar
+.ih
+NAME
+polbin -- Rebin FOS polarization spectra.
+.ih
+USAGE
+polbin input output bin_mode perror bins
+.ih
+DESCRIPTION  
+This routine rebins the spectra in an FOS polarimetry data ('c3h') file using
+either uniform or variance weighting when computing rebinned values.
+Three binning modes are available: one that rebins the data into equal-sized 
+wavelength bins, one that rebins the data so that the linear polarization
+error per bin is equal, and one that allows the user to specify the exact
+beginning and end locations (in wavelength space) for each bin. 
+The constant-error method results in output data with bins
+of different width in wavelength space, depending on the character of the 
+spectrum and the variation in the local signal-to-noise ratio. In all modes
+a binned wavelength file is produced to accompany the spectra during subsequent
+analysis.
+
+The algorithms used to compute polarization quantities from the Stokes IQUV
+parameters are identical to those used in the 
+'calfos', 'calpolar', 'polave', and 'polcalc' tasks (see below).
+Note that these algorithms assume that the Stokes QUV spectra have NOT been
+previously normalized by Stokes I.
+
+The output polarization ('c3h') file has the same group format as the input
+file, but the lengths of the spectra are shortened to be equal to the
+number of output bins.  Likewise the output wavelength ('c0h') file has
+the same number of bins as the output polarization file, with the value in
+each bin being the average of the wavelengths of all input pixels covered
+by that bin. The output wavelength file contains only 4 data groups, with
+the wavelengths in each of the 4 groups corresponding to the binned 
+wavelengths of each of the 4 sets of spectral data contained in the output
+polarization file; wavelength file group 1 matches spectral ('c3h') groups 1-14,
+wavelength group 2 matches spectral groups 15-28, wavelength group 3 matches 
+spectral groups 29-42, and wavelength group 4 matches spectral groups 43-56.
+
+BINNING MODES
+
+If binning to equal linear polarization error per bin ('bin_mode = cerror'), the 
+user must choose one of the 4 sets of spectra in the input polarization ('c3h') 
+file to serve as a reference for computing the bin sizes and locations (via 
+the parameter 'refset'). The spectra in the reference set are binned first 
+so that the linear polarization error per bin for that set matches the value 
+chosen by the user (via the parameter 'perror'). The same bin sizes and 
+locations are then used to rebin the remaining 3 sets of polarization spectra.
+
+When binning in constant error mode the user may also choose a wavelength at 
+which to begin the binning.  This is useful if, for example, there are 
+spectral features of interest, so that polarization effects in line wings can 
+be shown to best effect.  If the chosen starting wavelength occurs within the
+range of the data, the polarization is calculated from the
+channel closest to this wavelength, binning to the end of the data
+and then to the beginning. A null value for beginning wavelength or a value 
+not within the range of the data causes binning to commence from 
+the beginning of the data (i.e. first channel).
+
+When binning in constant wavelength mode ('bin_mode = cwave'), the user has the
+choice of whether the bin sizes should be constant in wavelength or constant
+in inverse wavelength (1/lambda) via the parameter 'invlam'. Regardless of
+the setting of 'invlam' the output binned wavelength spectra are always
+in normal wavelength space, i.e. setting 'invlam = yes' only causes the 
+calculation of the bin locations to be performed in inverse-wavelength space 
+while the wavelength vectors themselves remain unchanged.
+
+The user may specify exact bin widths and locations by using the 
+'bin_mode = list' option. In this case, the task reads beginning and ending
+wavelength values for each bin from a text table supplied by the user.
+This offers the user complete flexibility in controlling the bin locations
+and sizes. The default name for this file is "bins.list". This file can be 
+created using any text file editor. Each line of the file is assumed to 
+contain two wavelength values specifying the beginning and end of each 
+desired bin. Bins are allowed to overlap one another, or you may leave 
+dead space between bins.
+
+BINNING AND WEIGHTING ALGORITHMS
+
+The 'polbin' task operates by computing the average values of the Stokes IQUV
+parameters (and their associated errors) within the output bins, and then
+recomputing the corresponding values of linear and circular polarization and
+polarization position angle (and their errors) from the rebinned Stokes 
+parameters. In constant error per bin mode, where the bin sizes are not known
+a priori, the task computes running means of the Stokes parameters, constantly
+reevaluating the linear polarization error as each new pixel is added to a
+bin. When the linear polarization error reaches the value specified by
+the parameter 'perror', all polarization values are computed from the
+current mean Stokes parameter values and recorded in the output spectra.
+The running means are then reset to zero and the computations are restarted
+for the next bin.
+
+The mean Stokes parameter values can be calculated using either uniform or
+variance weighting. In uniform weighting mode, each pixel value receives
+equal weight, while in variance weighting each input Stokes pixel value is
+weighted by the inverse square of its error value. In either weighting mode,
+input Stokes values that have an associated error value of zero are not used
+in the computations (i.e. they are assigned a weight of zero). If all of
+the input pixels for a given output bin are rejected for this reason, all
+output values for that bin (Stokes parameters, polarization values, and
+their errors) are set to zero. In mathematical form, the mean Stokes
+parameters for a given output bin are calculated as follows:
+.nf
+
+             Uniform Weighting                    Variance Weighting
+
+wgt(i)     = 1 or 0 (if S_err(i)=0)               1 / S_err(i)**2
+
+wsum       = sum{ wgt(i) }                        sum{ wgt(i) }
+
+ave. S     = sum{ S(i)*wgt(i) } / wsum            sum{ S(i)*wgt(i) } / wsum
+
+ave. S_err = sqrt{ sum{ S_err(i)**2 }} / wsum     sqrt{ 1/wsum }
+
+.fi
+where the sums are over the number of pixels contained within the bin, S(i)
+and S_err(i) are the values of one of the Stokes IQUV parameters and its error,
+and wgt(i) is the assigned weight value for input pixel number "i".
+
+Linear polarization (PL), circular polarization (PC), and polarization
+position angle (THETA), and their errors, are calculated from the rebinned
+Stokes parameters as follows:
+.nf
+
+PL        = sqrt { (Q/I)**2 + (U/I)**2 }
+
+                 {  Qerr**2  Q**2    Uerr**2  U**2   Q**2+U**2 Ierr**2 }
+PL_err    = sqrt { ---------*---- + ---------*---- + ---------*------- }
+                 { Q**2+U**2 I**2   Q**2+U**2 I**2     I**2     I**2   }
+
+PC        = V/I
+
+                 { Verr**2   Ierr**2   V**2 }
+PC_err    = sqrt { ------- + ------- * -----}
+                 {  I**2      I**2     I**2 }
+
+THETA     = O.5 * ARCTAN(U/Q)
+
+                       {  Q**2*Uerr**2     U**2*Qerr**2  }
+THETA_err = 0.5 * sqrt { -------------- + -------------- }
+                       { (Q**2+U**2)**2   (Q**2+U**2)**2 }
+
+.fi
+.ih
+PARAMETERS 
+.ls input [file name]
+Input polarimetry ('c3h') file. A file name extension of 'c3h' is assumed if not 
+given.
+.le
+.ls output [file name]
+Output root file name for the rebinned polarimetry and wavelength files. The 
+output polarimetry file name extension will be the same as that of the input
+polarimetry file. The output wavelength file name extension will be 'c0h'.
+.le
+.ls bin_mode [string, allowed values: cerror | cwave | list]
+The binning mode.  The choices are "cerror" for constant linear polarization
+error per bin, "cwave" for constant wavelength interval per bin, or "list"
+to specify the bin locations via a list file.
+.le
+.ls perror [real, min=0, max=100]
+Desired linear polarization error (in percent) for the output data.
+This parameter is ignored if 'bin_mode = cwave' or "list".
+.le
+.ls bins [integer, min=1, max=npts]
+Number of output bins if 'bin_mode = cwave'. This parameter is ignored if
+'bin_mode = cerror' or "list".
+.le
+.ls (listfile = "bins.list") [file name]
+Name of the file containing beginning and ending wavelength positions
+for the desired bins when using 'bin_mode = list'. This parameter is ignored if
+'bin_mode = cerror' or "cwave".
+.le
+.ls (refset = 4) [integer, min=1, max=4]
+The reference set of spectra to use when 'bin_mode = cerror'. The bin locations
+will be calculated for this set of spectra so as to give the desired level
+of linear polarization error per bin. The same bin locations will then be
+applied to the remaining three sets of spectra. The default value of 4
+corresponds to the set of spectra in data groups 43-56 in the polarization
+('c3h') file. This parameter is ignored if 'bin_mode = cwave' or "list".
+.le
+.ls (weight = "uniform") [string, allowed values: uniform | variance]
+The type of weighting to use when computing the average Stokes IQUV values
+in each output bin. Uniform weighting gives equal weight to all input pixels, 
+while variance weighting applies weights equal to the inverse square of the 
+error associated with each Stokes value. Input pixels having errors equal to
+zero are assigned zero weights in either weighting mode.
+.le
+.ls (wavcen = 0) [real]
+Wavelength at which to center the binning process when 'bin_mode = cerror'. The
+binning starts at this location and proceeds to the last channel, then runs
+backwards from wavcen to the first channel of the spectra.
+If the value of wavcen is outside the wavelength limits of the data, then 
+binning starts from the first channel and proceeds to the last channel.
+This parameter is ignored if 'bin_mode = cwave' or "list".
+.le
+.ls (invlam = no) [boolean]
+Type of wavelength interval for 'bin_mode = cwave'.  If "yes", then bins are
+made to be equal width in units of 1/lambda; if "no", then bins are in constant
+wavelength increments.  This parameter is ignored if 'bin_mode = cerror' or "list".
+.le
+.ls (wave = "") [file name]
+Name of the input wavelength file.  If null, the root name of the input
+polarization data ('c3h') file is used, with a file name extension of 'c0h'.
+If the wavelength file name extension is not given, 'c0h' is assumed.
+.le
+.ls (verbose = yes) [boolean]
+Print operations as they are performed?
+.le
+.ih
+EXAMPLES
+1. Rebin the polarization data file 'y15v0403t.c3h' so that the linear
+polarization error per output bin in the 4th set of spectral data is 0.5%. 
+Use uniform weighting and start the binning at a wavelength of 1550. 
+The input wavelength file is 'y15v0403t.c0h' and the output polarization and 
+wavelength files are 'y15v0403t_bin.c3h' and 'y15v0403t_bin.c0h'.
+.nf
+
+   sp> polbin y15v0403t y15v0403t_bin cerror 0.1 wavcen=1550
+
+.fi
+2. Rebin the polarization data file 'y15v0403t.c3h' into 258 equal-sized output
+bins. Use variance weighting for computing the binned averages. The input 
+wavelength file is 'y15v0403t.c0h' and the output files will
+be 'y15v0403b.c3h' and 'y15v0403b.c0h'.
+.nf
+
+   sp> polbin y15v0403t y15v0403b cwave bins=258 weight=variance
+
+.fi
+3. Rebin the file 'y15v0403t.c3h' into 4 (variable size) bins where the 
+locations of the bins are specified in the text file "bins.list". 
+Use variance weighting for computing the binned values. The file 
+"bins.list" contains the following lines:
+.nf
+
+	1565 1800
+	1800 1900
+	1900 2050
+	2050 2310
+
+.fi
+Polbin is executed as follows:
+.nf
+
+   sp> polbin y15v0403t y15bin4 list weight=variance
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+plbias, polave, polnorm
+
+Type "help spec_polar opt=sys" for a tutorial on FOS polarimetry datasets
+and the use of the spec_polar tasks in a coordinated fashion.
+.endhelp

@@ -1,0 +1,28 @@
+ximioa
+# Supplementary routines for the IMIO interface
+# routines that get values
+imspp.x:long procedure imgctime (imptr:i)
+imspp.x:procedure imghistory (imptr:i, str:o, maxch:i)
+imspp.x:long procedure imglimtime (imptr:i)
+imspp.x:real procedure imgmax (imptr:i)
+imspp.x:real procedure imgmin (imptr:i)
+imspp.x:long procedure imgmtime (imptr:i)
+imspp.x:int procedure imgndim (imptr:i)
+imspp.x:long procedure imglen (imptr:i, axis:i)
+imspp.x:procedure imgpixfile (imptr:i, str:o, maxch:i)
+imspp.x:int procedure imgtypepix (imptr:i)
+imspp.x:procedure imgtitle (imptr:i, str:o, maxch:i)
+# routines that set values
+imspp.x:procedure impctime (imptr:i, val:i)
+imspp.x:procedure imphistory (imptr:i, str:i)
+imspp.x:procedure implimtime (imptr:i, val:i)
+imspp.x:procedure impmax (imptr:i, val:i)
+imspp.x:procedure impmin (imptr:i, val:i)
+imspp.x:procedure impmtime (imptr:i, val:i)
+imspp.x:procedure impndim (imptr:i, val:i)
+imspp.x:procedure implen (imptr:i, axis:i, val:i)
+imspp.x:procedure imppixfile (imptr:i, str:i)
+imspp.x:procedure imptypepix (imptr:i, val:i)
+imspp.x:procedure imptitle (imptr:i, str:i)
+# get the address of the user area
+imspp.x:pointer<s> procedure imguserarea(imptr:i)

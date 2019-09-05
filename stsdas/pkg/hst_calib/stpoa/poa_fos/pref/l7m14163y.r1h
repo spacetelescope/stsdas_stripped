@@ -1,0 +1,30 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                 2064 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    0 /                                                
+PSIZE   =                    0 /                                                
+DATE    = '19/04/01'           /                                                
+INSTRUME= 'FOS     '           /                                                
+FILETYPE= 'FLAT FIELD'         /                                                
+HEADNAME= 'l7m14163y.hhh'      /                                                
+DATANAME= 'l7m14163y.hhd'      /                                                
+FCHNL   =                    0 /                                                
+NCHNLS  =                  512 /                                                
+NXSTEPS =                    4 /                                                
+OVERSCAN=                    5 /                                                
+APER_ID = 'B-3     '           /                                                
+POLAR_ID= 'C                 ' /                                                
+FGWA_ID = 'L15               ' /                                                
+DETECTOR= 'BLUE              ' /                                                
+PEDIGREE= ' INFLIGHT 01/05/1994' /                                              
+DESCRIP = ' Superflux-derived FOS closeout flatfield'/                          
+USEAFTER= ' May 1, 1994'       /                                                
+PASS_DIR=                    0 /                                                
+APER_POS= 'SINGLE  '           /                                                
+HISTORY  FOS_FLAT 19-Apr-2001 11:55:39.00 infile=y2et010bt.c5h                  
+HISTORY   i1q1836ay.r1h renamed to l7m14163y.r1h on Sun 14:16:07 22-Jul-2001    
+END                                                                             

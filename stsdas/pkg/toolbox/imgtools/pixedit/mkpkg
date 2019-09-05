@@ -1,0 +1,28 @@
+# Update the pixedit application code in the imgtools package library
+# Author: B.Simon, 02-Mar-1992
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	command.x	"lex.h"  "command.h"  "message.h"  "pixedit.h" \
+			"object.h"  <curses.h>  <ctype.h>
+	pixedit.x
+	help.x		"help.h"  "message.h"  "pixedit.h"  "object.h" \
+			<curses.h>
+	image.x		"lex.h"  "image.h"  "message.h"  "pixedit.h" \
+			"object.h"  <curses.h>  <ctype.h>  <imhdr.h> \
+			<imio.h>  <mach.h>
+	lex.x		"lex.h"  <ctype.h>
+	list.x
+	log.x		"log.h"  "message.h"  "pixedit.h" \
+			"object.h"  <curses.h>
+	message.x	"message.com"  "message.h"  "pixedit.h"  "object.h" \
+			<config.h>
+	object.x	"object.h"  "pixedit.h"
+	terminal.x	"terminal.com"  "message.h"  "pixedit.h"  "object.h" \
+			<curses.h>
+	window.x	"window.h"  "pixedit.h"  "object.h"  <curses.h>
+	;

@@ -1,0 +1,368 @@
+.help obsum Jun97 stsdas.hst_calib.hrs
+.ih
+NAME
+obsum -- Print various summaries of GHRS data.
+.ih
+USAGE
+obsum input title
+.ih
+DESCRIPTION
+The 'obsum' task prints basic summary information for each group of a GHRS
+observation, ordered by increasing time when the packet was dumped.
+The groups are taken from the standard header information (SHP), found
+in files with the '.shh' extension, the unique data log (UDL), found in
+files with the '.ulh' extension, the extracted data, found in files with
+the '.x0h' extension, and the science data, found in files with the '.d0h'
+extension.  
+
+There are two options.  The general order of all data groups produced
+can be  generated with the 'show_groups = yes' parameter.  If one is
+just interested in the science data itself, i.e. a list of raw diode
+values and various engineering information, one should set the
+parameter 'diode = yes'.
+
+This tool is also used to determine which GHRS observations may have
+experienced a maximum Doppler compensation.  This is necessary, since
+a problem with the on-board Doppler compensation was discovered in
+February, 1993.  At the time this help file was originally written 
+(October 1993), the problem was not resolved.  In short, the
+problem was that at periods when the maximum Doppler compensation
+should be applied, the on-board flight software mistakenly applies NO
+correction.  This situation will last for, at most, 60 seconds during
+any individual exposure.  This task attempts to identify these periods
+and indicate the length of time that the non-correction occurred.  See below for
+more details.
+
+The output of task 'obsum' is a text summary printed to standard output,
+i.e., the terminal.  This can be redirected to a file using IRAF file
+redirection.  See the EXAMPLES section below.
+
+The text that 'obsum' produces consists of the following:
+
+The first line is the value of the parameter "title".
+
+Next, if the parameter 'show_groups' is "yes", a header line is
+printed.  The fields in the header line are defined below.
+
+Then, for each observation, a line is printed that lists the observation 
+name and the number of groups of each type of data.
+
+For each observation, one line is printed for each group from all the
+raw data files for that observation.  The groups are printed in
+chronological order.  The contents of each line are summarized below.
+
+Fields common to all types of groups are:
+
+.nf
+        TIME    -- This is the time when this group was 
+                   produced by the instrument.
+        W11/14  -- For groups from the SHP file, this is the value
+                   of the keyword "w11/14".
+        ZOBNUM  -- 0-indexed counter of the pattern in the current
+                   observation. Each SHP group delimits one complete
+                   pattern taken by the instrument.
+        PTYPE   -- The type of group represented in the current
+                   line of output.
+        PFC     -- The packet format code.  For science groups, this
+                   represents the type of science data stored in
+                   the group.
+.fi
+
+The following fields only apply to science data groups.
+
+.nf
+        SYS     -- Which detector is in use. "1" for side 1,
+                   "2" for side 2.
+        CARPOS  -- The carrousel position for the current group.
+        INTE    -- The number of integration periods for the current
+                   group.
+        COADDS  -- The number of coadditions that make up the current
+                   group.
+        SUM     -- Sum of the counts for the current group.        
+.fi
+
+For lines representing SHP groups, the following fields apply:
+
+.nf
+        PINFO   -- The encoded proposal number.
+        DMP_IND -- Always "1".
+.fi
+
+For lines representing UDL groups, the following field applies:
+
+.nf
+        FINCODE -- Value indicating the success of the observation.
+                   Typical values are:
+                        101 = Start of observation
+                        102 = Successful end of observation.
+                   Any other value indicates the observation had some
+                   type of trouble.
+.fi
+
+If the parameter 'doppler' is "yes", a check is made for each pattern
+(or "zobnum") of an observation to see whether it possibly crossed a
+maximum Doppler compensation point in the orbit.  If the current
+pattern did not cross, nothing extra is printed.  However, if the
+current exposure did cross, the following is indicated
+
+.nf
+        CAL GROUP       -- Which group of the calibrated data of 
+			   the current observation may be affected.  
+        EXP             -- Length of the exposure, in seconds.
+        OVER            -- Extra time the exposure took due to
+                           telescope operations, such as idling.
+        RSHIFT          -- Estimated time, in seconds, the exposure
+                           spent at zero Doppler compensation when it
+                           should have been at maximum redshifted 
+                           compensation.
+        BSHIFT          -- Estimated time, in seconds, the exposure
+                           spent at zero Doppler compensation when it
+                           should have been at maximum blueshifted 
+                           compensation.
+        DOPMAG          -- The X deflection correction that would be
+                           applied at maximum compensation.
+.fi
+
+Some notes about the above numbers.  With the science data alone,
+there is no way of getting absolute timings about when events occur on
+the telescope, especially with events such as idling of the exposure
+due to Earth occultation of the target.  Therefore, the task is designed
+to overestimate when maximum Doppler occurred and how often it occurred.
+In general, the following guidelines may be followed.  The overhead
+usually should be about 2 seconds for uninterrupted exposures.  In
+these cases, the rshift or bshift values should be fairly accurate.
+However, if the overhead time is large, on the order of a couple
+thousand seconds, then some external event interrupted the
+observation.  In these cases, the time represented by rshift or bshift
+will be an over-estimation.  In fact, due to time needed to re-acquire
+guide stars after an occultation, the observation may never experience
+the blue shift maximum, though certain geometries of the orbit plus
+target can still make this possible.
+
+In short, the Doppler information is meant to be used as a guide to
+tell the user that a closer examination of the flagged observations is
+in order.
+
+If the parameter 'diode' is "yes", the following extra output will
+also be produced.  If all the aforementioned parameters are set to
+"yes", the following will be printed after the doppler information.
+However, it is generally recommended that if 'diode = yes', all the
+other parameters should be set to "no".
+
+The 'diode' output is as follows:
+.ls
+.ls S. C. TIME
+This is the packet time when the science group was dumped from the
+spacecraft.  This is the same value as found in the header keyword
+"PKTTIME". 
+.le
+.ls FILLCNT
+The number of segments containing fill data.  This is the same value
+as found in the header keyword "FILLCNT".
+.le
+.ls ERRCNT
+The number of errors in the data.  This is the same value as found in
+the header keyword "ERRCNT".
+.le
+.ls Rootname
+The Rootname of the observation being examined.
+.le
+.ls PFC
+The packet format code representing the type of data in the science
+file.  This is the save value as found in the header keyword "PKTFMT".
+.le
+.le
+
+Next, the value of all 512 diodes of the GHRS are printed.  Remember
+that the first and last 6 diodes in the list are the "special diodes",
+i.e. background, focus, radiation, etc. detectors.  The science diodes
+are number from 7 to 506.  At the end of the dump, the total of the
+science diodes is printed.
+
+Following the dump of the diode values, the following engineering
+information is printed:
+.ls
+.ls "50MS CNTR"
+The 50 millisecond counter value.
+.le
+.ls OTFA
+The On-The-Fly-Adder value.
+.le
+.ls ANTICOINC:
+The next three fields represent the state of the anticoincidence
+detection hardware.
+.ls SUM
+The number of anticoincidence events encountered.
+.le
+.ls THRESH
+The anticoincidence threshold.
+.le
+.ls FLG
+The analog noise sum flag.  "1" if set.
+.le
+.ls EN
+Flag indicating whether the anticoincidence circuit is enabled.  "1" if
+enabled.
+.le
+.le
+.ls SYS
+The detector system in use,  "1" or "2" for side 1 or side 2 respectively.
+.le
+.ls TP:
+The following values indicate the state of the test pulse hardware.
+.ls ADDR
+The test pulse address.
+.le
+.ls EN
+Flag indicating whether the test pulse circuit is enabled.  "1" if
+enabled.
+.le
+.le
+.ls DWHON
+Flag indicating whether the Digicon window heater is on.  "1" if on.
+.le
+.ls THLEN
+Flag indicating whether the threshold latch is enabled.  "1" if enabled.
+.le
+.ls CARSL:
+The following values indicate the state of the carrousel.
+.ls POS
+The carrousel position.
+.le
+.ls ERR
+State of the carrousel.  The possible states are:
+.ls "4"
+Carrousel is "greater than" the commanded position.
+.le
+.ls "2"
+Carrousel is "equal to" the commanded position.
+.le
+.ls "1"
+Carrousel is "less than" the commanded position.
+.le
+.le
+.ls FTL
+Flag indicating whether the carrousel has achieved fine track lock.  "1"
+if true.
+.le
+.le
+.ls SHUTCL
+Position of the aperture shutter.  It can have the following values:
+.ls "1"
+Shutter is closed.
+.le
+.ls "2"
+Shutter is open.
+.le
+.le
+.ls LAMPS:
+The following indicate the state of the internal lamps.
+.ls EN1
+Lamp power relay 1 is on.  "1" is on.
+.le
+.ls EN2
+Lamp power relay 2 is on.  "1" is on.
+.le
+.ls SC1
+Spectral calibration lamp 1 relay on.  "1" is on.
+.le
+.ls SC2
+Spectral calibration lamp 2 relay on.  "1" is on.
+.le
+.ls ff
+Flat field lamp relay on.  "1" is on.
+.le
+.le
+.ls HOR DFL
+The horizontal position commanded.
+.le
+.ls VER DFL
+The vertical position commanded.
+.le
+.ls TWEAK
+The tweaking coil current level commanded.
+.le
+.ls INT TIME
+The integration time commanded.
+.le
+.ls COADDS
+The number of times the data has been co-added to this bin for normal
+science data.  "-2" for field map data.  "0" for direct downlink/rapid
+readout.
+.le
+.le
+.ih
+PARAMETERS
+.ls input [file name]
+An observation template specification.  Any file template specifying
+an observation or set of observations may be specified.  It is not
+necessary to specify extensions.
+.le
+.ls title [string]
+A one-line summary of why this report is being generated.
+.le
+.ls (show_groups = yes) [boolean]
+If set to "yes", a line will be output for each group of the '.shp', '.udl', and raw
+science files of each observation found.  (See the DESCRIPTION section
+for details on the output).
+.le
+.ls (doppler = no) [boolean]
+Flag those observations that may have passed through a maximum point
+in the Doppler compensation?
+.le
+.ls (diode = no) [boolean]
+Print detailed listing of the science groups and engineering
+information.  If set to "yes", the user should set the other
+parameters to "no".
+.le
+.ls (version = "8Oct93") [string]
+Date the current version of code was installed. Do not change this.
+.le
+.ih
+EXAMPLES
+1. Produce a summary of observation 'Z0Y30102T' in the current
+directory.
+
+.nf
+        cl> obsum z0y30102t
+.fi
+
+2. Produce a summary of all observations in the directory 'data$hrs'.
+
+.nf
+        cl> obsum data$hrs/*
+.fi
+
+3. Flag the observations in the current directory for possible maximum
+Doppler compensation.
+
+.nf
+        cl> obsum * show_groups=no doppler=yes
+.fi
+
+4. Show all information about all observations in the current
+directory.  Redirect the output to the file "obsum.report".
+
+.nf
+        cl> obsum * doppler=yes > obsum.report
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+STSDAS Author: Jonathan Eisenhamer
+
+The on-board Doppler compensation problem is described in Addendum 1
+of the "Instrument Handbook for the Goddard High Resolution
+Spectrograph (GHRS)", version 4.1, January 1993, STScI GHRS Team.
+
+The document describing the GHRS is "SI Systems
+Description and User's Handbook for the High Resolution Spectrograph
+(GHRS) for the Hubble Space Telescope (HST)", Ball Aerospace, SE-01.
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+.endhelp

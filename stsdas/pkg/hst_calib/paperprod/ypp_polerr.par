@@ -1,0 +1,10 @@
+input_c0, f, a, "", , , 	Input c0h file name
+input_c3, f, a, "", , , 	Input c3h file name
+output, f, a, "", , ,		Output table name
+ftype, f, a,"", , ,             Image type: FITS or GEIS files?
+pstart, i, a, , , ,		starting pixel number of the data range
+pend, i, a, , , ,		ending pixel number of the data range
+npix, i, a, , , ,		number of pixels per bin
+nread, i, a, , , ,		number of reads
+
+mode, s, h, "al"

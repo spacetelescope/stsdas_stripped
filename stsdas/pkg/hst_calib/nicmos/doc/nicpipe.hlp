@@ -1,0 +1,107 @@
+.help nicpipe Jun2000 stsdas.hst_calib.nicmos
+.ih
+NAME
+nicpipe -- process NICMOS images through various steps of CALNICA
+.ih
+USAGE
+nicpipe input output stage
+.ih
+DESCRIPTION
+Nicpipe is a CL script that can be used to run NICMOS MultiAccum images
+through various steps of the "calnica" calibration pipeline task.
+This is intended to be used to prepare images for bias correction with
+the task "biaseq", and to apply final processing after correction with
+"biaseq".
+
+Lists of input and output images may be used to automatically process large
+numbers of datasets. Only the input and output dataset names are passed
+to "calnica", so users may set other "calnica" parameters as desired before
+running "nicpipe".
+Nicpipe automatically sets the necessary calibration switches in the
+input image header so that "calnica" performs the appropriate steps.
+
+To prepare images for input to the "biaseq" task, use "nicpipe" with
+"stage=biaseq". Raw images will then be processed through "calnica" using the
+ZSIGCORR, ZOFFCORR, MASKCORR, BIASCORR, NOISCALC, DARKCORR, NLINCORR, BARSCORR,
+PHOTCALC, BACKCALC, and WARNCALC steps. The FLATCORR, UNITCORR, and CRIDCALC
+steps will be omitted. The resulting *_ima.fits files can then be used as
+input to "biaseq". The *_cal.fits files resulting from this stage of processing
+will simply contain a copy of the data from the last readout (IMSET=1) in the
+_ima.fits file and can be ignored or discarded.
+
+To apply the final processing steps to images produced by the "biaseq" task,
+use "nicpipe" with "stage=final". These images will be processed through
+"calnica" with only the FLATCORR, UNITCORR, and CRIDCALC steps performed.
+FLATCORR processing will NOT be applied to grism images (identified by
+header keyword FILTER="G096", "G141", or "G206").
+.ih
+PARAMETERS
+.ls input [file]
+Input MultiAccum image name(s).
+This will normally be either a *_raw.fits file for initial processing, or
+a *_ima.fits type file produced by the "biaseq" task. The full file name must
+be given.
+.le
+.ls output [file]
+Output image name(s).
+This can be left blank, in which case the root name of the input file will be
+used for constructing the output file name, or it can be given as either a
+root or full name specification.
+If only a root name is given, calnica will automatically construct output file
+names with the standard suffixes (_ima and _cal) appended.
+.le
+.ls stage [string, allowed values: biaseq | final]
+Specifies what stage of processing to apply. A value of "biaseq" results in
+images that are ready for input to the "biaseq" task, while "final"
+applies the final calibration to images that have already been
+processed with the "biaseq" task.
+.ih
+EXAMPLES
+1. Process the image n3z302g7m_raw.fits through the first steps of "calnica"
+to prepare it for input to the "biaseq" task.
+All three examples are equivalent and produce output files with root names of
+"n3z302g7m" and standard _ima and _cal file name suffixes:
+
+.nf
+ cl> nicpipe n3z302g7m_raw.fits "" biaseq
+ cl> nicpipe n3z302g7m_raw.fits n3z302g7m biaseq
+ cl> nicpipe n3z302g7m_raw.fits n3z302g7m_cal.fits biaseq
+.fi
+
+2. Prepare the raw image n4ls01i1q_raw.fits for input to "biaseq", run
+"biaseq", then apply the final calibration:
+
+.nf
+ cl> nicpipe n4ls01i1q_raw.fits n4ls01i1q_np1 biaseq
+ cl> biaseq n4ls01i1q_np1_ima.fits n4ls01i1q_beq.fits "1-6"
+ cl> nicpipe n4ls01i1q_beq.fits n4ls01i1q_beq_cal.fits final
+.fi
+
+4. Process the raw images listed in the file "raw.lis" to prepare them for
+input to the "biaseq" task.
+The corresponding list of output file names is contained in the file "cal.lis":
+
+.nf
+ cl> nicpipe @raw.lis @cal.lis biaseq
+.fi
+.ih
+REVISIONS
+.ls Version 01-Jun-2000 (STSDAS v2.2)
+The "stage=pedsky" option was removed because the "pedsky" task was modified
+to accept flatfielded images as input. Therefore it is no longer necessary to
+apply partial processing to images intended for input to "pedsky", nor to
+finish the calibration processing after correcting with "pedsky". Fully
+calibrated images ("stage=final") can now be used as input to the "pedsky" task.
+.le
+.ls Version 11-Jun-1999 (STSDAS v2.1)
+First release of the task. Included "stage=pedsky" option.
+.le
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: H. Bushouse, M. Dickinson, STScI
+.ih
+SEE ALSO
+calnica, biaseq
+.endhelp

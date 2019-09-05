@@ -1,0 +1,12 @@
+input,s,a,"STDIN",,,"input file list names"
+output,s,a,"STDOUT",,,"output file list names"
+fromdate,s,a,"b1950",,,"precess from julian year (input yyyy.y)"
+todate,s,a,"j2000",,,"precess to julian year"
+ra_units,s,h,"hours","hours|degrees|radians",,"default units for ra"
+hms_format,b,h,yes,,,"ascii output in HMS & DMS format"
+namcol1,s,h,"ra",,,"column name for right ascension"
+namcol2,s,h,"dec",,,"column name for declination"
+namcol3,s,h,"fjy",,,"column name for 'from' julian date"
+namcol4,s,h,"tjy",,,"column name for 'to' julian date"
+verbose,b,h,yes,,,"print file names?"
+mode,s,h,"al",,,

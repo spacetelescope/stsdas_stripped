@@ -1,0 +1,9 @@
+# Help directory for the STECF impol package (Jeremy Walsh)
+
+$doc = "stecf$impol/doc/"
+
+hstpolima    hlp=doc$hstpolima.hlp
+hstpolpoints hlp=doc$hstpolpoints.hlp
+hstpolsim    hlp=doc$hstpolsim.hlp
+polimodel    hlp=doc$polimodel.hlp
+polimplot    hlp=doc$polimplot.hlp

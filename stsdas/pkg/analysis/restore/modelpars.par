@@ -1,0 +1,6 @@
+# Wiener filter signal model parameters.
+#
+signalm,s,h,"input",,,">signal model"
+correl,r,h,2.,0.,,">correlation factor for `input` model"
+mfwhm,r,h,2.,,,">fwhm in pixels for Gaussian model"
+mode,s,h,al

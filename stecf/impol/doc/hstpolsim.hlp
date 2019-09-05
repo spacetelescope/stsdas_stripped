@@ -1,0 +1,260 @@
+.help hstpolsim V2.00 November00 
+.ih
+NAME
+hstpolsim  -- Produce simulated polarization input data frames for HST instruments
+
+USAGE
+hstpolima  inint inpol inpopa instr polname filtname PA_V3 instpoltab unback
+e_adu read_noise seed outroot
+
+.ih
+PARAMETERS
+.ls inint = "" [name]
+Input Stokes I (total intensity) image. 
+.le
+.ls inpol = "" [name]
+Linear polarization (%) image corresponding to the Stokes I image.
+The image must be of the same dimensions as the Stokes I one.
+.le
+.ls inpopa = "" [name]
+Linear polarization position angle (degrees) image corresponding to 
+the Stokes I image and of the same dimensions as the Stokes I image.
+.le
+.ls incir = "" [name]
+Circular polarization (%) image corresponding to the Stokes I image
+(can be negative corresponding to left handed circular polarization).
+The image must be of the same dimensions as the Stokes I one.
+.le
+.ls instr = "" [name]
+Name of the HST instrument for which simulated polarization images
+are to be produced. Valid HST instruments are FOC, NICMOS and WFPC2.
+Non-HST instruments are denoted by 'SPECIAL'.
+.le
+.ls polname = "" [name]
+Name of the instrument specific polarizing filter for simulated images
+(ignored for SPECIAL instrument).
+.le
+.ls filtname = "" [name]
+Name of the instrument specific colour filter for simulated images.
+.le
+.ls PA_V3 = "" [real]
+Value of the instrument position angle (degrees).
+.le
+.ls instpoltab = "" [table file name]
+Name of STSDAS table file giving the parameters for polarization 
+determination for the instrument corresponding to the input 
+images. The table lists the polarizer filter name, the polarizer 
+angle, the transmission for the components parallel and 
+perpendicular to the polarizer axis, the transmission of the s 
+and p rays (parallel and perpendicular to the pick-off mirror surface 
+for the WFPC2 case) and the retardation of the s ray relative to the 
+p ray, the instrumental polarization and its instrumental position 
+angle. 
+.le
+.ls unback = "" [real]
+Unpolarized background level to add to ouput images
+.le
+.ls e_adu = "" [real]
+Conversion factor for electrons per ADU for simulated images.
+.le
+.ls read_noise = "" [real]
+Read-out noise (in electrons) for simulated images.
+.le
+.ls seed = "" [integer]
+Seed for random number generator.
+.le
+.ls outroot = "" [name]
+The root name for all the output files. The number of output
+files depends on the instrument. For FOC and NICMOS three
+signal files and three error files are produced. For WFPC2
+seven signal and seven error files are produced corresponding
+to all the allowed settings of the polarizer quad filter.
+For a non-HST instrument the number produced depends on the
+number of distinct angles in the instrument table file.
+The files are distinguished by:
+.nf
+root name + int + angle (3 digit) - for signal files
+root name + err + angle (3 digit) - for error files
+.fi
+
+.le
+.ih
+DESCRIPTION
+This task is a comprehensive tool for producing simulated raw images
+and error frames for the HST instruments with imaging polarizer 
+facilities (currently FOC, NICMOS and WFPC2 and in future ACS). A 
+non-HST instrument can also be handled - called 'SPECIAL'. There are 
+four required input images: total signal (Stokes I in instrumental 
+units - e.g. ADU); percentage linear polarization; position angle 
+of polarization (E) vector (in degrees); circular polarization 
+(in percent). The latter is required since the reflection by the 
+pick-off mirror for WFPC2 (and ACS) induces some retardance (see 
+Biretta & McMaster, WFPC2 ISR 97-11) and any input cirular 
+polarization will affect the measurement of linear polarization.  
+
+The name of the HST instrument (or SPECIAL), the name of the
+polarizing filter, the name of the colour filter (if distinct
+from the polarizing filter e.g. for FOC, WFPC2 and ACS) and the
+instrument position angle (PA_V3 for HST instruments) are 
+required to fully specify the instrument. For FOC three simulated 
+images are produced corresponding to the polarizer angles of 0, 60 
+and 120 degrees. For NICMOS three simulated images are formed with 
+polarizer angles close to 0, 120 and 240 degrees but the exact 
+values are set by the choice of filter (short wavelength `S' or
+long wavelength `L'). For WFPC2 seven images are formed 
+corresponding to the four angles of the POLQ configuration
+(0, 45, 90 and 135 degrees) and the three other possibilites
+(102, 15 and 117 degrees - see the WFPC2 Instrument Handbook
+for details). For ACS three simulated images are formed 
+corresponding to the polarizer angles 0, 60 and 120 degrees. 
+For the SPECIAL instrument the number of
+images is specified by the number of polarizer position entries
+in the instrument specific table file. All output simulated
+images have a corresponding error image.
+
+The instrument specific parameters are matched with
+values found in the instpoltab table file which is required to
+set the instrument specific polarization parameters for
+computing the Stokes parameter and linear polarization data.
+The correction for polarizer transmission and pick-off mirror
+induced polarization follows closely the treatment for WFPC2
+by Biretta and McMaster (WFPC2 ISR 97-11). The instrumental
+polarization is included for effects that are not collected by 
+these distinct parameters.
+
+The predicted signal for the given instrument configuration
+is computed at the specified polarizer position angles
+and written to the output files. From the electrons per ADU
+conversion factor and the readout noise, Poissonian
+errors are produced from the signal files, using a random 
+number generator. Error frames produced with the same value 
+of seed are identical. A constant (ADU) can be added to the 
+simulated images to model an unpolarized component (e.g. sky
+or detector background); the error frames take account of
+this background.
+
+The output files are distinguished by a three digit integer 
+postfix for the polarizer position angle - thus the NICMOS
+POL120S simulated image will have the postfix int116 and
+the error image err116.
+
+.ih
+EXAMPLES
+.nf
+1. To produce a set of FOC simulated polarimetry images:
+
+cl> hstpolsim inint="focint.fits" inpol="focpol.fits" 
+    inpopa="focpa.fits" instr="FOC" polname="" filtname="F437M"
+    PA_V3=128.5 instpoltab="foc-pol-filt-001.tab" unback=0.0
+    e_adu=1.0 read_noise=0.0 seed=99 outroot="foc1"
+
+polname is not required since there is only one polarizer filter
+for FOC. The FOC being a photon counting detector has zero 
+read-out noise. Three output simulated images are produced:
+foc1int000.fits, foc1int060.fits & foc1int120.fits
+and three error images:
+foc1err000.fits, foc1err060.fits & foc1err120.fits 
+
+
+2. To produce a set of NICMOS simulated polarimetry images:
+
+cl> hstpolsim inint="nic1int.fits" inpol="nic1pol.fits" 
+    inpopa="nic1pa.fits" instr="NICMOS" polname="POL0S" filtname="" 
+    PA_V3=30.0 instpoltab="nicmos-pol-filt-001.tab" unback=1000.0
+    e_adu=12.8 read_noise=30.0 seed=11 outroot="nic1"
+
+polname is specified as one of the short or longwavelength
+filters. filtername is not required since there are no
+separate colour filters for the polarimetry mode of NICMOS.
+Three output simulated images are produced:
+nic1int001.fits, foc1int116.fits & nic1int258.fits
+and three error images:
+nic1err001.fits, nic1err116.fits & nic1err258.fits 
+
+
+3. To produce a set of WFPC2 simulated polarimetry images:
+
+cl> hstpolsim inint="wfc1int.fits" inpol="wfc1pol.fits" 
+    inpopa="wfc1pa.fits" instr="WFPC2" polname="POLQ" 
+    filtname="F555W" PA_V3=173.3 
+    instpoltab="wfpc2-pol-filt-001.tab" unback=12.0
+    e_adu=7.1 read_noise=5.2 seed=1 outroot="wfc1"
+
+Seven output simulated images are produced:
+wfc1int000.fits, wfc1int015.fits, wfc1int045.fits, wfc1int090.fits
+wfc1int102.fits, wfc1int117.fits & wfc1int135.fits
+and seven error images:
+wfc1err000.fits, wfc1err015.fits, wfc1err045.fits, wfc1err090.fits
+wfc1err102.fits, wfc1err117.fits & wfc1err135.fits
+
+
+4. To produce a set of ACS simulated polarimetry images:
+
+cl> hstpolsim inint="acs1int.fits" inpol="acs1pol.fits" 
+    inpopa="acs1pa.fits" instr="ACS" polname="POL0V" filtname="F555W" 
+    PA_V3=30.0 instpoltab="acs-pol-wfc-v-filt-001.dat" unback=1.0
+    e_adu=1.0 read_noise=4.0 seed=7 outroot="acs1"
+
+polname is specified as either the visible (V) or ultra-violet (UV)
+polarizing filter and filtname as one of the colour filters 
+available with the chosen polarizer.  
+Three output simulated images are produced:
+acs1int000.fits, acs1int060.fits & acs1int120.fits
+and three error images:
+acs1err000.fits, acs1err060.fits & acs1err120.fits 
+
+5. To produce a set of simulated polarimetry images for a 
+non-HST instrument:
+
+cl> hstpolsim inint="new1int.fits" inpol="new1pol.fits" 
+    inpopa="new1pa.fits" instr="SPECIAL" polname="" 
+    filtname="FILT1" PA_V3=0.0 instpoltab="special-pol-001.tab" 
+    unback=50.0 e_adu=2.0 read_noise=4.1 seed=7 outroot="spec1"
+
+polname is not used. filtname must correspond to the name
+of the filter in the table file. The number of simulated images
+depends on the number of entries in the table file. The integer
+value of the polarizer angle distinguishes the different
+output files. The header parameter FILTER provides the
+filter name and POLANG the polarizer angle.
+.fi
+
+.ih
+Format of the Instrument specific table file
+.nf
+The STSDAS table file is a nine column file with the following
+columns:
+Name of colour/polarizing filter 
+Position angle of polarizer filter
+Normalised transmission parallel to polarizer axis 
+Normalised transmission parallel to polarizer axis 
+Reflectance of mirror E-vector parallel to surface 
+Reflectance of mirror E-vector perpendicular to surface 
+Retardance (deg.) of s wave relative to p wave  
+Instrumental polarization (%) 
+Position angle (deg.) of instrumental polarization (in instrument frame)
+
+with the following column names and format:
+FILTER     CH*16 
+POLANG     R     F6.2
+TRANSPAR   R     E10.4
+TRANSPER   R     E10.4
+REFLECTRS  R     F6.4
+REFLECTRP  R     F6.4
+RETARDPHI  R     F8.4
+INSTPOL    R     F6.2
+INSTPA     R     F6.2
+
+.fi
+
+.ih
+BUGS
+.nf
+None known.
+.fi
+
+.ih
+SEE ALSO
+hstpolima, polimplot, polimodel, hstpolpoints
+.fi
+.endhelp

@@ -1,0 +1,10 @@
+$checkout fos.a ../
+$update   fos.a
+$checkin  fos.a ../
+$exit
+
+fos.a:
+	bspec.f
+	getpst.x
+	countspec.x	<tbset.h> <synphot.h>
+	;

@@ -1,0 +1,7 @@
+imalis,f,a,,,,"List of input object-sky image files" 
+errlis,f,a,,,,"List of input error image files" 
+instpoltab,f,a,,,,"Name of table file for instrument polarization parameters"  
+pointab,f,a,,,,"Name of input table file for object apertures and sky annuli"
+iterej,i,a,,,,"Number of sigma clip iterations for mean sky"
+sigsky,r,a,,,,"Rejection factor on rms for mean sky sigma clip" 
+outtab,f,a,,,,"Name of output results table file"

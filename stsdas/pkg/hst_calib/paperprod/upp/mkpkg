@@ -1,0 +1,15 @@
+# Update the upp application code in the paperprod package library
+# Author: Hack, 12-Nov-1996
+
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	upp_image.x	"upp.h"	<imhdr.h>
+	upp_obsum.x	"upp.h"	
+	upp_calflag.x	"upp.h"	
+	det_uaper.x	"upp.h"
+	upp_rd2xy.x	<math.h>
+	;

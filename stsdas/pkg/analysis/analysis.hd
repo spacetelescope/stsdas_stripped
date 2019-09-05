@@ -1,0 +1,67 @@
+# Help directory for the ANALYSIS package
+
+
+$dither		= "stsdas$pkg/analysis/dither/"
+$fitting	= "stsdas$pkg/analysis/fitting/"
+$fourier	= "stsdas$pkg/analysis/fourier/"
+$gasp		= "stsdas$pkg/analysis/gasp/"
+$isophote	= "stsdas$pkg/analysis/isophote/"
+$nebular	= "stsdas$pkg/analysis/nebular/"
+$restore	= "stsdas$pkg/analysis/restore/"
+$slitless	= "stsdas$pkg/analysis/slitless/"
+$statistics	= "stsdas$pkg/analysis/statistics/"
+
+dither		men=dither$dither.men,
+		hlp=..,
+		sys=dither$dither.hlp,
+		pkg=dither$dither.hd,
+		src=dither$dither.cl
+
+fitting		men=fitting$fitting.men,
+		hlp=..,
+		sys=fitting$fitting.hlp,
+		pkg=fitting$fitting.hd,
+		src=fitting$fitting.cl
+
+fourier		men=fourier$fourier.men,
+		hlp=..,
+		sys=fourier$fourier.hlp,
+		pkg=fourier$fourier.hd,
+		src=fourier$fourier.cl
+
+gasp		men=gasp$gasp.men,
+		hlp=..,
+		sys=gasp$gasp.hlp,
+		pkg=gasp$gasp.hd,
+		src=gasp$gasp.cl
+
+isophote	men=isophote$isophote.men,
+		hlp=..,
+		sys=isophote$isophote.hlp,
+		pkg=isophote$isophote.hd,
+		src=isophote$isophote.cl
+
+nebular		men=nebular$nebular.men,
+		hlp = ..,
+		sys=nebular$nebular.hlp,
+		pkg=nebular$nebular.hd,
+		src=nebular$nebular.cl
+
+restore		men=restore$restore.men,
+		hlp=..,
+		sys=restore$restore.hlp,
+		pkg=restore$restore.hd,
+		src=restore$restore.cl
+
+slitless	men=slitless$slitless.men,
+		hlp=..,
+		sys=slitless$slitless.hlp,
+		pkg=slitless$slitless.hd,
+		src=slitless$slitless.cl
+
+statistics	men=statistics$statistics.men,
+		hlp=..,
+		sys=statistics$statistics.hlp,
+		pkg=statistics$statistics.hd,
+		src=statistics$statistics.cl
+

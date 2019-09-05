@@ -1,0 +1,10 @@
+$checkout ctools.a ../
+$update ctools.a
+$checkin ctools.a ../
+$exit
+
+ctools.a:
+	t_mkweight.x    <gset.h> <imhdr.h> <plset.h> <tbset.h>
+        maploa.x
+        region.x        <gset.h> <mach.h> <plset.h>
+        ;

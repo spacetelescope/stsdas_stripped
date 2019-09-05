@@ -1,0 +1,64 @@
+.help examples Sept91 stsdas
+.ih
+NAME
+examples -- Print online examples of how to use the named task(s). 
+.ih
+USAGE
+examples template
+.ih
+DESCRIPTION
+The 'examples' task is a shortcut for printing the on-line 
+examples for a specified task.  It produces essentially the same output as 
+the IRAF task 'help' when the "section=examples" parameter is set.  
+However, the other options and parameters available for the 'help' task 
+are not supported here.  The advantage to using 'examples' is that the 
+task name is more intuitive and easier to remember for novice users of IRAF.  
+.ih
+PARAMETERS
+.ls template [string]
+A string listing the task(s) for which examples are desired.  As with the 
+'help' task, each list element may be a simple name or a pattern matching 
+template.  Abbreviations are permitted.  The form of the template is a list 
+of patterns delimited by commas:
+
+	"pattern1, pattern2, ..., patternN"
+
+and the form of a pattern is:
+
+	package_pattern.task_pattern
+
+If the "." is omitted, 'examples' assumes you are looking for a task
+in the current package.  The standard pattern
+matching metacharacters, i.e., "*?[]", are permitted in patterns.
+Simple patterns are assumed to be abbreviations.
+.le
+.ih
+EXAMPLES
+The 'examples' task is easy to use, and behaves much the same as the 
+familiar 'help' task.  To see examples, one supplies the task name as 
+an argument.  
+
+1. Print examples of how to use the task 'grpcopy' in the package
+'tools' (with output displayed on the terminal):
+
+.nf
+	cl> examples tools.grpcopy
+or
+	cl> examples grpcopy
+or
+	cl> examples grpc
+.fi
+
+2. Print the examples of how to use the tasks 'dqfpar' and 'noisepar'
+(in the 'wfpc' package) on the default printer device:
+
+	cl> examples dqfpar,noisepar | lpr
+.ih
+BUGS
+On some systems, typing the next command keystroke before the end-of-page
+prompt is printed may result in the character being echoed (messing up the
+output) and then ignored when raw mode is enabled for the prompt.
+.ih
+SEE ALSO
+describe, help
+.endhelp

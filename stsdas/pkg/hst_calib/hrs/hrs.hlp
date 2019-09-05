@@ -1,0 +1,352 @@
+.help hrs Jan98 stsdas.hst_calib.hrs
+.ih
+NAME
+hrs -- Calibration of Goddard High Resolution Spectrograph (GHRS) 
+observations.
+.ih
+INTRODUCTION
+All observations made by the Hubble Space Telescope (HST) undergo what
+is known as Routine Science Data Processing (RSDP).  RSDP essentially
+consists of two steps implemented by the Post Observation Data
+Processing System (PODPS).  The first step is called "generic
+conversion", which takes the telemetry from the HST, extracts the
+relevant science and engineering data, and creates the GEIS (or
+group-format) files containing the uncalibrated science data.  The
+second step is to run the calibration task appropriate for the
+instrument involved, to produce the calibrated science data GEIS
+files.
+
+This package contains the calibration task, 'calhrs', used by PODPS to
+calibrate GHRS data.  The remaining tasks in this package are used to
+perform post-calibration processing and to help plan GHRS
+observations.  These tasks are provided to the General Observer (GO)
+to help facilitate understanding on how the data were calibrated,
+allow the observer to recalibrate if so desired, and to help prepare
+the data for use by other spectral reduction tasks provided by the
+IRAF system, or provided by other software products.
+
+.ih
+OBSERVATION PLANNING
+A thorough discussion of observation planning is provided to the GO's
+in the "Phase II Proposal Instructions" and the "GHRS Instrument
+Handbook".  STSDAS does not provide any software to help directly in
+preparing Phase II proposals, except for one area, exposure time
+calculation.  The "synphot" package provides GO's with the tools
+necessary to calculate exposure time and expected count rates.  In
+addition to "synphot", the "hrs" package provides one task, 'tacount', to
+help predict expected count rates for GHRS target acquisitions.
+Please refer to the latest edition of the "GHRS Instrument Handbook" for
+more information.
+.ih
+GEIS DATA FORMAT
+When a GHRS observation is processed by RSDP, the result is a number
+of files.  These files are written in GEIS, or group-format, files.
+The files are named using the following convention:
+
+.nf
+	IPPPSSOOT.XXT
+.fi
+
+The individual fields of the name are as follows:
+
+.ls I - Instrument
+The field indicates which instrument the data comes from.  The
+possible values are:
+.nf
+	f - FGS
+	k - COSTAR
+	u - WFPC II
+	v - HSP
+	w - WFPC
+	x - FOC
+	y - FOS
+	z - GHRS  <-- This is GHRS data.
+.fi
+.le
+.ls PPP - Proposal ID number
+This is an octal-encoded form of the proposal ID number
+.le
+.ls SS - Observation set number
+An encoded number which groups related observations together.
+.le
+.ls OO - Observation ID number
+An encoded number uniquely identifying the observation within a group
+of observations for a proposal.
+.le
+.ls XX - Data type
+Encodes what type of data is represented by the GEIS file.  See
+discussion below.
+.le
+.ls T - Format type
+Can be either "h", for header, or "d" for binary data.  See discussion
+below.
+.le
+
+Each GEIS data file consists of two disk files.  An ASCII "header",
+denoted by the "h" in the extension, contains various parameters of
+the data, including size and dimensionality.  The second file is the
+"data", denoted by the "d" in the extension, which contains the actual
+data.  In the remaining discussion, data files will be referred by the
+"header" file only; the "data" file will be implied.  For example,
+when referring to the file 'z0x20101t.c1h', implicitly the reference
+also includes the file 'z0x20101t.c1d'.  Or, the GEIS data file
+'z0x20101t.c1h' is composed of two disk files, 'z0x20101t.c1h' and
+'z0x20101t.c1d'.
+
+The main feature of GEIS data is that a single GEIS file can contain
+multiple groups of data.  For example, the file 'z0x20101t.c1h' may
+contain four groups, each group containing a different spectrum.  Each
+group is identified by a number.  In IRAF, the syntax for identifying
+a group is by appending "[X]" where X is the group number.  So, to
+refer to the fourth group of the file 'z0x20101t.c1h', the syntax would
+be 'z0x20101t.c1h[4]'.  
+
+For more information about the STSDAS GEIS format, and IRAF, please
+refer to the "STSDAS Users Guide".
+.ih
+GHRS DATA SET
+As stated previously, a single GHRS observation actually consists of a
+number of GEIS files.  Referring to the naming convention presented
+above, each file is identified by the two letter code, XX, in the
+extension.  For GHRS, the files and what they contain are as follows:
+.ls
+.ls SHH - Standard Header Packet (SHP)
+This file contains the Standard Header Packet (SHP) information.  This
+file is created for all observations.  It contains the telemetry
+values for GHRS-specific software monitors and calibration-critical
+engineering data.
+.le
+.ls ULH - Unique Data Log (UDL)
+The UDL contains the command values used to control the instrument,
+and observational data produced by the HST'S flight control software.
+This data includes instrument modes, target acquisition statistics,
+and instrument status.
+.le
+.ls D0H - Science Data
+The Science data file contains the values of the 500 science diodes
+for the observation.  Depending on the observing mode of the
+instrument, individual groups of the science data may contain
+observations of the celestial target, background measurements, and
+sky.  In rapid-readout mode, the science data will contain the raw
+counts from the diodes.  For target acquisitions, this will contain the
+acquisition image used to acquire and center the instrument.  The
+header keywords contain selected 
+information from the UDL, and the calibration switches and reference
+file names to be used in calibration.  
+.le
+.ls D1H - Return-To-Brightest (RTB)
+For target acquisitions that use RTB mode, this file contains the flux
+measurements at each dwell point of the spiral search, which dwell
+point was selected and the flux for that dwell.  The header contains
+statistics of which dwell point was selected.
+.le
+.ls X0H - Extracted Data
+This file contains the values of the twelve "special" diodes of the
+instrument.  These include the focus diodes, background monitor diodes,
+and radiation background monitor diodes.  Another twelve values are
+added which include engineering trailer and
+flight software information.
+.le
+.ls Q0H, Q1H, XQH - Data quality
+For the D0H, D1H, and X0H, files, there are associated data quality
+files, Q0H, Q1H, and XQH, respectively.  The values indicate whether the
+data in the associated science files is worthy of examination.
+Current values are as follows:
+
+.nf
+	 0 - Good data
+	 1 - Failed Reed-Solomon error checking
+	16 - Data contains a fill value.
+.fi
+.le
+.ls C0H - Wavelength Solution
+Produced by 'calhrs'.  This file contains the wavelength solution for
+the calibrated science data, in angstroms.
+.le
+.ls C1H - Calibrated Science Data
+Produced by 'calhrs'.  This file contains the calibrated science data
+from the 500 science diodes.  The header contains a record of the
+steps that were performed in the calibration.  Also, the header
+contains various other parameters determined by the calibration task,
+such as sample/line mapping, exposure time, etc.
+.le
+.ls C2H - Propagated Statistical Error
+This contains a measure of the statistical errors of the original data.
+.le
+.ls CQH - Calibrated Data Quality
+Similar to the data quality files mentioned above, this file give an
+indication of the quality of the calibrated science data.
+.le
+.ls C3H - Calibrated Special Diodes
+Calibrated version of the special diodes.  The calibration for the
+special diodes only includes division by exposure time, diode response
+correction, and paired-pulse correction.
+.le
+.ls C4H - Special Diodes Data Quality
+Similar to the other data quality files, but for the calibrated
+special diodes.
+.le
+.ls C5H - Background
+If background removal has been selected by the calibration keywords,
+'calhrs' will produce this file which contains the calculated background
+removed from the observation.  There are as many groups in this file
+as there are in the C1H image.  The units of the background will
+either be counts or count rate; the background is never flux
+calibrated.
+.le
+.le
+
+Besides the above GEIS files, a simple ascii file whose extension is
+TRL is present.  This file is the trailer file and contains a textual
+log of the RSDP processing of the observation.
+
+For more information about the GHRS data files, refer to the "HST
+Data Handbook", "STSDAS Users Guide", and the help for 'calhrs'.
+.ih
+CALIBRATION
+All calibration performed on GHRS data by RSDP occurs within the one
+task, 'calhrs'.  The input to 'calhrs' is the raw data files and reference
+data files and tables.  The output is the calibrated science data.  A
+brief description of the calibration is provided below. For detailed
+descriptions of the calibration performed by 'calhrs', refer to the help
+for 'calhrs' and the "HST Data Handbook".
+
+The following steps comprise the calibration process:
+
+.nf
+	1) Removal of diode non-linearities and 
+           non-uniformities.
+
+	2) Removal of photocathode granularities.
+
+	3) Removal of vignetting and low frequency 
+           variations across the photocathode.
+
+	4) Wavelength assignments.
+
+	5) Background subtraction.
+
+	6) Echelle ripple correction.
+
+	7) Conversion to absolute flux units.
+.fi
+.ih
+CALIBRATION REFERENCE FILES
+The calibration uses tables and files whose names are 
+contained in keywords in the science data header.  The references
+files/tables are created by the Instrument Scientists for each instrument
+using various facilities.  These tables are archived, just as the observational data is
+archived.  Reference data often changes, either because the instrument
+is changing with time, or a better understanding of the calibration is
+developed.  Hence, the reference data is "timed-tagged" such that a
+"best" set of reference files exist for a particular observation.  It
+is not necessarily true that the best references exist at the time of
+observation, hence necessitating the need to recalibrate.
+
+For GO's, who are located at STScI and have access to the Calibration
+Data Base System (CDBS), the task 'getref' is available to
+determine whether the set of reference files used for an observation
+are the "best" or not.  For offsite users, StarView provides a
+facility similar to 'getref' for making the same determination.  For
+more information, see the help for 'getref' or the "HST Archive
+Manual".  For information concerning the reference files themselves,
+see the help for 'calhrs', the "HST Data Handbook", and ICD-47
+(see REFERENCES section below).
+.ih
+COOKBOOK
+The following briefly discusses the relationship between the tasks provided
+by STSDAS/IRAF and GHRS data.  As always, for more information about
+usage of individual tasks, see the help for those tasks.
+
+As stated earlier, STSDAS provides minimal software for preparing
+Phase II proposal instructions.  For determination of count rates and
+exposure times, tasks in the "synphot" package would be used.  "Synphot"
+uses throughput tables representing the optical path of the HST
+through to the diodes of GHRS.  For target acquisitions, once an
+expected count rate has been determined, the task 'tacount' in the "hrs"
+package can be used to convert this expected count rate to what the
+GHRS will actually see in target acquisition mode.  'tacount' takes into
+account the current Point Spread Function (PSF) that the acquisition
+diodes see and the paired-pulse effect of the diode electronics.
+
+For calibration, the 'calhrs' task is predominant, as already discussed.
+To confirm that the GO has the most update-to-date reference data,
+'getref' and 'upreffile' can be used to determine new reference files
+and update the header keyword parameters in the raw science data
+headers.  To change the calibration switches and reference file
+keywords manually, the 'chcalpar' task would be used.  If the GO
+has taken wavelength calibration observations along with the science
+observations, the 'zwavecal' task can be used to produce a new
+wavelength reference file and determine a zero-point offset to apply
+to already-calibrated wavelength solutions.
+
+For post-calibration analysis, the following tasks would be useful.
+For GHRS observations taken in FP-SPLIT mode, the tasks 'poffsets' and
+'specalign' would be used.  These tasks determine the offset between
+each split observation and then recombine the individual split
+observations into a single spectrum.  The wavelength solutions are
+preserved while the spectra are combined.
+
+There are a couple of tasks to handle the fact that the calibrated
+science data and wavelength solutions reside in different files.  The
+task 'fwplot' can be used to plot wavelength vs. flux.  The 'resample'
+task resamples the data to a linear wavelength dispersion, placing the
+wavelength solution in the header as a World Coordinate System
+transformation, allowing tasks to access the wavelength information
+without the wavelength file.
+
+If the GO does not wish to resample the data, the task 'mkmultispec'
+allows various functions to be fit to the wavelength solution and
+place them as header keyword parameters in the science data, again
+allowing other tasks access to the wavelength information.
+
+The tasks 'showspiral' and 'spiralmap' allows observers to examine a
+target acquisition image using the IRAF image display.
+
+The 'reflux' performs the flux calibration step of 'calhrs', but with a
+new set of sensitivity reference data.
+
+The 'obsum' task allows a quick overview of an observation,
+summarizing what observations occurred when, summed counts, completion
+status, etc.  The main usage for GO's is the ability to flag
+observations that may be affected by the Doppler compensation problem.
+Any data observed before the 1 March, 1993, may be affected.  Please
+refer to the "GHRS Instrument Handbook" for more information.
+
+For more general spectral analysis tasks, the GO is referred to the
+noao.onedspec package, the stsdas.fitting package, and the
+stsdas.toolbox.imgtools.  Tasks in these package provide many things
+ranging from basic arithmetic (imcalc) to line profile fitting
+(nfit1d) and general interactive spectral analysis (splot).
+.ih
+REFERENCES
+For many issues regarding STSDAS, file formats, etc., please refer to
+the "STSDAS User's Guide", available from the STSDAS group at STScI.
+
+For calibration related questions and a general discussion of HST data, refer 
+to the "HST Data Handbook".
+
+For specific questions with regard to GHRS, other references are the "GHRS 
+Data Products Guide" and the "GHRS Instrument
+Handbook", produced by the Science Software Division (SSD) of STScI.
+
+Help for "synphot" is available online in the "synphot" package.  Also,
+the "Synphot User's Guide" may be obtained from the STSDAS group of
+STScI.
+
+The algorithms used by CALHRS are described in "SOGS Requirements Document", 
+(SE-06-01).
+
+The document
+describing the contents and form of the reference data is "Post
+Observation Data Processing System to Calibration Database System
+Interface Control Document", (ICD-47).
+
+The document describing the keywords is "Post Observation Data Processing
+System to Space Telescope Science Data Analysis Software Interface
+Control Document", (ICD-19).
+
+The document describing the GHRS is "SI Systems
+Description and User's Handbook for the High Resolution Spectrograph
+(HRS) for the Hubble Space Telescope (HST)", Ball Aerospace, SE-01.
+.endhelp

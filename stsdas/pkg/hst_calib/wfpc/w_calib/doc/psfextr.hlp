@@ -1,0 +1,139 @@
+.help psfextr Jan92 stsdas.hst_calib.wfpc.w_calib
+.ih
+NAME
+psfextr -- Extract a subsection of an image to be put in the PSF library.
+.ih
+USAGE
+psfextr infile outfile xcenter ycenter xsize ysize origin
+.ih
+DESCRIPTION
+This task is used to extract an image subsection from an input image and 
+copy it to an output image having a specific file header.  The output image
+is to be put in a PSF image library later.
+.ih
+PARAMETERS
+.ls infile = "" [string]
+Name of the input science data file (a file name template can be used to 
+process several files).
+.le
+.ls outfile = "" [string]
+Name of the output file (or a file template).  The output file has the 
+following header:
+
+.nf
+SIMPLE  =                    F /                                       
+BITPIX  =                   32 /                                        
+DATATYPE= 'REAL*4          '   /                                        
+NAXIS   =                    2 /                                        
+NAXIS1  =                  256 /                                        
+NAXIS2  =                  256 /                                        
+GROUPS  =                    T /                                        
+PSIZE   =                  512 /                                        
+PCOUNT  =                   12 /                                        
+GCOUNT  =                    1 /                                        
+PTYPE1  = 'DATAMIN '           /                                        
+PDTYPE1 = 'REAL*4  '           /                                        
+PSIZE1  =                   32 /                                        
+PTYPE2  = 'DATAMAX '           /                                        
+PDTYPE2 = 'REAL*4  '           /                                        
+PSIZE2  =                   32 /                                        
+PTYPE3  = 'CRVAL1  '           /                                        
+PDTYPE3 = 'REAL*8  '           /                                        
+PSIZE3  =                   64 /                                        
+PTYPE4  = 'CRPIX1  '           /                                        
+PDTYPE4 = 'REAL*4  '           /                                        
+PSIZE4  =                   32 /                                        
+PTYPE5  = 'CD1_1   '           /                                        
+PDTYPE5 = 'REAL*4  '           /                                        
+PSIZE5  =                   32 /                                        
+PTYPE6  = 'CTYPE1  '           /                                        
+PDTYPE6 = 'CH*8    '           /                                        
+PSIZE6  =                   64 /                                        
+PTYPE7  = 'CD1_2   '           /                                        
+PDTYPE7 = 'REAL*4  '           /                                        
+PSIZE7  =                   32 /                                        
+PTYPE8  = 'CRVAL2  '           /                                        
+PDTYPE8 = 'REAL*8  '           /                                        
+PSIZE8  =                   64 /                                        
+PTYPE9  = 'CRPIX2  '           /                                        
+PDTYPE9 = 'REAL*4  '           /                                        
+PSIZE9  =                   32 /                                        
+PTYPE10 = 'CD2_2   '           /                                        
+PDTYPE10= 'REAL*4  '           /                                        
+PSIZE10 =                   32 /                                        
+PTYPE11 = 'CTYPE2  '           /                                        
+PDTYPE11= 'CH*8    '           /                                        
+PSIZE11 =                   64 /                                        
+PTYPE12 = 'CD2_1   '           /                                        
+PDTYPE12= 'REAL*4  '           /                                        
+PSIZE12 =                   32 /                                        
+                                                                        
+FILTNAM1= '        '           / FIRST ST SCI FILTER NAME           
+FILTNAM2= '        '           / SECOND ST SCI FILTER NAME          
+CAMERA  = '  '                 / WF OR PC                           
+MODE    = '    '               / FULL OR AREA                       
+DETECTOR=                    0 / 1-4 FOR WF, 5-8 FOR PC                 
+ROOTNAME= '                  ' / ROOTNAME OF THE OBS. CONTAINING PSF IMAGE
+DATA_FIL= '                  ' / NAME OF THE PSF IMAGE FILE
+TARGNAME= '        '           / TARGET IMAGE                 
+ORIGIN  = '        '           / DATA SOURCE, E.G. 'HST','TIM', OR OTHER
+SPECTRAL= 'unknown '           / SPECTRAL TYPE OF SOURCE IF KNOWN 
+EXPTIME =                   0. / EXPOSURE TIME IN SECONDS        
+OBSDATE = '            '       / UT DATE (E.G. 28 JAN 1991)     
+MJD     =                   0. / MODIFIED JULIAN DATE (=JD-2400000.5)
+XCORNER =                    0 / X PIXEL OF (1,1) CORNER IN PSF IMAGE
+YCORNER =                    0 / Y PIXEL OF (1,1) CORNER IN PSF IMAGE
+XSIZE   =                    0 / DIMENSION OF PSF IMAGE IN X DIRECTION
+YSIZE   =                    0 / DIMENSION OF PSF IMAGE IN Y DIRECTION
+XCENTER =                   0. / X COORDINATE OF PSF CENTER ON CHIP  
+YCENTER =                   0. / Y COORDINATE OF PSF CENTER ON CHIP 
+CALIBRAT=                    F / HAS THIS IMAGE BEEN CALIBRATED? (FLAT, ETC)
+FLATFILE= '                  ' / NAME OF FLAT-FIELD IMAGE, (OR INDEF)
+PSFSCALE=                   1. / DIVISOR USED TO NORMALIZE PSF, 1 OTHERWISE
+OBSMODE = '                  ' / OBS MODE FOR SYNPHOT(E.G., WF,4,F,DN,F555W)
+REFSPEC = '                  ' / REF SPECTRUM (CRCALSPEC:AGK_81D266_002.TAB)
+ACTUAT25=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 25
+ACTUAT26=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 26
+ACTUAT27=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 27
+ACTUAT28=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 28
+ACTUAT29=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 29
+ACTUAT30=                    0 / POSITION OF SECONDARY MIRROR ACTUATOR 30
+.fi
+.le
+.ls xcenter [real, min = 1]
+X coordinate of the PSF center.
+.le
+.ls ycenter [real, min = 1]
+Y coordinate of the PSF center.
+.le
+.ls xsize  = 256 [integer, min = 0]
+X dimension of the subsection.  If 'xsize' or 'ysize' is zero, the entire input 
+image will be copied to the output image.
+.le
+.ls ysize  = 256 [integer, min = 0]
+Y dimension of the subsection.  If 'xsize' or 'ysize' is zero, the entire input 
+image will be copied to the output image.
+.le
+.ls origin [string]
+origin of the input image, i.e., "hst", "tim", or others.
+.le
+.ls (dummy) = "wfpc$tmplpsf.hhh" [string]
+Name of the PSF template file header.
+.ih
+EXAMPLES
+1. Extract a 15 x 15 image subsection centered at (123,150) of the image 
+'input.d0h' and write it to the output image 'output.hhh'.
+
+.nf
+w_> psfextr input.d0h output.hhh xcenter=123 ycenter=150 xsize=15 \
+>>>   ysize=15 origin="hst" 
+.fi
+.ih
+REFERENCE
+.ih
+BUGS
+A harmless warning message "Cannot open pixfile to read GPB" will appear.  
+This is because that the PSF header template file has no data file.
+.ih
+SEE ALSO
+.endhelp

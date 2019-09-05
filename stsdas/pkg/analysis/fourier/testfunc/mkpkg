@@ -1,0 +1,15 @@
+# Update the testfunc application code in the fourier package library
+# Author: C.D.Biemesderfer, 29-DEC-1987
+
+$checkout fourier.a ../
+$update   fourier.a
+$checkin  fourier.a ../
+$exit
+
+fourier.a:
+	mkfunc.x     		<imhdr.h> 
+	testfunc.x     		<math.h> 
+	bessj0.f       		
+	ncar_fft.x		
+	rdfunc.x       		<error.h> <ctype.h> 
+	;

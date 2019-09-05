@@ -1,0 +1,108 @@
+.help regions Aug93 stsdas.analysis.gasp
+.ih
+NAME
+regions -- Extract stars from a list of guide star regions.
+.ih
+USAGE
+regions ra dec width mag1 mag2 exttab
+.ih
+DESCRIPTION
+Copy guide star tables from the CD-ROM when the table overlaps
+a user-specified sky region. In addition to specifying a region
+of the sky, you can also specify a brightness range to copy only
+stars above or below a certain magnitude.
+
+Note that guide star coordinates are equinox J2000.
+
+This task will optionally plot a chart of the region with the extracted
+stars plotted showing their relative brightness using the task
+'stplot.skymap'.  You may also draw the same plot and interact with it
+by running 'skymap' independently.  If you do, you must tell 'skymap'
+the central coordinate, size of the field and the table column names.
+The center and size are the same as the parameters 'ra', 'dec', and
+'width' for regions, and the column names may be specified by setting
+'skymap.colnames="gsc"'.
+.ih
+PARAMETERS
+.ls ra = 0. [real, min=0., max=24.]
+Right ascension of the field center in hours, equinox J2000.  The value
+may be entered on the command line or in eparam using decimal or
+"sexagesimal" notation, i.e., hours, minutes, and seconds with the
+fields separated by colons:
+.nf
+
+ra = 5:43:12.2
+
+.fi
+Missing fields are assumed to be least significant.  That is, 5:43 is
+interpreted as 5 hours, 43 minutes rather than 0 hours, 5 minutes, 43
+seconds.
+.le
+.ls dec [real, min=-90., max=90.]
+Declination of the field center in degrees, equinox J2000.  The value
+may be entered on the command line or in eparam using decimal or
+"sexagesimal" notation, i.e., degrees, minutes, and seconds with the
+fields separated by colons:
+.nf
+
+dec = -1:23:45.6
+
+.fi
+Missing fields are assumed to be least significant.  That is, -1:23 is
+interpreted as -1 degree, 23 minutes rather than 0 hours, -1 minute, 23
+seconds.
+.le
+.ls width [real, min=0., max=180.]
+Field width in degrees.
+.le
+.ls exttab = extgsc [file name]
+Name of the output table that will contain extracted stars.
+.le
+.ls (mag1 = INDEF) [real]
+Lower limit of acceptable magnitudes.  The default is to not use
+magnitude limits.
+.le
+.ls (mag2 = INDEF) [real]
+Upper limit of acceptable magnitudes.
+.le
+.ls (allcols = no) [bool]
+Copy all table columns from the GSC?  If allcols=no, then only the
+coordinates and magnitude columns are created and written to the output
+table.
+.le
+.ls (savetabs = no) [bool]
+Keep extracted GSC region tables?  If savetabs = no, then the GSC
+region tables are deleted after the stars in the user's field are
+extracted to the output table.  Otherwise, the region tables are
+retained in the current working directory.
+.le
+.ls (plot = no) [boolean]
+Plot a sky chart of the selected region?
+.le
+.ih
+EXAMPLES
+1. Extract a table of guide stars from a region 10 minutes wide
+centered at R.A. of 10 hours and Dec. of +30 degrees to a table called
+myregion:
+.nf
+
+  ga> regions 10 30 0:10 myregion
+
+.fi
+
+2. Extract and plot a region centered on 3h42m12s and -24d31'02" 15
+minutes in size of stars between 11th and 14th magnitude:
+.nf
+
+  ga> regions 3:42:12 -24:31:02 0:10 myregion mag1=11 mag2=14 plot+
+
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO 
+strfits, extgsc, skymap
+
+Type "help gasp opt=sys" for an overview of the 'gasp' package and the
+Guide Star Catalog.
+.endhelp

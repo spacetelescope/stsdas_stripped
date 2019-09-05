@@ -1,0 +1,7 @@
+# Task parameters for the BUCKLEYJAMES task
+
+input,s,a,,,,"> Input file(s)"
+tolerance,r,h,1.0e-5,0.0,,"> Tolerance for regression fit?"
+niter,i,h,50,1,,"> Maximum number of iterations to allow"
+verbose,b,h,n,,,"> Full printout desired?"
+mode,s,h,"al",,,

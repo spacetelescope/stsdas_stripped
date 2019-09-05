@@ -1,0 +1,703 @@
+# ghrs_udl_def.db -- UDL information for GHRS observations
+# 
+# DESCRIPTION
+# This text database defines how to extract and interprete the information
+# contained in the Unique Data Log (UDL) image for Goddard High
+# Resolution Spectrograph (GHRS) observations.  See the task
+# "eng2tab" in the STSDAS external package for IRAF for more information.
+# 
+# Each record defines an item to be retrieved from the image data.  Each
+# record contains four fields:
+# 
+# 	descr   -- Description of the item.
+# 	extract -- How to get the monitor value from the udl image.
+# 	format  -- How to interpret the value of the item.
+# 	units   -- Units of the interpreted value
+#
+# The values of the 'extract' and 'format' fields are expressions used
+# to extract item from the image array and to format it into some
+# understandable form.  For a full description of the expressions, see
+# the help for the task "eng2tab" in the ctools package of STSDAS under
+# IRAF. 
+#
+# FORMAT
+# This file conforms to the standard IRAF text database format.  A
+# text database consists of a series of 'records'.  Each record consists
+# of a set of 'fields'.  A record looks like the following:
+# 
+# 	begin record
+# 		field value
+# 		field value
+# 		....
+# 
+# A record starts at a line which has the word "begin" followed by a
+# single word which is the record name.  Each subsequent line is
+# considered a field of the record (unless it is blank or a comment
+# line).  Each field line has the following format: The first word on
+# the line is the name of the field.  Everything else on the line, up to
+# the newline, is the value of the field.  A line can contain
+# approximately 200 characters.  There is no indentation requirement;
+# indentation is present only to humans examine the file.
+#
+# DATABASE
+begin zfconof_det2
+	extract	and(shift(d[1],-7),1)
+	descr	Detector 2 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_det1
+	extract	and(shift(d[1],-6),1)
+	descr	Detector 1 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_shutter
+	extract	and(shift(d[1],-5),1)
+	descr	Shutter ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_sc2
+	extract	and(shift(d[1],-3),1)
+	descr	Spectral Calibration Lamp 2 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_sc1
+	extract	and(shift(d[1],-2),1)
+	descr	Spectral Calibration Lamp 1 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_ff2
+	extract	and(shift(d[1],-1),1)
+	descr	Flat field lamp 2 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconof_ff1
+	extract	and(d[1],1)
+	descr	Flat field lamp 1 ON/OFF
+	format	word_find(v,"off,on")
+	units	on/off              
+begin zfconss_spacecraft
+	extract	and(shift(d[2],-9),1)
+	descr	Spacecraft stable
+	format	word_find(v,"not_stable,stable")
+	units	stable/notstable    
+begin zfconss_carrousel
+	extract	and(shift(d[2],-8),1)
+	descr	Carrousel state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_det2
+	extract	and(shift(d[2],-7),1)
+	descr	Detector 2 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_det1
+	extract	and(shift(d[2],-6),1)
+	descr	Detector 1 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_shutter
+	extract	and(shift(d[2],-5),1)
+	descr	Shutter state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_sc2
+	extract	and(shift(d[2],-3),1)
+	descr	Spectral calibration lamp 2 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_sc1
+	extract	and(shift(d[2],-2),1)
+	descr	Spectral calibration lamp 1 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_ff2
+	extract	and(shift(d[2],-1),1)
+	descr	Flat field lamp 2 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfconss_ff1
+	extract	and(d[2],1)
+	descr	Flat field lamp 1 state change
+	format	word_find(v,"not_required,required")
+	units	required/notrequired
+begin zfcarpos
+	extract	and(d[3],65535)
+	descr	Carrousel position, range=0-65535
+	format	v
+	units	encoder position    
+begin zfintper
+	extract	and(d[4],255)
+	descr	Number of 50ms blocks accumulated internally for 1 line of science
+	format	v
+	units	50ms blocks         
+begin zftref
+	extract	and(d[5],65535)*65536 + and(d[6],65535)
+	descr	Doppler shift 0 phase time
+	format	v
+	units	125ms since 1jan79  
+begin zfdopmag
+	extract	and(d[7],65535)
+	descr	Doppler shift magnitude, range=0-32767
+	format	v
+	units	deflection steps    
+begin zfacolim
+	extract	and(d[8],65535)
+	descr	Maximum allowable coincidence counts per integration period, 0-65535
+	format	v
+	units	counts/integration  
+begin zflim
+	extract	and(d[9],511)*65536 + and(d[10], 65535)
+	descr	On-the-fly adder limit
+	format	v
+	units	counts              
+begin zfbdlmax
+	extract	and(d[11],65535)
+	descr	Maximum number of consecutive bad data lines, range 0-32767
+	format	v
+	units	lines               
+begin zfrptmax
+	extract	and(d[12],65535)
+	descr	Automatic bad frame repeat limit, range 0-32767
+	format	v
+	units	lines               
+begin zfrptobs
+	extract	and(d[13],65535)
+	descr	Maximum number of times the observation is to be repeated
+	format	v
+	units	observations        
+begin zfmaxgss
+	extract	and(d[14],65535)
+	descr	Maximum number of good substep patterns for current observation
+	format	v
+	units	substep pattern     
+begin zfscidmp
+	extract	and(d[15],65535)
+	descr	Number of substep patterns between data dumps
+	format	v>32767?v-65536:v
+	units	substep pattern     
+begin zfexpchl
+	extract	and(d[16],511)
+	descr	Lower diode number for exposure meter test
+	format	v
+	units	diode               
+begin zfexpchu
+	extract	and(d[17],511)
+	descr	Upper diode number for exposure meter test
+	format	v
+	units	diode               
+begin zfexpmax
+	extract	and(d[18],511)*65536 + and(d[19], 65535)
+	descr	Cumulative maximum allowabel count for overexposure test
+	format	v
+	units	count               
+begin zfexpssp
+	extract	and(d[20],65535)
+	descr	Number of substep paterns for minimum exposure rate test
+	format	v
+	units	substep pattern     
+begin zfexpmin
+	extract	and(d[21],65535)
+	descr	Minimum allowable count for under exposure rate test
+	format	v
+	units	count               
+begin zfdefid1_bin7
+	extract	and(shift(d[22],-12),15)
+	descr	Source of data in bin #7
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin6
+	extract	and(shift(d[22],-8),15)
+	descr	Source of data in bin #6
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin5
+	extract	and(shift(d[22],-4),15)
+	descr	Source of data in bin #5
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin4
+	extract	and(d[22],15)
+	descr	Source of data in bin #4
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin3
+	extract	and(shift(d[23],-8),15)
+	descr	Source of data in bin #3
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin2
+	extract	and(shift(d[23],-4),15)
+	descr	Source of data in bin #2
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin zfdefid1_bin1
+	extract	and(d[23],15)
+	descr	Source of data in bin #1
+	format	word_find(v,"no_data,small,large,upper_array,lower_array,sky_small,sky_large,dark,both_upper,both_lower,left_upper,left_lower,right_upper,right_lower,both_left,both_right")
+	units	encoded pattern id  
+begin info_dd
+	extract	and(shift(d[24],-15),1)
+	descr	Direct downlink flag
+	format	word_find(v,"not_direct,direct")
+	units	downlink flag       
+begin info_defl_pairs
+	extract	and(shift(d[24],-4),1023)
+	descr	Number of deflection pairs in a substep pattern
+	format	v
+	units	pairs               
+begin info_repeat
+	extract	and(d[24],15)
+	descr	Largest repeat code
+	format	v
+	units	repeat count        
+begin zfix1_present
+	extract	and(shift(d[25],-15),1)
+	descr	Address code present for address #1
+	format	v==1
+	units	boolean             
+begin zfixdef1
+	extract	and(d[25],4095)
+	descr	Initial X deflection address #1
+	format	v
+	units	deflection steps    
+begin zfiydef1
+	extract	and(d[26],4095)
+	descr	Initial Y deflection address #1
+	format	v
+	units	deflection steps    
+begin zfix2_present
+	extract	and(shift(d[27],-15),1)
+	descr	Address code present for address #2
+	format	v==1
+	units	boolean             
+begin zfixdef2
+	extract	and(d[27],4095)
+	descr	Initial X deflection address #2
+	format	v
+	units	deflection steps    
+begin zfiydef2
+	extract	and(d[28],4095)
+	descr	Initial Y deflection address #2
+	format	v
+	units	deflection steps    
+begin zfix3_present
+	extract	and(shift(d[29],-15),1)
+	descr	Address code present for address #3
+	format	v==1
+	units	boolean             
+begin zfixdef3
+	extract	and(d[29],4095)
+	descr	Initial X deflection address #3
+	format	v
+	units	deflection steps    
+begin zfiydef3
+	extract	and(d[30],4095)
+	descr	Initial Y deflection address #3
+	format	v
+	units	deflection steps    
+begin zfix4_present
+	extract	and(shift(d[31],-15),1)
+	descr	Address code present for address #4
+	format	v==1
+	units	boolean             
+begin zfixdef4
+	extract	and(d[31],4095)
+	descr	Initial X deflection address #4
+	format	v
+	units	deflection steps    
+begin zfiydef4
+	extract	and(d[32],4095)
+	descr	Initial Y deflection address #4
+	format	v
+	units	deflection steps    
+begin zfix5_present
+	extract	and(shift(d[33],-15),1)
+	descr	Address code present for address #5
+	format	v==1
+	units	boolean             
+begin zfixdef5
+	extract	and(d[33],4095)
+	descr	Initial X deflection address #5
+	format	v
+	units	deflection steps    
+begin zfiydef5
+	extract	and(d[34],4095)
+	descr	Initial Y deflection address #5
+	format	v
+	units	deflection steps    
+#======================================================================
+# ====NOTE====
+# The following pertains to the entries zf[xy]def0[1-6].
+#
+# SE01, the GHRS Instrument and User guide, states that bits 0-3 is either
+# a repeat count or spare for these entries, and that bits 4-15 is the
+# 2's complement representation of the deflection offset.  Fine, except that
+# the range of values is supposed to be from -4096 to +4095.  This requieres
+# 13 bits, not the twelve stated.  It is verifiable that bits 0-3 is the
+# repeat code, so something is confused.
+#
+# The adopted solution is to take only the 12 bits and handle that as the 2's 
+# complement number.  However, the cutoff of positive values is assumed 2047
+# instead of 4095.  If you have problems with this entries, this is 
+# the reason.
+#======================================================================
+begin zfxdef01_repeat
+	extract	and(shift(d[35],-12),15)
+	descr	When to accumulate during substep pattern #1
+	format	v
+	units	repeat code         
+begin zfxdef01
+	extract	and(d[35],4095)
+	descr	X substep deflection offset #1
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef01
+	extract	and(d[36],4095)
+	descr	Y substep deflection offset #1
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfxdef02_repeat
+	extract	and(shift(d[37],-12),15)
+	descr	When to accumulate during substep pattern #2
+	format	v
+	units	repeat code         
+begin zfxdef02
+	extract	and(d[37],4095)
+	descr	X substep deflection offset #2
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef02
+	extract	and(d[38],4095)
+	descr	Y substep deflection offset #2
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfxdef03_repeat
+	extract	and(shift(d[39],-12),15)
+	descr	When to accumulate during substep pattern #3
+	format	v
+	units	repeat code         
+begin zfxdef03
+	extract	and(d[39],4095)
+	descr	X substep deflection offset #3
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef03
+	extract	and(d[40],4095)
+	descr	Y substep deflection offset #3
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfxdef04_repeat
+	extract	and(shift(d[41],-12),15)
+	descr	When to accumulate during substep pattern #4
+	format	v
+	units	repeat code         
+begin zfxdef04
+	extract	and(d[41],4095)
+	descr	X substep deflection offset #4
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef04
+	extract	and(d[42],4095)
+	descr	Y substep deflection offset #4
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfxdef05_repeat
+	extract	and(shift(d[43],-12),15)
+	descr	When to accumulate during substep pattern #5
+	format	v
+	units	repeat code         
+begin zfxdef05
+	extract	and(d[43],4095)
+	descr	X substep deflection offset #5
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef05
+	extract	and(d[44],4095)
+	descr	Y substep deflection offset #5
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfxdef06_repeat
+	extract	and(shift(d[45],-12),15)
+	descr	When to accumulate during substep pattern #6
+	format	v
+	units	repeat code         
+begin zfxdef06
+	extract	and(d[45],4095)
+	descr	X substep deflection offset #6
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfydef06
+	extract	and(d[46],4095)
+	descr	Y substep deflection offset #6
+	format	v>2047?v-4096:v
+	units	deflection steps    
+begin zfradul
+	extract	and(d[47],65535)
+	descr	Sum of radiation diodes upper limit, 0-65535
+	format	v
+	units	count               
+begin zfspybf_use
+	extract	and(shift(d[48],-1),1)
+	descr	Flag to indicate spectrum Y-balance offset should be used
+	format	v==1
+	units	flag                
+begin zfspybf_calc
+	extract	and(d[48],1)
+	descr	Flag to indicate spectrum Y-balance offset should be computed
+	format	v==1
+	units	flag                
+begin zfwtfm
+	extract	and(shift(d[50],-15),1)
+	descr	Flag to enter wait after flux measurment routine
+	format	v==1
+	units	flag                
+begin zfwtpp
+	extract	and(shift(d[50],-14),1)
+	descr	Flag to enter wait after post-offset peakup routine
+	format	v==1
+	units	flag                
+begin zfwtof
+	extract	and(shift(d[50],-13),1)
+	descr	Flag to enter wait after target offset routine
+	format	v==1
+	units	flag                
+begin zfwtpu
+	extract	and(shift(d[50],-12),1)
+	descr	Flag to enter wait after target peakup routine
+	format	v==1
+	units	flag                
+begin zfwttl
+	extract	and(shift(d[50],-11),1)
+	descr	Flag to enter wait after target location routine
+	format	v==1
+	units	flag                
+begin zfwtts
+	extract	and(shift(d[50],-10),1)
+	descr	Flag to enter wait after target search routine
+	format	v==1
+	units	flag                
+begin zfwtdc
+	extract	and(shift(d[50],-9),1)
+	descr	Flag to enter wait after deflection calibration
+	format	v==1
+	units	flag                
+begin zfwtin
+	extract	and(shift(d[50],-8),1)
+	descr	Flag to enter wait after initialization
+	format	v==1
+	units	flag                
+begin zfexfm
+	extract	and(shift(d[50],-7),1)
+	descr	Execute flag for flux measurement routine
+	format	v==1
+	units	flag                
+begin zfexpp
+	extract	and(shift(d[50],-6),1)
+	descr	Execute flag for post-offset peakup routine
+	format	v==1
+	units	flag                
+begin zfexof
+	extract	and(shift(d[50],-5),1)
+	descr	Execute flag for target offset routine
+	format	v==1
+	units	flag                
+begin zfexpu
+	extract	and(shift(d[50],-4),1)
+	descr	Execute flag for target peakup routine
+	format	v==1
+	units	flag                
+begin zfextl
+	extract	and(shift(d[50],-3),1)
+	descr	Execute flag for target location routine
+	format	v==1
+	units	flag                
+begin zfexts
+	extract	and(shift(d[50],-2),1)
+	descr	Execute flag for target search routine
+	format	v==1
+	units	flag                
+begin zfexdc
+	extract	and(shift(d[50],-1),1)
+	descr	Execute flag for deflection calibration routine
+	format	v==1
+	units	flag                
+begin zfexin
+	extract	and(d[50],1)
+	descr	Execute flag for initialization routine
+	format	v==1
+	units	flag                
+begin zfapoptl_aper
+	extract	and(shift(d[51],-4),15)
+	descr	Final aperture desired
+	format	word_find(v,"unknown,large,small,sc1,sc2")
+	units	encoded aperture    
+begin zfapoptl_opt_el
+	extract	and(d[51],15)
+	descr	Optical element for acquisition
+	format	word_find(v,"unknown,g140l,mirror_n2,mirror_a1,mirror_a2")
+	units	encoded grating     
+begin zfmodes_locate
+	extract	and(shift(d[52],-4),15)
+	descr	Target locate mode
+	format	word_find (v,"unknown,null_only,map_only,both")
+	units	target locate mode  
+begin zfmodes_search
+	extract	and(d[52],15)
+	descr	Target search mode
+	format	word_find(v,"unknown,star_present,map_until_present,map_full")
+	units	target search mode  
+begin zfpreslo
+	extract	and(d[53],65535)
+	descr	Lower threshold for initial star presence check, 0-65535
+	format	v
+	units	counts              
+begin zfpreshi
+	extract	and(d[54],65535)
+	descr	Upper threshold for initial star presence check, 0-65535
+	format	v
+	units	counts              
+begin zftarofx
+	extract	and(d[55],65535)
+	descr	Offset in X-direction to final target, -32768-32767
+	format	v>32767?v-65536:v
+	units	10**-3 arc-sec      
+begin zftarofy
+	extract	and(d[56],65535)
+	descr	Offset in Y-direction to final target, -32768-32767
+	format	v>32767?v-65536:v
+	units	10**-3 arc-sec      
+begin zfsrchlc_shutter
+	extract	and(shift(d[57],-15),1)
+	descr	Large aperture shutter position after transfer of target star
+	format	word_find(v,"open,close")
+	units	shutter state       
+begin zfsrchlc_order
+	extract	and(shift(d[57],-10),31)
+	descr	Order of spiral in target search, 0-31
+	format	v
+	units	dwell scans         
+begin zfsrchlc_n_focus
+	extract	and(shift(d[57],-9),1)
+	descr	Number of focus diodes for field map
+	format	word_find(v,"both,top_only")
+	units	encoded focus diode 
+begin zfsrchlc_option
+	extract	and(shift(d[57],-8),1)
+	descr	Focus diode option flag
+	format	word_find(v,"right,left")
+	units	focus diode option  
+begin zfsrchlc_y_inc
+	extract	and(shift(d[57],-4),15)
+	descr	Y increment for field map, 1-15
+	format	v
+	units	deflection steps    
+begin zfsrchlc_x_inc
+	extract	and(d[57],15)
+	descr	X increment for field map, 1-15
+	format	v
+	units	deflection steps    
+begin zfmapsiz_sample
+	extract	and(shift(d[58],-8),255)
+	descr	Map size, number of samples, 1-255
+	format	v
+	units	samples             
+begin zfmapsiz_line
+	extract	and(d[58],255)
+	descr	Map size, number of lines, 1-255
+	format	v
+	units	lines               
+begin zfxmapc
+	extract	and(d[59],4095)
+	descr	X-deflection for center of map
+	format	v-2048
+	units	deflection steps    
+begin zfymapc
+	extract	and(d[60],4095)
+	descr	Y-deflection for center of map
+	format	v-2048
+	units	deflection steps    
+begin packet_format
+	extract	and(shift(d[65],-8),255)
+	descr	Packet format code
+	format	v
+	units	packet format code  
+begin zfcdefx1
+	extract	and(d[66],65535)
+	descr	X-deflection offset for SC1
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zfcdefy1
+	extract	and(d[67],65535)
+	descr	Y-deflection offset for SC1
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zfcdefx2
+	extract	and(d[68],65535)
+	descr	X-deflection offset for SC2
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zfcdefy2
+	extract	and(d[69],65535)
+	descr	Y-deflection offset for SC2
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zfspybal
+	extract	and(d[70],65535)
+	descr	Spectrum Y-balance offset
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zftarlok
+	extract	and(d[71],32767)
+	descr	DATACQ target-locked take-data flag counter
+	format	v
+	units	counter             
+begin zfobsnum_source
+	extract	and(shift(d[72],-15),1)
+	descr	Observation source
+	format	word_find(v,"ost,gc/ost")
+	units	encoded source      
+begin zfobsnum
+	extract	and(d[72],32767)
+	descr	Observation number (2s complement) (negative - GC/OST)
+	format	v>32767?v-65536:v
+	units	observation number  
+begin zfxdcal
+	extract	and(d[73],65535)
+	descr	X-component of null deflection calibration correction
+	format	v
+	units	defl steps * 50     
+begin zfydcal
+	extract	and(d[74],65535)
+	descr	Y-component of null deflection calibration correction
+	format	v
+	units	defl steps * 50     
+begin zffincod
+	extract	and(d[75],65535)
+	descr	Code telling why GHRS log dump occurred
+	format	v
+	units	finish code         
+begin zflapx
+	extract	and(d[76],65535)
+	descr	X-component of the location of target in large aperture before centering
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zflapy
+	extract	and(d[77],65535)
+	descr	Y-component of the location of target in large aperture before centering
+	format	v>32767?v-65536:v
+	units	deflection steps    
+begin zffluxm
+	extract	and(d[78],65535)
+	descr	Flux measurement taken at end of target acquisition process
+	format	v
+	units	counts              
+begin zfxdcalp
+	extract	and(d[79],65535)
+	descr	Proportional (plate scale) X-deflection calibration correction
+	format	v
+	units	defl steps * 500    
+begin zfydcalp
+	extract	and(d[80],65535)
+	descr	Proportional (plate scale) Y-deflection calibration correction
+	format	v
+	units	defl steps * 500    

@@ -1,0 +1,3 @@
+input,f,a,,,,"File of the PDB SAA Vertex Description File"
+output,f,a,"saa.tab",,,"Table representation of the SAA PDB"
+model,i,h,INDEF,0,,"Which model to update in the table"

@@ -1,0 +1,35 @@
+Menu for the package 'stsdas.hst_calib.stis':
+ 
+     basic2d - Performs two dimensional image reduction on STIS data.
+     calstis - Process STIS images (imaging and spectrum) through the
+               different steps of the STIS Pipeline calibration.
+     ctestis - Correct STIS imaging data for CTE loss.
+    doppinfo - Print information about the Doppler shift during an exposure.
+     echplot - Generate and plot IGI scripts for extracted spectral orders.
+   echscript - Generate an IGI script for selected extracted spectral orders.
+    infostis - Print information about STIS FITS files.
+      inttag - Convert an events table of TIMETAG into an integrated
+               ACCUM image.
+   ocrreject - Generate a STIS CCD image (images and spectra) free of
+               cosmic rays from multiple exposures of the same file.
+  odelaytime - Correct for light delay time for STIS timetag data.
+      tastis - Analyze STIS target acquisition images.
+     wavecal - Update science header with MSM offset value from wavecal.
+         x1d - Extract a collection of 1-D spectra from a calibrated 2-D
+               ACCUM image.
+     sc2dref - Add to the file header all required keywords necessary to
+               support the SC2DCORR 1-D extraction algorithm.
+         x2d - Perform 2-D rectification of calibrated STIS images.
+  normspflat - Normalize STIS CCD fringe flat.
+    prepspec - Prepare a spectrum for subsequent de-fringing procedures.
+mkfringeflat - Matching fringes in STIS fringe flat to those in science data.
+     mktrace - Refine a trace table
+    defringe - Correct a G750L or G750M spectrum for fringing.
+     daydark - Update current dark image with hot pixels from a daily dark.
+    ovac2air - Convert wavelengths from vacuum to air.
+    sdqflags - Print sum of data quality flags.
+   stisnoise - Remove fixed pattern noise from STIS images.
+      trxyeq - Translate distorted 2-D pixel coordinates to RA and Dec.
+      treqxy - Translate RA and Dec to distorted 2-D pixel coordinates.
+      ucrpix - Update reference pixel, based on coordinates at one point.
+        wx2d - Resample in the cross-dispersion direction using wavelets

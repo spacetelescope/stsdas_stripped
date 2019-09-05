@@ -1,0 +1,4 @@
+input, f, a, "", , , 	Input WFPC2 image(s)
+update, b, a, yes, , , 	Update the group parameters?
+
+mode, s, h, "al"

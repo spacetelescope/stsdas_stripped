@@ -1,0 +1,252 @@
+.help tprecess Jan93 stsdas.toolbox.tools
+.ih
+NAME
+precess -- Precess images, tables, or lists of coordinates.
+.ih
+USAGE
+precess input output fromdate todate
+.ih
+DESCRIPTION
+The task will precess one of the following: 1) the coordinate system 
+of images, 2) the
+right ascension and declination columns of tables, or 3) a list of right
+ascension and declination values from text files. 
+The IAU (1976) precession constants are used
+(see Lieske, Jay H., Astron. Astrophys., 73, 282-284 (1979)).
+
+The following standards apply to all types of precession.
+Dates can be entered either in years with a fractional component or as a Julian
+day number.
+Any date value that is greater than 3000 will be considered a Julian day number.
+A year number can be prefixed with either 'j', 'J', 'b' or 'B',
+where the 'J' stands for a Julian year and the 'B' for a Besselian year.
+A year number without a prefix is assumed to be a Julian year.
+The only exception to these rules is the 'EQUINOX' header keyword in an image.
+The keyword value is normally a floating-point number
+rather than a character string and therefore does not have a character prefix.
+If the value of 'EQUINOX' is exactly 1950.0, then B1950 is assumed.
+This can be overridden with the 'fromdate' parameter.
+Actually, the 'EQUINOX' keyword value is gotten as a character string,
+and it is permitted to have a prefix.
+This is because the 'EQUINOX' keyword in HST images is in fact
+a character string equal to "J2000".
+When the 'todate' is written to the output header, however,
+no prefix will be included.
+
+If text files are used, then
+each line must contain the right ascension and declination in that order.
+If the parameters 'fromdate' or 'todate' are undefined ("")
+then they must be given following the RA and DEC.
+The input values for RA & DEC may be in sexagesimal notation.
+Output will be in sexagesimal notation if
+the 'hms_format' parameter is set to yes.
+The number of digits of precision that will be printed is determined by
+the precision of the input RA & DEC,
+except that the minimum is four decimals.
+Blank lines and lines beginning with '#' are ignored.
+
+Image precession is done by modifying the parameters that describe
+the transformation between pixel coordinates and RA & DEC.
+Precession shifts and rotates the coordinate system,
+so this task precesses the coordinates (CRVAL1 & CRVAL2) at the reference pixel
+and rotates the CD matrix by the appropriate amount.
+If the 'fromdate' parameter is undefined (i.e., "")
+then the 'EQUINOX' keyword of the image is used as the 'fromdate'.
+If 'EQUINOX' is not found then 'EPOCH' will be used.
+An error will occur if 'fromdate' is undefined and the image contains
+neither 'EQUINOX' nor 'EPOCH' keyword.
+
+Certain limitation checks are made before the image is precessed.
+The first two axes of the image must be either RA or DEC,
+as specified by the 'CTYPE1' & 'CTYPE2' keywords.
+The task will not handle RA or DEC being the third axis.
+Images that include either the north or south pole are processed correctly, 
+however, if the reference pixel (either before or after precession) is at a 
+pole, the image orientation will be poorly defined and the image rejected.
+A pixel is considered too close to the pole if "cos(DEC) <= ~1e-15".
+If your image is rejected because the reference pixel is too close to a pole, 
+you can change the reference coordinate slightly. 
+
+Images with Aitoff or Mercator projections will not be precessed.
+MWCS requires zero declination for the reference pixel for these projections,
+but precession changes the declination of the reference pixel.
+
+If an input file is a table, then the RA and DEC in a pair of columns
+in the table will be precessed.
+The column names for RA, DEC, 'fromdate' and 'todate' are gotten from the
+parameters 'namcol1', 'namcol2', 'namcol3', and 'namcol4', respectively.
+If the 'fromdate' or 'todate' parameters are undefined (i.e., ""), the dates 
+must come from table columns.
+
+If an output table is created, it will differ from the input table only in that 
+RA and DEC coordinates will have been precessed. 
+If the input table is modified in-place, new columns will be created by
+prepending "p_" to the names of the existing RA and DEC columns.
+The units will be taken from the column units (case insensitive) if they
+can be interpreted; otherwise, the 'ra_units' parameter is used to specify the 
+units.
+Because this is true of each column, you should make sure that column units 
+are defined for both RA and DEC, or that both are undefined and the 'ra_units' 
+parameter is correct. 
+If the column units for RA begin with "hour" or "hr",
+units of hours will be assumed.
+Units of degrees are specified by column units beginning with "deg",
+and radians are specified by column units beginning with "rad".
+In contrast to text I/O,
+the units for RA and for DEC can be quite different,
+e.g., radians for RA and degrees for DEC.
+.ih
+PARAMETERS
+.ls input [file name template]
+Name(s) of file to be precessed.
+The task will determine whether each input file is
+an image, table, or text file.
+Wild cards and file lists are accepted, e.g., "*.tab" or "@file.lst".
+.le
+.ls output [file name template]
+Output file name(s).
+
+For text files an output file name must be specified.
+
+If an output image or table name is the same as the input name,
+or if 'output' is null or blank,
+the input image or table will be modified in-place.
+
+For a table that is modified in-place,
+new column names will be created
+for the precessed right ascension and declination
+be prepending "p_" to the input column names.
+
+Note that IRAF can build new file names from existing file names.
+For example, if the 'input' parameter was passed a wildcard such as 
+"*.tab" to process all tables, the 'output' parameter can be set to 
+"new_//*.tab" to prefix all of the output files with the string "new_".
+This is described in more detail by typing "help files". 
+.le
+.ls fromdate = "b1950" [string]
+This is the master date of the input coordinates to precess;
+it is independent of whether the image contains
+an 'EQUINOX' keyword, or the table or text file contains a 'fromdate' column.
+The 'EQUINOX' keyword or 'fromdate' column is used
+only if 'fromdate' is not specified.
+
+This value will be used for all files specified by 'input'.
+.le
+.ls todate = "j2000" [string]
+This is the date to which the coordinates should be precessed.
+It works like 'fromdate'.
+For an image, however, 'todate' must be specified.
+That is, there is no header keyword (like 'EQUINOX')
+that is used if 'todate' is not specified.
+.le
+.ls (ra_units = "hours") [string, allowed values: hours | degrees | radians]
+
+If an ASCII text file is used as input,
+this parameter defines the units used for right ascension,
+and implies units for declination.
+If hours or degrees are used for right ascension,
+the task assumes declination is in degrees.
+If radians are used for RA, then they are assumed for DEC as well.
+
+Units used in processing tables are taken from the columns,
+unless either RA or DEC column units is null or cannot be interpreted,
+in which case, this parameter is used.
+
+All units are in degrees for images.
+.le
+.ls (hms_format = yes) [boolean]
+Use HH:MM:SS.d format for ASCII output?
+
+If hms_format = yes, the output right ascension and declination will
+be in HH:MM:SS.d, DD:MM:SS.d format
+(or DD:MM:SS.d, DD:MM:SS.d if ra_units="degrees").
+You will get garbage if you set hms_format = yes and ra_units = "radians".
+.le
+.ls (namcol1 = "ra") [string]
+Column name for right ascension.
+.le
+.ls (namcol2 = "dec") [string]
+Column name for declination.
+.le
+.ls (namcol3 = "fjy") [string]
+Column name for the date from which to precess.
+.le
+.ls (namcol4 = "tjy") [string]
+Column name for the date to which to precess.
+.le
+.ls (verbose = yes) [boolean]
+The input and output file names will be printed to the standard output
+if 'verbose' is set to yes.
+.le
+.ih
+EXAMPLES
+1.  Precess coordinates typed in from the keyboard from b1900 to b1950,
+displaying the results on the terminal screen.
+The output values are in HH:MM:SS.d, DD:MM:SS.d format by default.
+Alternate lines of the example are printed by the user and by the task.
+
+.nf
+	to> tprecess STDIN STDOUT b1900 b1950
+	         --RA--        --DEC--
+	0   0
+	      0:02:33.7          0:16:42
+	0   0.0000000
+	   0:02:33.6760      0:16:42.433
+	0.000000000   90
+	 12:01:16.84413    89:43:17.5513
+	0.000000000  -90
+	  0:01:16.84413   -89:43:17.5513
+	18.25   37:12:05.4
+	    18:16:43.05       37:13:14.7
+	18:15   37:12:05.4
+	    18:16:43.05       37:13:14.7
+	3:18:06.423   42:57:57.19
+	    3:21:27.893      43:08:42.27
+.fi
+
+2.  Precess columns "ra" and "dec" in a table "bsc.tab" from b1900 to j2000.
+Suppose that we know that the units for those columns are not given
+in the table, so we specify the units explicitly.
+
+.nf
+	to> tprecess bsc.tab bsc2000.tab b1900 j2000 ra_units=degrees
+.fi
+
+3.  Precess the coordinate parameters of an image in-place from j2000 to b1950.
+'images.hedit' is used to display the coordinate parameters before and
+after precessing.
+
+.nf
+	im> hedit x0dw0503t.d0h crval*,cd* .
+	x0dw0503t.d0h,CRVAL1 = 187.706042553463
+	x0dw0503t.d0h,CRVAL2 = 12.391055609997
+	x0dw0503t.d0h,CD1_1 = -4.594922E-6
+	x0dw0503t.d0h,CD1_2 = -4.173452E-6
+	x0dw0503t.d0h,CD2_1 = -4.125204E-6
+	x0dw0503t.d0h,CD2_2 = 4.648664E-6
+
+	to> tprecess x0dw0503t.d0h "" j2000 b1950
+
+	im> hedit x0dw0503t.d0h crval*,cd* .
+	x0dw0503t.d0h,CRVAL1 = 187.073476992675
+	x0dw0503t.d0h,CRVAL2 = 12.6671491006909
+	x0dw0503t.d0h,CD1_1 = -4.597562E-6
+	x0dw0503t.d0h,CD1_2 = -4.170475E-6
+	x0dw0503t.d0h,CD2_1 = -4.122262E-6
+	x0dw0503t.d0h,CD2_2 = 4.651335E-6
+.fi
+
+4.  Precess all four groups of w4.hhh, putting the results in t4.hhh.
+
+.nf
+	to> tprecess  w4[1],w4[2],w4[3],w4[4]  t4[1/4],t4[2],t4[3],t4[4]
+.fi
+.ih
+BUGS
+A date entered with trailing blanks is considered uninterpretable.  For 
+instance the string "j2000 " is not interpretable because of the trailing
+blank.
+.ih
+SEE ALSO
+precess
+.endhelp

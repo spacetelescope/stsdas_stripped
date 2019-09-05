@@ -1,0 +1,4 @@
+input,f,a,,,,"> input image(s)"
+pformat,s,h,"g9.3",,,"> format for printing values"
+pagewidth,i,h,132,9,,"> page width if output is redirected"
+mode,s,h,"al"

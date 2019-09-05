@@ -1,0 +1,11 @@
+# Update the rbinary application code in the imgtools package library.
+# Author:  Phil Hodge, 5-Jul-1989
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	rbinary.x 	 	<imhdr.h> <mach.h>
+	;

@@ -1,0 +1,61 @@
+.help galprofpars Apr90 stsdas.analysis.fitting
+.ih
+NAME
+galprofpars -- Edit parameters for galaxy profile function fitting.
+.ih
+USAGE
+galprofpars
+.ih
+PARAMETERS
+.ls (se = INDEF) [real]
+Initial guess for bulge brightness, in linear intensity scale (leave as 
+0. for pure disk profile). If INDEF, the task will set it to the 
+maximum value in the dependent variable.
+.le
+.ls (re = INDEF) [real, min=0.]
+Initial guess for bulge radius. If INDEF, the task will set it to 1/50
+of the independent variable's range of values.
+.le
+.ls (s0 = INDEF) [real]
+Initial guess for disk brightness, in linear intensity scale (leave as 
+0. for pure bulge profile). If INDEF, the task will set it to the 
+maximum value in the dependent variable.
+.le
+.ls (r0 = INDEF) [real, min=0.]
+Initial guess for disk radius. If INDEF, the task will set it to 1/50
+of the independent variable's range of values.
+.le
+.ls (r1 = 0.) [real, min=0.]
+Initial guess for disk "hole" radius. If INDEF, the task will set it to
+0.0.
+.le
+.ls (backgr = 0.) [real]
+Initial guess for background level. If INDEF, the task will set it to
+minimum value in the dependent variable.
+.le
+.ls (vse = yes) [boolean]
+Vary bulge brightness?
+.le
+.ls (vre = yes) [boolean]
+Vary bulge radius?
+.le
+.ls (vs0 = yes) [boolean]
+Vary disk brightness?
+.le
+.ls (vr0 = yes) [boolean]
+Vary disk radius?
+.le
+.ls (vr1 = no) [boolean]
+Vary "hole" radius?
+.le
+.ls (vbackgr = no) [boolean]
+Vary background level?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+nfit1d, funcform
+.endhelp

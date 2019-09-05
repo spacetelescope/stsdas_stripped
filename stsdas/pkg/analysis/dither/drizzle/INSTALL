@@ -1,0 +1,82 @@
+Installation Instructions for DRIZZLE V1.2
+
+Richard Hook (ST-ECF, ESO)
+Andrew Fruchter (STScI)
+
+Original version September 1996
+Revised for V1.1, February and May 1997
+V1.2 release, March 1998
+
+This file contains instructions for compiling, linking and installing
+the F77/VOS IRAF tasks "drizzle" which implemented the drizzling
+method for the reconstruction of dithered images and "blot" which is
+the reverse of drizzling 
+
+It is assumed that the distribution compressed tar file has been
+unpacked and that the resulting files are in the current directory.
+The following should be present:
+
+README                  Brief introduction
+RELEASE_NOTES_V1.1      Release notes for V1.1
+RELEASE_NOTES_V1.2      Release notes for V1.2
+INSTALL                 This file, installation instructions
+compile_drizzle         A single line script for compilation and linking
+drizzle.f               The F77 source code
+drizzle.hlp             An IRAF style help file for drizzle
+drizzle.hlp-txt         An IRAF style help file for drizzle (text version)
+drizzle.par             The IRAF parameter file for the drizzle task
+compile_blot            A single line script for compilation and linking
+blot.f                  The F77 source code
+blot.hlp                An IRAF style help file for blot
+blot.hlp-txt            An IRAF style help file for blot (text version)
+blot.par                The IRAF parameter file for the blot task
+drutil.f                Utility routines used by DRIZZLE & BLOT
+x_drizzle.x             A single line of SPP needed for linking drizzle
+x_blot.x                A single line of SPP needed for linking blot
+
+there will also be a directory called "coeffs" which should contain
+four text files of geometric distortion coefficients appropriate for
+the WFPC2 and STIS on the HST and a README file.
+
+Before the tasks can be built the files compile_drizzle and compile_blot
+should be edited so that the correct location of the libiraf77.a and 
+libiminterp.a files are specified. The first of these is normally in the 
+"lib" directory of the local STSDAS installation and the latter in the 
+standard IRAF libraries directory.  If they is not present then the tasks
+cannot be installed. If in doubt consult your local IRAF manager. Ensure that 
+compile_drizzle and compile_blot are executable and then run them by typing 
+their names. If there are any error messages then there is most likely a 
+problem with either your installation of IRAF or the local F77 compiler and 
+your local system administrator should be consulted.
+
+It is recommended that these tasks should be installed under IRAF 2.11.1
+but other versions should also work.
+
+Once "drizzle.e" and "blot.e" have been created it is necessary to install 
+the tasks in IRAF. This is done using the following IRAF cl commands:
+
+set drizzle=<the location of the drizzle and blot files>
+task drizzle = drizzle$drizzle.e
+task blot = drizzle$blot.e
+
+These may be put into an IRAF startup file (eg, loginuser.cl) so that
+they do not need to be typed each time IRAF is run.
+
+When IRAF is started again the drizzle and blot tasks should be 
+available and may be tested.
+
+The help files may be displayed within IRAF using the commands:
+
+help drizzle$drizzle.hlp fi+
+help drizzle$blot.hlp fi+
+
+The outputs of these commands are supplied as drizzle.hlp-txt and 
+blot.hlp-txt.
+
+Unfortunately we do not have the resources to provide full support. However, 
+we are keen to help you make best use of these tasks to process your data 
+and will be willing to answer queries and bug-reports as best we can. 
+Drizzle and Blot are now also available within the "dither" package
+in STSDAS.
+
+rhook@eso.org,fruchter@stsci.edu 2nd March 1997     

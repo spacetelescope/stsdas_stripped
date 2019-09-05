@@ -1,0 +1,8 @@
+input1,f,a,,,,file containing independent variable values
+input2,f,a,,,,fit table
+output,f,a,,,,output file (or output column if input1 is a table)
+row,i,a,1,1,,row to use from fit table
+column,s,h,,,,column name for independent variable
+xandy,b,h,yes,,,(not used)
+version,s,h,"16Sep97",,,>date of installation
+mode,s,h,al

@@ -1,0 +1,37 @@
+# Make the odelaytime package
+
+$call relink
+$exit
+
+update:
+        $call   relink
+        $call   install
+        ;
+
+relink:
+        $update   odelaytime.a
+        $call   link
+        ;
+
+ 
+install:
+        $move xx_odelaytime.e stsdasbin$x_odelaytime.e
+        ;
+ 
+link:
+        $omake  x_odelaytime.x
+        $link   x_odelaytime.o odelaytime.a \
+			-ltbtables -o xx_odelaytime.e
+        ;
+
+odelaytime.a:
+	odelaytime.x 
+	odelay_do.x		<time.h> <tbset.h> delaytime.h
+	odelay_get.x		delaytime.h
+	geo_delay.x		delaytime.h
+	get_ephem.x		delaytime.h <tbset.h>
+	intrp_state.x
+	object_pos.x		<math.h> delaytime.h
+	relativ.x
+	vpolin.f
+	;

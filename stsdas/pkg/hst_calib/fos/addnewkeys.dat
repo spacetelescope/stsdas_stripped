@@ -1,0 +1,2 @@
+SCT_VAL real 0. " scattered light correction value"
+SCT_ERR real 0. " scattered light correction error"

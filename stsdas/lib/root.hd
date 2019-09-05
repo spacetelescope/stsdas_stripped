@@ -1,0 +1,5 @@
+# Root help directory for the STSDAS packages.  This dummy package is necessary
+# in order to have `stsdas' appear as a module in some package, so that the user
+# can type "help stsdas" (with the `stsdas' given as a task).
+
+_stsdas		pkg = stsdas$lib/rootstsdas.hd

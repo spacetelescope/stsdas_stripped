@@ -1,0 +1,51 @@
+#################################################################################
+# Update the COMBINE application code in the wfpc package library.		#
+#										#
+#	Initial version:	1/91 by RAShaw					#
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	$call generic 
+	@generic		# Update wfpc.a in ./generic
+
+	logsum.x	<imhdr.h> <imset.h> <time.h>
+	scale.x		<imhdr.h> <imset.h> <ctype.h> <time.h> "wpdef.h"
+	subsectn.x	<ctype.h>
+	t_combine.x	<imhdr.h> <error.h> <syserr.h> "wpdef.h"
+	;
+
+# Generate source from generic code, if needed.
+generic:
+	$set	GEN = "$$generic -k"
+
+        $ifolder (generic/asigclip.x, asigclip.gx)
+	    $(GEN) asigclip.gx -o generic/asigclip.x $endif
+        $ifolder (generic/average.x, average.gx)
+	    $(GEN) average.gx -o generic/average.x $endif
+        $ifolder (generic/crreject.x, crreject.gx)
+	    $(GEN) crreject.gx -o generic/crreject.x $endif
+        $ifolder (generic/maxrej.x, maxrej.gx)
+	    $(GEN) maxrej.gx -o generic/maxrej.x $endif
+        $ifolder (generic/median.x, median.gx)
+	    $(GEN) median.gx -o generic/median.x $endif
+        $ifolder (generic/minrej.x, minrej.gx)
+	    $(GEN) minrej.gx -o generic/minrej.x $endif
+        $ifolder (generic/mmrej.x, mmrej.gx)
+	    $(GEN) mmrej.gx -o generic/mmrej.x $endif
+        $ifolder (generic/mode.x, mode.gx)
+	    $(GEN) mode.gx -o generic/mode.x $endif
+        $ifolder (generic/sigclip.x, sigclip.gx)
+	    $(GEN) sigclip.gx -o generic/sigclip.x $endif
+        $ifolder (generic/sum.x, sum.gx)
+	    $(GEN) sum.gx -o generic/sum.x $endif
+        $ifolder (generic/thresh.x, thresh.gx)
+	    $(GEN) thresh.gx -o generic/thresh.x $endif
+        $ifolder (generic/combine.x, combine.gx)
+	    $(GEN) combine.gx -o generic/combine.x $endif
+        $ifolder (generic/sigma.x, sigma.gx)
+	    $(GEN) sigma.gx -o generic/sigma.x $endif
+	;

@@ -1,0 +1,12 @@
+input, f, a, "", , , 		Input images
+masks, f, a, "", , , 		Input data quality files
+tables, f, a, "", , , 		Input table
+rej_thresh, r, a, 0.1, 0., ,	Rejection threshold
+fix_thresh, r, a, 0.003, 0., ,	Fixing threshold
+var_thresh, r, a, 0.003, 0., ,	Variance threshold
+
+fix_dqval, i, h, 1024, 0, ,	Data quality value for fixed pixels
+rej_val, r, h, INDEF, , ,	Pixel value for rejected pixels
+verbose, b, h, yes, , ,		Print out verbose messages?
+
+mode, s, h, "al"

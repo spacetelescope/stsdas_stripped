@@ -1,0 +1,16 @@
+gsctab,f,a,"",,,Guide Star Catalog table name
+image,f,a,"",,,Image name
+boxsize,i,h,11,3,,Box size to search for star center
+valid,i,h,0,-1,1,Initialize validity of all stars?
+xcrpix,r,h,,,,X Reference pixel
+ycrpix,r,h,,,,Y Reference pixel
+deccen,r,h,,,,Dec at reference
+racen,r,h,,,,Ra at reference
+xpxsize,r,h,,,,X Pixel size in mirons
+ypxsize,r,h,,,,Y Pixel size in mirons
+pltscl,r,h,,,,Plate scale in arcsec/mm
+solout,b,h,no,,,Write coordinates for full pltsol?
+coord,*imcur,h,,,,Image cursor
+clist,f,h,tmp$curlist,,,Cursor list file
+fcoord,*imcur,h,tmp$curlist,,,Image cursor
+mode,s,h,"a"

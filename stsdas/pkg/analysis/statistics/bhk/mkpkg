@@ -1,0 +1,18 @@
+# Update the bhk application code in the statistics package library
+# Author: BALL, 30-DEC-1987
+# Revised by BSIMON, 18-NOV-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	bhk.f          		
+	bhkdata.x	<tbset.h>	
+	bhkprint.x
+	bhktitle.x	<tbset.h>
+	cens.f         		
+	coeff.f        		
+	t_bhk.x
+	;

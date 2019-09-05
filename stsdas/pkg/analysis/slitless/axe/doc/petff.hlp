@@ -1,0 +1,76 @@
+.help petff Jun2004 axe
+.ih
+NAME
+petff -- flat field the contents of a Pixel Extraction Table (PET)
+.ih
+USAGE
+.nf
+petff grism config
+.fi
+.ih
+PARAMETERS
+.le
+.ls grism
+Name of grism/prism image.
+.le
+.ls config
+Filename of grism/prism extraction configuration file.
+.le
+.ls (back = no) [boolean]
+Specify whether or not to apply the flat-field (FF) to the 
+background Pixel Extraction Table (BPET).
+.le
+.ls (ffname = "") [string]
+Name to use for the output flat field cube file instead of the default.
+.le
+.ih
+DESCRIPTION
+This tasks uses a flat-field calibration file to flat-field the content of 
+a Pixel Extraction Table (PET). The wavelength of a pixel is used in 
+conjunction with a flat-fielding data cube containing the coefficents of a 
+polynomial which can be used to compute at each pixel (x,y): 
+.nf
+
+        FF(x,y,lambda) = a_0(x,y) + a_1(x,y)*lambda + .. +a_i * lambda^i
+
+.fi 
+The coefficients a_0(x,y) are stored in the first data extention of the 
+flat-field cube, a_1(x,y) in the second, etc... The name of the flat-field 
+cube is read from the aXe configuration file.
+
+Note that that flat-fielding should be applied to both the OPET and the BPET 
+separately so that, when subtracted, the information contained in the BPET 
+has been flat-fielded with the same flat-field as the OPET (which contains 
+counts of objects plus counts from the background).
+.ih
+FILE NAMING CONVENTION
+aXe tasks use default names for input and output files based on the given
+name of the "grism" image. For this task the default input PET would be
+called <grism-rootname>_<science extension>.PET.fits and will be flat-fielded
+"in place" using the flat field cube defined in the main configuration file.
+.ih
+EXAMPLES
+.nf
+
+        ax> petff test_grism_1.fits SLIM.conf.test.0
+
+.fi
+Perform in-place flat-fielding of the PET associated with the grism data
+file test_grism_1.fits. Use configuration parameters from the file
+SLIM.conf.test.0.
+.ih
+TIME REQUIREMENTS
+.ih
+BUGS
+.ih
+REFERENCES
+Refer to manual for more detailed information about using this aXe task:
+.nf
+
+http://www.stecf.org/software/slitless_software/axe/
+
+.fi
+.ih
+SEE ALSO
+petcont,pet2spc
+.endhelp

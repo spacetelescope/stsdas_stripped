@@ -1,0 +1,5 @@
+input,f,a,,,,"Input SHP image list"
+output,f,a,,,,"Output table"
+ext,s,h,"c1h",,,"Default extension for input images"
+keywords,s,h,"",,,"Header keyword list"
+Version,s,h,"1Sep95",,,"Date of Installation"

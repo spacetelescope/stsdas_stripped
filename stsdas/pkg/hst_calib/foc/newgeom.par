@@ -1,0 +1,9 @@
+input,s,a,"",,,"image to be geometrically corrected"
+output,s,a,"",,,"output (corrected) image"
+geo_file,s,a,"",,,"geo correction file"
+defval,r,h,0.,,,"default value for output image"
+coord_trans,s,h,"set_values","set_values|apply_distortion|none",,\
+"how to modify coordinate parameters"
+box_check,b,h,no,,,"check computation of box overlap?"
+verbose,b,h,yes,,,"print percent done?"
+mode,s,h,"al"

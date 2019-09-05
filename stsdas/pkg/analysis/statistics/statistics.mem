@@ -1,0 +1,2046 @@
+33 entries
+                         STATISTICS Software Notebook
+                         ----------------------------
+===============================================================================
+Entry #1    scivax::hanisch   08/26/87  possible project
+
+
+Dave,
+
+Now that Samy has left us (at least unofficially) I need someone to pick up
+a portion of the projects I had expected him to do.  Someone will need to
+maintain the Kolmogorov-Smirnov statistics task.  More importantly, Eric
+Feigelson and Takashi Isobe have developed a set of routines for dealing
+with data sets having known intrinsic errors and upper/lower limits.  Doing
+statistics with such data sets (which are typical of astronomy) is extremely
+important and, so far, has not been done properly by most observers.  Thus,
+we have the chance to build into SDAS some nice stats routines that no one
+else has.
+
+The point is that Takashi will be coming to visit here in late September.
+I need someone to work with him for a day or two in order to understand his
+code (it is all F77 and has already been run successfully on a variety of
+machines, so it should be pretty clean) and understand how to build an IRAFish
+shell around it.  The basic I/O will be tables, but it may make sense to work
+from simple ASCII lists as well.  I have asked them to send us a tape and
+documentation now so that we'll have some idea of questions to ask, etc., 
+before Takashi actually shows up.
+
+Would you be willing to take this on?  Phil is tremendously overloaded, so
+is Chris, and you seemed to have enjoyed the cooperative project with Chris
+Blades and Jon Wheatley.  If you're up for it, I will see that you get this
+tape and related documentation as soon as it arrives.
+
+Bob
+
+===============================================================================
+Entry #2    scivax::hanisch   09/09/87  takashi isobe
+
+
+Takashi just called from Penn State.  (He's the guy with the non-parametric
+statistics routines.)  I've asked him to postpone his visit until Oct 1/2
+to avoid downtime on the cluster.  Is this ok with you?
+
+Bob
+
+===============================================================================
+Entry #3    kepler::ball      09/09/87  RE: takashi isobe
+
+
+Yes.  I need to start studying the material you gave me so a few weeks from
+now would be fine.
+
+Dave
+
+===============================================================================
+Entry #4    ti@jabba          10/07/87  Test
+
+
+From: ti@jabba.psu.edu
+
+
+ Hello, Dave. I'm now writing the Electronic mail that you want to use between
+us. In fact, I need several subroutines that we made, since I found the 
+subroutines on the tape are old ones. Please send next subroutines :
+  
+       aarray  arisk  cox  lrank  pwlcxn  wlcxn  ftest  twost
+
+       grdprb  bin  twokm
+
+ Return address is ti@jabba.psu.edu; if jabba is not in your file, try
+128.118.30.150. If all else fails, try t1i@psuvm.psu.edu.
+
+                                         Takashi Isobe
+
+PS    This mail is second trial. Former one did not make to STSci...
+
+===============================================================================
+Entry #5    scivax::ball      10/09/87  Survival Routines
+
+
+Hello, Takashi.
+     Glad you found a way to send us mail!  I'm not sure what happened with
+the routines you mentioned since we changed the main file but I am sending
+them to you under separate messages(a different one for each) because you're
+less likely to lose it if there should be a error.  Just to verify which ones
+you need here is your list:  
+
+	aarray	arisk	cox	lrank	pwlcxn	wlcxn
+	ftest	twost	grdprb	bin	twokm
+
+Please let me know if you need others or if this is not correct.
+
+Dave
+
+===============================================================================
+Entry #6    scivax::ball      10/12/87  Eleven Routines Mailed
+
+
+Takashi,
+
+     I have just sent all the routines you asked for(see the list I gave in
+my first two messages).  If I don't hear from you by email by tommorrow I will
+call you on the phone to verify that you have received the routines.  Hope
+everything is okay.
+
+Dave
+
+===============================================================================
+Entry #7    scivax::ball      10/12/87  Network Address
+
+
+Takashi,
+
+    I checked with our computer staff about your email address.  They say that
+you are not in the network information center address tables(and we just this
+morning got a new one) so maybe even if you are getting mail from me you should
+talk to your local network experts.  Our staff did add your address to our
+local copy of the tables as jabba.psu.edu is 128.118.30.150.  
+
+Dave
+
+===============================================================================
+Entry #8    scivax::ball      10/15/87  Survival Routines
+
+
+Hello, Takashi.
+     Okay, let's try this again!  I am sending the subroutines
+to you under separate messages(a different one for each) because you're
+less likely to lose it if there should be a error.  Just to verify which ones
+you need here is your list:  
+
+	aarray	arisk	cox	lrank	pwlcxn	wlcxn
+	ftest	twost	grdprb	bin	twokm
+
+Please let me know if you need others or if this is not correct.
+
+Dave
+
+P.S. Let me know as soon as you get this one please then when you have received
+all of them as well.  Thanks.
+
+===============================================================================
+Entry #9    scivax::ball      10/15/87  Takashi's network address
+
+
+FYI:
+   My first attempt to send email to Takashi Isobe at Penn State with
+most recent copies of eleven of the ASURV package routines failed because
+the network was down at his end.  Instead of using the address 
+<ti@128.118.30.150> I have tried <t1i%psuvm.bitnet@wiscvm.wisc.edu>.
+
+
+===============================================================================
+Entry #10   ti@jabba          10/16/87  Message from ra.arpa received!
+
+
+From: ti@jabba.psu.edu
+
+
+   Hello Dave:
+    I got the mail on the Sun which was sent Oct. 15 afternoon from you.
+It seems working! Since it is much easy for me to work on the Sun, rather 
+than on the IBM main frame, please use this channel everytime. 
+    It is a very present day at Penn State. I will take off quite soon to talk
+a walk; maybe visit the farmer's market. Have a nice weekend.
+
+                                Takashi Isobe
+
+
+===============================================================================
+Entry #11   ball@ra           10/19/87  Survival routines
+
+
+From: Dave Ball <ball@ra.arpa>
+
+Takashi,
+ 
+    I am still having trouble with the mailers here so here we go again.
+I might have tried to get too fancy in what I was trying to do.  I hope this
+time this message gets through.  The eleven routines you need should be 
+following close behind this e-mail; when you get wlcxn.for, I will have
+sent all eleven(regardless of the order you have received them in).  I guess
+you should wait until you have them all to let me know how things are.
+
+Here's hoping all arrive safely this time.  Good luck.
+
+Dave
+
+P.S. If this looks out of sequence with the other messages, it probably is
+(or if you already got this message, sorry!).  I think I forgot to send
+this first!
+
+
+===============================================================================
+Entry #12   ti@jabba          10/20/87  Survival
+
+
+From: ti@jabba.psu.edu
+
+
+Hi, Ball: 
+    I received all subroutines that I asked. Thanks. Altough there are a 
+few bugs in other subroutines, I will not send these now: It may confuse you.
+I will send them when I find a few more (there are always MORE bugs!)
+
+                                            Takashi Isobe
+PS   This is sent to STSCI.ARPA.
+
+===============================================================================
+Entry #13   ti@jabba          10/29/87  ASURV Rev0.0
+
+
+From: ti@jabba.psu.edu
+
+
+Hi, Dave:
+    Since we started sending ASURV, we decided to not change Rev0.0 anymore.
+There are, however, a few changes that I made:
+    XVAR.FOR        :  Add ISIGN=1  (nearly the top)
+    ASURV.FOR       :  Add CLOSE(UNIT=2)   (nearly the end)
+    EM.FOR          :  Move PRINT 2070 to after PRINT2055. Also add GOTO 3000 
+                       before the line.
+    I will not change the code any further, at least a few months, so please 
+exchange these subroutines and work on them. Thanks.
+                                               Takashi Isobe
+
+
+C
+C      **********************************************************************
+C      ********************* SUBROUTTINE XVAR  ******************************
+C      **********************************************************************
+C
+       SUBROUTINE XVAR(IND,X,J,NTOT,ISIGN,ZU,ZC,IU,IC)
+C
+C      *       THIS SUBROUTINE DISTINGUISHS UNCENSORED AND CENSORED         *
+C      *       DATA IN X VARIABLE AND PUT INTO ZU AND ZC. ALSO              *
+C      *       IF THE DATA CONTAIN UPPER LIMITS, THE SIGN OF THE            *
+C      *       VALUES IS CHANGED SO THAT THE PROGRAM FOR THE LOWER          *
+C      *       LIMITS CAN BE USED. ADOPTED FROM SMSDA.                      *
+C      *                                                                    *
+C      *       INPUT      IND(J,I) : INDICATOR OF CENSORING                 *
+C      *                    X(J,I) : VARIABLE                               *
+C      *                    J      : J-TH DATA SETS                         *
+C      *                   NTOT    : TOTAL NUMBER OF DATA POINTS            *
+C      *                                                                    *
+C      *       OUTPUT      ISIGN   : IF LOWER LIMIT, ISIGN = 1              *
+C      *                             IF UPPER LIMIT, ISIGN = -1             *
+C      *                   ZU(K)   : UNCENSORED DATA POINTS IN X(J,I)       *
+C      *                   ZC(K)   : CENSORED DATA POINTS IN X(J,I)         *
+C      *                    IU     : NUMBER OF UNCENSORED DATA POINTS       *
+C      *                    IC     : NUMBER OF CENSORED DATA POINTS         *
+C      *                                                                    *
+C
+       IMPLICIT REAL*8 (A-H,O-Z)
+       DIMENSION IND(10,200),X(10,200),ZU(200),ZC(200)
+C
+C  ******* NEXT LINE IS ADDED ON OCT 9, 1987   *******************
+C
+       ISIGN=1
+       DO 100 I=1,NTOT
+       IF(IND(J,I).EQ.0) GOTO 100
+       ISIGN=IND(J,I)/IABS(IND(J,I))
+  100  CONTINUE
+C
+       IC=0
+       IU=0
+       DO 300 I=1,NTOT
+       K=IABS(IND(J,I))
+       IF(K.EQ.0) GOTO 200
+C
+  150  IC=IC+1
+       ZC(IC)=ISIGN*X(J,I)
+       GOTO 300
+  200  IU=IU+1
+       ZU(IU)=ISIGN*X(J,I)
+  300  CONTINUE
+       RETURN
+       END
+
+
+
+C
+C
+C      *             SURVIVAL ANALYSIS PACKAGE FOR ASTRONOMERS              *
+C      *                                                                    *
+C      *  DEVELOPED BY:        TAKASHI ISOBE                                *
+C      *                    DEPARTMENT OF ASTRONOMY                         * 
+C      *                THE PENSYLVANIA STATE UNIVERSITY                    *
+C      *              525 DAVEY LAB. UNIVERSITY PARK PA 16802               *
+C      *                                                                    *
+C      *  REV. 0.0  TEST VERSION   JUNE 1987                                *
+C      *                                                                    *
+C      *     THIS PACKAGE IS WRITTEN TO PROVIDE SEVERAL                     *
+C      *  SURVIVAL ANALYSIS METHODS WHICH ARE USEFUL IN ANALYZING           *
+C      *  ASTRONOMICAL DATA. SURVIVAL ANALYSIS IS A GROUP OF STATISTICAL    *
+C      *  METHODS WHICH TREAT PROBLEMS WITH CENSORED DATA (UPPER OR LOWER   *
+C      *  LIMITS). THIS PACKAGE INCLUDES SOME TECHNIQUES DEVELOPED IN       *
+C      *  IN OTHER FIELDS (E.G. ECONOMICS, ACTUARIAL SCIENCE, RELIABILITY   *
+C      *  MATHEMATICS), AND A FEW METHODS DEVELOPED BY ASTRONOMERS.         *
+C      *                                                                    *
+C      *   THE METHODS PROVIDED IN THIS PACKAGE ARE :                       *
+C      *                                                                    *
+C      *   UNIVARIATE DISTRIBUTION :  KAPLAN-MEIER ESTIMATOR                *
+C      *   TWO-SAMPLE TESTS        :  GEHAN TEST                            *
+C      *                              LOGRANK TEST                          *
+C      *                              COX-MANTEL TEST                       *
+C      *                              PETO AND PETO TEST                    *
+C      *                              F TEST [THOUGH PROVIDED IN SMSDA CODE *
+C      *                                  WE OMIT THE F-TEST BECAUSE NO     *
+C      *                                  PROBABILITIES ARE ASSIGNED TO     *
+C      *                                  F-STATISTIC VALUES.]              *
+C      *   CORRELATION TESTS       :  COX PROPORTIONAL HAZARDS MODEL        *
+C      *                              GENERALIZED KENDALL'S TAU (BHK METHOD)*
+C      *   LINEAR REGRESSIONS      :  EM ALGORITHM WITH NORMAL DISTRIBUTION *
+C      *                              BUCKLEY-JAMES METHOD                  *
+C      *                              TWO-DIMENSIONAL KAPLAN-MEIER          *
+C      *                                  REGRESSION FOR DUAL-CENSORED DATA *
+C      *                                                                    *
+C      *                                                                    *
+C      *   INPUTS                                                           *
+C      *                                                                    *
+C      *       IS0     :  IF 1 : UNIVARIATE PROBLEM                         *
+C      *                     2 : CORRELATION/REGRESSION PROBLEM             *
+C      *                     3 : EXIT                                       *
+C      *                                                                    *
+C      *   SUBROUTINE UNIVAR, BIVAR
+C
+       IMPLICIT REAL*8 (A-H,O-Z)
+       CHARACTER*1 BLANK,CHECK,CHAR(4,10)
+C
+C
+C
+       PRINT *
+       PRINT *,'     **************************************************'
+       PRINT *,'     *                                                *'
+       PRINT *,'     *              WELCOME TO ASTROSURV              *'
+       PRINT *,'     *           SURVIVAL ANALYSIS PACKAGE            *' 
+       PRINT *,'     *                FOR ASTRONOMERS                 *'
+       PRINT *,'     *                                                *'
+       PRINT *,'     *            DEVELOPED BY T. ISOBE               *' 
+       PRINT *,'     *              DEPT. OF ASTRONOMY                *'
+       PRINT *,'     *       THE PENNSYLVANIA STATE UNIVERSITY        *'
+       PRINT *,'     *                                                *'
+       PRINT *,'     *              REV 0.0  JUNE 1987                *'
+       PRINT *,'     **************************************************'
+       PRINT *
+       PRINT *
+       PRINT *
+       PRINT *
+       PRINT *,'              (CARRIAGE RETURN TO CONTINUE) '
+       READ(*,50) BLANK
+   50  FORMAT(A1)
+       PRINT *
+C
+C      *           START CONVERSATION WITH A USER                           *
+C
+       PRINT *
+       PRINT *
+       PRINT *
+  100  PRINT *,'                          MENU  '
+       PRINT *
+       PRINT *
+       PRINT *,'       UNIVARIATE DATA           BIVARIATE DATA '
+       PRINT *
+       PRINT *
+       PRINT *,'     DISTRIBUTION FUNCTION       CORRELATION '
+       PRINT *,'   1 KAPLAN-MEIER ESTIMATOR    1 COX REGRESSION '
+       PRINT *,'                               2 GEN. KENDALL TAU'
+       PRINT *
+       PRINT *
+       PRINT *,'     TWO-SAMPLE TESTS            LINEAR REGRESSION '
+       PRINT *,'   1 GEHAN TEST                1 EM ALGORITHM WITH  '
+       PRINT *,'   2 LOGRANK TEST                GAUSSIAN RESIDUALS ' 
+       PRINT *,'   3 COX-MANTEL TEST           2 BUCKLEY-JAMES METHOD ' 
+       PRINT *,'   4 PETO AND PETO TEST           WITH KM RESIDUALS '
+       PRINT *,'                               3 SCHMITT METHOD FOR '
+       PRINT *,'                                 DUAL CENSORED DATA ' 
+       PRINT *
+       PRINT *
+       PRINT *
+       PRINT *,'            (CARRIAGE RETURN TO CONTINUE) '
+       READ(*,50) BLANK
+C
+       PRINT *
+C
+C      *  CHOICE : UNIVARIATE PROBLEM OR CORRELATION/REGRESSION PROBLEM     *
+C
+       PRINT *
+       PRINT *,'       SELECT DATA TYPE: ' 
+       PRINT *,'        1 UNIVARIATE DATA '
+       PRINT *,'        2 BIVARIATE DATA ' 
+       PRINT *,'        3 EXIT '
+  200  WRITE(*,210)
+  210  FORMAT($,'          CHOICE ? ')
+C
+       CALL DATA(IS0)
+C
+       IF((IS0.EQ.1).OR.(IS0.EQ.2).OR.(IS0.EQ.3)) GOTO 300
+       PRINT *,'PLEASE TYPE ONCE MORE'
+       GOTO 200
+C
+  300  IBACK=0
+       IF(IS0.EQ.1) CALL UNIVAR(IBACK)
+       IF(IS0.EQ.2) CALL BIVAR(IBACK)
+       IF(IS0.EQ.3) STOP
+C
+C      *******NEXT LINE IS ADDED ON OCT. 14, 1987.******
+C
+       CLOSE(UNIT=2)
+       IF(IBACK.EQ.1) GOTO 100
+       STOP
+       END
+
+
+
+C
+C      **********************************************************************
+C      ********************* SUBROUTINE EM  *********************************
+C      **********************************************************************
+C
+       SUBROUTINE EM(IND,X,Y,NTOT,TOL,MAXITS,NVAR,IBET,ALPHA,
+     +                                          ND,NC,OUTPUT,FILE)
+C
+C      *           MAXIMUM LIKELIHOOD ESTIMATION IN A LINEAR MODEL          *
+C      *           FROM CONFINED AND CENSORED NORMAL DATA                   *
+C      *                                                                    *
+C      *       FORMAL PARAMETERS :                                          *
+C      *                                                                    *
+C      *       NTOT    INPUT : THE NUMBER OF OBSERVATIONS                   *
+C      *      MPLONE   INPUT : THE TOTAL NUMBER OF PARAMETERS TO BE         *
+C      *                       ESTIMATED (I.E. NB+1)                        *
+C      *      MAXITS   INPUT : THE MAXIMUM NUMBER OF ITERATIONS ALLOWED     *
+C      *      IBET     INPUT : IF THERE ARE DATA WHICH ARE CONFINED         *
+C      *                       BETWEEN TWO VALUES, IBET=1 OTHERWISE 0       *
+C      *      ALPHA    INPUT : IF ALPHA(NVAR+2).LE.0.0, THE SUBROUTINE      *
+C      *                       CALCULATES INITIAL PARAMETER ESTIMATES.      *
+C      *                       IF >0.0, IT CONTAINS THE INITIAL             *
+C      *                       ESTIMATE OF THE J-TH LOCATION PARAMETER      *
+C      *                       FOR J=1,2,.....,NB.                          *
+C      *               OUTPUT: THE MOST RECENT PARAMETER ESTIMATES          *
+C      *                       BEFORE EXIT FROM THE SUBROUTINE.             *
+C      *      TOL      INPUT : CONVERGE TO THE MAXIMUM LIKELIHOOD           *
+C      *                       PARAMETER ESTIMATES IF THE DIFFERENCE        *
+C      *                       BETWEEN CONSECUTIVE ESTIMATES OF THE         *
+C      *                       J-TH PARAMETER IS LESS THAN TOL(J) FOR       *
+C      *                       J=1,2,........,M.                            *
+C      *       IND     INPUT : INDICATOR OF CENSORED DATA                   *
+C      *       XX      INPUT : THE DESIGN MATRIX XX(I,J) CONTAINS THE       *
+C      *                       COEFFICIENT OF THE J-TH LOCATION PARA-       *
+C      *                       METER FOR I-TH OBSERVATION.                  *
+C      *       Y       INPUT : IF PP(I)=0, THE I-TH OBSERVATION IS          *
+C      *                       COMPLETELY SPECIFIED IN Y(I); IF             *
+C      *                       PP(I)=-1, Y(I)  IS LEFT-CENSORED: IF         *
+C      *                       PP(I)=1, Y(I) IS RIGHT-CENSORED: IF          *
+C      *                       PP(I)=5, Y(I) IS CONFINED BETWEEN TWO        *
+C      *                       VALUES.                                      *
+C      *      ROWX     WORK  : THE NUMBER OF ROWS OF X (=NTOT)              *
+C      *      COLX     WORK  : THE NUMBER OF COLUMNS OF X (=NB)             *
+C      *       W       WORK  :                                              *
+C      *      LENW     WORK  :   = NB+NTOT                                  *
+C      *      WORK     WORK  :                                              *
+C      *      LENWRK   WORK  :   = NB*NTOT                                  *
+C      *      VCOV     OUTPUT: IF THE PROCEDURE CONVERGED TO THE MAX-       *
+C      *                       IMUM LIKELIHOOD ESTIMATES, THE FIRST         *
+C      *                       (NB+1)*(NB+1) POSITION CONTAIN AS ESTI-      *
+C      *                       MATE OF THE VARIANCE-COVARIANCE MATRIX       *
+C      *                       OF THESE ESTIMATES.                          *
+C      *      SIGMAA   OUTPUT: (J,J) COMPONENT CONTAINS THE STANDARD        *
+C      *                       DEVIATION OF THE J-TH PARAMETER.             *
+C      *      IFAULT   OUTPUT: FAILURE INDICATOR                            *
+C      *      ICHECK   OUTPUT: IF ERROR ANALYSIS IS NOT COMPLETED,          *
+C      *                       ICHECK HAS A VALUE : 1 ,OTHERWISE 0 .        *
+C      *                                                                    *
+C      *       SUBROUTINES:   EMALGO.                                       *
+C      *                                                                    *
+C      *       REF : M.S.WOLYNETZ AS 139 APL.STATIST.VOL.28 195 (1979)      *
+C      *             PLUS CORRECTIONS IN LATER ISSUES OF APPLIED STATISTICS.*
+C      *                                                                    *
+C      *       SUBROUTINE EMALGO IS COPIED DIRECTLY FROM WOLYNETZ, EXPECT   *
+C      *       FOR A FEW CHANGES TO PRINT AND COMMENT STATEMENTS.           *
+C
+C
+       IMPLICIT REAL*8 (A-H,O-Z)
+       INTEGER   ROWX,COLX
+       DIMENSION X(10,200),Y(200),IND(200),XX(200,10),Y2(200)
+       DIMENSION W(200),WCEN(200),VCOV(1000),WORK(1000)
+       DIMENSION ALPHA(10),SIGMAA(10,10),TOLA(10)
+       CHARACTER*9 FILE,OUTPUT
+C
+C
+C      *                  INITIALIZATION                                    *
+C
+       MPLONE=NVAR+2
+       NB=NVAR+1
+       ROWX=NTOT
+       COLX=MPLONE
+       LENW=NTOT+MPLONE
+       LENWRK=NTOT*MPLONE
+C
+       DO 10 I=1,MPLONE
+       TOLA(I)=TOL
+   10  CONTINUE
+C
+C      *                                                                    *
+C      *   IF THERE ARE DATAPOINTS CONFINED BETWEN TWO VAULES, READ THE     *
+C      *   INPUT DATA AGAIN.                                                *
+C      *                                                                    *
+       IF(IBET.EQ.0) GOTO 80 
+       OPEN(UNIT=2,FILE=FILE,STATUS='OLD',FORM='FORMATTED')
+       DO 40 I=1,NTOT
+       READ(2,30) IND(I),(XX(I,J),J=2,NB),Y(I),Y2(I)
+   30  FORMAT(I3,3F10.3)
+   40  CONTINUE
+C
+   80  DO 100 I=1,NTOT
+       XX(I,1)=1
+       DO 90 J=1,NVAR
+       JJ=J+1
+       XX(I,JJ)=X(J,I)
+   90  CONTINUE
+  100  CONTINUE
+C
+       ICHECK=0
+C
+C      *        THE SUBPROGRAM FOR THE MAXIMUM LIKELIHOOD ESTIMATES         *
+C
+  195  CALL EMALGO(NTOT,Y,Y2,IND,MPLONE,XX,ROWX,COLX,W,WCEN,LENW,
+     +           VCOV,WORK,LENWRK,ALPHA,TOLA,MAXITS,IFAULT,ICHECK,NC)
+C
+       IF(ICHECK.NE.0) GOTO 360
+       IF((OUTPUT.EQ.'         ').AND.(IFAULT.LE.0)) GOTO 2000
+       IF((OUTPUT.NE.'         ').AND.(IFAULT.LE.0)) GOTO 2005
+C
+C      *        CHANGE VCOV ARRAY FROM ONE DIM. TO TWO DIM.                 *
+C
+       K=1
+       DO 300 I=1,MPLONE
+       DO 200 J=1,MPLONE
+       SIGMAA(I,J)=DSQRT(DABS(VCOV(K)))
+       K=K+1
+  200  CONTINUE
+  300  CONTINUE
+C
+C      PRINT FINAL REGRESSION COEFFICIENTS IN OUTPUT FILE.
+C
+  360  IF(OUTPUT.EQ.'         ') GOTO 3360
+       WRITE(6,1050)
+       WRITE(6,1020)        
+       WRITE(6,1200) ALPHA(1),SIGMAA(1,1)
+       DO 455 J=2,NB
+       JI=J-1
+       WRITE(6,1250) JI,ALPHA(J),SIGMAA(J,J)
+  455  CONTINUE
+       WRITE(6,1300) ALPHA(MPLONE)
+       IF(ICHECK.NE.0) GOTO 525
+       ITE=IFAULT
+       GOTO 545
+  525  ITE=ICHECK
+  545  WRITE(6,1350) ITE
+       GOTO 3000
+C
+C      FOLLOWING WE HAVE COLLECTED ALL OF WOLYNETZ'S ERROR FLAGS
+C      AND PRINT OUT THE APPROPRIATE ERROR MESSAGE. 
+C
+ 2005  WRITE(6,1000)
+       WRITE(6,1020)
+       WRITE(6,1050)
+       WRITE(6,2001)
+       IF(IFAULT.NE.-1) GOTO 2019
+       WRITE(6,2002)
+       WRITE(6,2003)
+       GOTO 3000
+ 2019  IF(IFAULT.NE.-4) GOTO 2029
+       WRITE(6,2012)
+       WRITE(6,2014)
+       GOTO 3000
+ 2029  IF(IFAULT.NE.-5) GOTO 2038
+       WRITE(6,2021)
+       WRITE(6,2022)
+       WRITE(6,2023)
+       WRITE(6,2024)
+       WRITE(6,2025)
+       WRITE(6,2026)
+       WRITE(6,2027)
+       GOTO 3000
+ 2038  IF(IFAULT.NE.-6) GOTO 2049
+       WRITE(6,2031)
+       WRITE(6,2032)
+       WRITE(6,2033)
+       WRITE(6,2034)
+       WRITE(6,2035)
+       WRITE(6,2036)
+       WRITE(6,2037)
+       GOTO 3000
+ 2049  IF(IFAULT.NE.-7) GOTO 2056
+       WRITE(6,2045)
+       GOTO 3000
+ 2056  IF(IFAULT.NE.-8) GOTO 2065
+       WRITE(6,2055)
+ 2065  WRITE(6,2070)
+C
+C      PRINT FINAL REGRESSION COEFFICIENTS AND ERROR MESSAGES ON TERMINAL. 
+C
+ 3360  PRINT 1050
+       PRINT 1020         
+       PRINT 1200,ALPHA(1),SIGMAA(1,1)
+       DO 450 J=2,NB
+       JI=J-1
+       PRINT 1250,JI,ALPHA(J),SIGMAA(J,J)
+  450  CONTINUE
+       PRINT 1300,ALPHA(MPLONE)
+       IF(ICHECK.NE.0) GOTO 520
+       ITE=IFAULT
+       GOTO 540
+  520  ITE=ICHECK
+  540  PRINT 1350,ITE
+       GOTO 3000
+C
+ 2000  PRINT 1000
+       PRINT 1020
+       PRINT 1050
+       PRINT 2001
+       IF(IFAULT.NE.-1) GOTO 2010
+       PRINT 2002
+       PRINT 2003
+       GOTO 3000
+ 2010  IF(IFAULT.NE.-4) GOTO 2020
+       PRINT 2012
+       PRINT 2014
+       GOTO 3000
+ 2020  IF(IFAULT.NE.-5) GOTO 2030
+       PRINT 2021
+       PRINT 2022
+       PRINT 2023
+       PRINT 2024
+       PRINT 2025
+       PRINT 2026
+       PRINT 2027
+       GOTO 3000
+ 2030  IF(IFAULT.NE.-6) GOTO 2040
+       PRINT 2031
+       PRINT 2032
+       PRINT 2033
+       PRINT 2034
+       PRINT 2035
+       PRINT 2036
+       PRINT 2037
+       GOTO 3000
+ 2040  IF(IFAULT.NE.-7) GOTO 2050
+       PRINT 2045
+       GOTO 3000
+ 2050  IF(IFAULT.NE.-8) GOTO 2060
+       PRINT 2055
+       GOTO 3000
+ 2060  PRINT 2070
+C
+ 1000  FORMAT(T10,'REGRESSION ANALYSIS WITH CENSORED DATA')
+ 1020  FORMAT(T10,'       PARAMETRIC EM ALGORITHM')
+ 1050  FORMAT(T5,'      ')
+ 1100  FORMAT(T8,'DATA TITLE :',T25,60A1)
+ 1150  FORMAT(T8,'TOTAL # OF DATA :',T26,I3,T33,'CENSORED DATA :'
+     +           ,T48,I3)
+ 1200  FORMAT(T8,'INTERCEPT COEFF    :',F8.4,T38,'#',T39,F8.4)
+ 1250  FORMAT(T8,'SLOPE COEFF ',I1,'      :',F8.4,T38,'#',T39,
+     +         F8.4,5X)
+ 1300  FORMAT(T8,'STANDARD DEVIATION :',F8.4)
+ 1350  FORMAT(T8,'ITERATIONS         :',I3)
+ 2001  FORMAT(T5,'NOTICE :')
+ 2002  FORMAT(T5,'MAXIMUM NUMBER OF ITERATION REACHED AND')
+ 2003  FORMAT(T5,'CONVERGENCE HAS NOT BEEN OBTAINED.')
+ 2012  FORMAT(T5,'NUMBER OF COMPLETELY SPECIFIED DATA IS LESS')
+ 2014  FORMAT(T5,'THAN NB+1')
+ 2021  FORMAT(T5,'THE MATRIX IS NOT POSITIVE DEFINITE,AS')
+ 2022  FORMAT(T5,'DETERMINED BY SUBROUTINE "SYMINV",A MATRIX')
+ 2023  FORMAT(T5,'INVERSION PROCEDURE(HEALY,1968); THE VALUE')
+ 2024  FORMAT(T5,'OF "NULLTY" AND "IFAULT" RETURNED BY SYMINV')
+ 2025  FORMAT(T5,'ARE PLACED IN THE FIRST TWO POSITIONS OF ')
+ 2026  FORMAT(T5,'THE ARRAY "VCOV" BEFORE RETURNING TO THE ')
+ 2027  FORMAT(T5,'CALLING PROGRAM.')
+ 2031  FORMAT(T5,'THE ESTIMATE OF THE VARIANCE- COVARIANCE')
+ 2032  FORMAT(T5,'MATRIX IS NOT POSITIVE DEFINITE, AS DETER-')
+ 2033  FORMAT(T5,'MINED BY SUBROUTINE "SYMINV"(HEALY,1968):')
+ 2034  FORMAT(T5,'THE VALUES OF "NULLTY" AND "IFAULT", RETURNED')
+ 2035  FORMAT(T5,'BY SYMINV ,ARE PLACED IN THE FIRST TWO ')
+ 2036  FORMAT(T5,'POSITIONS OF THE ARRY "VCOV" BEFORE RETURNING')
+ 2037  FORMAT(T5,'TO THE CALLING PROGRAM')
+ 2045  FORMAT(T5,'"ROWX" IS LESS THAN NTOT')
+ 2055  FORMAT(T5,'"COLX" IS LESS THAN NB')
+ 2070  FORMAT(T5,'THE PROGRAM IS STOPPED FOR UNKNOWN REASONS')
+ 3000  RETURN
+       END
+
+===============================================================================
+Entry #14   ball@ra           10/29/87  Asurv Updates
+
+
+From: Dave Ball <ball@ra.arpa>
+
+
+Takashi,
+     Thanks for the updates to xvar, em and asurv.  I will incorporate
+them today.
+
+Dave
+
+===============================================================================
+Entry #15   ti@jabba          12/16/87  Question about the reading a tape
+
+
+From: ti@jabba.psu.edu
+
+
+Hello Dave,
+   We have a minor problem... Although we sent tapes made by UNIX, appearently
+many people tried to read it by VAX and failed. The problem is Control-j and 
+Control-M difference (or they said so). Since you had a same prbolem before, if
+you have a conversion program from UNIX to VAX, could you send it to me? If
+you do not have it, could tell me how to do that? I will stay here this
+Xmas holidays, so please let me know. Thanks.
+
+                                          Takashi Isobe
+
+===============================================================================
+Entry #16   ball@stsci        12/16/87  Tape question
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+Takashi,
+    In answer to your question about tapes, I spent about a half a day on the
+VAX examining the tape you sent and realized after a conversation with a
+local UNIX expert that the easiest way to read your tape was on the UNIX 
+machine, which was how I finally got the programs.  Sorry I don't have a 
+conversion program although I think one would be fairly easy to write.
+
+    Next, I have finally gotten into the implementation of ASURV in IRAF after
+several other projects are done (not completed, mind you, just this or that
+phase is done!) and I have a few minor questions.  The following is my 
+"questions" file.  There is no rush to these.  In fact, there will probably
+be more to come.
+
+Questions about ASURV code 
+Last updated 15-Dec-87
+
+1. In kmestm, just after the call to prnt, there is a
+	"NTOT=IXU+IXC"
+Is this necessary since ntot is input to this routine?
+
+2. In kmestm, he refers to a "PL estimator": what is the difference
+between that and the km estimator if any?
+
+3. In kmestm, at the end there are several lines changing ixc and ixu
+back to original values if the last censored point was changed to a detection
+but these varaibles are not passed back to the caller. Why bother?
+
+Maybe you will have some snow up there for the holidays!
+Dave
+
+
+===============================================================================
+Entry #17   ball@stsci        01/04/88  More ASURV questions
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+
+Takashi,
+     I am still working madly on the ASURV conversion and I have some more
+questions for you.  Your last message must have been cut short somehow;
+there wasn't any text in the message except a "q"!  Anyway here is my
+expanded questions file including the first few I sent you.  I hope you
+are having a pleasant holiday and are not working TOO hard!  
+Hope you had a Merry Christmas and a happy new year!
+(I tried to send this to you last week but I think I messed up;  if
+you DID get this, sorry!, and please ignore!)
+
+Dave
+ 
+Questions about ASURV code 
+Last updated 30-Dec-87
+
+1. In kmestm, just after the call to prnt, there is a
+	"NTOT=IXU+IXC"
+Is this necessary since ntot is input to this routine?
+
+2. In kmestm, he refers to a "PL estimator": what is the difference
+between that and the km estimator if any?
+
+3. In kmestm, at the end there are several lines changing ixc and ixu
+back to original values if the last censored point was changed to a detection
+but these varaibles are not passed back to the caller. Why bother?
+
+<Sent about 16 or 17 Dec>
+
+4. In twost, for the Peto & Peto test when there are no censored data
+and the test reduces to Gehan, the call to subroutine wlcxn contains
+only two arguments; shouldn't there be four?
+
+5. In subroutine stat, there are several print statements which I have
+commented out in the IRAF version.  What are they printing?  Should
+some kind of output be produced there in the IRAF version?  Or should
+I just comment them out as I did?
+
+6. In subroutine sumry, there is a variable in the calling sequence called
+TIME which is not referenced in the routine.  I removed it in the IRAF code
+but should it be there or not? If yes what is it used for?
+
+7. In subroutine aarray, there was a statement IFULL = IPR which would
+reset IFULL to zero since IPR is not defined in aarray.  This would result
+in the minimum printout even if the user asked for all.  This is left over
+from moving all the printout statements up to a higher level.
+
+8. In subroutines grdprb and bin, I removed references to OUTPUT, IPRINT,
+and IO which are all related to "verbose" mode printouts, both in the code
+and in the calling sequences.  The IRAF version of twokm will use a verbose
+flag to control volume of printout.
+
+9. In subroutine datreg, near the end, there is a misspelling of ICENS.
+
+10. For the EM algorithm, there is an input variable called IBET to 
+determine if the dependent variable is a pair of limits.  It appears to
+me that the censoring indicator has a value of 5 in that case, so I included a 
+check in the datreg routine which reads in the data to determine if a second 
+value should be read rather than reopening the input file and rereading the 
+data as is done in subroutine EM.  Will this get me into trouble?
+
+===============================================================================
+Entry #18   scivax::ball      01/04/88  Asurv output
+
+
+Bob,
+   Here is the output file from the statistics stuff.  The mistake you 
+noted has been fixed!  By the way do you want a little demo on the stuff?
+Dave
+
+ *** Two-Sample test *** 
+
+Title:  IR Luminosity of Galaxies 
+
+Data set:  IR Luminosity 
+
+
+Tested groups are Normal and Starburst 
+
+ Number of data points: 12; number of upper limits: 5 
+ Number of data points in Group I: 6 
+ Number of data points in Group II: 6 
+
+ Distinct Failures         R(I)            M(I)        M(I)/R(I)         H(I)
+
+           31.100         11.000        -31.100          0.091          1.000
+           30.200         10.000        -30.200          0.100          0.909
+           30.100          9.000        -30.100          0.111          0.818
+           29.000          7.000        -29.000          0.143          0.727
+           28.500          5.000        -28.500          0.400          0.623
+           26.900          1.000        -26.900          1.000          0.374
+
+                                                                        0.000
+
+
+        Gehan's Generalized Wilcoxon Test
+
+
+                 T(I)       ID1(I)    ID2(I)   R1(I)    R2(I)
+               32.400         1         2       0.0       1.0
+               31.100         0         2     -10.0      11.0
+               30.200         0         2      -8.0      10.0
+               30.100         0         1      -6.0       9.0
+               29.700         1         1       3.0       1.0
+               29.000         0         2      -3.0       7.0
+               29.000         1         2       4.0       1.0
+               28.500         0         1       1.0       4.0
+               28.500         0         2       1.0       4.0
+               28.100         1         1       6.0       1.0
+               27.600         1         1       6.0       1.0
+               26.900         0         1       6.0       1.0
+
+     Test Statistic    =       1.652
+      Probability      =       0.0986
+
+
+                Logrank Test
+
+
+               T(I)      ID1(I)  ID2(I)      Score(I)
+              32.400       1       2          0.000
+              31.100       0       2          0.909
+              30.200       0       2          0.809
+              30.100       0       1          0.698
+              29.700       1       1         -0.302
+              29.000       0       2          0.555
+              29.000       1       2         -0.445
+              28.500       0       1          0.155
+              28.500       0       2          0.155
+              28.100       1       1         -0.845
+              27.600       1       1         -0.845
+              26.900       0       1         -0.845
+
+     Test Statistic    =       1.742
+      Probability      =       0.0815
+
+
+        Cox-Mantel Test
+
+
+              Risk(I)          A(I)
+               5.000          0.455
+               4.000          0.400
+               3.000          0.333
+               3.000          0.429
+               1.000          0.200
+               0.000          0.000
+
+     Test Statistic    =       1.814
+      Probability      =       0.0696
+
+
+        Peto and Peto's Generalized Wilcoxon Test
+
+
+               T(I)         Score(I)
+              32.400          0.000
+              31.100          0.909
+              30.200          0.727
+              30.100          0.545
+              29.700         -0.273
+              29.000          0.351
+              29.000         -0.377
+              28.500         -0.003
+              28.500         -0.003
+              28.100         -0.626
+              27.600         -0.626
+              26.900         -0.626
+     Test Statistic    =       1.730
+      Probability      =       0.0837
+
+
+Kaplan-Meier Estimator
+
+Data name:  Normal 
+
+
+Number of data points:    6; number of lower limits:    3
+
+
+        Variable      PL Estimator       Error
+         30.100          0.833          0.152 
+         29.700 C 
+         28.500          0.625          0.213 
+         28.100 C 
+         27.600 C 
+         26.900          0.000          0.000 
+
+    Percentiles    
+    75 TH     50 TH     25 TH
+     0.000     0.000     0.000 
+Mean=    27.767 +/-  0.515 
+
+
+Kaplan-Meier Estimator
+
+Data name:  Starburst 
+
+
+Number of data points:    6; number of lower limits:    2
+
+
+        Variable      PL Estimator       Error
+         32.400 C 
+         31.100          0.800          0.179 
+         30.200          0.600          0.219 
+         29.000 C 
+         29.000          0.400          0.219 
+         28.500          0.000          0.000 
+
+    Percentiles    
+    75 TH     50 TH     25 TH
+    30.875    29.600    28.812 
+Mean=    29.460 +/-  0.460 
+
+ Correlation Test by Cox Proportional Hazard Model
+
+ Title:  Optical infrared luminosities of Galaxies 
+
+ Data:  optirlum.2ddat 
+ Number of data points is 16
+
+ Upper limits in  Y    X    Both  Mix
+                  6    0       0    0
+
+
+ Global chi-square is    18.458 with 1 degrees of freedom
+ Probability is     0.0000
+
+
+
+ Correlation Test by Generalized Kendall's Tau 
+
+ Title:  Optical infrared luminosities of Galaxies 
+
+ Data:  optirlum.2ddat 
+ Number of data points is 16
+
+ Upper limits in  Y    X    Both  Mix
+                  6    0       0    0
+
+
+ Z-value is        4.380
+ Probability is        0.0000   (H0, two sided)
+
+
+
+===============================================================================
+Entry #19   ti@jabba          01/07/88  ASURV
+
+
+From: ti@jabba.psu.edu
+
+
+Happy New Year Dave:
+     Although I sent the last mail just before Xmas, I think something happened
+while it went through the main computer. It was shut down around Xmas. Anyway,
+how was your holiday? I had a good time in N.Y. 
+     Thank you for working on ASURV. I hope that you do not have too many
+problems to modify the program (I expect dozens of mistakes but not hundreds of
+them).
+
+
+                                            Takashi Isobe
+
+
+The answers for your questions :
+
+1. In kmestm, just after the call to prnt, there is a
+	"NTOT=IXU+IXC"
+Is this necessary since ntot is input to this routine?
+
+*********** It is not necessary. This one and third one are remnant from
+            the older version.
+
+2. In kmestm, he refers to a "PL estimator": what is the difference
+between that and the km estimator if any?
+
+*********** Not in my program. The official name of the method is
+            Kaplan-Meier Product Limit estimator. Under the PL estimator
+            there are several different estimation methods.
+
+3. In kmestm, at the end there are several lines changing ixc and ixu
+back to original values if the last censored point was changed to a detection
+but these varaibles are not passed back to the caller. Why bother?
+
+********** Same as first. You can erase them.
+
+
+4. In twost, for the Peto & Peto test when there are no censored data
+and the test reduces to Gehan, the call to subroutine wlcxn contains
+only two arguments; shouldn't there be four?
+
+********** Yes, you are right. Thanks.
+
+5. In subroutine stat, there are several print statements which I have
+commented out in the IRAF version.  What are they printing?  Should
+some kind of output be produced there in the IRAF version?  Or should
+I just comment them out as I did?
+
+********** These print outs are for statisticians' interest. Astronomers may not
+           want to know them (or don't care). If you want, except the variace, 
+           you can drop them.
+
+6. In subroutine sumry, there is a variable in the calling sequence called
+TIME which is not referenced in the routine.  I removed it in the IRAF code
+but should it be there or not? If yes what is it used for?
+
+********* This is another fossil from the older version. Please remove it.
+
+7. In subroutine aarray, there was a statement IFULL = IPR which would
+reset IFULL to zero since IPR is not defined in aarray.  This would result
+in the minimum printout even if the user asked for all.  This is left over
+from moving all the printout statements up to a higher level.
+
+********  Yes, please remove it.
+
+8. In subroutines grdprb and bin, I removed references to OUTPUT, IPRINT,
+and IO which are all related to "verbose" mode printouts, both in the code
+and in the calling sequences.  The IRAF version of twokm will use a verbose
+flag to control volume of printout.
+
+********  O.K.
+
+9. In subroutine datreg, near the end, there is a misspelling of ICENS.
+
+******** Thank you. I'll correct it.
+
+10. For the EM algorithm, there is an input variable called IBET to 
+determine if the dependent variable is a pair of limits.  It appears to
+me that the censoring indicator has a value of 5 in that case, so I included a 
+check in the datreg routine which reads in the data to determine if a second 
+value should be read rather than reopening the input file and rereading the 
+data as is done in subroutine EM.  Will this get me into trouble?
+
+******* I do not think that there is any problem.
+
+===============================================================================
+Entry #20   scivax::hanisch   01/27/88  help info for Penn State stats pkg
+
+
+Dave,
+
+Karen and Judy did a little typing for us.  This is the ASURV help manual.
+It clearly needs to be redone a bit for use in IRAF help files, but at least
+the real grunt work is done.
+
+
+From:	SCIVAX::WIESSNER     12-JAN-1988 10:41
+To:	HANISCH
+Subj:	Here's the typing
+
+                        1.0 Introduction
+
+     Observational astronomers frequently encounter the situation 
+where they observe a particular property (e.g. far infrared 
+emission, calcium line absorption, CO emission) of a previously 
+defined sample of objects, but fail to detect all of them.  The 
+data then contains "upper limits" as well as detections, 
+preventing the use of simple and familiar statistical techniques 
+in the analysis.  Statistical quantities frequently sought 
+include the mean value of the measured variable for the sample, 
+its distribution function, comparison of this distribution with 
+other samples, and the relation of the measured variable to other 
+properties of the objects.
+
+     A number of astronomers have recently recognized the 
+existence of a variety of statistical methods, or have derived 
+similar methods on their own, to deal with these problems.  The 
+methods are frequently collectively called "survival analysis" or 
+the "analysis of lifetime data," from their origins in actuarial 
+and related fields.  ASURV is a menu-driven stand-alone computer 
+package designed to assist astronomers in using some of these 
+methods.  Rev. 0.0 of ASURV provides all of the methods described 
+in our papers in the Astrophysical Journal (feigelson and Nelson, 
+1985; Isobe, Feigelson and Nelson, 1986).
+
+     No statistical procedure can magically recover information 
+that was never measured at the telescope.  However, there is 
+frequently important information implicit in the failure to 
+detect some objects which can be partially recovered under 
+reasonable assumptions.  We purposely provide several two-sample 
+tests, correlation tests and linear regressions - each based on 
+different models of where upper limits truly lie - so that the 
+astronomer can judge the importance of the different assumptions.
+
+     There are reasons for confidence in the methods.  First, the 
+volume of scholarly effort devoted to the problem is 
+impressive.  A dozen books and scores of papers have been 
+published during the last decade.  Second, other people in 
+enterprises involving thousands of lives and billions of dollars 
+appear to believe the methods.  Third, our Monte Carlo 
+simulations of a typical astronomical problem (flux-limited 
+satellite observations of a magnitude limited population of 
+uniformly distributed objects) showed several methods to be quite 
+reliable in this context (Isobe et al. 1986).  More simulations 
+of astronomical problems are definitely needed.
+
+     There are also reasons for not applying these methods.  We 
+describe some of their known limitations in section 2.3.
+
+     Because astronomers are frequently unfamiliar with this 
+field of statistics, we devote the first section to background 
+material.  Both general issues concerning censored data and 
+specifics regarding the methods used in ASURV are discussed.  A 
+more mathematical presentation can be found in many of the 
+
+
+references given in section 2.6.  Those wishing to get right down 
+to work should read section 2.4, find the appropriate program in 
+section 3, and follow the instructions in section 4.
+
+                         2.0 Background
+
+2.1  Overview of Survival Analysis
+
+     Statistical methods dealing with censored data have a long 
+and confusing history.  It began in the 17th century with the 
+development of actuarial mathematics for the life insurance 
+industry and demographic studies.  Astronomer Edmund Halley was 
+one of the founders.  In the mid-20th century, this application 
+grew along with biomedical and clinical research into a major 
+field of biometrics.  Similar (and sometimes identical) 
+statistical methods were being developed in two other fields: the 
+theory of reliability, with industrial and engineering 
+applications; and econometrics, with attempts to understand the 
+relations between economic forces in groups of people.  Finally. 
+we find the same mathematical problems and some of the same 
+solutions arising in modern astronomy as discussed is section 1 
+above.
+
+     Let us give an illustration on the use of survival analysis 
+in three disparate fields.  Consider a linear regression problem. 
+First, an epidemiologist wishes to determine how the longevity or 
+"survival time" (dependent variable) depends on the number of 
+cigarettes smoked per day (independent variable).  The experiment 
+lasts 10 years, during which some individuals die and others do 
+not. The survival time of the living individuals is only known to 
+be greater than their age when the experiment ends.  These values 
+are therefore "right censored data points."  Second, a company 
+manufacturing engines wishes to know the average time between 
+breakdowns as a function of engine speed to determine the optimal 
+operating range.  Test engines are set running until 20% of them 
+fail; the average "lifetime" and dependence on speed is then 
+calculated with 80% of the data points censored.  Third, an 
+astronomer observes a sample of nearby galaxies in the far-
+infrared to determine the relation between dust and molecular 
+gas.  Half have detected infrared luminosities but half are upper 
+limits ("left censored data points").  The infrared luminosities 
+are compared to CO observations, which themselves may contain 
+censored values.
+
+     Astronomers have dealt with their upper limits in a number 
+of fashions.  One is to consider only detections in the analysis; 
+while possibly acceptable for some purposes (e.g. regression), 
+this will clearly bias the results in others (e.g. estimating 
+luminosity functions).  A second procedure considers the ratio of 
+detected objects to observed objects in a given sample.  When 
+plotted in a range of luminosity bins, this has been called the 
+"fractional luminosity function" and has been frequently used in 
+extragalactic radio astronomy.  This is mathematically the same 
+as actuarial life tables.  But it is sometimes used incorrectly 
+
+
+in comparing different samples:  the detected fraction clearly 
+depends on the (usually uninteresting) distance to the objects as 
+well as their (interesting) luminosity.  Also, [] N error bars do 
+not apply in these fractional luminosity functions.
+
+     A third procedure is to take all of the data, including the 
+exact values of the upper limits, and model the properties of the 
+parent population under certain mathematical constraints, such as 
+maximizing the likelihood that the data fits the model.  This 
+technique, which is at the root of much of modern survival 
+analysis, was independently developed by astrophysicist Yoram 
+Avni (Avni et al. 1980; Avni and Tananbaum 1986) and is now 
+commonly used in X-ray astronomy.
+
+     The advantage accrued in learning and using survival 
+analysis methods developed in biometrics, econometrics, actuarial 
+and reliability mathematics is the wide range of useful 
+techniques developed in these fields.  In general, astronomers 
+can have faith in the mathematical validity of survival 
+analysis.  Issues of great social importance (e.g. establishing 
+Social Security benefits, strategies for dealing with the AIDS 
+epidemic, MIL-STD reliability standards) are based on it.  In 
+detail, however, astronomers must study the assumptions 
+underlying each model and be aware that some methods at the 
+forefront of survival analysis may not be fully understood.
+
+2.2  Overview of ASURV
+
+     The statistical methods for dealing with censored data might 
+be divided into a 2x2 grid: parametric vs. nonparametric, and 
+univariate vs. multivariate.  Parametric methods assume that the 
+censored survival times are drawn from a parent population with a 
+known distribution function (e.g. Gaussian, exponential), and is 
+the principal assumption of industrial reliability models.  
+Nonparametric models make no assumption about the parent 
+population, and frequently rely on maximum-likelihood 
+techniques.  Univariate methods are devoted to determining the 
+characteristics of the population from which the censored sample 
+is drawn, and comparing such characteristics for two or more 
+censored samples.  Bivariate methods measure whether the censored 
+property of the same is correlated with another property of the 
+objects and, if so, to perform a regression that quantifies the 
+relationship between the two vairables.  There are few truly 
+multivariate methods for censored data.
+
+     We have chosen to concentrate on nonparametric models, since 
+the underlying distribution of astronomical populations is 
+usually unknown.  Some methods (e.g. EM algorithm regression), 
+however, are fully parametric while others (e.g. Cox regression, 
+Buckley-James regression) are partially parametric.  Most of the 
+methods are derived and described in more detail in Schmitt 
+(1985), Feigelson and Nelson (1985) and Isobe et al. (1986).
+
+
+
+     The program within ASURV giving univariate methods is 
+UNIVAR.  Its first subprogram is KMESTM, giving the Kaplan-Meier 
+estimator for the distribution function of a randomly censored 
+sample.  First derived in 1958, it lies at the root of non-
+parametric survival analysis.  It is the unique, self-consistent, 
+generalized maximum-likelihood estimator for the population from 
+which the sample was drawn.  When formulated in cumulative form, 
+it has analytic asymptotic (for large N) error bars.  The median 
+is always well-defined, though the mean is not if the lowest 
+point in the sample is an upper limit.  It is identical to the 
+differential "redistribute-to-the-right" algorithm, 
+independently, derived by Avni et al. (1980), but when formulated 
+in integral form has simple analytic error analysis.
+
+     The second univariate program is TWOST, giving the variety 
+of ways to test whether two censored samples are drawn from the 
+same parent population.  They are mostly generalizations of 
+standard tests for uncensored data, such as the Wilcoxon and 
+logrank nonparametric two-sample tests.  They differ in how the 
+censored data are weighted or "scored" in calculating the 
+statistic.  Thus each is more sensitive to differences at one end 
+or the other of the distribution.  The Gehan and logrank tests 
+are widely used in biometrics, while some of the others are not.
+
+     BIVAR provides methods for bivariate data, giving two 
+correlation tests and three linear regression analyses.  Cox 
+hazard model (correlation test), EM algorithm, and Buckley-James 
+method (linear regressions) can treat several independent 
+variables if the dependent variable contains only one kind of 
+censoring (i.e. upper of lower limits).  Generalized Kendall's 
+tau (correlation test) and Schmitt's binned linear regression can 
+treat mixed censoring including censoring in the independent 
+variable, but can have only one independent variable.  We 
+currently do not provide error analysis for Schmitt's method.
+
+2.3  Cautions and Caveats
+
+     The Kaplan-Meier estimator works with any underlying 
+distribution (e.g. Gaussian, power law, bimodal), but only if the 
+censoring is "random."  That is, the probability that the 
+measurement of an object is censored can not depend on the value 
+of the censored variable.  At first glance, this may seem to be 
+inapplicable to most astronomical problems:  we detect the 
+brighter objects in a sample, so the distribution of upper limits 
+always depends on brightness.  However, two factors often serve 
+to randomize the censoring distribution.  First, the censored 
+variable may not be correlated with the variable by which the 
+sample was initially identified.  Thus, infrared observations of 
+a sample of radio bright objects will be randomly censored if the 
+radio and infrared emission are unrelated to each other.  Second, 
+astronomical objects in a sample usually lie at different 
+distances, so that brighter objects are not always the most 
+luminous.  In cases where the variable of interest is censored at 
+a particular value (e.g. flux, spectral line equivalent width, 
+
+
+stellar rotation rate) rather than randomly censored, then 
+parametric methods appropriate to "Type 1" censoring should be 
+used.  These are described by Lawless (1982) and Schneider 
+(1986), but are not included in this package.
+
+     Thus, the censoring mechanisms of each study MUST be 
+understood individually to judge whether the censoring is or is 
+not likely to be random.  The appearance of the data, even if the 
+upper limits are clustered at one end of the distribution, is NOT 
+a reliable measure.  A frequent (if philosophically distasteful) 
+escape from the difficulty of determining the nature of the 
+censoring in a given experiment is to define the population of 
+interest to be the observed sample.  The Kaplan-Meier estimator 
+then always gives a valid redistribution of the upper limits, 
+though the result may not be applicable in wider contexts.
+
+     The two-sample tests are somewhat less restrictive than the 
+Kaplan-Meier estimator, since they seek only to compare two 
+samples rather than determine the true underlying distribution.  
+The Gehan test assume that the censoring patterns of the two 
+samples are the same, but does not require that they be random.  
+The logrank test results appear to be correct even when the 
+censoring patterns differ somewhat.  There is little known about 
+the limitations of the other two-sample tests given here or the 
+bivariate generalized Kendall's tau rank statistic.
+
+     The two bivariate correlation coefficients, generalized 
+Kendall's tau and Cox regression, are both known to be inaccurate 
+when many tied values are present in the data.  Ties are 
+particularly common when the data is binned.  Caution should be 
+used in these cases.
+
+     Cox regression, though widely used in biostatistical 
+applications, formally applies only if the "hazard rate" is 
+constant; that is, the cumulative distribution function of the 
+censored variable falls exponentially with increasing values.  
+Astronomical luminosity functions, in contrast, are frequently 
+modeled by power law distributions.  It is not clear whether or 
+not the results of a Cox regression are significantly affected by 
+this difference.
+
+     There are a variety of limitations to the three linear 
+regression methods -- EM, BJ, and TWOKM -- presented here.  
+First, only TWOKM works when censoring is present in both 
+variables.  Second, EM requires that the residuals about the 
+fitted line follow a Gaussian distribution.  BJ and TWOKM are 
+less restrictive, requiring only that the censoring distribution 
+about the fitted line is random.  Both we and Schneider (1986) 
+find little difference in the regression coefficients derived 
+from these two methods.  Third, there is considerable uncertainty 
+regarding the error analysis of the regression coefficients of 
+all three models.  EM gives analytic formulae based on asymptotic 
+normality, while Avni and Tananbaum (1986) numerically calculate 
+and examine the likelihood surface.  BJ gives an analytic formula 
+
+
+for the slope only, but it lies on a weak theoretical 
+foundation.  We do not provide Schmitt's (1985) bootstrap error 
+analysis for TWOKM, partly because of the high computational 
+expense for large data sets.  Users may thus wish to run all 
+methods and evaluate the uncertainty with caution.  Fourth, use 
+of TWOKM is questionable in certain cases with heavy censoring.  
+The user must arbitrarily choose a bin size.  If it is too small, 
+many censored points at the end of the distribution will be 
+changed to detected points.  If the bins are too large, accuracy 
+in the regression calculation is reduced.  Fifth, the BJ method 
+has a defect in that the final solution occasionally oscillates 
+rather than converges smoothly.
+
+     If we consider the field of survival analysis from a broader 
+perspective, we note a number of deficiencies with respect to 
+censored statistical problems in astronomy.  Most importantly, 
+survival analysis assumes the upper limits in a given experiment 
+are precisely known, while in astronomy they frequently represent 
+n times the RMS noise level in the experimental detector, where 
+n=2, 3, 5, or whatever.  Methods adopted to this situation are 
+clearly needed.  A related deficiency is the absence of weighted 
+means or regressions.  Survival analysis also has not yet 
+produced any true multi-variate techniques, such as a Principal 
+Components Analysis that permits censoring.  There also seems to 
+be a dearth of nonparametric goodness-of-fit tests like the 
+Kolmogorov-Smirnov test.
+
+     Finally, we note that this package - ASURV - is not 
+unique.  Nearly a dozen software packages for analyzing censored 
+data have been developed (Wagner and Meeker 1985).  Four are part 
+of large multi-purpose commercial statistical software systems:  
+SAS, SPSS, BMDP, and GLIM.  These packages are available on many 
+university mainframes.  We have found BMDP to be the most useful 
+for astronomers (see Appendices to Feigelson and Nelson 1985, 
+Isobe et al. 1986 for instructions on its use).  It provides most 
+of the functions in KMESTM and TWOST as well as a full Cox 
+regression, but no linear regressions.  Other packages (CENSOR, 
+DASH, LIMDEP, STATPAC, STAR, SURVAN, SURVREG) were written at 
+various universities, medical institutes and industrial labs, and 
+have not been evaluated by us.  It is not clear whether ASURV 
+should be maintained and developed, or whether the astronomical 
+community should adopt one of these other packages.
+
+2.4  Acknowledgments
+
+     The production and distribution of this package is partially 
+supported by NSF Presidential Young Investigator Award AST 83-
+51447 and NASA Research Grant NAG 8-555.  We are grateful to Paul 
+Nelson (Dept. Statistics, Kansas State University) for an 
+enduring and fruitful collaboration; to Gillian Knapp and Mark 
+Wardle (Dept. of Astronomy, Princeton) and Mark Halpern (Dept. of 
+Statistics, Standford [sic]) for generously lending us software.
+
+
+
+2.5  Annotated Bibliography
+
+Amemiya, T. Advanced Econometrics (Harvard U. Press:Cambridge MA)
+     1985.  [Reviews econometric "Tobit" regression models 
+     including censoring.
+
+Avni, Y., Soltan, A., Tananbaum, H. and Zamorani, G.  "A Method
+     for Determining Luminosity Functions Incorporating Both Flux 
+     Measurement and Flux Upper Limits, with Applications to the 
+     Average X-ray to Optical Luminosity Ration for Quasars," 
+     Astrophys. J. 235:694 1980.  [The discovery paper in the 
+     astronomical literature for the differential Kaplan-Meier 
+     estimator.]
+
+Avni, Y. and Tananbaum, H. "X-ray Properties of Optically
+     Selected QSOs."  Astrophys. J. 305:57 1986.  [The discovery 
+     paper in the astronomical literature of the linear 
+     regression with censored data for the Gaussian model.]
+
+Brown, B.J. Jr., Hollander, M., and Korwar, R.M.  "Nonparametric
+     Tests of Independence for Censored Data, with Applications 
+     to Heart Transplant Studies" in Reliability and Biometry, 
+     eds. F. Proschan and R.J. Serfling (Philadelphia: SIAM) p. 
+     327 1974.  [Reference for the generalized Kendall's tau 
+     correlation coefficient.]
+
+Buckley, J. and James, I.  "Linear Regression with Censored
+     Data," Biometrika 66:429 1979.  [Reference for the linear 
+     regression with Kaplan-Meier residuals.]
+
+Feigelson, E.D. and Nelson, P.I.  "Statistical Methods for
+     Astronomical Data with Upper Limits:  I. Univariate 
+     Distributions," Astrophys. J. 293:192 1985.  [Our first 
+     paper, presenting the procedures in UNIVAR here.]
+
+Isobe, T., Feigelon, E.D., and Nelson, P.I.  "Statistical Methods
+     for Astronomical Data with Upper Limits: II. Correlation and 
+     Regression," Astrophys. J. 306:490 1986.  [Our second paper, 
+     presenting the procedures in BIVAR here.]
+
+Kalbfleisch, J.D. and Prentice, R.L.  The Statistical Analysis of 
+     Failure Time Data (Wiley:New York) 1980.  [A well-known 
+     monograph with particular emphasis on Cox regression.]
+
+Lee, E.T.  Statistical Methods for Survival Data Analysis 
+     (Lifetime Learning Pub.:Belmont CA) 1980.  [Hands-on 
+     approach, with many useful examples and FORTRAN programs.]
+
+Lawless, J.F.  Statistical Models and Methods for Lifetime Data
+     (Wiley:New York) 1982.  [A very thorough monograph, 
+     emphasizing parametric models and engineering applications.]
+
+
+Miller, R.G. Jr. Survival Analysis (Wiley, New York) 1981.
+     [A good introduction to the field; brief and informative 
+     lecture notes from a graduate course at Stanford.]
+
+Schmitt, J.H.M.M. "Statistical Analysis of Astronomical Data
+     Containing Upper Bounds:  General Methods and Examples Drawn 
+     from X-ray Astronomy."  Astrophys. J. 293:178 1985.  
+     [Similar to our papers, a presentation of survival analysis 
+     for astronomers.  Derives TWOKM regression for censoring in 
+     both variables.]
+
+Schneider, H.  Truncated and Censored Samples Normal Populations
+     (Dekker:New York) 1986.  [Monograph specializing on Gaussian 
+     models, with a good discussion of linear regression.]
+
+Wagner, A.E. and Meeker, W.Q. Jr. "A Survey of Statistical
+     Software for Life Data Analysis," in 1985 Proceedings of the 
+     Statistical Computing Section, (Amer. Stat. Assn.:Washington 
+     DC), p. 441.  [Summarizes capabilities and gives addresses 
+     for other software packages.]
+
+Wardle, M. and Knapp, G.R. "The Statistical Distribution of the
+     Neutral-Hydrogen Content of SO Galaxies," Astron. J. 91:23 
+     1986.  [Discusses the differential Kaplan-Meier distribution 
+     and its error analysis.] 
+
+Wolynetz, M.S.  "Maximum Likelihood Estimation in a Linear Model
+     from Confined and Censored Normal Data,"  Appl. Stat. 28:195 
+     1979.  [Published Fortran code for the EM algorithm linear 
+     regression.]
+
+
+
+
+          3.0  Outline of the Programs and Subroutines
+
+
+     UNIVAR deals with univariate censored data, and is divided 
+into two parts.  KMESTM calculates and prints the Kaplan-Meier 
+product-limit estimator of a randomly censored distribution.  
+TWOST computes several nonparametric two-sample tests for 
+comparing censored two or more censored data sets.  The code 
+closely follows that given by Lee (1980, Appendix B).  Figure 1 
+shows the various subroutines and their relationships.  Detailed 
+remarks can be found in comments are the beginning of each 
+subroutine.
+
+     BIVAR deals with bivariate censored data, and provides two 
+correlation coefficients (subroutines COXREG and BHK) and three 
+linear regressions (EM, BJ, and TWOKM).  Figure 2 shows the 
+structure.  COXREG computes the correlation probabilities by 
+Cox's proportional hazard model and BHK computes the generalized 
+Kendall's tau.  EM calculates linear regression coefficients by 
+the EM algorithm assuming a normal distribution of residuals, BJ 
+calculates the Buckley-James regression with Kaplan-Meier 
+residuals, and TWOKM calculates the binned two-dimensional 
+Kaplan-Meier distribution and associated linear regression 
+coefficients derived by Schmitt (1985).  The code for EM 
+algorithm follows that given by Wolynetz (1979) except minor 
+changes.  The code for Buckley-James method is adopted from 
+Halpern (Stanford Department of Statistics; private 
+communication).  COXREG, BHK, and TWOKM code were developed 
+entirely by us.
+
+
+
+                      4.0  How to Run ASURV
+
+
+4.1  General Setup
+
+     ASURV is designed to be menu-driven.  There are two basic 
+input structures:  a data file, and a command file.  The data 
+file is assumed to reside on disk.  For each observed object, it 
+contains the measured value of the variable of interest and an 
+indicator as to whether it is detected or not.  The indicator is 
+0 if detected, -1 if an upper limit (most common in astronomical 
+applications), or +1 if a lower limit (most common in lifetime 
+applications).  The command file may either reside on disk, or 
+may be given interactively at the terminal.
+
+     For the univariate program UNIVAR, the format of the data 
+file is determined by the subroutine DATAIN.  It is currently set 
+at 10*(I4,F10.3) for KMESTM, where each column represents a 
+distinct subsample.  For TWOST, it is set at I4, 10*(I4,F10.3), 
+where the first column gives the sample identification number.  
+Table 1 gives an example of a TWOST data file called 
+'Galax.dat'.  It shows a hypothetical study where six normal 
+galaxies, six starburst galaxies and six Seyfert galaxies were 
+observed with the IRAS satellite.  The variable is the log of the 
+60-micron luminosity.  The problem we address are the estimation 
+of the luminosity functions of each sample, and a determination 
+whether they are different from each other at a statistically 
+significant level.  Command file input formats are given in 
+subroutine UNIVAR, statements 2690 to 3225.  The input lines are 
+parsed in subroutines DATA and DATA2.  Note that the True/False 
+indicators are given in the command file as 1/0 in the first 
+column (not in the 4th column as required by I4 formats).
+
+     For the bivariate program BIVAR, the data file format is 
+determined by the subroutine DATREG.  It is currently set at 
+I4,10F10.3.  Table 2 shows an example of a bivariate censored 
+problem.  Here one wishes to investigate possible relations 
+between infrared and optical luminosities in a sample of 
+galaxies.  Note that adjustment of the format statements in 
+DATAIN and DATREG would allow any program to be run from a single 
+multi-variable, multi-sample data file if desired.  Users are 
+encouraged to change the format statements to suit their needs.  
+BIVAR command file input formats are sometimes a bit complex.  
+The examples below illustrate various common cases.  The formats 
+for the basic command inputs are given in subroutine BIVAR, 
+statements 6660 to 7115.  Additional inputs for the EM algorithm, 
+Buckley-James method, and Schmitt's binned two-dimensional 
+Kaplan-Meier method are given in subroutines R3, R4, and R5 
+respectively.
+
+     The current version of ASURV is set up for data sets with 
+fewer than 200 data points and occupies about 0.35 MBy of core 
+memory.  For problems with more than 200 points, the array sizes 
+in all subroutines must be changed.  Note that for the 
+
+
+generalized Kendall's tau correlation coefficient, and possibly 
+other programs, the computation time goes up as a high power of 
+the number of data points.
+
+
+
+
+                             Table 1
+
+             Example of UNIVAR Data Input for TWOST
+
+          IR, Optical and Radio Luminosities of Normal,
+                 Starburst and Seyfert Galaxies
+
+
+                                  ____
+         0      0      28.5       |
+         0      0      26.9       |
+         0     -1      29.7       Normal galaxies
+         0     -1      28.1       |
+         0      0      30.1       |
+         0     -1      27.6       ____
+         1     -1      29.0       |
+         1      0      29.0       |
+         1      0      30.2       Starburst galaxies
+         1     -1      32.4       |
+         1      0      28.5       |
+         1      0      31.1       ____
+         2      0      31.9       |
+         2     -1      32.3       Seyfert galaxies
+         2      0      30.4       |
+         2      0      31.8       ____
+         |      |        |
+        #1     #2       #3
+
+
+
+           
+Note: #1 : indicator of subsamples (or groups)
+           If you need only K-M estimator, leave out this
+           indicator.
+      #2 : indicator of censoring
+      #3 : variable (in this case, the values are in log form)
+
+
+
+                             Table 2
+
+           Example of Bivariate Data Input for MULVAR
+
+       Optical and IR luminosity relation of IRAS galaxies
+
+
+         0    27.2     28.5
+         0    25.4     26.9
+        -1    27.2     29.7
+        -1    25.9     28.1
+         0    28.8     30.1
+        -1    25.3     27.6
+        -1    26.5     29.0
+         0    27.1     29.0
+         0    28.9     30.2
+        -1    29.9     32.4
+         0    27.0     28.5
+         0    29.8     31.1
+         0    30.1     31.9
+        -1    29.7     32.3
+         0    28.4     30.4
+         0    29.3     31.8
+         |      |        |
+        #1     #2       #3
+            ________  ______
+            Optical     IR
+
+
+Note:  #1:  indicator of censoring
+       #2:  independent variable (may be more than one)
+       #3:  dependent variable
+
+
+
+
+
+
+===============================================================================
+Entry #21   ball@stsci        03/10/88  Multivariate method restriction in ASURV
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+Hi Takashi,
+
+     Sorry to have been out of touch for a while.  I have been working
+on other things recently and have just gotten back to the survival
+analysis work.  I have a question on some checks that you make in the
+bivariate/multivariate algorithms to retrict the choice of methods
+a user may choose after the subroutine datreg reads in the data.  
+I need to know what to check for in each individual algorithm
+to prohibit its use on inappropriate data, i.e. what type of data
+is the Buckley-James method not useable for or the em method, etc. for
+each of the five methods?  I have implemented the BHK method and the
+Cox-hazard method already, but I would appreciate having this information
+for them also.  I think I will have all methods implemented by the end
+of next week (or shortly thereafter!), so as soon as you can get this
+to me I would appreciate it!  Thanks.
+
+Dave
+
+===============================================================================
+Entry #22   ball@stsci        03/10/88  ASURV parameter initialization
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+Hi Takashi
+    It's me again!  I almost forgot:  particularly for the em and schmitt
+methods, some initial values for some parameters are to be supplied (or guesses)
+by the user but we had agreed that the program would do that; what are good
+values for these parameters for most cases?
+Dave
+
+===============================================================================
+Entry #23   ball@stsci        03/23/88  Recent mail
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+
+Takashi,
+   Thanks for the information.  I have not yet had a chance to assimilate
+all the news, but I do have a file with thhe data from Kriss in it if you're
+interested.  Let me know and I'll mail you a copy.
+Dave
+
+===============================================================================
+Entry #24   ball@stsci        03/28/88  More questions
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+Takashi,
+    How's spring in State College?  The daffodils are blooming here.  
+I need some more information on the icheck/ifault useage in the EM method;
+I don't really understand how they are used in the routines em and emalgo
+so I am having a little trouble seeing how to code them into my driver routine
+for the em method.  Also the information you gave me on how the use of each
+method is restricted by the type of censoring was good (for em, bj, and schmitt
+methods); I need the same information for coxreg and bhk.
+Thanks!
+Dave
+
+===============================================================================
+Entry #25   scivax::ball      03/28/88  questions answered
+
+
+From ti@jabba.psu.edu Tue Mar 22 14:18:47 1988
+Received: Tue, 22 Mar 88 14:14:59 EST from jabba.psu.edu by stsci.arpa (3.2/1.0)
+Received: by jabba.psu.edu (3.2/Psu1.0)
+	id AA00153; Tue, 22 Mar 88 12:53:59 EST
+Date: Tue, 22 Mar 88 12:53:59 EST
+From: ti@jabba.psu.edu (Takashi Isobe)
+Message-Id: <8803221753.AA00153@jabba.psu.edu>
+To: ball
+Subject: ASURV
+Status: R
+
+
+
+Hi, Dave:
+     Sorry not to answer to your questions soon, but I just came back from IPAC
+last weekend and did not start work till yesterday (in fact, I was in Baltimore
+on Sunday to see the Gun show). Here are the answers:
+
+1. EM algorithm and Buckley-James methods can treat multivariate problems.The 
+restriction is that the censoring is allowed only in the dependent variable.
+All dependent variables should be completely detected.On the other hand, 
+Schmitt's method cannot treat multivariate problem, but can take censored
+points in both variables. The censoring indicators which can be used for EM and
+B-J are -1, 0 , 1 which indicate the censoring status of the dependent
+variable. Those of Schmitt's are -4, -3, -2, -1, 0, 1, 2, 3, 4, which indicate
+censored status of dependent and/or indpendent variables.
+
+2. Please set the itereation limit aroud 400. If the conversion does not occur
+before that, the data are not good enuogh to examine. The torelance level is
+10**-5 is normally good enough. For Schmitt's method, the
+number of bins of both axies can be set around 15, though it might be too many 
+for the small data set.
+
+   If you have any more questions, please let me know.
+
+
+                                      Takashi
+
+
+P.S. These days, I'm using Mac and not the department computer, so sometime
+it takes a few extra days to find out that I have received mails.
+
+
+
+===============================================================================
+Entry #26   scivax::ball      03/28/88  more questions answered
+
+
+From ti@jabba.psu.edu Tue Mar 22 14:21:46 1988
+Received: Tue, 22 Mar 88 14:20:34 EST from jabba.psu.edu by stsci.arpa (3.2/1.0)
+Received: by jabba.psu.edu (3.2/Psu1.0)
+	id AA00133; Tue, 22 Mar 88 12:51:01 EST
+Date: Tue, 22 Mar 88 12:51:01 EST
+From: ti@jabba.psu.edu (Takashi Isobe)
+Message-Id: <8803221751.AA00133@jabba.psu.edu>
+To: ball
+Subject: ASURV
+Status: R
+
+
+
+Hi Dave:
+     I can't send the mail to you yet, but I'll try again. This mail contains 
+the answers for the mail on 18th.
+
+
+
+
+
+o in these tasks as well as in the em algorithm, you compute alpha and sigmaa
+(slope-intercept coefficients).  Most places they are dimensioned at 10 but
+shouldn't they be nvar+2?  Some related arrays probably need to be increased
+also then.
+
+*******You are right. Since not so many astronomers use more than 3 independent
+       variables, I just ignored the inconsistancy. Please change in your
+       varsion.
+
+o when I was testing the IRAF version of the schmitt algorithm, I got slightly
+different answers between the original ASURV and the IRAF version for the IRAS
+luminosity galaxy sample for 10 bins in x and y letting the program compute
+sizes and origin, but the same results when I chose 9 bins in both.  Your
+comments in the schmitt routines suggest that this algorithm is VERY sensitive
+to the bin size and number.  Is this right?  If so it would be good if we could
+figure out a way for the program to compute optimal values for these parameters.
+
+*******This is the very dificult problem. I do not know the best way. There are
+       two factors. First, if you take only a few bins, you lose the positional
+       information. Second, if you take hundreds of bins, though you can get
+       good positional information, you can't use upper limits as weight (you 
+       need to drop the upper limits of change them to detection.)
+       From my experience, 10 to 15 bins are relatively safe. If you have any 
+       thought, let me know.
+
+o I need a more extensive set of test data, something with more points and more
+independent variables(>=2).  Do you have something like that I could use to test
+the ASURV stuff with?
+
+******I don't have a data set that you want, but I suggest to use the data from
+      Table 1 of G. Kriss(1988, Ap. J. 324, 809; Jan. 15, 1988). The regression
+      among logL(1micro)-logL(2500)-logL(2kev)is good one. I havn't had time to
+      test it yet, I'll compute it and let you know the result.
+
+o in the em routine, you use icheck and ifault (returned from emalgo) almost
+like counters of the number of iterations used.  I would like to combine them
+if possible into ite and return that to the IRAF driver I am working on and
+let the driver decode and print the Wolynetz error messages rather than do
+that in em.  Is this possible?
+******Yes, I do not find any problem.
+
+
+    I hope that you recieve this mail.
+
+                                                          Takashi
+
+
+===============================================================================
+Entry #27   ball@stsci        03/31/88  More questions on the Bi/multivariate tasks
+
+
+From: Dave Ball <ball@stsci.arpa>
+
+Takashi,
+    How's spring in State College?  The daffodils are blooming here.  
+I need some more information on the icheck/ifault useage in the EM method;
+I don't really understand how they are used in the routines em and emalgo
+so I am having a little trouble seeing how to code them into my driver routine
+for the em method.  Also the information you gave me on how the use of each
+method is restricted by the type of censoring was good (for em, bj, and schmitt
+methods); I need the same information for coxreg and bhk.
+Thanks!
+Dave
+
+P.S. I tried to send this to you Monday Mar 28 but you end of the network was
+down, so I am trying again!
+
+===============================================================================
+Entry #28   ti@jabba          04/11/88  ASURV
+
+
+From: ti@jabba.psu.edu (Takashi Isobe)
+
+
+Hi Dave:
+
+blooming and ladies are wearing very attractive clothes...
+      I received March 31 (returned to you on Apr. 4) letter. It looks like
+some problems between our computers. Here is the answer for the question about
+Icheck:
+      Icheck is the indicator which is related to subroutine syminv. The
+subroutine syminv computes the errors for the linear regression coefficient
+but sometime it fails to get results due to zero entries in the diagonal 
+component. Since, if the subroutine em gets ifault<0, it won't print the 
+results but the error messages, even all other values are available, to 
+print out the linear regression coefficients (without errors), I needed to
+add icheck which is not in the original code. This problem is rarely happened
+but it is good idea to keep it.
+      
+      The coxreg can use multiple independent variables if they are completely
+detected (in the same categoly as EM and B-J), and BHK can use one independent
+and one dependent variables but they can contain upper (lower) limits in either
+variables.
+
+      By the way, my department email address might be changed. Could you try
+next few options?
+
+         ti@astro.psu.edu
+         ti@jabba.psu.edu
+         ti%jabba@psuvm.bitnet
+
+I do not know which one is working now.
+
+
+                                                 Takashi Isobe
+
+===============================================================================
+Entry #29   scivax::ball      04/11/88  Test messages done for now
+
+
+Takashi,
+
+I have discovered that our Unix machine is having lots of problems today so
+I won't be sending you any test messages that way for a while.  Let me know
+which of the other two addresses worked (astro DID not from here:  unknown host)
+Thanks.
+
+Dave
+
+===============================================================================
+Entry #30   ti@jabba          04/15/88  ASURV
+
+
+From: ti@jabba.psu.edu (Takashi Isobe)
+
+
+
+Dave:
+     I received three mails dated on Apr. 11 and 12. I guess this means that
+the experiments are succesful.
+     By the way, Eric wants to add two more methods in the regression/corr-
+relation part. Are you interested in that? Also, if you want to, I can add
+the error analysis for twokm (though, since it uses the bootstrapping method,
+this error analysis takes lots of cpu time).
+
+                                             Takashi
+
+===============================================================================
+Entry #31   ball@scivax       04/15/88  Additions to ASURV
+
+
+From: "DAVID BALL" <ball@scivax.stsci.edu>
+
+Takashi,
+
+    Thanks for the quick response.  It looks like our network connections are
+back together again.  In answer to your question of interest, I would say that
+we definitely are interested in any further major enhancements to ASURV, and
+since new algorithms for correlation/regression, etc., fit that we would be
+interested in adding them to the IRAF implementation.  All methods have now
+been integrated into IRAF; I have begun to work on the help files that users
+can read online, so the entire package should be ready for you and 
+Dr. Feigelson to review and see demonstrated very soon.  Bob would like 
+for you both to come here for a brief visit to do that, but I don't know 
+any more like how soon or whatever.  Perhaps if you should have the new code
+ready by the time you visit, we could add that while you are here.  As you may
+recall, the IRAF version is seven separate tasks; if you would like to see
+some kind of a structure diagram of the IRAF programs before you include
+the new stuff in your version, I would be glad to oblige.  You might see
+easier ways to build the new stuff to fit easily into both versions.  The
+only real concern I would voice is that about print statements and parameter-
+getting which we discussed before.  I have supplied main driver routines
+for all the methods which do that; in some cases I have also rewritten your
+routines into the IRAF spp langauge to do some printout.  In any case, however
+you decide to do it won't be a problem unless you pass data to the lower level
+subroutines in common rather than in the calling sequence.  That would make
+it more difficult to expand the programs to allow more than 200 data values
+later.  Ah, well, I rattle on here.  We can discuss any of this by email
+or perhaps even a "conference" phone call would be useful(?).  I'm sure Bob
+will be in touch about a visit and I certainly will with material for you to
+read.  Hope the weather is nice.  Thanks!
+
+Dave
+------
+
+===============================================================================
+Entry #32   scivax::hanisch   05/25/88  visit by Takashi
+
+
+Would Thu/Fri 16/17 June be clear for you if Takashi were to come visit?
+I want him to give a talk to the sci staff and to close the loop on the
+installation of the ASURV package.
+
+===============================================================================
+Entry #33   scivax::biemes    05/26/88  statistics$twost
+
+
+Dave,
+	I see there is a sort2 module used by this twost task.  I had to write
+a "double sort" VOPS routine for the ks test, and maybe this could be used by
+twost as well.  Then we could move the asrt2.gx code to statistics$lib/.
+I notice that their code would not permit this to be done real easily, but it
+would be a good idea anyway, especially since their sort2 is a bubble sort.
+(I just modified the regular VOPS asrt routine, which is a quicksort.)
+
+Chris

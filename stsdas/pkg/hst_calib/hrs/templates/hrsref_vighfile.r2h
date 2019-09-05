@@ -1,0 +1,39 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'REAL*4  '           /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                   96 /                                                
+                                                                                
+                               / GROUP PARAMETERS: PODPS CALIBRATION            
+PTYPE1  = 'CAR_POS '           / carrousel position                             
+PDTYPE1 = 'REAL*4  '           / datatype of parameter 1                        
+PSIZE1  =                   32 / number of bits in parameter 1                  
+PTYPE2  = 'LINE_POS'           / line position                                  
+PDTYPE2 = 'REAL*4  '           / datatype of parameter 2                        
+PSIZE2  =                   32 / number of bits in parameter 2                  
+PTYPE3  = 'APERTURE'           / aperture name: SSA, LSA                        
+PDTYPE3 = 'CHARACTER*4'        / datatype of parameter 3                        
+PSIZE3  =                   32 / number of bits in parameter 3                  
+                                                                                
+                               / HRS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'HRS     '           / instrument                                     
+FILETYPE= 'VIGNETTING'         / vignetting calibration file set                
+HEADNAME= 'ZVIGFILE2.R2H'      / reference file set header filename             
+DATANAME= 'ZVIGFILE2.R2D'      / reference file set data filename               
+DATE    = '                  ' / date this file originated (yyyy-mm-dd)         
+                                                                                
+                               / HRS DATA REDUCTION KEYWORDS                    
+GRATING = 'G140M   '           / grating, echelle, or mirror in use             
+SAMPBEG =                  0.0 / first response sample number                   
+SAMPOFF =                  1.0 / sample offset                                  
+                                                                                
+                               / HRS DATA QUALITY KEYWORDS                      
+USEAFTER= '        '           / use this file for obs. taken on/after this date
+PEDIGREE= 'INFLIGHT'           / data source (INFLIGHT,GROUND,MODEL,DUMMY) &date
+DESCRIP = 'Description of where the reference data is from'                     
+                                                                                
+END                                                                             

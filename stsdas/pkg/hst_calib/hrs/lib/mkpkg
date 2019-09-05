@@ -1,0 +1,44 @@
+# Update the lib application code in the hrs package library
+# Author: CDBS, 1-MAR-1988
+
+$checkout hrs.a ../
+$update   hrs.a
+$checkin  hrs.a ../
+$exit
+
+hrs.a:
+	ccprt.f        		
+	covsrt.f       		
+	crossc.f       		
+	dmnmax.f       		
+	gaussj.f       		
+	gtroot.x
+	lfit.f         		
+	lfit2.f        		
+	lfit3.f        		
+	lookup.f       		
+	minmax.f       		
+	mrqcof.f       		
+	mrqmin.f       		
+	poly1.f        		
+	polyft.f       		
+	spline.f       		
+	splint.f       		
+        splin2.f
+        splie2.f
+	tabinv.f       		
+	taccor.f       		
+	taedge.f       		
+	tainfo.f       		
+        zfname.f
+	zindex.f       		
+	zinteg.f       		
+	zlintp.f       		
+	zmrqs1.f       		
+	zmrqsp.f       		
+	zpksr2.f       		
+	zspfit.f       		
+	zspldr.f       		
+	zsplin.f       		
+	ztplat.f       		
+	;

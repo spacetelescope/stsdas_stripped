@@ -1,0 +1,8 @@
+input, f, a, "", , , 		Input image name
+igi_output, f, a, "", , ,	Output igi script file name
+x1, r, a, , , ,			left position of the plot
+x2, r, a, , , ,			right position of the plot
+y1, r, a, , , ,			bottom position of the plot
+y2, r, a, , , ,			top position of the plot
+
+mode, s, h, "al"

@@ -1,0 +1,561 @@
+.help spec_polar Mar98 stsdas.hst_calib.fos
+.ih
+NAME
+spec_polar -- Processing and Analysis of FOS Polarimetry Observations.
+.ih
+INTRODUCTION 
+The 'spec_polar' package contains tasks to examine, manipulate, and
+reprocess FOS spectropolarimetry observation datasets. Tasks are available
+to plot and examine both flux-calibrated spectra as well as polarization 
+spectra that are derived from the flux-calibrated spectra. There are also
+tasks to average multiple datasets for a target either at the stage of
+flux-calibrated spectra or polarization spectra and to rebin polarization
+spectra in order to increase the signal-to-noise ratio.
+
+The next few sections describe the structure and content of the images
+that comprise an FOS polarimetry dataset, as well as a desription of the
+standard processing that is performed by the pipeline calibration system
+(CALFOS). The final sections give an overview of the capabilities of the
+tasks in the 'spec_polar' package and a brief tutorial as to how they
+can be used to perform typical sequences of operations on a polarimetry
+data set.
+.ih
+INSTRUMENT DESCRIPTION
+There are two polarization analyzer elements available in the FOS: a thick
+waveplate (plate "A") plus Wollaston prism assembly, and a thin waveplate
+plus Wollaston prism assembly (plate "B").
+The waveplate plus Wollaston prism assemblies are located just behind the 
+entrance apertures of the spectrograph and split the incoming beam into a 
+pair of spectra that correspond to orthogonal directions of polarization. 
+The first spectrum corresponds to the first pass direction (ordinary ray),
+and the second to the second pass direction (extra-ordinary ray). One
+exposure is composed of an observation of each of these two spectra and
+is accomplished by alternately deflecting one of the spectra onto the diode 
+array.
+Furthermore, the waveplate+prism assemblies rotate in order to observe the 
+spectra from both pass directions at different position angles.
+In normal spectropolarimetry each spectrum is observed once at 
+each of 4, 8, or 16 position angles separated by 22.5 degrees. 
+.ih
+GENERIC PIPELINE CALIBRATION AND IMAGE FORMATS
+The raw dataset ('d0h' images) for an FOS observation has the two spectra 
+observed at each waveplate position angle stored back-to-back in a single 
+data group of the multigroup images. Thus for a quarter-stepped spectrum,
+consisting of 2064 pixels, each data group in the 'd0h' images has 2 x 2064
+pixels of data; pixels 1-2064 contain the spectral data for pass direction 1,
+while pixels 2065-4128 contain the spectral data for pass direction 2.
+The number of data groups in a raw ('d0h') image is equal to the number
+of different waveplate position angles (usually 4, 8, or 16) at which
+observations were obtained for the spectral pairs.
+
+The raw datasets for polarimetry observations follow the normal calibration
+process provided by the task CALFOS. The basic reduction steps include 
+conversion from counts to count rates (i.e. division of the spectra by the
+exposure time), corrections for detector non-linearities, subtracting
+background and sky spectra from the object spectra, flatfielding the
+object spectra, and converting the countrate object spectra to absolute
+flux units. Statistical errors in the object spectra - computed as the
+square-root of the original number of counts per pixel - are also propagated
+through each of these operations (type "help calfos" for more details of 
+the routine calibration process). 
+
+At this point there are 4 images in the calibrated dataset that are of
+interest to the analysis of polarimetric data: the wavelength image, with
+an image name extension of 'c0h', the flux-calibrated object spectra image,
+with an extension of 'c1h', the flux-calibrated statistical errors
+image, with an extension of 'c2h', and the data quality flags image, with an
+extension of 'cqh'. The formats of these calibrated images are rearranged
+somewhat relative to the format of the original raw ('d0h') image. Instead
+of having the two spectra (pass direction 1 and pass direction 2) obtained
+at each waveplate position stored back-to-back in a single data group, they
+are stored sequentially in pairs of individual groups where each group is
+now only 2064 pixels in length. The spectra from pass direction 1 are stored
+in the odd-numbered groups, while the pass direction 2 spectra are in the
+even-numbered groups. This is illustrated in the following
+table (for an observation sequence that includes 16 waveplate positions):
+
+.nf
+----------------------------------
+| Group  | Pass      | Waveplate |
+| Number | Direction | Position  |
+----------------------------------
+|    1   |     1     |     1     | 
+|    2   |     2     |     1     |
+|    3   |     1     |     2     |
+|    4   |     2     |     2     |
+|    5   |     1     |     3     |
+|    6   |     2     |     3     |
+|    .   |     .     |     .     |
+|    .   |     .     |     .     |
+|    .   |     .     |     .     |
+|   31   |     1     |    16     |
+|   32   |     2     |    16     |
+----------------------------------
+.fi
+
+A one-to-one correspondence is maintained between the groups in the
+wavelength ('c0h'), flux ('c1h'), error ('c2h'), and data quality ('cqh') 
+images.
+For example, the wavelength vector in group 3 of the 'c0h' image is to be
+associated with the flux spectrum in group 3 of the 'c1h' image, as are the 
+error spectra and data quality vectors in group 3 of the 'c2h' and 'cqh' 
+images, respectively. 
+
+.ls Wavelength Image ('c0h')
+An image with 2*POLSCAN groups with wavelengths for both pass directions
+through the Wollaston prism and each waveplate position.
+The wavelengths for the different waveplate positions
+should be identical (rotating the waveplate does not shift the spectra),
+but the wavelengths are offset by a constant amount between the two pass
+directions at each waveplate position. Therefore the wavelength vectors
+contained in the odd-numbered groups of a 'c0h' image will all be identical,
+as will the wavelengths in the even-numbered groups, but there is a constant
+offset between the values in the odd- and even-numbered groups.
+.le
+.ls Flux Image ('c1h')
+An image with 2*POLSCAN groups containing calibrated flux spectra for both
+pass directions through the Wollaston prism and each waveplate position.
+The relationship between image group number, pass direction, and waveplate
+position is as outlined above. Note that unlike calibrated flux data for
+non-polarimetric observations, the first group will not represent the total
+absolute flux for the source, but only half. Representative fluxes are formed
+by averaging the fluxes from the set of waveplate positions for each pass
+direction separately and then summing the two. However, as discussed above,
+there is a wavelength shift between the spectra from the two pass directions.
+To combine the two mean spectra from both pass directions one of
+them must be shifted to align with the other (use 'imshift' in iraf.images or
+'resample' in stsdas.hst_calib.ctools) and then sum the two spectra.
+However the total flux (Stokes I) is also computed by the spectropolarimetric
+reduction process (in the 'c3h' image; see below) and so is more conveniently 
+accessed there.
+.le
+.ls Statistical Error Image ('c2h')
+An image with 2*POLSCAN groups with statistical error on the calibrated
+flux for both pass directions through the Wollaston prism and each waveplate
+position. The flux error spectra are stored in exactly the same fashion
+as the wavelength and flux spectra. As is the case with the calibrated flux
+data, this data set differs from the statistical errors for non-polarimetric
+data in that the errors cannot be simply combined. It is suggested that the
+error on Stokes I computed by the polarimetric processing be used for the
+total flux error.
+.le
+.ls Data Quality Image ('cqh')
+An image with 2*POLSCAN groups containing data quality values for the 
+calibrated fluxes. The organization is exactly the same as that of the
+calibrated fluxes. The data quality values are as follows:
+
+.nf
+-------------------------------------------------------------------
+| DQ Value | Condition                                            |
+-------------------------------------------------------------------
+|    50    | Sampling less than 50% of nominal                    |
+|          |                                                      |
+|   100    | Reed-Solomon decoding error                          |
+|   120    | Sky or background spectrum repaired or extrapolated  |
+|   130    | Moderate saturation correction (uncertainty > 5%)    |
+|   160    | Possible contamination from intermittent dead diode  |
+|   170    | Possible contamination from intermittent noisy diode |
+|   190    | Large saturation correction (uncertainty > 20%)      |
+|          |                                                      |
+|   200    | Invalid inverse sensitivity value applied            |
+|   300    | Severe saturation correction (uncertainty > 50%)     |
+|   400    | Disabled diode                                       |
+|   700    | Data filled due to ground-based GIMP correction      |
+|   800    | Data filled                                          |
+-------------------------------------------------------------------
+.fi
+.le
+.ih
+POLARIMETRIC PROCESSING AND DATA FORMATS
+After the completion of the generic calibration processing steps outlined
+above, the CALFOS procedure applies extra steps of processing that are
+unique to spectropolarimetry datasets. Using the calibrated wavelength, flux,
+error, and data quality spectra, CALFOS performs the following four steps:
+
+1) Compute Stokes parameter IQUV spectra and errors, as well as linear
+polarization (PL), polarization position angle (THETA), and circular 
+polarization (PC), and their associated errors, for spectra from pass 
+direction 1;
+
+2) Compute Stokes parameter IQUV spectra and errors, as well as linear
+polarization (PL), polarization position angle (THETA), and circular 
+polarization (PC), and their associated errors, for spectra from pass 
+direction 2;
+
+3) Compute the weighted mean of the Stokes IQUV spectra (and errors) from
+the two pass directions, and recompute PL, THETA, and PC (and errors) 
+from the mean Stokes spectra;
+
+4) Correct the mean Stokes and polarization spectra computed in step 3 for
+interference between Q and U and correct THETA for instrumental orientation
+(i.e. transform THETA from instrumental coordinates to sky coordinates).
+
+5) If applicable, apply the post-COSTAR polarimetry corrections.
+
+The results of the polarimetric processing are stored in the so-called
+"special statistics" file, which has the same root file name as the rest
+of the dataset with an image name extension of 'c3h'. The 'c3h' image contains
+56 data groups, organized as follows: Four sets of 14 groups, with the first
+set (groups 1-14) containing polarization spectra associated with pass
+direction 1, the second set (groups 15-28) containing polarization spectra
+for pass direction 2, the third set (groups 29-42) containing polarization
+spectra for both pass directions combined, and the fourth set (groups 43-56)
+containing the combined polarization spectra that have been corrected for
+interference and instrument orientation. The organisation of each set of 14
+groups is as follows:
+
+.nf
+-------------------------------------------------------------------
+|   Set 1   |   Set 2   |   Set 3   |   Set 4   |                 |
+-------------------------------------------------------------------
+| Pass dir. | Pass dir. | Pass dir. | Pass dir. |                 |
+|     1     |     2     |    1+2    | 1+2+corr. | Contents        |
+-------------------------------------------------------------------
+| Grp 1     |    15     |     29    |     43    | Stokes I        |
+|     2     |    16     |     30    |     44    | Stokes Q        |
+|     3     |    17     |     31    |     45    | Stokes U        |
+|     4     |    18     |     32    |     46    | Stokes V        |
+|     5     |    19     |     33    |     47    | Stokes I error  |
+|     6     |    20     |     34    |     48    | Stokes Q error  |
+|     7     |    21     |     35    |     49    | Stokes U error  |
+|     8     |    22     |     36    |     50    | Stokes V error  |
+|     9     |    23     |     37    |     51    | Lin.  pol. (PL) |
+|    10     |    24     |     38    |     52    | Circ. pol. (PC) |
+|    11     |    25     |     39    |     53    | Pol. PA (THETA) |
+|    12     |    26     |     40    |     54    | PL error        |
+|    13     |    27     |     41    |     55    | PC error        |
+|    14     |    28     |     42    |     56    | THETA error     |
+-------------------------------------------------------------------
+.fi
+
+The fourth set of Stokes and polarization spectra (corresponding to the
+merged and corrected data) is normally the one of interest for analysis of
+final results.
+.ls Wavelengths for Polarization Spectra
+The wavelength assignments for the first set of polarization spectra (groups
+1-14) in the 'c3h' image are the same as that of the flux spectra for the
+first pass direction, which is contained in group 1 of the 'c0h' image.
+The wavelength assignments for set 2 (groups 15-28) of the 'c3h' image are the
+same as that for the flux spectra for pass direction 2, which is contained
+in group 2 of the 'c0h' image. For the combined data contained in the third
+and fourth sets (groups 29-56) of the 'c3h' image, the wavelengths are the same
+as that of the first pass direction, and therefore are again given by group
+1 of the 'c0h' image.
+.le
+.ls Data Quality for Polarization Spectra
+The data quality values contained in the 'cqh' image only strictly apply to
+each of the individual flux spectra contained in the 'c1h' image. Because
+the polarization spectra in the 'c3h' image are computed from the combination
+of all flux spectra, there is no longer a one-to-one correspondence between
+any of the individual data quality vectors in the 'cqh' image and the 
+polarization spectra. 
+
+The data quality values are used to exclude individual
+bad pixels in the flux spectra during the process of computing the polarization
+spectra; any pixel with a dq value of 200 or greater is not used in the
+computation of polarimetry values at that channel. In the event that there are 
+fewer than 4 good (non-rejected) input flux values at a given channel, the
+output Stokes and polarization values (and errors) for that channel
+are set to zero. Bad pixels in the 'c3h' image can therefore be identified by
+the fact they have error values equal to zero. A value of zero for one of
+the polarization quantities by itself does not necessarily consitute a bad
+pixel since zero can be a physically-meaningful value for flux or polarization.
+Only if the associated error value is equal to zero can we safely conclude
+that this is a bad pixel and should be ignored.
+.le
+.ih
+SPEC_POLAR TASKS
+The following table summarizes the applicability of each task in the
+'spec_polar' package:
+
+.nf
+-------------------------------------------------------------------------
+| Task        | Input | Output | Description                            |
+-------------------------------------------------------------------------
+| comparesets |  c1h  |        | Examine flux spectra                   |
+| pcombine    |  c1h  |  c1h   | Combine sets of flux spectra           |
+| calpolar    |  c1h  |  c3h   | Compute pol. spectra from flux spectra |
+| plbias      |  c3h  |  c3h   | Correct for bias in PL                 |
+| polave      |  c3h  |  c3h   | Average c3h files                      |
+| polbin      |  c3h  |  c3h   | Rebin c3h file spectra                 |
+| polcalc     |  c3h  |  c3h   | Compute pol. spectra from Stokes IQUV  |
+| polnorm     |  c3h  |  c3h   | Normalize Stokes QUV by I              |
+| polplot     |  c3h  |        | Plot c3h file spectra                  |
+-------------------------------------------------------------------------
+.fi
+.ls COMPARESETS
+Plots and computes statistics for the flux-calibrated spectra contained
+within a 'c1h' image. The task can plot the flux spectra obtained at all
+waveplate positions for a given pass direction and compute the mean and
+standard deviation of each of these spectra so that a relative comparison
+of the spectra can be made. This is useful for identifying bad data at a
+given waveplate position. If data at some waveplate position(s) are identified
+as being bad (or of lower quality compared to the rest), the 'c0h', 'c1h', 
+'c2h', 'cqh' images can be reprocessed through the 'calpolar' task in order to
+recalculate the polarization spectra (i.e. produce a new 'c3h' image) while
+excluding the spectra from the bad waveplate positions from the calculations.
+.le
+.ls PCOMBINE
+Combines (averages) the data from multiple flux-calibrated datasets for a
+given target. Since FOS polarimetry observation sequences are usually
+constrained to be one orbit (or less) in length, it may be necessary to
+obtain several observations for faint targets. The 'pcombine' task can
+be used to combine the calibrated datasets from all of the observations
+into a single averaged dataset. The averaged calibrated dataset can then
+be reprocessed with the 'calpolar' task to compute the polarization spectra
+(i.e. a new 'c3h' image) for the averaged data. 'pcombine' takes the calibrated
+flux ('c1h'), error ('c2h'), and data quality ('cqh') images as input, and 
+produces averaged 'c1h', 'c2h', and 'cqh' images as output. Because the wavelength
+scales for all of the datasets must be identical in order to perform the
+averaging, it is not necessary to compute an averaged wavelength ('c0h') image.
+Any one of the wavelength images from the original datasets can be used
+with the averaged 'c1h', 'c2h', and 'cqh' images.
+.le
+.ls CALPOLAR
+Computes Stokes and polarization spectra from flux-calibrated datasets.
+This operation is identical to (and in fact uses the same routines as) the
+"special mode" processing performed by the pipeline calibration CALFOS
+task for polarimetry datasets. Given a calibrated dataset (i.e. a set of
+'c0h', 'c1h', 'c2h', and 'cqh' images) 'calpolar' computes a new 'c3h' image.
+The input dataset can be from an individual observation or can be the result
+of averaging the calibrated data from several observations (i.e. the output
+of 'pcombine'). 
+
+'Calpolar' allows additional flexibility as compared to
+CALFOS since the user can manipulate the data within the calibrated
+images in any desired way and then compute the polarization spectra
+from the modified flux spectra. For example, 'calpolar' allows you to specify 
+a list of bad waveplate positions which are subsequently excluded from the 
+calculations. Furthermore, since 'calpolar' automatically rejects input
+pixels that have data quality (dq) values greater than or equal to 200, one
+could specify individual pixels or ranges of pixels in any of the input
+spectral groups to be excluded simply by modifying the 'cqh' image (set the
+dq values for pixels you want excluded to be > 200) before running 'calpolar'.
+'Calpolar' (Version 3, March 1998) incorporates the capability of applying 
+the post-COSTAR polarimetry corrections to the data.
+.le
+.ls POLAVE
+Averages several polarization ('c3h') images for a single target. This is an
+alternate method to 'pcombine' to average multiple datasets; 'pcombine'
+averages the data at the flux-calibrated stage of operations (i.e. operates
+on 'c1h', 'c2h', 'cqh' images) which then entails reprocessing the 
+new 'c1h', 'c2h',
+'cqh' images through 'calpolar' to compute a new polarization ('c3h') image, while
+'polave' averages the 'c3h' data directly. This is accomplished by averaging
+the Stokes IQUV (and error) spectra for the list of input 'c3h' images, and
+then recomputing PL, PC, and THETA (and errors) from the averaged Stokes
+spectra. The Stokes spectra can be averaged using either uniform or
+variance weighting.
+
+'Polave' offers a more direct method of deriving averaged polarization data
+than the combination of the 'pcombine' and 'calpolar' tasks, but the
+advantage of the latter is that the user can manipulate (if desired) the
+data coming out of 'pcombine' before sending it into 'calpolar'. Some
+control over the data going through 'polave' is available, however, by
+virtue of the fact that 'polave' (as well as all other tasks in 'spec_polar'
+that operate on 'c3h' data) excludes input data that have error values equal
+to zero. Thus the user can force data to be excluded from the averaging
+process by first setting the Stokes I, Q, U, or V error values (contained
+in 'c3h' image groups 5-8, 19-22, 33-36, and 47-50) for any choice of pixels
+to zero.
+.le
+.ls POLCALC
+Computes PL, PC, and THETA (and errors) spectra from Stokes IQUV in a 'c3h'
+image. This is exactly the same operation that is performed in the second
+half of the 'polave' task (i.e. computing polarization spectra from the
+averaged Stokes spectra) but can be used on any individual 'c3h' image after
+having done any desired manipulation of the Stokes spectra. For example,
+one could set the Stokes error values to zero for some pixels that you
+want to be excluded from the polarization calculations and then run 'polcalc'
+to recalculate the polarization spectra from the modified Stokes data.
+.le
+.ls POLBIN
+Rebins Stokes IQUV and polarization (PL, PC, THETA) spectra in 'c3h' images.
+A rebinned wavelength image is also produced to accompany the rebinned
+spectral image in subsequent analysis steps. This is useful for increasing
+the signal-to-noise ratio in the polarization spectra of weak sources.
+The rebinning may be performed so as to produce equal-sized output bins,
+or so that the linear polarization (PL) error is constant in each bin.
+This is accomplished by rebinning the Stokes IQUV spectra and then
+recomputing the PL, PC, and THETA values for each bin from the binned Stokes 
+data. As with all other 'spec_polar' tasks, 'polbin' regards input data points
+that have error values equal to zero as bad and does not include them in
+its calculations.
+.le
+.ls PLBIAS
+Corrects the linear polarization (PL) spectra in 'c3h' images for the bias
+introduced by the fact that PL is computed from the values of Q**2 and U**2,
+which are always positive. The 'plbias' task can be run on a 'c3h' image at
+any time during any of the processing/analysis stages of the 'spec_polar' tasks;
+e.g. it can be run on 'c3h' images straight out of CALFOS, combined 'c3h' images
+that come from 'polave', or even on rebinned 'c3h' images from 'polbin'.
+.le
+.ls PLNORM
+Normalizes (divides) the Stokes QUV spectra in a 'c3h' image by Stokes I.
+Note that all of the tasks in the 'spec_polar' package that compute
+polarization (PL, PC, and THETA) spectra from Stokes spectra expect the
+Stokes QUV spectra to be UNnormalized. Therefore if you want to normalize
+your QUV spectra for any reason, it must be done AFTER you have completed
+all other desired operations using 'polave', 'polcalc', or 'polbin'.
+.le
+.ls POLPLOT
+Produce a stacked plot of total flux (Stokes I) and either Stokes QUV
+or polarization (PL, PC, and THETA) spectra. This provides a more convenient
+means of plotting polarization spectra than what can be done using
+more generic plotting tasks within IRAF/STSDAS. 'Polplot' will accept 'c3h'
+images that have been produced by any of the 'spec_polar' tasks, including
+rebinned data from 'polbin'.
+.le
+.ih
+EXAMPLES
+Here we show examples of some methods that might be used to
+reprocess and analyze polarimetry datasets using the 'spec_polar' tasks.
+See the help pages for the individual tasks for a more detailed explanation
+of the various input/output parameters that are available.
+
+Example 1. Let's say you have a single dataset called 'y15v0403t' that has been
+processed through the pipeline calibration procedures (CALFOS), so you have
+a set of images consisting of 'y15v0403t.c0h', 'y15v0403t.c1h', 'y15v0403t.c2h',
+'y15v0403t.c3h', and 'y15v0403t.cqh' (the standard set of calibrated images).
+To assess the quality of the flux spectra use the 'comparesets' task to
+first plot the spectra from pass direction 1, and then the spectra from
+pass direction 2:
+
+.nf
+ sp> comparesets y15v0403t.c1h 1 norm-
+ sp> comparesets y15v0403t.c1h 2 norm-
+.fi
+
+While examining the plots on your screen you notice that the spectra from
+waveplate positions 3 and 4 look peculiar relative to the other spectra.
+So you decide to recompute the polarization spectra, using 'calpolar',
+excluding the flux spectra from those waveplate positions:
+
+.nf
+ sp> calpolar y15v0403t y15v0403t_new badwp="3-4"
+.fi
+
+This gives you a new image called 'y15v0403t_new.c3h' that contains the
+recomputed polarization data. Now you use 'polplot' to take a look at
+the polarization spectra in the new 'c3h' image:
+
+.nf
+ sp> polplot y15v0403t_new.c3h 4 wave=y15v0403t.c0h
+.fi
+
+[You need to specify the name of the original wavelength image when using
+'polplot' because 'calpolar' does not produce a new 'c0h' image to go with the
+new 'c3h' image; the wavelength scale has not changed at all so it's not
+necessary to produce a new wavelength image.] Looking at the plots of the
+polarization spectra you notice that the error bars are the same magnitude
+as the polarization values themselves, so you decide that it would be good
+to rebin the data in order to beat down some of the noise:
+
+.nf
+ sp> polbin y15v0403t_new y15v0403t_bin cwave 1 258 \
+ >>> weight=variance wave=y15v0403t
+.fi
+
+This rebins the polarization (and wavelength) spectra into 258 equal-sized
+bins (the equivalent of 8 input pixels per bin) using variance weighting
+when computing the average Stokes values in each bin. Two new images are
+produced, 'y15v0403t_bin.c3h' containing the rebinned polarization spectra,
+and "y15v0403t_bin.c0h" containing the rebinned wavelength arrays.
+Now we plot the rebinned spectra using 'polplot' again:
+
+.nf
+ sp> polplot y15v0403t_bin 4
+.fi
+
+
+Example 2. Let's say you have obtained four separate observations of the
+object HD94910 and want to combine the results of the four datasets.
+Using 'comparesets' to examine the flux-calibrated spectra in the four
+'c1h' images you decide that everything looks acceptable and so you can
+procede to combine the calibrated datasets "as is". Instead of using
+'pcombine' to average the calibrated data and then recompute the polarization
+spectra using 'calpolar', you opt to use 'polave' to directly average the
+Stokes spectra contained in the four 'c3h' images that were produced by
+CALFOS when the datasets were processed through the pipeline:
+
+.nf
+ sp> polave y0xr0305t,y0xr0306t,y0xr0307t,y0xr0308t hd94910avg \
+ >>> weight=variance
+.fi
+
+This produces a new image 'hd94910avg.c3h' that contains the averaged
+Stokes IQUV spectra from the images 'y0xr0305t.c3h', 'y0xr0306t.c3h', 
+'y0xr0307t.c3h',
+and 'y0xr0308t.c3h', as well as polarization spectra (PL, PC, THETA and their
+errors) computed from the averaged Stokes spectra. You examine the results
+using 'polplot':
+
+.nf
+ sp> polplot hd94910avg.c3h 4 wave=y0xr0305t.c0h
+.fi
+
+[Since the wavelength scales of all the original 'c3h' images are identical,
+you can use any of the original 'c0h' images to supply wavelengths to 'polplot'.]
+Looking at the plots you decide to increase the signal-to-noise ratio by
+rebinning to 129 bins (16 input pixels per bin) using variance weighting
+when computing the average Stokes values in each bin:
+
+.nf
+ sp> polbin hd94910avg hd94910bin cwave 1 129 weight=variance \
+ >>> wave=y0xr0305t
+.fi
+
+This produces a rebinned spectral image, 'hd94910bin.c3h', and a rebinned
+wavelength image, 'hd94910bin.c0h', which you again examine using 'polplot':
+
+.nf
+ sp> polplot hd94910bin 4 ptype=h
+.fi
+
+You decide you want to produce a plot containing normalized Stokes QUV spectra
+for the rebinned data, so you use 'polnorm' to normalize QUV and then replot
+using 'polplot' again:
+
+.nf
+ sp> polnorm hd94910bin.c3h hd94910norm.c3h
+ sp> polplot hd94910norm 4 spec=stokes wave=hd94910bin.c0h ptype=h
+.fi
+.ih
+REFERENCES
+Author: Howard Bushouse, STSDAS
+
+The following references are available from STScI and describe various 
+aspects of the calibration process, simple
+cookbook, and general usage of STSDAS:
+.nf
+        "HST Data Handbook"
+        "STSDAS Users Guide"
+        "FOS Data Products Guide"
+        "FOS Instrument Handbook"
+        "Phase II Proposal Instructions"
+.fi
+
+For more information about the FOS polarimeter and calibrations
+you may find the following references useful:
+.nf
+
+	FOS Instrument Handbook, Version 1.1, 1990, Appendix C,
+	"FOS Spectropolarimeter Performance".
+
+        Storrs, A., Koratkar, A., Keyes, C., Bushouse, H., 
+        De La Pena, M., and Allen, R., 1998.  ISR FOS-150: 
+        "FOS Spectropolarimetry".
+
+	Allen, R.G. and Smith, P.S., 1988. FOS/IDT Report CAL/FOS-055: 
+	"FOS Polarimetry".
+
+	Allen, R.G. and Smith, P.S., 1992. FOS/IDT Report CAL/FOS-078: 
+	"FOS Polarimetry Calibrations" (update of CAL/FOS-055).
+
+	Allen, R.G. and Angel, J.R.P., 1982, Proc. SPIE, 331, 259.
+.fi
+.ih
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.endhelp

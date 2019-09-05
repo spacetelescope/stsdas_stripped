@@ -1,0 +1,5 @@
+input,s,a,,,,"Input flux image name(s)"
+output,s,a,,,,"Output flux image name(s)"
+new_abs,s,a,,,,"New absolute sensitivity image name"
+new_net,s,a,,,,"New wavelength net image name"
+verbose,b,h,"no",,,"print extended messages"

@@ -1,0 +1,28 @@
+# Update the PIXCOORD application code in the wfpc package library
+# Author: BSIMON, 16-AUG-1990
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	brent.x		<mach.h>
+	cholesky.x
+	file.x		<tbset.h>
+	pixcmd.x	"pixpos.h"
+	pixcoord.x
+	pixcursor.x	"pixpos.h"
+	pixdisplay.x	<gset.h>  "pixpos.h"
+	pixfit.x	"pixpos.h"
+	pixframe.x	"pixframe.h"
+	pixnxtgrp.x	<imio.h>
+	pixparam.x	"pixparam.h"  "pixparam.com"
+	pixparse.x
+	pixpos.x	<imhdr.h>  "pixpos.h"
+	pixprint.x	"pixpos.h"
+	starcenter.x	<imhdr.h>
+	starunits.x	<math.h>
+	strsame.x	<ctype.h>
+	wrtcoord.x	"pixpos.h"  "pixframe.x"
+	;

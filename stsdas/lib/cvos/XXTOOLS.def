@@ -1,0 +1,21 @@
+xxtools
+# Interface definition file for IRAF XTOOLS library
+# 15 January 1999 - M. De La Pena: Initial version of XTOOLS interface.
+# 07 July 1999 - M.D. De La Pena: Added isdirectory interface.
+
+# Relative to directory /usr/ra/irafx/pkg/xtools/
+
+/h/# include <c_iraf.h>
+/h/
+
+# XTOOLS includes and private routines
+/c/# include <xxtools.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+ranges.x:int procedure decode_ranges (range_string:i, ranges:o, max_ranges:i, nvalues:o)
+ranges.x:int procedure get_next_number (ranges:i, number)
+ranges.x:int procedure get_previous_number (ranges:i, number)
+ranges.x:bool procedure is_in_range (ranges:i, number:i)
+isdir.x:int procedure isdirectory (vfn:i, pathname:o, maxch:i)

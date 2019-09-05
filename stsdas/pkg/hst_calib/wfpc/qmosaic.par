@@ -1,0 +1,6 @@
+infile, f, a, "", , , 	Input file template
+outfile, f, a, "", , , 	Output file name
+interp,s,h,spline3,"none|nearest|linear|poly3|poly5|spline3",,"Interpolation type:
+   none, nearest, linear, poly3, poly5, spline3"
+
+mode, s, h, "al"

@@ -1,0 +1,225 @@
+.help pixcoord Sept91 stsdas.hst_calib.wfpc
+.ih
+NAME
+pixcoord -- Compute pixel coordinates of stars in an image.
+.ih
+USAGE
+pixcoord image catalog name ra dec
+.ih
+DESCRIPTION
+This task reads a file containing the right ascension, declination and
+names of a set of stars. It then computes the positions of these stars
+on an image from the world coordinate system keywords in the image
+header. It displays the image and a graphic overlay with the catalog
+positions of the stars. You can then interactively indicates the
+actual positions of the stars with the image cursor. When you finish 
+indicating the star positions, the position of all catalog
+stars is calculated by using a least squares fit. This process can be
+repeated, as you add or delete stars from the fit until
+you are satisfied with the final results. When you are finished, the pixel 
+coordinates of the stars and the star names are
+written to the output file. This file can then be used as input to 
+tasks in the 'apphot' package.
+
+The input file containing the star catalog positions can either be a
+text file or an STSDAS table. The task assumes that if the file is
+binary it is an STSDAS table. If the file is a text file, columns are
+separated by white space and star names including blanks must be
+surrounded by quote marks. The columns containing the star names,
+right ascension, and declination are given by the task parameters
+'name', 'ra', and 'dec', respectively. If the catalog file is an STSDAS table
+these parameters contain the STSDAS table names. If the catalog file is
+a text file, these parameters contain the column numbers.
+
+Users interact with the task by adding or deleting stars from the
+least squares fit, computing the fit, getting a printout of the star
+positions, changing task parameters, and finally, quitting the task.  Stars 
+are
+added to the fit by placing the image cursor near the catalog position
+and pressing the "a" key. The task will then prompt you for the actual
+star position. Move the cursor to the actual star position
+and press the space bar to register the position. To delete a star from the 
+least
+squares fit, move the image cursor near the catalog star
+position and press the "d" key. Stars can also be added or deleted by
+name using the colon commands ":add" and ":delete".  Enter
+the command followed by the name or number of the catalog star. If the
+star is being added to the fit, the task will prompt you for the
+actual star position as described above. To perform the least squares
+fit, the press the "f" key or enter the ":fit" command . The number
+of terms in least squares fit is controlled by the task parameter
+'nterm'. This task parameter can be modified interactively and the fit
+can be performed again if you are not satisfied by the original
+fit.
+
+The fitted right ascension and declination of a particular point will be 
+displayed by moving the cursor to the point and pressing "p". You can also 
+get the RA and DEC of a particular pixel by using the colon command ":pos 
+<x> <y>". 
+
+A star's catalog and fitted position can be displayed by moving the cursor 
+near its catalog position and pressing "l" (that's "L", not one). If the star is 
+part of a least squares fit, the marked position is also shown. The colon 
+command ":list" can be used to print a star position and its name or 
+number. Using ":list" without arguments prints positions of every star on 
+the image. 
+
+Task parameters can be changed with the ":set" command. Used without 
+arguments, this command will show the values of all modifiable 
+parameters. Parameter values can be changed using the syntax: 
+
+.nf
+:set <name> = <value>
+.fi
+
+If the image name or catalog file parameters are changed, the catalog
+positions of the stars will be recalculated and redisplayed. If the
+display parameters are changed, the image and its graphics overlay
+will be redisplayed. The user can also change the image name to the
+next group in the image with the ":next" command. 
+
+Quit the task by pressing "q".  Star coordinates,
+as calculated from the most recent least squares fit, and the star
+names are then written to the output file. If the image name is changed
+interactively, the output file will also be written, as long as a
+least squares fit has been performed. The user can also force the
+output file to be written with the ":write" command. The name of the
+output file is controlled by the task parameter 'coordfile'. If the
+value of 'coordfile' is "default", the output file will be created from
+the root of the image name, the extension "coo" and a trailing
+version number. The version number starts at 1 and increases each time
+a new output file is written for that image. For example, if the
+image name is 'wstar.d0h', the first output file will be 'wstar.coo.1'.
+If the value of 'coordfile' is "<dir>/default", the output file name
+will be constructed in the same way, but placed in the named
+directory. If 'coordfile' does not contain "default" as the
+root name, the output file name will be the value of 'coordfile'.
+.ih
+PARAMETERS
+.ls image [file name]
+The name of the image. Star coordinates will be calculated in the
+physical cordinate frame of this image.
+.le
+.ls catalog [file name]
+The name of the star catalog file. The file maybe either a text file
+or an STSDAS table. If the file is a text file, columns are separated by
+white space. Rows in the text file may be continued by placing a
+backslash character as the last character on the line.
+.le
+.ls name [string]
+Star ID column(s) in the star catalog. If the star catalog is an STSDAS
+table, the parameter will contain the column name. If the star catalog
+is a text file, the parmeter will contain the column number. If the
+star ID is contained in more than one column, the parameter should contain
+a list of the column names. The star ID will then be the column values
+separated by colons.
+.le
+.ls ra [string]
+The right ascension column in the star catalog. The parameter should
+contain either the column name or number, depending on whether it is
+an STSDAS table or text file.
+.le
+.ls dec [string]
+The declination column in the star catalog. The parameter should
+contain either the column name or number, depending on whether it is
+an STSDAS table or text file.
+.le
+.ls (coordfile = "default") [string]
+The coordinate file name. The coordinate file contains three columns.
+The first two are the X and Y coordinates of the star postition in the
+physical coordinate system. The third column is the star name. The
+physical coordinate system is the pixel coordinate system without any
+image subsectioning.
+.le
+.ls (nterm = 3) [integer, min = 1, max = 6]
+Number of terms in least squares fit. Fit is computed in the (l,m)
+frame. This frame has its axes parallel to the world coordinate system
+axes (usually RA and DEC) and has its origin at the reference point of
+the image (usually the point of tangency). The fit is given by the two
+equations below. All units are in pixels.
+
+.nf
+(xnew - xold) = a1 + a2*xold + a3*yold + 
+		a4*xold^2 + a5*xold*yold + a6*yold^2
+(ynew - yold) = b1 + b2*yold + b3*xold + 
+		b4*yold^2 + b5*xold*yold + b6*xold^2
+.fi
+.le
+.ls (boxsize = 11) [integer, min = 3, max = 25]
+The search box size in pixels. When the user marks the actual star
+position, the task calculates the star position by centroiding the
+area contained in the search box.
+.le
+.ls (tvcmd = "display(image=$1,frame=$2)") [string]
+Command to display image. The task displays an image by sending the
+command in this string to the CL interpreter. Before sending the
+command, the task substitutes the value of 'image' for $1 and the value
+of 'tvframe' for $2. Any task called by this command must be loaded
+before this task is run. For example, to use the 'display' task the
+'images' and 'tv' packages must be loaded
+.le
+.ls (tvframe = 1) [integer]
+If the display device supports more than one frame, this parameter
+determines which display frame will be used.
+.le
+.ls (label = rownumber) [string]
+Label type for stars.  They can be labeled on the image by their table 
+row number, or by the name given in the input coordfile.  
+.le
+.ls (mkcolor = white) [string, allowed values: white | red | green | 
+blue | yellow]
+
+The color used to plot the graphics overlay.
+.le
+.ls (mksize = 11) [integer, min = 3, max = 25]
+Size of the symbol (in pixels) used to plot the catalog position of
+the star
+.le
+.ls (script = " ") [string]
+This parameter conrols whether the task is run interactively. If this
+parameter is a blank or null string, the task works as described above. 
+If the parameter contains a file name, no image display is generated, 
+and the commands contained in the script are executed. Each line of
+the script should contain one command. The commands are identical to the
+colon commands, except that they do not contain the leading colon. The
+task will end after the last line in the script is executed or
+when a "quit" command is read. If the script does not contain a "write"
+command, the coordinate file is written when the task ends.
+.le
+.ls ra_unit = deg [string, allowed values: hours | degrees | radians ]
+Units of the right ascension column. The user will be queried for
+the right ascension column units unless the catalog file is an STSDAS
+table where the right ascension column units are not blank.
+.le
+.ls dec_unit = deg [string, allowed values: degrees | radians ]
+The units of the declination column. The user will be queried for the
+declination column units unless the catalog file is an STSDAS table
+where the declination column units are not blank.
+.le
+.ls cur [image cursor]
+The image cursor, which is used to interact with the user. (Type "help 
+cursor" for information about using image cursors.)
+.le
+.ih
+EXAMPLES
+1. Compute the pixel coordinates of stars on the image 'wimage.d0h'
+given the coordinate positions in the catalog file 'wcat.tab'. The
+columns named 'star_id', 'ra', and 'dec' contain the star names, right
+ascensions, and declinations respectively:
+.nf
+
+wf> pixcoord wimage.d0h wcat.tab star_id ra dec
+.fi
+.ih
+BUGS
+1. Graphics (i.e., labels) will not be plotted in the correct location if 
+the image display buffer is not the same size as the image.  For example, 
+if you display a 512x512 image, but you have 'stdimage="imt800"', the labels 
+will be incorrectly plotted, which would make it impossible to associate the 
+actual and predicted stellar positions.  For standard 800x800 frames, be 
+sure that you have 'stdimage="imt800"' before running this task.  
+
+.ih
+SEE ALSO
+
+.endhelp

@@ -1,0 +1,82 @@
+.help bhkmethod Nov92 stsdas.analysis.statistics
+.ih
+NAME
+bhkmethod -- Compute the generalized Kendall's tau correlation coefficient.  
+.ih
+USAGE
+bhkmethod input
+.ih
+DESCRIPTION
+The 'bhkmethod' task computes the generalized Kendall's tau 
+correlation coefficient between two variables.  It can treat mixed 
+censoring including censoring in the independent variable, but can 
+have only one independent variable.  It is known to be inaccurate 
+when many tied values are present in the data.  Ties are particularly 
+common when the data are binned.  Caution should be used in these 
+cases.
+
+The test assumes the null hypothesis.  The probability given by this 
+program is the probability that there is no correlation between the 
+variables.  If the probability is small, that means "the probability 
+that these two variables are not correlated is small" or approximately 
+"these variables are correlated".  If you see the result 0.000, it 
+means "< 0.001".  
+
+Since the method is non-parametric, it assumes the asymptotically 
+normal distribution (or if the number of data is infinitely large, 
+the normal distribution).  Therefore, for smaller data sets the 
+probability given may not be accurate.  If you need an accurate value, 
+get the value of tau and check the CRC statistics table (or other 
+statistics tables), though if there are more than 10 points the 
+difference is less than 5%.
+
+.ih
+PARAMETERS
+.ls input [string]
+Input file name(s); this can be a list of files. Following each file name
+is a list of column names in brackets. Thes column names specify which
+columns in the file contain the information used by this task. The
+brackets MUST contain three names in the following format:
+[censor_indicator, independent_var, dependent_var]. The censor
+indicator specifies the censorship of the data point. The different
+kinds of censorship are explained in the 'censor' help file. The second
+name in the brackets specifies the column containing the independent
+variable.  The third name specifies the column containing the
+dependent variable.  If the input file is an SDAS table, the names in
+brackets are the table column names. If the input file is a text file,
+the names in brackets are the column numbers.  A title string will be
+printed if the input file is a table containing the header parameter
+'TITLE'.
+.le
+.ls (verbose = no) [boolean]
+Provide detailed output? 
+
+The detailed output includes the number of
+data points and the number of censored points and type of censorship.
+.le
+.ih
+EXAMPLES
+1. Sequentially process several files.  The following will compute the
+bhk correlation for the two files indicated. The first is an STSDAS
+table, and the second is a text file.
+
+.nf
+
+st> bhkmethod kriss.tab[Censor,LogL2500A,LogL2keV],iraslum.dat[1,2,3]
+
+.fi
+The above command will apply the 'bhkmethod' task to the data in the 
+table "kriss.tab", using the columns "Censor" for the censoring 
+indicator, "LogL2500A" for the independent variable column, and 
+"LogL2keV" for the dependent variable column.  Then use the file
+"iraslum.dat" (text file), columns 1, 2, and 3 (censor, independent, 
+dependent).
+.ih
+BUGS
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

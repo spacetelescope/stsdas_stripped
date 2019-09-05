@@ -1,0 +1,15 @@
+#  WFPC data quality parameters
+#
+dqfextn,s,h,".c1h",,,"Data Quality File extension"
+rs,b,h,yes,,,"Reject Reed-Solomon errors ?"
+sat,b,h,yes,,,"Reject saturated pixels ?"
+cray,b,h,yes,,,"Reject cosmic ray hits ?"
+generic,b,h,yes,,,"Reject generic bad pixels ?"
+calib,b,h,yes,,,"Reject calibration file defects ?"
+camdef,b,h,yes,,,"Reject permanent camera defects ?"
+hot,b,h,yes,,,"Reject unfixable hot pixels ?"
+fixhot,b,h,yes,,,"Reject fixed hot pixels ?"
+mis,b,h,yes,,,"Reject missing data ?"
+trap,b,h,yes,,,"Reject trap column pixels (WFPC2 only) ?"
+overlap,b,h,yes,,,"Reject image overlap pixels (WFPC2 only) ?"
+mode,s,h,al

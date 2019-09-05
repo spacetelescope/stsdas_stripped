@@ -1,0 +1,45 @@
+$call relink
+$exit
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-c -DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_estreakflat.c estreak.h
+	$update	libestreak.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_estreakflat.o libestreak.a \
+		-lhstio -lcvos -lc -lxtools \
+		-o xx_msstreakflat.e
+		;
+
+install:
+	$move xx_msstreakflat.e stsdasbin$x_msstreakflat.e
+	;
+
+libestreak.a:
+	g_checkinput.c		estreak.h
+	g_doerror.c		estreak.h
+	g_doflat.c		estreak.h
+	g_doit.c		estreak.h
+	g_filenames.c		estreak.h
+	g_getpixelm.c		estreak.h
+	g_gstreak.c		estreak.h
+	g_imio.c		estreak.h
+	g_inputpar.c		estreak.h
+	g_lib.c			estreak.h
+	g_median.c		estreak.h
+	g_memory.c		estreak.h
+	g_smooth.c		estreak.h
+	g_stat.c		estreak.h
+	g_streakang.c		estreak.h
+	g_updatehdr.c		estreak.h
+	g_wresult.c		estreak.h
+	;

@@ -1,0 +1,5 @@
+# Wiener filter low-pass parameters.
+#
+lowpass,s,h,"none","|none|square|circular",,">low-pass filter type"
+fwhm,r,h,1.,1.,,">convolution kernel fwhm (in pixels)"
+mode,s,h,al

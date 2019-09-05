@@ -1,0 +1,102 @@
+.help precor Aug97 stsdas.analysis.dither
+.ih
+NAME
+precor --  remove cosmic rays.
+.ih
+USAGE
+precor  inlist
+.ih
+PARAMETERS
+.ls inlist [file name template]
+Image(s) for cosmic ray cleaning.
+.le
+.ls (box_siz = 5) [int]
+Box size -- 3 or 5 pixels.
+.le
+.ls (min_pix = 16) [int]
+Required number of significant pixels.
+.le
+.ls (min_val = 3.0) [real]
+Minimum value considered significant.
+.le
+.ls (ngroup = 4) [int]
+Number of groups in image (for GEIS files only).
+.le
+.ls (do_sky = yes) [boolean]
+Run 'sky' task on the input image ?
+.le
+.ls (verbose = yes) [boolean]
+Verbose output ?
+.le
+.ls (tempdir = "tmp$") [file] 
+Directory for temporary files.
+.le
+.ih
+DESCRIPTION
+Precor is a task designed to remove the majority of cosmic rays from an
+image, while leaving astrophysical objects intact.  The output image
+equals the input where astrophysical sources are detected, and is set
+to zero otherwise.  Precor was developed as a preparatory
+step before cross-correlating images.  For instance, in the case of deep
+raw WFPC2 images,  the primary source of noise in the cross-correlation
+image may be due to cosmic rays.  Precor dramatically reduces this
+source of noise.
+
+Precor works by determining the number of pixels in a user defined box of size
+"box_siz" which have a value above "min_val".  If this number equals
+or exceeds "min_pix", then the box and its neighboring pixels are retained
+in the output image.  Otherwise the pixels in the box will be
+zero in the output image,
+unless they survive through inclusion in another, overlapping, box.  
+
+If the image has not been previously sky subtracted, it is recommended
+that the user set the "do_sky" option to "yes".  
+
+Given an input image called "input_image", precor creates an output
+image "input_name_obj".
+
+Cross-correlation is only statistically optimal for determining a shift
+or rotation between an image when the background noise is Gaussian (see
+article cited below).  Furthermore, there is evidence that converting
+to the signal-to-noise also reduces the effects on the cross-correlation
+of undersampling, particularily when determining a rotation.  
+The true signal-to-noise of an image typically grows linearly with
+signal strength near the detection limit, and then as the square-root
+of the signal, as the Poisson noise of the object begins to dominate
+over the sky noise.   In this task we provide the option of
+taking the square-root of the image (by setting "sig2n" to "yes). 
+This only truely estimates the signal-to-noise under
+the assumption 
+that images are dominated by Poisson noise.  However, tests on WFPC2 images
+have found
+that there is essentially no difference between cross-correlating
+the true signal-to-noise images and the square-root images in terms
+of one's ability to determine a shift or rotation.  This is not
+very surprising, as most of the power in a cross-correlation comes
+from the brightest objects, which typically are dominated by Poisson noise.
+We therefore have adopted this simplifying assumption.
+.ih
+EXAMPLES
+.ih
+BUGS
+This version is a rather simple CL script that was initially developed
+for handling WFPC images only. Later on, several modifications were 
+put in place to enable handling of NICMOS FITS files. This resulted in
+a less-than-perfect behavior in some cases. The task is simply unable
+to process OIF images (Old IRAF Format, ".imh"). Make sure your images
+conform either to GEIS format or FITS format with extensions and primary
+header (extensioin zero). If your input images are in GEIS (".??h")
+format, make sure the 'ngroup' parameter trully describes the actual
+file contents.
+.ih
+REFERENCES
+This task was written by A. Fruchter and I. Busko.  A further
+description of its use, and a comparison of input and output images can be 
+found in  A. S. Fruchter, R. N. Hook, I. C. Busko,  and M. Mutchler, 
+1997, "A  Package for the Reduction of Dithered Undersampled Images", in "The 
+1997 HST Calibration Workshop", S. Casertano et al.,
+ed. (Baltimore: Space Telescope Science Institute), in press. 
+See http://www.stsci.edu/meetings/cal97.
+.ih
+SEE ALSO
+.endhelp

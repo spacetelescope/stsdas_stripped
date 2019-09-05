@@ -1,0 +1,13 @@
+# Update the uchcoord application code in the wfpc package library
+# Author: HSU, 03-Oct-1994
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_uchcoord.x	<mach.h>	<math.h>	"uchcoord.h"
+	uchcoord_pdb.x	<mach.h>	"uchcoord.h"
+	uchcoord_in.x	
+	;

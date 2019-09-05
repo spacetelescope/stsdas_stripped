@@ -1,0 +1,82 @@
+.help coxhazard Nov92 stsdas.analysis.statistics
+.ih
+NAME
+coxhazard -- Compute the correlation probability by Cox's proportional hazard 
+model.
+.ih
+USAGE
+coxhazard input
+.ih
+DESCRIPTION
+The 'coxhazard' task computes a correlation probability by Cox's
+proportional hazard model.  The Cox hazard model can treat several
+independent variables if the dependent variable contains only one kind
+of censoring (i.e., upper or lower limits).
+
+The Cox correlation is known to be inaccurate when many tied values
+are present in the data.  Ties are particularly common when the data
+are binned.  Caution should be used in these cases.
+
+Cox regression, though widely used in biostatistical applications,
+formally applies only if the "hazard rate" is constant; that is, the
+cumulative distribution function of the censored variable falls
+exponentially with increasing values.  Astronomical luminosity
+functions, in contrast, are frequently modeled by power law
+distributions.  It is not clear whether the results of a Cox
+regression are significantly affected by this difference.
+
+The test assumes the null hypothesis.  The probability given by this
+program is the probability that there is no correlation between the
+variables.  If the probability is small, that means "the probability
+that these two variables are not correlated is small" or approximately
+"these variables are correlated".  If you see the result 0.000, it
+means "< 0.001".
+.ih
+PARAMETERS
+.ls input [string]
+Input file(s); this can be a list of files. Following each file name
+is a list of column names in brackets. Thes column names specify which
+columns in the file contain the information used by this task. The
+brackets MUST contain at least three names in the following format:
+[censor_indicator, independent_vars, dependent_var]. If there is more
+than one independent variable, the column names all follow the censor
+indicator. The censor indicator specifies the censorship of the data
+point. The different kinds of censorship are explained in the censor
+help file. If the input file is an STSDAS table, the names in brackets
+are the table column names. If the input file is a text file, the
+names in brackets are the column numbers.  A title string will be
+printed if the input file is a table containing the header parameter
+'TITLE'.
+.le
+.ls (verbose = no) [boolean]
+Provide detailed output? 
+
+The detailed output includes the number of
+data points and the number of censored points and type of censorship.
+.le
+.ih
+EXAMPLES
+1. Apply 'coxhazard' to the data in the table "kriss.tab", using the
+columns "Censor" for the censoring indicator, "LogL1mu" for the first
+independent variable column, "LogL2500A" for the second independent
+variable column, and "LogL2keV" for the dependent variable column.
+Then use the file "iraslum.dat" (text file), columns 1, 2, and 3
+(censor, independent, dependent). Several files may be processed
+sequentially.  The following example will compute the Cox-hazard
+correlation probability for the two files indicated:
+
+.nf
+
+   st> coxhazard kriss.tab[Censor,LogL1mu,LogL2500A,LogL2keV], \
+   >>>  iraslum.dat[c1,c2,c3]
+
+.fi
+.ih
+ BUGS
+.ih
+SEE ALSO
+censor, survival
+
+Type "help statistics option=sys" for a higher-level description of
+the 'statistics' package.
+.endhelp

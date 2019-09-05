@@ -1,0 +1,104 @@
+xqpoe
+# This is the input file for the IRAF/VOS qpoe library.
+# Relative to directory /usr/stsci.irafx/sys/qpoe
+
+/h/# include <c_iraf.h>
+
+# MWCS defines
+/h/
+/h/# define SZ_DATATYPE 79
+/h/# define SZ_COMMENT 79
+
+# QPOE includes and private routines
+/c/# include <xqpoe.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+
+qpparse.x:procedure qp_parse (qpspec:i, root:o, sz_root:i, filter:o, sz_filter:i)
+qpaccess.x:int procedure qp_access (poefile:i, mode:i)
+qpcopy.x:procedure qp_copy (o_poefile:i, n_poefile:i)
+qprename.x:procedure qp_rename (o_poefile:i, n_poefile:i)
+qprebuild.x:procedure qp_rebuild (poefile:i)
+qpdelete.x:procedure qp_delete (poefile:i)
+
+qpopen.x:pointer procedure qp_open (poefile:i, mode:i, o_qp:i)
+qpseti.x:procedure qp_seti (qp:i, param:i, value:i)
+qpstati.x:int procedure qp_stati (qp:i, param:i)
+qpsync.x:procedure qp_sync (qp:i)
+qpclose.x:procedure qp_close (qp:i)
+
+gen/qpaddb.x:procedure qp_addb (qp:i, param:i, value:i, comment:i)
+gen/qpaddc.x:procedure qp_addc (qp:i, param:i, value:i, comment:i)
+gen/qpaddd.x:procedure qp_addd (qp:i, param:i, value:i, comment:i)
+gen/qpaddi.x:procedure qp_addi (qp:i, param:i, value:i, comment:i)
+gen/qpaddl.x:procedure qp_addl (qp:i, param:i, value:i, comment:i)
+gen/qpaddr.x:procedure qp_addr (qp:i, param:i, value:i, comment:i)
+gen/qpadds.x:procedure qp_adds (qp:i, param:i, value:i, comment:i)
+gen/qpaddx.x:procedure qp_addx (qp:i, param:i, value:i, comment:i)
+qpastr.x:procedure qp_astr (qp:i, param:i, value:i, comment:i)
+qpgetb.x:bool procedure qp_getb (qp:i, param:i)
+qpgetx.x:complex procedure qp_getx (qp:i, param:i)
+gen/qpgetc.x:char procedure qp_getc (qp:i, param:i)
+gen/qpgetd.x:double procedure qp_getd (qp:i, param:i)
+gen/qpgeti.x:int procedure qp_geti (qp:i, param:i)
+gen/qpgetl.x:long procedure qp_getl (qp:i, param:i)
+gen/qpgetr.x:real procedure qp_getr (qp:i, param:i)
+gen/qpgets.x:short procedure qp_gets (qp:i, param:i)
+qpgstr.x:int procedure qp_gstr (qp:i, param:i, outstr:o, maxch:i)
+qpputb.x:procedure qp_putb (qp:i, param:i, value:i)
+qpputx.x:procedure qp_putx (qp:i, param:i, value:i)
+gen/qpputc.x:procedure qp_putc (qp:i, param:i, value:i)
+gen/qpputd.x:procedure qp_putd (qp:i, param:i, value:i)
+gen/qpputi.x:procedure qp_puti (qp:i, param:i, value:i)
+gen/qpputl.x:procedure qp_putl (qp:i, param:i, value:i)
+gen/qpputr.x:procedure qp_putr (qp:i, param:i, value:i)
+gen/qpputs.x:procedure qp_puts (qp:i, param:i, value:i)
+qppstr.x:procedure qp_pstr (qp:i, param:i, strval:i)
+
+qpread.x:int procedure qp_read (qp:i, param:i, buf:o<v>, maxelem:i, first:i, datatype:i)
+qpwrite.x:procedure qp_write (qp:i, param:i, buf:i<v>, nelem:i, first:i, datatype:i)
+qppopen.x:int procedure qp_popen (qp:i, param:i, mode:i, type:i)
+qploadwcs.x:pointer procedure qp_loadwcs (qp:i)
+qpsavewcs.x:procedure qp_savewcs (qp:i, mw:i)
+
+qpaccessf.x:int procedure qp_accessf (qp:i, param:i)
+qpdeletef.x:procedure qp_deletef (qp:i, param:i)
+qprenamef.x:procedure qp_renamef (qp:i, param:i, newname:i)
+qpcopyf.x:procedure qp_copyf (o_qp:i, o_param:i, n_qp:i, n_param:i)
+qpaddf.x:procedure qp_addf (qp:i, param:i, datatype:i, maxelem:i, comment:i, flags:i)
+qpqueryf.x:int procedure qp_queryf (qp:i, param:i, datatype:o[SZ_DATATYPE], maxelem:o, comment:o[SZ_COMMENT], flags:o)
+qplenf.x:int procedure qp_lenf (qp:i, param:i)
+qpexpand.x:int procedure qp_expandtext (qp:i, s1:i, s2:o, maxch:i)
+
+qpgnfn.x:pointer procedure qp_ofnls (qp:i, template|fieldname:i)
+qpgnfn.x:pointer procedure qp_ofnlu (qp:i, template|fieldname:i)
+qpgnfn.x:pointer procedure qp_ofnl (qp:i, template|fieldname:i, sort:i)
+qpgnfn.x:int procedure qp_gnfn (fl:i, outstr:o, maxch:i)
+qpgnfn.x:int procedure qp_lenfnl (fl:i)
+qpgnfn.x:procedure qp_seekfnl (fl:i, pos:i)
+qpgnfn.x:procedure qp_cfnl (fl:i)
+
+qpioopen.x:pointer procedure qpio_open (qp:i, paramex:i, mode:i)
+qpioclose.x:procedure qpio_close (io:i)
+qpiosetrg.x:procedure qpio_setrange (io:i, vs:i, ve:i, ndim:i)
+qpiogetrg.x:int procedure qpio_getrange (io:i, vs:o, ve:o, maxdim:i)
+qpiosetfil.x:procedure qpio_setfilter (io:i, expr:i)
+qpiogetfil.x:int procedure qpio_getfilter (io:i, outstr:o, maxch:i)
+qpioseti.x:procedure qpio_seti (io:i, param:i, value:i)
+qpiostati.x:int procedure qpio_stati$qpiost (io:i, param:i)
+qpiolwcs.x:pointer	procedure qpio_loadwcs (io:i)
+qpiomkidx.x:procedure qpio_mkindex (io:i, key:i)
+qpioputev.x:procedure qpio_putevents (io:i, i_ev:i, nevents:i)
+qpiogetev.x:int procedure qpio_getevents (io:i, o_ev:o, maskval:o, maxev:i, o_nev:o)
+gen/qpiorpixi.x:int procedure qpio_readpixi (io:i, obuf:o, vs:i, ve:i, ndim:i, xblock:i, yblock:i)
+gen/qpiorpixs.x:int procedure qpio_readpixs (io:i, obuf:o, vs:i, ve:i, ndim:i, xblock:i, yblock:i)
+
+qpexopen.x:pointer procedure qpex_open (qp:i, expr:i)
+qpexmodfil.x:int procedure qpex_modfilter (ex:i, exprlist:i)
+qpexgetfil.x:int procedure qpex_getfilter (ex:i, outstr:o, maxch:i)
+qpexgetat.x:int procedure qpex_getattribute (ex:i, attribute:i, outstr:o, maxch:i)
+gen/qpexattrld.x:int procedure qpex_attrld (ex:i, attribute:i, xs, xe, xlen)
+gen/qpexattrli.x:int procedure qpex_attrli (ex:i, attribute:i, xs, xe, xlen)
+gen/qpexattrlr.x:int procedure qpex_attrlr (ex:i, attribute:i, xs, xe, xlen)
+qpexeval.x:int procedure qpex_evaluate (ex:i, i_ev:i, o_ev:o, nev:i)
+qpexclose.x:procedure qpex_close (ex:i)

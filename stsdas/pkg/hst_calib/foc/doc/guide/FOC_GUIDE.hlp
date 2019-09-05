@@ -1,0 +1,96 @@
+.help FOC_GUIDE Jan88 "FOC 0"
+
+.ih
+CHAPTER
+FOC_GUIDE -- overview of the guide
+
+.ih
+SUMMARY
+Summary of FOC_GUIDE
+.nf
+Sections:
+
+	The guide 
+	Addition help
+	Examples
+
+.fi
+
+
+
+.ih
+THE GUIDE
+
+This is the starting point for the users guide for the FOC and
+FOC data.
+It should be used in addition to the FOC Handbook, and there
+is some overlap with the latter.
+
+The guide consists of many separate chapters - each a separate help file,
+and each may refer the reader to more detailed help. The help 
+FOC_TOC contains a complete table of contents, and FOC_INDEX
+an index to the contents.
+
+A task FOC_PRINT_GUIDE will produce a complete listing of the
+guide, together with and appropriate figures. The user may need to
+pipe the file through "type file dev=text" to convert reverse video
+characters to capital letters suitable for printing. The graphics output is
+written to a file.
+
+Note the use of upper case in names connected with this guide.
+
+.ih
+ADDITIONAL HELP
+Typing "help" will allow one to access the FOC help as well as help for 
+all tasks.
+
+For help related to some topic or keyword type "focapropos topic"
+to get suggestions of where to look for more details.
+
+.ih
+EXAMPLES
+
+1. fo> help FOC_CALIBRATION 
+.sp
+for information about FOC calibration, including the FOC operators guide.
+
+2. fo> focapropos geom
+.sp
+will give one line information about thjings related to geometry in IRAF,
+with the emphasis on the FOC packages.
+
+3. fo> help FOC_OPGUIDE sect=BAC
+.sp
+will print the section in the FOC operators top level help about
+BAC files.
+
+4. fo> help *.FOC* sect=summ
+.sp
+will a list of the sections in each help file
+
+5. fo> help *.FOC* sect="see also"
+.sp
+will print out references to additional help
+
+.ih 
+SEE ALSO
+From FOC_GUIDE see also:
+
+.nf
+
+General instrument		...... FOC_INSTRUMENT
+Proposal preparation		...... FOC_PROPOSAL
+FOC Simulator			...... FOC_SIMULATOR
+Calibration			...... FOC_CALIBRATION
+Image correction		...... FOC_CORRECTION
+Data analysis			...... FOC_ANALYSIS
+.fi
+
+and
+
+fo> help FOC_TOC
+
+will print the table of contents of the FOC guide to give an overview of 
+the organization.
+
+.endhelp

@@ -1,0 +1,49 @@
+$call relink
+$exit
+
+update:
+	$call relink
+	$call install
+	;
+
+relink:
+	$set XFLAGS="-c -DNATIVE_IRAF -I. -Inolibc \
+	'-Istsdaslib$cvos/irafstdio' $(XFLAGS)"
+	$omake	t_msstatistics.c
+	$update	libmsstatistics.a
+	$call	linkonly
+	;
+
+linkonly:
+	$set LFLAGS = '-H -z $(LFLAGS)'
+	$link   t_msstatistics.o libmsstatistics.a \
+		-lhstio -lcvos -lc -lxtools \
+		-o xx_msstatistics.e
+		;
+
+install:
+	$move xx_msstatistics.e stsdasbin$x_msstatistics.e
+	;
+
+libmsstatistics.a:
+	e_accum.c		msstat.h
+	e_cbindings.c
+	e_clearaccum.c		msstat.h
+	e_compsizes.c		msstat.h
+	e_descfile.c		msstat.h
+	e_filenames.c		msstat.h
+	e_getline.c		msstat.h
+	e_getmask.c		msstat.h
+	e_gstat.c		msstat.h
+	e_headerline.c		msstat.h
+	e_hist.c		msstat.h
+	e_immap.c		msstat.h
+	e_lib.c			msstat.h
+	e_locatehdu.c		msstat.h
+	e_midmod.c		msstat.h
+	e_opendqmask.c		msstat.h
+	e_openhdu.c		msstat.h
+	e_reject.c		msstat.h
+	e_report.c		msstat.h
+	e_singlefile.c		msstat.h
+	;

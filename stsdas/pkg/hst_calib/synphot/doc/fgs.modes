@@ -1,0 +1,12 @@
+FGS
+
+The FGS instrument keywords consist of a list of filters plus a dispersion
+axis. Some of the filter names are aliases for other filters: "astroclear" is
+an alias for "F605W", "clear" is an alias for "F583W", "red" is an alias for
+"F650W", and "yellow" is an alias for "F550W". One example of an FGS
+observation mode string would be "FGS,F583W,Y".
+
+Filter: f550w (yellow) f583w (clear) f605w (astro-clear) f650w (red) nd5 pupil
+
+Axis: x y
+

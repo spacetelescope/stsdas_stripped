@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE>  Adding/Inserting already formatted keywords </TITLE>
+<meta name="description" value="  Adding/Inserting already formatted keywords ">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html107 HREF="node9.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html105 HREF="node2.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html99 HREF="node7.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html108 HREF="node9.html">  Deleting keywords in </A>
+<B>Up:</B> <A NAME=tex2html106 HREF="node2.html"> 
+Manipulating FITS Header </A>
+<B> Previous:</B> <A NAME=tex2html100 HREF="node7.html">  Inserting keywords in </A>
+<BR> <HR> <P>
+<H2><A NAME=SECTION00026000000000000000>  Adding/Inserting already formatted keywords </A></H2>
+<P>
+<PRE>    426:    int addFitsCard(Hdr *, char *card);
+    427:    FitsKw insertFitsCard(FitsKw, char *card);</PRE>
+<P>
+These functions take an already formatted FITS &quot;card&quot; and either adds
+the string to the list or inserts it after the current position.  If
+the string is less than 80 bytes it is padded with spaces to 80 bytes.
+If the string is more than 80 bytes it is truncated.
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

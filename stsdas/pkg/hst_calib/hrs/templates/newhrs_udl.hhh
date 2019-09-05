@@ -1,0 +1,61 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'INTEGER*4'          /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           / number of segments containing errors           
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           / time from the packet ancillary data            
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / HRS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'HRS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'UDL               ' / file type                                      
+CTYPE1  = 'n/a               ' / units for first data axis                      
+                                                                                
+                 / CALIBRATION FLAGS AND INDICATORS                             
+OBSMODE = 'n/a               ' / observation mode                               
+                                                                                
+                 / STATISTICAL KEYWORDS                                         
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+                                                                                
+                 / CDBS KEYWORDS                                                
+ZDOPMAG =                 -999 / OCT doppler shift correction magnitude         
+ZFLUXM  =                 -999 / flux measurement at end of targ. acq. obs.     
+ZFSPYBF =                 -999 / control bits for spectrum y-balance            
+ZFXMAPC =                -9999 / x deflection of the center of field map        
+ZFYMAPC =                -9999 / y deflection of the center of fiels map        
+ZINTPER =                 -999 / OCT integration period (number of 50 ms slices)
+ZSPYBALU=                -999. / spectrum y-balance offset                      
+ZSRCHLCE=                 -999 / OCT y increment for field map                  
+ZSRCHLCF=                 -999 / OCT x increment for field map                  
+ZTREFH  =                 -999 / OCT time of zero doppler correction            
+ZXDCALU =                -999. / x comp null deflection cal correction          
+ZXDCALP =                -999. / proportional x-deflection cal correction       
+ZYDCALU =                -999. / y comp null deflection cal correction          
+ZYDCALP =                -999. / prop y-def cal correction                      
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name                         
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

@@ -1,0 +1,199 @@
+.help wiener Mar93 stsdas.analysis.restore
+.ih
+NAME
+wiener -- Noniterative Fourier deconvolution filter  (2-D)
+.ih
+USAGE
+wiener input psf output
+.ih
+DESCRIPTION
+This task applies a Fourier noniterative deconvolution filter to
+2-dimensional images.  The filter form may be chosen among inverse, 
+Wiener, geometric mean and parametric types. (Type "help wiener opt=sys" 
+to see a
+more detailed explanation of filter characteristics, limitations, and
+usage.) You may use the task with its default parameter settings,
+supplying only the required parameters. However, to fully exploit the 
+task capabilities (and hopefully achieve better restorations), reading 
+the 'opt=sys' help pages is recommended.
+
+Psets are used to input information to the task. There are separate
+psets dedicated to the Point Spread Function (PSF), filter parameters,
+signal model parameters, noise parameters and an optional low-pass filter.
+
+The PSF can be input from either a separate file, 
+or from the input image to be deconvolved. In either case, the PSF need not be
+centered in the field.  You may specify the center coordinates 'px0'
+and 'py0' of the PSF in the PSF image section, or, leaving either one, 
+or both, as INDEF, instructing the task to find them automatically.  In 
+this case, the pixel with maximum intensity in the PSF image section will be
+taken as the PSF center. 
+A circular mask with low leakage can be used to
+isolate a suitable star in a crowded field. The radius is specified by
+task parameter 'mask' (in pixels), and must be wide enough to not affect
+the point source image, but narrow enough to eliminate field stars. The
+PSF must be background-subtracted before using it with this task. When
+extracting the PSF directly from the input image, this image must have 
+the background already subtracted.
+
+Besides the PSF, the Wiener filter needs additional information 
+about the undegraded image and noise statistics. This information is
+derived using the signal model and noise parameters in the corresponding
+psets. The meaning of these parameters is described in detail 
+in the system-level help by typing "help wiener opt=sys".
+
+After deconvolving the input image, the task may optionally apply a
+low-pass filter to the deconvolution result.  This low-pass filtering 
+step is particularly important in the case of inverse filter deconvolution.
+Use task parameter 'lowpass' in the appropriate pset to specify filter
+type, and 'fwhm' parameter to specify the width of the smoothing kernel in 
+image pixel units.
+A circularly symmetric or an axially symmetric (in frequency
+domain) filter can be selected, or you can specify that no filter is to 
+be used at all.
+The square filter has proven to be effective at eliminating rings around the
+deconvolved point sources. The filter is an apodizing function which
+minimizes side-bands.
+
+The output deconvolved image is normalized to the same total flux as in
+the input image.
+
+Any image size and aspect ratio may be used as input for this task. The 
+input and PSF images may have different size axis. However, for
+efficiency purposes, the input image axis sizes must be even. If the
+input image contains an odd-size axis, the last row or column  will be 
+stripped off. The Fast Fourier Transform algorithm used by this task
+is faster when the axis sizes are composite numbers (i.e., non-primes), 
+faster yet when rich in factors of 2, and even faster with
+exact powers of 2. One limitation in input image size may come from the
+amount of memory available to the task. For a 512 X 512 image, the task
+will use about 5 MB of memory for data storage.
+
+The filter function itself can optionally be written to an output image file.
+ This image  will contain the amplitude squared of the complex filter 
+function, eventually multiplied by the low-pass filter function. 
+The 'filter' task parameter specifies the file name to be created; if 
+left as a null string (""), no filter output is generated. Similarly, 
+if task parameter 'output' is set to null, then no deconvolved image is
+generated.  This option saves some execution time, and is useful when 
+running the task repeatedly, for example, when you are interested in the
+filter function form only. 
+
+The task can process an image template or list of files passed to 
+'input'. In this case, 'output' is either a matching list of images or a 
+directory. Both 'psf' and 'filter' must be always single images.
+
+History records with filter parameter information are appended to the
+output image header.
+
+Typical CPU times (Sparc 2, 512 X 512 image): 45 sec for inverse filter;
+90 sec for geometric mean filter with external image signal model.
+.ih
+PARAMETERS
+.ls input [file name template]
+Input 2-dimensional image(s) section(s) to be deconvolved. This may 
+optionally be a list of files to be processed.
+.le
+.ls psf [file name]
+Input PSF 2-dimensional image section.
+.le
+.ls output [file name]
+File name for the output deconvolved image(s). This parameter will also 
+take the name of a directory. If left as a null string (""), no output 
+is
+produced. Output images are always of type real, regardless of input 
+image type.
+.le
+.ls (filter = "") [file name]
+Output filter image. If left as a null string (""), no filter image is
+produced.
+.le
+.ls (psfpars) [pset]
+Pset with PSF parameters:
+.ls (nlpsf = yes) [boolean]
+Is the PSF noiseless?
+If the PSF is taken from an observed image, this parameter must be set to 
+"no", in which case, a "prunning" filter
+will be used in processing the PSF image.  If the PSF is synthetic
+and without noise, this parameter must be set to "yes".
+.le
+.ls (px0, py0 = INDEF) [real, min=1.]
+Center coordinates, in pixels, of PSF in 'psf' image section. If either
+one, or both, are left as INDEF, the task will locate the maximum pixel
+value in the PSF image section, and use its coordinates instead.
+.le
+.ls (mask = INDEF) [real, min=1.]
+PSF masking radius, in pixels. If INDEF, no masking is performed.
+.le
+.le
+.ls (filterpars) [pset]
+Pset with filter parameters:
+.ls (ftype = Wiener) [string, allowed values: Wiener | inverse | 
+parametric | geometric]
+
+Filter type to be used.
+.le
+.ls (gamma = 1.) [real, min=0.]
+When using parametric filter form, this is the constant value.
+Not used in other filter forms.
+.le
+.le
+.ls (modelpars) [pset]
+Pset with signal model parameters:
+.ls (signalm = input) [string, allowed values: white | input | 
+Markov | Gaussian | psf | image file name]
+
+Theoretical (undegraded) signal model to be used in Wiener and geometric
+mean filter forms. When none of the first five options is entered, the
+task attempts to open and read an IRAF image with the name given by the 
+'signalm' parameter.
+.le
+.ls (correl = 2.) [real, min=0.]
+Correlation factor to be used when the undegraded signal model is
+to be estimated from the input degraded image itself (i.e., when 
+'signalm=input'). If set as INDEF, signal model will be computed
+from input and psf images.
+.le
+.ls (mfwhm = 2.) [real]
+Model Gaussian FWHM. Used when the undegraded signal model is a
+Gaussian.
+.le
+.le
+.ls (noisepars) [pset]
+Pset with noise parameters:
+.ls (statistic = independent) [string, allowed values: independent | Poisson]
+
+Noise model.
+.le
+.ls (fnoise = INDEF) [real, min=1.]
+Frequency, in frequency domain pixels, where the task will measure the
+noise power spectral density. If INDEF, the highest available frequency
+is used (recomended).
+.le
+.le
+.ls (lowpars) [pset]
+Pset with low-pass filter parameters:
+.ls (lowpass = "none") [string, allowed values: none | square | circular]
+
+Type of low-pass filter.
+.le
+.ls (fwhm = INDEF) [real, min=1.]
+Full width at half maximum of low-pass filter smoothing kernel, in image
+pixel units. If INDEF, no filtering is performed regardless
+of 'lowpass' value.
+.le
+.le
+.ls (verbose = no) [boolean]
+Print file names and execution times?
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by I.Busko
+.ih
+SEE ALSO
+Type "help wiener opt=sys" for more information about this task.
+.endhelp

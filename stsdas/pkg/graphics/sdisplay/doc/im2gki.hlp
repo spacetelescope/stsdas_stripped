@@ -1,0 +1,92 @@
+.help im2gki Jun92 stsdas.graphics.sdisplay
+.ih
+NAME
+im2gki -- Render an image to a IRAF GIO Graphics device.
+.ih
+USAGE
+im2gki input
+.ih
+DESCRIPTION
+'im2gki' is a prototype routine that takes an image, scales it to a
+range of 256 values, and renders the image onto an IRAF Graphics
+device.
+.ih
+PARAMETERS
+.ls input [file name]
+The image to render.  Only one image is handled at a time.
+.le
+.ls (cmap) [file name]
+If specified, this is the file name of a color map produced by the
+SAOImage write button under the color and cmap buttons.  If 'cmap' is
+not specified,
+the image is rendered in a grey scale.
+.le
+.ls (preserve = yes) [boolean]
+Preserve the aspect ratio of the image?
+
+The
+image may not fill the area of the device to which it is being
+written (as specified by the 'left', 'top', 'right', and
+'bottom' parameters. If 
+'preserver = no', the image will fill the region specified, regardless
+of aspect ratios.
+.le
+.ls (function = "linear") [string, Allowed values: linear | log | none]
+The type of function to use to scale the image to the 256 entry range
+of the output.  If "none" is specified, values are simply truncated.
+.le
+.ls (zscale = no) [boolean]
+Find the mean and standard deviation of the image and set high and low
+values to one sigma around the mean?
+
+If 'zscale = no' (the default), 
+then the low and high values are as specified by 'low' and 'high'
+parameters.
+.le
+.ls (low = INDEF) [real]
+If 'zscale = no', this is the value in the image that corresponds to the
+lowest color index in the resulting output.  This is normally black,
+but is color map dependent.  If 'low = INDEF', the minimum value of the
+image is found and used.
+.le
+.ls (high = INDEF) [real]
+If 'zscale = no', this is the value in the image that corresponds to the
+highest color index in the resulting output.  This is normally white,
+but is color map dependent.  If 'high = INDEF', the maximum value of the
+image is found and used.
+.le
+.ls (left = 0., right = 1., bottom = 0., top = 1.) [real]
+The positions of the sides, in normalized device coordinates (NDC),
+where the image will be located.  NDC runs from bottom left (0,0) to
+the top right (1,1).
+.le
+.ls (device = stdplot) [string]
+The name of the IRAF GIO graphics device that is capable of rendering
+images.
+.le
+.ls (append = no) [boolean]
+Append to previously specified plot?
+
+If this is set to "yes", the task will ignore 
+the 'left', 'right', 'top', and 'bottom' parameters and
+draw the plot on the previously-specified device.
+.le
+.ih
+EXAMPLES
+1. Print the image current displayed in SAOImage using the current
+color map and write it to the upper right quadrant of the output device.
+.nf
+        cl> dsimg 1 sao.hhh
+        ....Use the saoimage buttons to write the color map file
+        ....to a file named sao.cmap
+        cl> im2gki sao.hhh cmap=sao.cmap function=none left=.5 
+        >>> right=1. bottom=.5 top=1.
+.fi
+.ih
+BUGS
+The concept of scaling is probably not necessary, but is convenient
+because it is so common.
+.ih
+SEE ALSO
+psikern, igi
+.endhelp

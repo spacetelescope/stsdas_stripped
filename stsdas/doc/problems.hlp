@@ -1,0 +1,45 @@
+.help problems Feb90 stsdas.problems
+.ih
+NAME
+spr -- Submit a STSDAS problem report.
+.ih
+USAGE
+spr
+.ih
+DESCRIPTION
+This task allows STSDAS users to notify the development staff 
+at STScI of any software problems encountered.  
+
+The 'spr' task makes a copy of a problem report template in 
+the user's home IRAF directory.  An editor is then invoked, 
+allowing the user to  complete a form, providing the 
+information needed by STScI staff to locate the problem.  
+Upon exiting the editor, the user is asked if the problem 
+report should be mailed.  If the reply is "yes", the report 
+is e-mailed to STScI.  The temporary version is then deleted, 
+regardless of whether the report was sent.
+
+The following information is requested when submitting a 
+problem report:
+
+.nf
+     - Date Submitted - the current date.
+     - Reported by - your name (first and last, please).
+     - Package/Task - the package and task in which the
+       problem occurred.
+     - IRAF Version - the version number of IRAF that you are
+       running.
+     - STSDAS Version - the version number of STSDAS that you
+       are running.
+     - Summary - a brief description of the problem.
+     - Description of Problem - a full description of the
+       problem and any additional information you can
+       provide.
+.fi
+.ih
+EXAMPLES
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

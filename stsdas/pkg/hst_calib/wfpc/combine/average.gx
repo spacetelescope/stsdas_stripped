@@ -1,0 +1,188 @@
+include "wpdef.h"
+
+.help average
+.nf ----------------------------------------------------------------------------
+                  COMBINING IMAGES: AVERAGING ALGORITHM
+
+The input images are combined by scaling and taking a weighted average.  The
+exposure time of the output image, which is written to the output image header, 
+is the scaled and weighted average of the input exposure times.
+
+PROCEDURES:
+
+    AVERAGE   -- Average image lines without scaling or weighting. 
+    DQAVERAGE -- Average image lines, excluding bad pixels, with scaling and/or 
+		 weighting.
+    WTAVERAGE -- Average image lines with scaling and/or weighting.
+.endhelp -----------------------------------------------------------------------
+
+#$for (silrdx)
+$for (silrd)
+
+#################################################################################
+# AVERAGE --	Compute the average of each pixel in the image line without 	#
+#		scaling.  These routines are based upon the `images.imcombine' 	#
+#		package.  							#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure average$t (data, avg, nimages, npts)
+
+# Calling arguments:
+pointer		data[nimages]		# Data pointers
+$if (datatype == sil)
+real		avg[npts]		# Average line (returned)
+$else
+PIXEL		avg[npts]		# Average line (returned)
+$endif
+int		nimages			# Number of images to be combined
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Dummy indexes
+$if (datatype == sil)
+real		rnimag			# No. images to be combined (rdx)
+$else
+PIXEL		rnimag			# No. images to be combined (rdx)
+$endif
+
+begin
+
+# Initialize output:
+	$if (datatype == sil)
+	call aclrr (avg, npts)
+	$else
+	call aclr$t (avg, npts)
+	$endif
+
+# Accumulate sum @pixel:
+	do j = 1, npts {
+	    do i = 1, nimages 
+		avg[j] = avg[j] + Mem$t[data[i]+j-1]
+	}
+
+# Normalize to nimages:
+	rnimag = nimages
+	$if (datatype == sil)
+	call adivkr (avg, rnimag, avg, npts)
+	$else
+	call adivk$t (avg, rnimag, avg, npts)
+	$endif
+end
+
+
+#################################################################################
+# DQAVERAGE --	Compute the weighted average of each pixel in the image line 	#
+# 		using DQF flags.  The input data is type dependent and the 	#
+#		output is real.  						#
+#										#
+#		Development version:	1/91	RAShaw				#
+
+procedure dqaverage$t (data, dqfdata, avg, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# IMIO data pointers
+pointer		dqfdata[nimages]	# Data Quality File pointers
+$if (datatype == sil)
+real		avg[npts]		# Average line (returned)
+$else
+PIXEL		avg[npts]		# Average line (returned)
+$endif
+int		nimages			# Number of images to be combined
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		bflag[IMS_MAX]		# DQF flag @value
+int		i, j			# Loop indexes
+int		ncount			# Number of non-rejected values @pixel
+real		sum			# Sum of non-rejected values @pixel
+real		wtsum			# Sum of non-rejected weights @pixel
+
+begin
+
+# Initialize output:
+	$if (datatype == sil)
+	call aclrr (avg, npts)
+	$else
+	call aclr$t (avg, npts)
+	$endif
+	do j = 1, npts {
+
+# Select user-chosen Data Quality bits:
+	    do i = 1, nimages
+		bflag[i] = Memi[dqfdata[i]+j-1]
+	    call aandki (bflag, BADBITS, bflag, nimages)
+	    sum    = 0.
+	    wtsum  = 0.
+	    ncount = 0
+	    do i = 1, nimages {
+		if (bflag[i] == 0) {
+		    sum    = sum + WTS[i] * (Mem$t[data[i]+j-1] / SCALES[i] - 
+				ZEROS[i])
+		    wtsum  = wtsum + WTS[i]
+		    ncount = ncount + 1
+		} else 				# Skip over DQF flagged data
+		    Mem$t[data[i]+j-1] = INDEF
+	    }
+
+# Normalize to sum of weights:
+	    if (wtsum <= 0.) 
+		avg[j] = BLANK
+	    else
+		avg[j] = sum / wtsum
+	}
+end
+
+
+#################################################################################
+# WTAVERAGE --	Compute the weighted average of each pixel in the image line.  	#
+#		The input data is type dependent and the output is real.	#
+#										#
+#		Development version:	1/91	RAShaw				#
+	
+
+procedure wtaverage$t (data, avg, nimages, npts)
+
+include "wpcom.h"
+
+# Calling arguments:
+pointer		data[nimages]		# IMIO data pointers
+$if (datatype == sil)
+real		avg[npts]		# Average line (returned)
+$else
+PIXEL		avg[npts]		# Average line (returned)
+$endif
+int		nimages			# Number of images to be combined
+int		npts			# Number of pixels per image line
+
+# Local variables:
+int		i, j			# Loop indexes
+real		sum			# Weighted sum of values @pixel
+real		wtsum			# Sum of weights @pixel
+
+begin
+
+# Initialize output:
+	$if (datatype == sil)
+	call aclrr (avg, npts)
+	$else
+	call aclr$t (avg, npts)
+	$endif
+
+# Accumulate sum @pixel:
+	do j = 1, npts {
+	    sum   = 0.
+	    wtsum = 0.
+	    do i = 1, nimages {
+		sum = sum + WTS[i] * (Mem$t[data[i]+j-1] / SCALES[i] - 
+				ZEROS[i])
+		wtsum  = wtsum + WTS[i]
+	    }
+
+# Normalize to nimages:
+	    avg[j] = sum / wtsum
+	}
+end
+$endfor

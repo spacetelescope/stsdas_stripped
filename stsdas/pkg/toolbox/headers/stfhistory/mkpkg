@@ -1,0 +1,11 @@
+# Update the stfhistory application code in the headers package library
+# Author: GIARETTA, 27-MAY-1988
+
+$checkout headers.a ../
+$update   headers.a
+$checkin  headers.a ../
+$exit
+
+headers.a:
+	stfhistory.x   		<ctype.h> 
+	;

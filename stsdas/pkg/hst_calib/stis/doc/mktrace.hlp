@@ -1,0 +1,67 @@
+.help mktrace October2006 stis
+.ih
+NAME
+mktrace -- Refine the orientation of the traces in a trace table for a selected 
+science spectrum, applying the new orientation to all traces for that first-order 
+grating and central wavelength.
+.ih
+USAGE
+mktrace input 
+.ih
+PARAMETERS
+.ls input [string]
+An input  file name. 
+.le
+.ls (tracecen = 0.0) [real]
+The approximate row that the trace of the selected spectrum is centered on 
+in the science image. If tracecen is 0, then the nomimal placement is assumed 
+as a starting point: crpix2 for a full array or sizaxis2/2.0 for a subarray.
+.le
+.ls (weights = "") [string]
+A list of integer pairs indicating ranges of columns where the spectrum is 
+suitable for trace measurement (e.g., acceptable signal-to-noise, no asymmetric 
+structure). For example: weights=30:300,500:900 means that only columns from 
+30 to 300 and from 500 to 900 will be used for fitting a line to the trace to 
+determine the orientation. If weights are not specified, the entire spectrum 
+will be used.
+.le
+.ih
+DESCRIPTION
+A trace is generated from a science file by fitting a gaussian to each column 
+in the vicinity of tracecen after subtracting off the median flux of surrounding 
+extended emission. The two traces bracketing the computed trace are extracted 
+from the trace table and interpolated to the computed trace position. The 
+orientation correction is computed as the difference between the weighted 
+linear fits to the science trace and to the interpolated trace. The correction 
+is applied to all traces in the trace table with that particular OPT_ELEM and 
+CENWAVE. An updated trace table is written to the current directory. It has 
+the name of the science file with '_1dt' added to it. Four other files are 
+written out to the current directory as 1D fits images: the interpolated trace 
+and the weighted linear fit to it and the science trace and the weighted linear 
+fit to it.  These files can be viewed to assess the quality of the fits and the 
+suitability of the weighting function.
+This is a python task which does not have iraf dependencies. Although it can be
+run in iraf it does not require it.
+.ih
+EXAMPLES
+.ls
+1. Refine the orientation of all traces for the grating and central wavelength 
+of the science spectrum for a target near the nominal position:
+.nf
+
+--> mktrace o6a5010d0_flt.fits
+.fi
+2. Refine the orientation of the traces specifying an approximate trace center 
+and weighting function:
+.nf
+--> mktrace o45a03010_crj.fits tracecen=500 weights=50:250,500:1000
+.fi
+.ih
+BUGS
+There are currently no known problems.
+.ih
+REFERENCES
+.ls
+IRAF task written by N. Dencheva (STScI) based on IDL code by L. Dressel (STScI).
+.le
+.endhelp

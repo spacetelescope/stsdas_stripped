@@ -1,0 +1,9 @@
+input,s,a,"",,,,"Input file"
+group,i,h,4,,,,"group number"
+row_thresh,r,h,0.1,,,,"row threshold"
+bias_thresh,r,h,100000.0,,,,"bias threshold"
+input_mask,s,h,"",,,,"user input mask"
+niter,i,h,5,,,,"number of iterations for CR rejection"
+verbosity,b,h,no,,,"level for diagnostic print statements"
+
+

@@ -1,0 +1,6 @@
+quad1,s,h,"[1:127,1:127]",,,"Image section for quadrant 1"
+quad2,s,h,"[129:256,1:127]",,,"Image section for quadrant 2"
+quad3,s,h,"[1:127,129:256]",,,"Image section for quadrant 3"
+quad4,s,h,"[129:256,129:256]",,,"Image section for quadrant 4"
+statsec,s,h,"[1:256,1:256]",,,"Image section for statistics"
+mode,s,h,al

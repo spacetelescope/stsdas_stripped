@@ -1,0 +1,30 @@
+SIMPLE  =                    F / data conforms to the fits standard             
+BITPIX  =                   32 / bits per data value                            
+DATATYPE= 'REAL*4            ' / datatype of the group array                    
+NAXIS   =                    1 / number of dimensions in the group array        
+NAXIS1  =                 2064 / number of elements ((chnls+scan-1)*xsteps      
+GROUPS  =                    T / data has groups                                
+GCOUNT  =                    1 / number of groups                               
+PCOUNT  =                    0 / number of parameters                           
+PSIZE   =                    0 / bits in the parameter block                    
+                                                                                
+                               / FOS DATA DESCRIPTOR KEYWORDS                   
+INSTRUME= 'FOS               ' / instrument                                     
+FILETYPE= 'INV SENSITIVITY   ' / inverse sensitivity reference file             
+HEADNAME= '                  ' / header file name                               
+DATANAME= '                  ' / data file name                                 
+DATE    = '                  ' / date when file was written (yyyy-mm-dd)        
+                                                                                
+                               / FOS FLAGS AND INDICATOR KEYWORDS               
+DETECTOR= 'AMBER             ' / detector: AMBER,BLUE                           
+FCHNL   =                    0 / first channel processed: 0,2,...,510           
+NCHNLS  =                  512 / number of channels processed: 2,4,...,512      
+NXSTEPS =                    4 / number of x substeps: 1,2,4,8,16               
+OVERSCAN=                    5 / overscan number: 1,...,256                     
+APER_ID = 'B-1               ' / aperture  id: A-1,A-2,A-3,A-4,B-1,...          
+POLAR_ID= 'C                 ' / polarizer id: A,B,C                            
+FGWA_ID = 'H27               ' / disperser id: CAM,H13,H19,H27,H40,...          
+PASS_DIR=                    0 / pass direction: 0,1,2                          
+APER_POS= 'SINGLE            ' / aperture position: UPPER,LOWER,SINGLE          
+                                                                                
+END                                                                             

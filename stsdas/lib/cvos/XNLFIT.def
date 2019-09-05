@@ -1,0 +1,57 @@
+xnlfit
+
+# Library $iraf/math/nlfit
+
+/h/# include <c_iraf.h>
+/h/
+
+/c/# include <xnlfit.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+nlacptsd.x:double procedure nlacptsd (nl, x, z, w, npts, nvars)
+nlacptsd.x:double procedure nlresidd (nl, x, z, w, npts, nvars)
+nlacptsd.x:procedure nl_accumd (deriv, list, w, dz, nfit, alpha, beta)
+nlacptsr.x:real procedure nlacptsr (nl, x, z, w, npts, nvars)
+nlacptsr.x:real procedure nlresidr (nl, x, z, w, npts, nvars)
+nlacptsr.x:procedure nl_accumr (deriv, list, w, dz, nfit, alpha, beta)
+nlchomatd.x:procedure nl_chfacd (matrix, nbands, nrows, matfac, ier)
+nlchomatd.x:procedure nl_chslvd (matfac, nbands, nrows, vector, coeff)
+nlchomatd.x:procedure nl_dampd (inmatrix, outmatrix, constant, nbands, nrows)
+nlchomatr.x:procedure nl_chfacr (matrix, nbands, nrows, matfac, ier)
+nlchomatr.x:procedure nl_chslvr (matfac, nbands, nrows, vector, coeff)
+nlchomatr.x:procedure nl_dampr (inmatrix, outmatrix, constant, nbands, nrows)
+nldumpd.x:procedure nl_dumpd (fd, nl)
+nldumpd.x:procedure nl_adumpd (fd, a, nrows, ncols)
+nldumpr.x:procedure nl_dumpr (fd, nl)
+nldumpr.x:procedure nl_adumpr (fd, a, nrows, ncols)
+nlerrmsg.x:procedure nlerrmsg (ier:i, errmsg:o, maxch:i)
+nlerrorsd.x:procedure nlerrorsd (nl, z, zfit, w, npts, variance, chisqr, errors)
+nlerrorsd.x:procedure nlinvertd (alpha, chofac, cov, errors, list, nfit, variance)
+nlerrorsr.x:procedure nlerrorsr (nl, z, zfit, w, npts, variance, chisqr, errors)
+nlerrorsr.x:procedure nlinvertr (alpha, chofac, cov, errors, list, nfit, variance)
+nlevald.x:double procedure nlevald (nl, x, nvars)
+nlevalr.x:real procedure nlevalr (nl, x, nvars)
+nlfitd.x:procedure nlfitd (nl, x, z, w, npts, nvars, wtflag, stat)
+nlfitd.x:double procedure nlscatterd (nl, x, z, w, npts, nvars)
+nlfitr.x:procedure nlfitr (nl, x, z, w, npts, nvars, wtflag, stat)
+nlfitr.x:real procedure nlscatterr (nl, x, z, w, npts, nvars)
+nlfreed.x:procedure nlfreed (nl)
+nlfreer.x:procedure nlfreer (nl)
+nlinitd.x:procedure nlinitd (nl, fnc, dfnc, params, dparams, nparams, plist, nfparams, tol, itmax)
+nlinitr.x:procedure nlinitr (nl, fnc, dfnc, params, dparams, nparams, plist, nfparams, tol, itmax)
+nliterd.x:procedure nliterd (nl, x, z, w, npts, nvars, ier)
+nliterr.x:procedure nliterr (nl, x, z, w, npts, nvars, ier)
+nllist.x:procedure nl_list (list, nlist, nfit)
+nlpgetd.x:procedure nlpgetd (nl, params, nparams)
+nlpgetr.x:procedure nlpgetr (nl, params, nparams)
+nlsolved.x:procedure nlsolved (nl, ier)
+nlsolver.x:procedure nlsolver (nl, ier)
+nlstatd.x:double procedure nlstatd (nl, param)
+nlstati.x:int procedure nlstati (nl, param)
+nlstatr.x:real procedure nlstatr (nl, param)
+nlvectord.x:procedure nlvectord (nl, x, zfit, npts, nvars)
+nlvectorr.x:procedure nlvectorr (nl, x, zfit, npts, nvars)
+nlzerod.x:procedure nlzerod (nl)
+nlzeror.x:procedure nlzeror (nl)

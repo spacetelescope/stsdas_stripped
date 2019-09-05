@@ -1,0 +1,50 @@
+.help sampinfo Aug10 stsdas.hst_calib.nicmos
+.ih
+NAME
+sampinfo -- print sample information for a NICMOS or WFC3/IR MultiAccum image
+.ih
+USAGE
+sampinfo image
+.ih
+DESCRIPTION
+Sampinfo prints information about a NICMOS or WFC3/IR MultiAccum image,
+including exposure time information for the individual samples (readouts).
+The global information listed (and the names of the header keywords from which
+it is retrieved) includes the total number of image extensions in the file
+(NEXTEND), the name of the MultiAccum exposure sample sequence (SAMP_SEQ),
+the total number of samples, including the "zeroth" read (NSAMP), and the
+total exposure time of the observation (EXPTIME). Information that is listed
+for each sample is the IMSET number (EXTVER), the sample number
+(SAMPNUM), the sample time, which is the total accumulated exposure time for
+a sample (SAMPTIME), and the delta time, which is the additional exposure
+time accumulated since the previous sample (DELTATIM).
+
+Note that the samples of a MultiAccum exposure are stored in the
+FITS file in reverse time order. The initial, or "zeroth" read, appears last
+in the FITS file, with IMSET=NSAMP, SAMPNUM=0, SAMPTIME=0, and
+DELTATIM=0. The final read of the exposure appears first in the file
+and has IMSET=1, SAMPNUM=NSAMP-1 (SAMPNUM is zero-indexed), and
+SAMPTIME=EXPTIME.
+.ih
+PARAMETERS
+.ls image [file]
+Input MultiAccum image name.
+This should be either a _raw.fits or _ima.fits file, containing all
+samples for a MultiAccum exposure.
+.le
+.ih
+EXAMPLES
+1. Print sample information for the file n3t502cur_ima.fits:
+
+.nf
+ cl> sampinfo n3t502cur_ima.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+Author: Mark Dickinson, Howard Bushouse, STScI
+.ih
+SEE ALSO
+iminfo
+.endhelp

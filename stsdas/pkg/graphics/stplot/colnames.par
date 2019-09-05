@@ -1,0 +1,6 @@
+# colnames.par  Catalog table column names
+racol,s,h,"ra",,,Column name for R. A.
+deccol,s,h,"dec",,,Column name for Dec.
+magcol,s,h,"mag",,,Column name for brightness
+namecol,s,h,"name",,,Column name for object name
+classcol,s,h,"class",,,Object class [color index]

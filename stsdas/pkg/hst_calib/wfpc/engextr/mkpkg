@@ -1,0 +1,29 @@
+# Update the engextr application code in the wfpc package library
+# Author: HSU, 23-DEC-1993
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_engextr.x     engextr.h	<imhdr.h>
+	engextr_in.x    engextr.h
+	engextr_out.x	engextr.h
+	engextr_do.x	engextr.h	<imhdr.h>	
+	engextr_grp.x	engextr.h
+	engextr_cmd.x	engextr.h	exptime.h
+	w_v3f.x		engextr.h
+	w_v3g.x		engextr.h
+	w_v3h.x		engextr.h
+	w_v3i.x		engextr.h
+	u_vi3j.x	engextr.h
+	u_vi3k.x	engextr.h
+	u_vi3l.x	engextr.h
+	u_vi3m.x	engextr.h
+	eng_write.x	engextr.h
+	eng16to12.x
+	bitson.x
+	templin.x	
+	temppoly.x	temppoly.h
+	;

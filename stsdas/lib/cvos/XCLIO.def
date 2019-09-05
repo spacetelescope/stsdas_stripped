@@ -1,0 +1,95 @@
+xclio
+# This is the input file for the IRAF/VOS clio library.
+#
+# 09 April 2001, Modified by MDD: Added clcmd() and clcmdw().
+# 16 May 2000, Modified by M.D. De La Pena: All xclio real functions can
+#   now be invoked either with an "r" (IRAF) or "f" (C) suffix 
+#   (e.g., c_clgetr or c_clgetf).
+
+/h/# include <c_iraf.h>
+
+# CLIO defines
+/h/
+/h/# define CL_PRTYPE	1
+/h/# define CL_PCACHE	2
+/h/
+/h/# define PR_CONNECTED 1
+/h/# define PR_DETACHED  2
+/h/# define PR_HOST      3
+/h/
+/h/# define PR_NOEXIT	0
+/h/# define PR_EXIT	1	
+/h/
+
+# CLIO includes and private routines
+/c/# include <xclio.h>
+/c/# include <c_iraf_priv.h>
+/c/# include <stdlib.h>
+/c/
+
+clseti.x:procedure clseti (parameter:i, value:i)
+clstati.x:int procedure clstati (parameter:i)
+clgetb.x:bool procedure clgetb (param:i)
+clgetc.x:char procedure clgetc (param:i)
+clgetd.x:double procedure clgetd (param:i)
+clgeti.x:int procedure clgeti (param:i)
+clgetl.x:long procedure clgetl (param:i)
+clgetr.x:real procedure clgetr|clgetf (param:i)
+clgetr.x:real procedure clgetr (param:i)
+clgets.x:short procedure clgets (param:i)
+clgetx.x:complex procedure clgetx (param:i)
+clputb.x:procedure clputb (param:i, bval:i)
+clputc.x:procedure clputc (param:i, cval:i)
+clputd.x:procedure clputd (param:i, dval:i)
+clputi.x:procedure clputi (param:i, value:i)
+clputi.x:procedure clputs (param:i, value:i)
+clputi.x:procedure clputl (param:i, lval:i)
+clputr.x:procedure clputr|clputf (param:i, rval:i)
+clputr.x:procedure clputr (param:i, rval:i)
+clputx.x:procedure clputx (param:i, xval:i)
+clgstr.x:procedure clgstr (param:i, outstr:o, maxch:i)
+clpstr.x:procedure clpstr (param:i, value:i)
+
+clglpb.x:int procedure clglpb (param:i, bval)
+clglpc.x:int procedure clglpc (param:i, cval)
+clglpd.x:int procedure clglpd (param:i, dval)
+clglpi.x:int procedure clglpi (param:i, ival)
+clglpl.x:int procedure clglpl (param:i, lval)
+clglpr.x:int procedure clglpr|clglpf (param:i, rval)
+clglpr.x:int procedure clglpr (param:i, rval)
+clglps.x:int procedure clglps (param:i, sval)
+clglpx.x:int procedure clglpx (param:i, xval)
+clglstr.x:int procedure clglstr (param:i, outstr:o, maxch:i)
+
+clgcur.x:int procedure clgcur (param:i, wx, wy, wcs, key, strval:o, maxch:i)
+clgkey.x:int procedure clgkey (param:i, key, strval:o, maxch:i)
+clgwrd.x:int procedure clgwrd (param:i, keyword:o, maxchar:i, dictionary:i)
+
+clopset.x:pointer procedure clopset (pset:i)
+clcpset.x:procedure clcpset (pp:i)
+clgpsetb.x:bool procedure clgpsetb (pp:i, parname:i)
+clgpsetc.x:char procedure clgpsetc (pp:i, parname:i)
+clgpsetd.x:double procedure clgpsetd (pp:i, parname:i)
+clgpseti.x:int procedure clgpseti (pp:i, parname:i)
+clgpsetl.x:long procedure clgpsetl (pp:i, parname:i)
+clgpsetr.x:real procedure clgpsetr|clgpsetf (pp:i, parname:i)
+clgpsetr.x:real procedure clgpsetr (pp:i, parname:i)
+clgpsets.x:short procedure clgpsets (pp:i, parname:i)
+clgpsetx.x:complex procedure clgpsetx (pp:i, parname:i)
+clppsetb.x:procedure clppsetb (pp:i, parname:i, bval:i)
+clppsetc.x:procedure clppsetc (pp:i, parname:i, cval:i)
+clppsetd.x:procedure clppsetd (pp:i, parname:i, dval:i)
+clppseti.x:procedure clppseti (pp:i, parname:i, ival:i)
+clppsetl.x:procedure clppsetl (pp:i, parname:i, lval:i)
+clppsetr.x:procedure clppsetr|clppsetf (pp:i, parname:i, rval:i)
+clppsetr.x:procedure clppsetr (pp:i, parname:i, rval:i)
+clppsets.x:procedure clppsets (pp:i, parname:i, sval:i)
+clppsetx.x:procedure clppsetx (pp:i, parname:i, xval:i)
+
+clgpseta.x:procedure clgpseta (pp:i, pname:i, outstr:o, maxch:i)
+clppseta.x:procedure clppseta (pp:i, pname:i, sval:i)
+cllpset.x:procedure cllpset (pp:i, fd:i, format:i)
+clepset.x:procedure clepset (pp:i)
+
+clcmd.x:procedure clcmd (cmd:i)
+clcmdw.x:procedure clcmdw (cmd:i)

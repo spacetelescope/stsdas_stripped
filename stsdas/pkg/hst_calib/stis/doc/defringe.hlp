@@ -1,0 +1,152 @@
+.help defringe Jan2013 stis
+.ih
+NAME
+Defringe -- Correct STIS CCD G750L or G750M spectrum for fringing
+.ih
+USAGE
+defringe inspec inflat outspec 
+.ih
+PARAMETERS
+.ls inspec
+Input (2-D) spectral image to be corrected for fringing
+.le
+.ls inflat
+Input flat field image (created by normspflat or mkfringeflat)
+.le
+.ls outspec
+Output spectral image
+.le
+.ls (do_cal = no)
+Perform bias and dark subtraction and cosmic ray rejection prior to 
+fringe correction? 
+.le
+.ls (darkfile = "")
+Name of (reference) superdark image to be used for dark subtraction.  
+If this value is null (the default), the DARKFILE keyword in the main
+header of inspec will be used (in that case, make sure it is
+correctly populated). This parameter is only relevant if do_cal
+= yes 
+.le
+.ls (pixelflat = "")
+Name of reference flat field image to perform pixel-to-pixel
+correction. This parameter is only relevant if do_cal = yes 
+.le
+.ls (do_defringe = yes)
+Perform fringe correction? 
+.le
+.ih
+DESCRIPTION
+DEFRINGE eliminates the fringes that are present in STIS first-order
+CCD spectra at wavelengths longer than about 700 nm, by dividing by
+"fringe flat field images" that have been treated in advance by means
+of tasks normspflat and/or mkfringeflat. 
+
+The input 2-D spectral image inspec [typically a STIS fits file
+with "_raw" file suffix] is first run through the STIS pipeline
+calstis in order to perform bias subtraction, cosmic ray
+rejection, dark subtraction, and division by a pixel-to-pixel flat
+field. In case of G750M data, wavelength calibration and S-distortion
+correction is performed as well. An appropriate superdark file name
+can be provided as parameter darkfile,as can a pixel-to-pixel
+flat field.  If these reference files are not specified, the ones
+listed in the image header will be used. The log file of the
+calstis reduction steps is written to output file
+spec.calstis.log.
+
+The task allows the user to bypass the whole calstis reduction step
+described in the previous paragraph through boolean parameter do_cal. 
+In case do_cal is set to "no", the assumption is that
+inspec has been corrected for pixel-to-pixel sensitivity
+variations with the proper flat field, and that 2-D rectification 
+is performed as well (in case of a G750M spectrum). The user
+is notified of this implicit assumption if appropriate. 
+
+After calstis pipeline reduction, the reduced spectrum is 
+divided by the input flat field image inflat. Note that in case
+of G750L spectra, the output spectrum outspec will neither have been
+wavelength calibrated nor rectified. Task x2d
+(in the stsdas.hst_calib.stis package) can be used to perform those (final)
+calibration steps. 
+
+INPUT AND OUTPUT IMAGES
+    
+The input STIS spectral image inspec is typically a
+"multi-imset" FITS file, with three extensions (or groups) per imset:
+science (EXTNAME=SCI), error (ERR), and data quality (DQ). If
+do_cal is set to "yes", DEFRINGE will read each imset, calibrate
+it, and produce a multi-group output FITS file. However, DEFRINGE can
+handle FITS "imset" files with three extensions as well as
+"old-fashioned" FITS files (with only one extension). This holds for
+the input spectrum inspec as well as for the input flat field
+inflat. 
+
+The output spectrum outspec will have the same format (i.e., a 
+FITS file with three extensions or a FITS file with single extension) as
+the input spectrum inspec. 
+
+.ih
+EXAMPLES
+
+1. Perform fringe correction for STIS spectrum. Use superdark file
+"mysuperdark.fits" to provide the most up-to-date correction of hot pixels in
+the input image.
+.nf
+
+    cl> defringe o3st20gdr_raw.fits normff.fits defringed.fits \
+    >>> darkfile="mysuperdark.fits"
+.fi
+
+2. Same as 1, but bypass basic image reduction (in case it was already
+done before). For a G750M spectrum: 
+.nf
+
+    cl> defringe o3st20gdr_sx2.fits normff.fits defringed.fits \
+    >>> do_cal-
+.fi
+
+3. Same as 2, but for a G750L spectrum: 
+.nf
+
+    cl> defringe o3st20gda_crj.fits normff.fits defringed.fits \
+    >>> do_cal-
+.fi
+
+4. Example of all steps involved in fringe correction for a G750M
+spectrum o3st20gdr_raw.fits and its associated contemporaneous fringe
+flat o3st20gds_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gds_raw.fits normff750M.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gdr_wav.fits"
+    cl> prepspec o3st20gdr_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat normffG750M.fits normff750M.fits normff750M_fin.fits
+    cl> defringe o3st20gdr_sx2.fits normff750M_fin.fits \
+    >>> outspec="o3st20gdr_final.fits" do_cal-
+.fi
+
+5. Same as 4, but for a G750L spectrum o3st20gda_raw.fits,
+wavecal o3st20gda_wav.fits and contemporaneous fringe flat
+o3st20gdb_raw.fits: 
+.nf
+
+    cl> normspflat o3st20gdb_raw.fits normff750M.fits \
+    >>> darkfile="mysuperdark.fits" wavecal="o3st20gda_wav.fits"
+    cl> prepspec o3st20gda_raw.fits darkfile="mysuperdark.fits"
+    cl> mkfringeflat o3st20gda_crj.fits normff750L.fits normff750L_fin.fits
+    cl> defringe o3st20gda_crj.fits normff750L_fin.fits \
+    >>> outspec="o3st20gda_defr.fits" do_cal-
+.fi
+.ih
+TIME REQUIREMENTS
+.ih
+REFERENCES
+.nf
+Task created by Paul Goudfrooij on April 17, 1998.
+Task modified by Paul Barrett on October 21, 2004.
+.fi 
+.ih
+BUGS
+.ih
+SEE ALSO
+calstis, normspflat, mkfringeflat, prepspec
+.endhelp

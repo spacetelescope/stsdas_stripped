@@ -1,0 +1,102 @@
+.help iterstat Jan2006 stsdas.hst_calib.nicmos
+.ih
+NAME
+iterstat -- iteratively compute and print image statistics
+.ih
+USAGE
+iterstat images
+.ih
+DESCRIPTION
+Iterstat is a CL script that computes image pixel statistics while iteratively
+rejecting deviant values. The IRAF task "imstatistics" is used to compute
+the statistics, utilizing that tasks "lower" and "upper" parameters to
+reject pixels with deviant values. On each iteration of this task, the
+rejection limits will be set to nsigrej*stddev above and below the mean
+(see "nsigrej" below). The rejection cycles will continue until either
+the number of unrejected pixels has converged, or the limit "maxiter" has
+been reached. Upon completion, the final values for the mean, stddev, median,
+and mode will be returned as task output parameters. Intermediate and final
+results may also be printed to stdout.
+
+A list of input images may be used to automatically process large
+numbers of datasets. If a list of images is processed, only the results for
+the last image in the list will be saved in the output parameters mean, sigma,
+median, and valmode.
+.ih
+PARAMETERS
+.ls image [file]
+Input image name(s).
+The full file name must be given and, for the case of multi-extension FITS
+files, an appropriate image extension name or number must be specified as
+part of the file name.
+.le
+.ls (nsigrej = 5.0) [real, min=0]
+Number of sigmas for rejection threshold. Pixel values nsigrej*stddev above
+and below the mean will be rejected on each iteration.
+.le
+.ls (maxiter = 10) [integer, min=1]
+Maximum number of iterations. Iterations will continue until either the
+statistics converge or this limit is reached.
+.le
+.ls (print = yes) [boolean]
+Print final results to stdout? If "yes", the final values for the mean, stddev,
+number of unrejected pixels, median, and mode will be printed.
+.le
+.ls (verbose = yes) [boolean]
+Print results of each iteration? If "yes", the mean, stddev, number of
+unrejected pixels, median, and mode will be printed to stdout at the end of
+each iteration.
+.le
+.ls (lower = INDEF) [real]
+Initial lower limit for pixel values to be included in the statistics. If
+INDEF, all pixels are considered to be above this threshold.
+.le
+.ls (upper = INDEF) [real]
+Initial upper limit for pixel values to be included in the statistics. If
+INDEF, all pixels are considered to be below this threshold.
+.le
+.ls (npix) [int]
+Number of unrejected pixels. This is a task output parameter.
+.le
+.ls (mean) [real]
+Mean of the unrejected pixel values. This is a task output parameter.
+If more than one image is used as input, only the value for the last image in
+the list will be retained.
+.le
+.ls (sigma) [real]
+Standard deviation of the unrejected pixel values. This is a task output
+parameter.
+.le
+.ls (median) [real]
+Median of the unrejected pixel values. This is a task output parameter.
+.le
+.ls (valmode) [real]
+Mode of the unrejected pixel values. This is a task output parameter.
+.le
+.ih
+EXAMPLES
+1. Compute statistics for the SCI image extension in the NICMOS file
+"n3z302g7m_cal.fits":
+
+.nf
+ cl> iterstat n3z302g7m_cal.fits[SCI]
+.fi
+
+2. Compute statistics for the first image extension in the NICMOS file
+"n4ls01i1q_ima.fits", initially rejecting pixels with values less than
+-1 and greater than 5:
+
+.nf
+ cl> iterstat n4ls01i1q_ima.fits[1] low=-1. upp=5.
+.fi
+
+.ih
+BUGS
+.ih
+REFERENCES
+Authors: H. Bushouse, M. Dickinson, STScI
+.ih
+SEE ALSO
+imstat
+.endhelp
+

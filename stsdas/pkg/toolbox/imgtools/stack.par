@@ -1,0 +1,8 @@
+input,s,a,,,,"list images"
+output,s,a,,,,"output image"
+pixtype,s,h,real,"real|long|short|int|double",,"pixel type output"
+ctype,s,h,"PIXEL",,,"ctype for last axis of output"
+crval,r,h,0.0,,,"crval for last axis of output"
+crpix,r,h,0.0,,,"crpix for last axis of output"
+cdelt,r,h,1.0,,,"cdelt for last axis of output"
+mode,s,h,al

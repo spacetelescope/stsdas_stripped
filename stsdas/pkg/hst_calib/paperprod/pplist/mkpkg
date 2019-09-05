@@ -1,0 +1,30 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	t_pplist.x
+	t_autopi.x
+	gen_cover.x
+	list_banner.x
+	targlist.x		"pplist.h"
+	jpp_cover.x
+	jpp_expl.x
+	t_jpp_prods.x 	"pplist.h"  <imhdr.h>
+	jpp_qual.x  	"pplist.h"  <tbset.h>
+	jpplist.x   	"pplist.h"  <imhdr.h>
+	npplist.x		"pplist.h"
+	npp_qual.x		"pplist.h"
+	npp_cover.x
+	npp_expl.x
+	opplist.x		"pplist.h"	<imhdr.h>
+	opp_qual.x		"pplist.h"
+	opp_cover.x
+	opp_expl.x
+	upplist.x		"pplist.h"	<imhdr.h>
+	xpp_expl.x
+	xpplist.x		"pplist.h" 	<imhdr.h>
+	ypplist.x		"pplist.h"
+	zpplist.x		"pplist.h"
+	;

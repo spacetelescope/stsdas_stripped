@@ -1,0 +1,8 @@
+input, f, a, "all", , ,	input printout selections ("one or more of the following:all cover visit obs")
+
+output, f, h, "", , ,	copy of the input string
+cover, b, h, , , ,	output flag for printing cover pages
+visit, b, h, , , ,	output flag for printing visit level pages
+obs, b, h, , , ,	output flag for printing observation pages
+
+mode, s, h, "al"

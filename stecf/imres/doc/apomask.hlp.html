@@ -1,0 +1,69 @@
+<!-- Translated by iraftex version 0.15 -->
+<html>
+<title>APOMASK (V1.0) --- Mar00 --- APOMASK (V1.0)</title>
+<h1>NAME</h1>
+<blockquote>
+apomask -- Create an apodizing mask image with zero background and a circular central mask with rounded off edge
+</blockquote>
+<h1>USAGE</h1>
+<blockquote>
+apomask output xdim ydim radius sigma k xpos ypos
+</blockquote>
+<h1>PARAMETERS</h1>
+<blockquote>
+<dl>
+<dt>output = &quot;&quot; [image]
+<dd>
+The name for the output mask image to be created.
+<dt>xdim = 512 [integer]
+<dd>
+The X dimension of the input image.
+<dt>ydim = 512 [integer]
+<dd>
+The Y dimension of the input image.
+<dt>radius = 12.0 [real]
+<dd>
+The radius of the central disk of the output image which is to be set to
+one.
+<dt>sigma = 2.0 [real]
+<dd>
+The sigma of the roll-off region around the central disk. 
+<dt>k = 0.5 [real]
+<dd>
+Linear size of output pixels in terms of input pixels. A scale of
+0.5 means a magnification of two from input to output.
+<dt>xpos = 256 [real]
+<dd>
+The position of the centre of the central disk in the image (x).
+<dt>ypos = 256 [real]
+<dd>
+The position of the centre of the central disk in the image (y).
+</dl>
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+This task is for creating images to be used as apodizing masks, typically
+PSFs are multiplied by such images to clean up the outer areas but there
+are other uses too. The output image is zero except for a central circular
+area which is set to 1.0 and a &quot;roll-off&quot; region around this central area
+where the value drops smoothly to zero. The roll-off is a gaussian
+determined by the sigma parameter. The parameter &quot;k&quot; controls the
+limb-darkening of the central disk. A value of 0.5 represents a uniform
+disk. 
+<p>
+</blockquote>
+<h1>EXAMPLES</h1>
+<blockquote>
+<pre>
+<p>
+</pre>
+</blockquote>
+<h1>TIMINGS</h1>
+<blockquote>
+It is, as one would expect, very quick!
+</blockquote>
+<h1>SEE ALSO</h1>
+<blockquote>
+drizzle, blot, tranback
+</blockquote>
+</html>

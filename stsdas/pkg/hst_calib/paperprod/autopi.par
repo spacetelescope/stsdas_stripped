@@ -1,0 +1,4 @@
+dirname, f, a, "", , , 		Input directory name
+subdirname, f, h, "", , , 	output subdirectory name
+
+mode, s, h, "al"

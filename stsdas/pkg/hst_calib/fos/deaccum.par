@@ -1,0 +1,6 @@
+# parameter file for deaccum
+input,f,a,,,,Input image name or list
+output,f,a,,,,Output image name or list
+verbose,b,h,yes,,,Print operations performed?
+Version,s,h,"20Apr94",,,Date of installation
+mode,s,h,"ql",,,

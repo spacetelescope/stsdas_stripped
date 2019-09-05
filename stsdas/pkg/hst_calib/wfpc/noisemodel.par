@@ -1,0 +1,15 @@
+#  wfpc.noisemodel parameters
+#
+input,s,a,,,,List of image input names
+group,i,h,1,1,4,Image group
+xbinsize,i,h,10,1,,Size of bin in X-direction
+ybinsize,i,h,10,1,,Size of bin in Y-direction
+ksigreject,r,h,INDEF,,,Kappa-sigma pixel rejection threshold
+cliplo,r,h,3.,0.,,Chi-square low rejection threshold
+cliphi,r,h,3.,0.,,Chi-square high rejection threshold
+device,s,h,"stdgraph",,,Output graphics device
+listout,b,h,no,,,List instead of plot data?
+usedqf,b,h,no,,,Reference DQF images to mask bad pixels?
+dqfpar,pset,h,,,,Data Quality File parameters (pset)
+noisepar,pset,h,,,,Noise model parameters (pset)
+cur,*gcur,h,,,,Graphics cursor input

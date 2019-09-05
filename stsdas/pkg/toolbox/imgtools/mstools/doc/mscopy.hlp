@@ -1,0 +1,137 @@
+.help mscopy Apr2002 mstools
+.nj
+.ih
+NAME
+mscopy -- Copy image sets of a multi-extension FITS file.
+.ih
+USAGE
+mscopy input output
+.ih
+DESCRIPTION
+This task copies images.
+In most situations, 'imcopy' should be used for this purpose.
+However, 'mscopy' has some features
+that make it more useful for multi-extension FITS files.
+
+One signficant distinction between 'mscopy' and 'imcopy'
+is that 'mscopy' copies whole image sets (imsets);
+it does not copy individual FITS extensions,
+nor does it copy images of any type other than FITS.
+The 'imsets' parameter lets you specify which imsets to copy;
+the default is to copy all of them.
+
+'mscopy' can copy dummy extensions,
+ones that consist of just a header,
+with keywords giving the pixel value
+and image size (when expanded).
+Dummy extensions are used in HST data to save space in the FITS file,
+and they can be present in calibrated as well as raw data.
+If the input name includes an image section,
+the coordinate parameters and image size of dummy extensions
+will be updated as the headers are copied to the output.
+
+In keeping with the idea that 'mscopy' is intended for
+FITS files in multi-extension (imset) format,
+the primary header is required to be just a header (no data portion).
+Keywords INSTRUME and NEXTEND are gotten from the primary header
+and used to determine the number of extensions per imset and
+the total number of imsets.
+If INSTRUME is not found,
+the number of extensions per imset will be assumed to be three.
+If NEXTEND is not found,
+the total number of imsets will be assumed to be one.
+
+As imsets are copied to output,
+the extension version numbers EXTVER of the output imsets
+will be explicitly set to consecutive integers.
+The starting value will be one larger than
+the EXTVER value in the last image in the output file
+before copying begins.
+
+One significant feature that 'imcopy' has that 'mscopy' does not
+is that 'imcopy' allows writing to
+an image section of an existing output image.
+.ih
+PARAMETERS
+.ls input [file name template]
+A list of one or more FITS files to be copied.
+The file name may include an image section,
+in which case that section of each imset to be copied
+will be extracted and copied to output.
+
+The file name may NOT include a FITS extension name, version or number
+(e.g. [sci,2] or [6]).
+To copy an individual FITS extension, use 'imcopy'.
+.le
+.ls output [file name template]
+Either a directory name or a list of output file names;
+in the latter case the number of input and output names must be the same.
+Note that the full file name -- including filename extension --
+should be specified, unless you have imtype set to "fits".
+
+If the output file does not exist,
+the primary header of the input file
+will be copied to create the output file,
+and the input imsets will then be appended to the output.
+
+If the output file does already exist,
+the input imsets will be appended.
+.le
+.ls (imsets = "-") [string]
+This parameter can be used to list the imsets
+which should be copied from input to output.
+The default is to copy all imsets.
+If 'input' includes more than one file name,
+'imsets' applies to all of the input files.
+
+Type "help ranges" for a description of the syntax.
+.le
+.ls (extnames = "SCI,ERR,DQ,SAMP,TIME") [string]
+This is the set of EXTNAME keyword values that make up an imset.
+Current HST instruments have either three or five extensions per imset.
+Their names may differ from the default, however,
+and this parameter lets you specify the names
+if the ones in the input file do not have the default values.
+The names in the list must be separated by commas or blanks.
+If 'extnames' is null or blank,
+the default set of values will be used.
+If any names are given, then all those in an imset must be listed;
+however, more names may be listed (up to five)
+than there are extensions in an imset.
+.le
+.ls (verbose = yes) [boolean]
+Display the names of input and output files as they are copied?
+.le
+.ih
+EXAMPLES
+1.  Copy the second and third imsets of a.fits,
+writing the output to a.fits in subdirectory xxx.
+
+.nf
+    ms> mscopy a.fits xxx imsets="2,3"
+.fi
+
+2.  Extract the image section "[20:1043,21:1044]"
+from every imset of a.fits, writing the output to c.fits.
+If c.fits does not already exist,
+the primary header will be created by copying from a.fits[0].
+
+.nf
+    ms> mscopy a.fits[20:1043,21:1044] c.fits
+.fi
+
+2.  Copy all imsets of both a.fits and b.fits to c.fits.
+
+.nf
+    ms> mscopy a.fits,b.fits c.fits,c.fits
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge.
+.ih
+SEE ALSO
+imcopy
+ranges
+.endhelp

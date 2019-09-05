@@ -1,0 +1,23 @@
+Menu for the package toolbox.imgtools.mstools
+
+      dqbits @ Generic Data Quality bits
+       ecdel - Delete an entire class of FITS extensions from a FITS file.
+   ecextract - Select all extensions of one selected 'type' from a FITS file
+      extdel - Delete single extensions from a FITS file.
+       egstp @ Output of msstatistics
+     msarith - Image arithmetic with NICMOS and STIS files
+   mscombine - Combine NICMOS or STIS files using gcombine
+      mscopy - Copy image sets of a multi-extension FITS file.
+       msdel - This script removes one (1) entire FITS imset from a FITS file.
+      mssort - Sort a FITS file to get all extensions of like version number
+               together.
+      msjoin - Joins files containing single IMSETs into one file
+     mssplit - Splits NICMOS or STIS IMSETs out into separate files 
+msstatistics - "Extended" gstatistics for OIF, GEIS, NICMOS and STIS files 
+    nicdqpar @ NICMOS Data Quality bits 
+   nsstatpar @ msstatistics parameters specific for NICMOS and STIS
+   stisdqpar @ STIS Data Quality bits 
+     wfdqpar @ WFPC Data Quality bits 
+
+Type "help mstools option=sysdoc" for more information about this package,
+including the special terminology used to describe STIS/NICMOS file structure.

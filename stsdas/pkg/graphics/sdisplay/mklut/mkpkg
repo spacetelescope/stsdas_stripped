@@ -1,0 +1,12 @@
+# Update the mklut application code in the sdisplay package library
+# Author: HSU, 25-Nov-1992
+
+$checkout sdisplay.a ../
+$update   sdisplay.a
+$checkin  sdisplay.a ../
+$exit
+
+sdisplay.a:
+	t_mklut.x	<imhdr.h>	
+	get_hist.x	<imhdr.h>	
+	;

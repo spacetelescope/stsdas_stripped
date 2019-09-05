@@ -1,0 +1,269 @@
+.help msstatistics Jun10 stsdas.toolbox.imgtools.mstools
+.ih
+NAME
+msstatistics -- statistics in IMSETs.
+.ih
+USAGE	
+msstatistics input
+.ih
+DESCRIPTION
+This task is an extension of the "gstatistics" task. It supports OIF,
+GEIS, STIS, NICMOS, ACS, WFC3, and COS file formats.
+
+It computes and prints in tabular form a number of statistical quantities,
+either for each individual group/IMSET in each input file or for an 
+accumulation over a range of groups/IMSETs in each input file. 
+Results for the last file/group/IMSET are saved into parameters in the 
+`egstp' pset. Each individual HDU in multi-IMSET files (as in STIS, NIC,
+ACS, and WFC3) is handled separately from the others.
+
+The task accepts mixed file types into a single input list. To discriminate
+between the several supported types it uses primarily the file name
+extension. OIF images have ".imh" name extensions. GEIS files have name
+extensions of the form ".??h". STIS, NIC, ACS, WFC3, and COS files have 
+".fits" or ".fit" 
+name extensions. The task also looks into some header keywords to figure out
+the file format details. In GEIS files it reads in the GCOUNT keyword.
+In FITS files it looks for the INSTRUME and NEXTEND keywords. If INSTRUME 
+does not have any of the values 'STIS', 'NICMOS', 'ACS', 'WFC3', or 'COS',
+the FITS file is handled
+as an OIF image, thus only the first FITS extension is processed.
+
+The task accepts Data Quality (DQ) information taken from appropriate sources.
+OIF images and GEIS files may have their DQ information stored in other files 
+that have the same name as the input file but with a different file name 
+extension. Both regular image files and IRAF ".pl" pixel lists may
+be used. Alternatively, an optional list/template of DQF files might be
+used. That list may either have the same number of elements as the main
+input list, or one single DQ file that will be applied to all input files.
+The files in the DQ list/template supersede any DQFs already associated to 
+the input files by the name extension mechanism. The above do not apply to
+STIS, NIC, ACS, WFC3 and COS images, because they always carry internally 
+their DQ information in the same file as the science image.
+
+The task has instrument-dependent psets that enable the user to select which 
+DQ bits are actually used to mask out individual pixels from the stat 
+computations. To provide more flexibility and independency from 
+instrument-specific bit assignations, Data Quality bits can also be specified 
+in generic form by using the `dqbits' pset. The actual boolean mask used to
+flag pixels out from the stat computations is built from the logical "OR"
+of both the generic dqbits pset and the appropriate instrument-specific pset. 
+
+The task also accepts an optional list/template of mask files.
+These files may have any name, but the "masks" list must be paired with
+the primary "input" input list. Alternatively, one single mask can be
+applied to all files in the input list. These masks are intended to be 
+used primarily as "science" masks, to remove objects/regions from the stat 
+computations. Both regular images and pixel lists are acceptable. 
+Contrary to DQ files, however, no bit-level
+information is taken from these masks; any pixel with a value different
+from zero will tell the task to discard the corresponding image pixel.
+No multi-group or multi-IMSET mask images are supported in this version.
+
+Image sections are fully supported.
+
+In the case of STIS, NIC, ACS, WFC3 and COS files, it is up to the user to 
+supply to 
+the task a properly formatted file, in the sense that its NEXTEND keyword 
+agrees with the number of FITS extensions, and the EXTVER number sequence 
+goes from 1 up to the number of IMSETs in the file. Note however that the 
+extensions themselves do not have to be physically stored in the file in 
+any pre-determined sequence. FITS files that have a primary header and 
+extensions but that do not agree with the standard HST formats are
+considered corrupted and may cause erratic behavior. This usually takes
+the form of either: (i) the task prints a header at STDOUT but no stats
+are computed and printed, or (ii) the task prints error messages from
+IRAF's FITS kernel about extensions not being specified. Files like these
+can be input to this task by supplying the extension number enclosed in
+brackets as part of the file name.
+
+It's worth
+noting that msstatistics will not compute statistics for the Data Quality
+arrays imbedded within IMSETs, because these arrays do not hold numerical
+measurement values, but rather bit-encoded flags for which statistical estimators
+are meaningless.
+
+The parameter `groups' may be used to specify a range of groups in GEIS
+files or a range of IMSETS in a multi-extension FITS file (as in STIS,
+NIC, ACS, WFC3 and COS files). The default value of `groups' is set to "*" 
+indicating 
+statistics will be done for all groups/IMSETS in each file. A group/IMSET 
+range may be specified by a set of one to three integers. The general 
+format is "g1-g2xg3", where g1 is the starting group/IMSET, g2 the ending 
+group/IMSET and g3 the increment. For instance, 3-11x2 means a range of 
+groups/IMSETs starting from group/IMSET 3 through group/IMSET 11 with a 
+step of 2. If g3 is omitted it defaults to 1. A single group/IMSET g1 may 
+be specified too. The group/IMSET range list is overridden if the input 
+file(s) itself is a GEIS file and already includes a group specification 
+in its name. 
+
+Statistics to be printed are those selected by the `stats' parameter, or 
+they may all be selected by setting `stats="doall"'. The user may choose 
+any combination of the following:  
+
+.nf
+	 doall - all of the statistical quantities
+	  npix - number of valid pixels
+	   min - minimum pixel value
+	   max - maximum pixel value
+	   sum - sum over all the pixels
+	  mean - mean of the pixel distribution
+	stddev - standard deviation of the pixel distribution
+	 midpt - estimate of the median of the pixel distribution
+	  mode - estimate of the mode of the pixel distribution
+	  skew - skewness of the pixel distribution
+          kurt - kurtosis of the pixel distribution
+         wmean - weighted mean of the pixel distribution
+          wvar - weighted variance of the pixel distribution
+.fi
+
+Statistical quantities are computed using the expressions listed below.
+
+.nf
+       mean = sum (x1,...,xN) / N
+     dev[i] = x[i] - mean
+   variance = sum {dev[i]**2} / (N-1)
+     stddev = sqrt (variance)
+   skewness = sum {(dev[i] / stddev) ** 3} / N
+   kurtosis = [sum {(dev[i] / stddev) ** 4} / N] - 3
+      wmean = sum{x[i]/(s[i]*s[i])} / sum{1/(s[i]*s[i])}
+       wvar =  1 / sum{1/(s[i]*s[i])}
+.fi
+
+where s[i] is the i-th pixel's error, available only in STIS and NICMOS 
+IMSETs. The weighted quantities are computed only for the science array.
+
+The task computes all specified statistical quantities either separately
+for individual groups/IMSETs of an image when `gaccum' is set to "no", or 
+accumulatively over all groups/IMSETs specified by the parameter `groups'
+when `gaccum' is set to "yes". The values written to the `egstp' pset
+are either the last file/group/IMSET's, or the ones accumulated across all 
+groups/IMSETS in the last file.
+
+The median is estimated by integrating the data histogram and computing by 
+interpolation the data value at which half the pixels are below that data 
+value and half are above it.  The mode is estimated by locating the maximum 
+of the data histogram and fitting the peak by parabolic interpolation. While 
+a histogram with the number of bins up to one fourth of the number of pixels 
+is used to achieve high accuracy, re-binning the histogram to a relatively 
+low resolution may be beneficial for searching the peak of the histogram. 
+Successive histograms with bin widths twice as broad as the previous one 
+are used to obtain intermediate results of the mode. The re-binning of the 
+histograms is ended when either the bin width is greater than 0.01 * 
+standard deviation or the number of bins becomes less than one tenth of the 
+number of pixels. The final result for the mode is an average of all the 
+intermediate results of the mode.
+
+The `nsstatpar' and `wfdqpar' psets provide the necessary instrument and
+format-dependent information. The `wfdqpar' pset holds the Data Quality
+File name extension for GEIS files and OIF images. This is usually ".c1h" 
+for WFPC images, but this pset can be used to specify the DQF name extension 
+for any other GEIS format file, and for OIF images as well. The special 
+case of pixel lists is handled by setting `dqfext = ".pl"'. The remaining
+parameters hold the individual flags for each Data Quality bit in WFPC files.
+
+The `nsstatpar' pset is specific for NICMOS, STIS, ACS, WFC3 and COS. The 
+`arrays' parameter
+is used to specify which HDUs in each IMSET in each file will have their stats 
+computed. The `clarray' parameter specifies which HDUs in the last 
+file/IMSET will have its stats written to the `egstp' pset. The `stisdqpar',
+`nicdqpar', 'acsdqpar', 'wfc3dqpar' and 'cosdqpar' psets hold the individual 
+flags for each Data Quality bit in STIS, NICMOS, ACS, WFC3 and COS files,
+respectively.
+.ih
+PARAMETERS
+.ls input [file name list/template]
+List of files for which pixel statistics are to be computed.
+.le
+.ls (masks = "") [file name list/template]
+List of masks which can be either pixel list files or mask images.
+.le
+.ls (dqf = "") [file name list/template]
+List of Data Quality Files which supersede any DQFs associated by file name
+extension (OIF/GEIS formats only).
+.le
+.ls (groups = "*") [string]
+Range list of groups/IMSETs to be processed (syntax is g1-g2xg3).
+.le
+.ls (stats = "npix,mean,stddev") [string]
+The statistical quantities to be computed and printed.
+.le
+.ls (lower = INDEF) [real]
+Use only pixels with values greater than or equal to this limit.
+All pixels are above the default value of INDEF.
+.le
+.ls (upper = INDEF) [real]
+Use only pixels with values less than or equal to this limit.
+All pixels are below the default value of INDEF.
+.le
+.ls (gaccum = no) [boolean]
+Accumulate statistics across groups/IMSETs?
+.le
+.ls (egstp = [pset])
+Pset name for storing the resulting statistical parameters.
+.le
+.ls (namecol = 25) [int, min=1, max=80]
+Column width used by file name in output printout.
+.le
+.ls (dqon = yes) [boolean]
+Use Data Quality information to mask pixels out from the stat computations?
+If not explicitly set, no Data Quality information will be used by the task.
+.le
+.ls (dqbits = "") [pset]
+Data Quality bits to look for in generic files. The flags set in this pset
+will be logically ORed with the flags set in the instrument-specific pset.
+.le
+.ls (nsstatpar = [pset])
+Pset with NICMOS, STIS, ACS, WFC3 and COS-specific parameters.
+.le
+.ls (wfdqpar = [pset])
+Pset with WFPC-dependent parameters. Also for GEIS files and OIF images.
+.le
+.ih
+PSETS
+.ls NSSTATPAR
+.ls (arrays = "science,error,time,sample") [string]
+HDUs to be processed.
+.le
+.ls (clarray = "science") [string]
+HDU whose stats are written into output pset.
+.le
+.ls (stisdqpar = "") [pset]
+Data Quality bits to look for in STIS IMSETs.
+.le
+.ls (nicdqpar = "") [pset]
+Data Quality bits to look for in NICMOS IMSETs.
+.le
+.ls (acsdqpar = "") [pset]
+Data Quality bits to look for in ACS IMSETs.
+.le
+.ls (wfc3dqpar = "") [pset]
+Data Quality bits to look for in WFC3 IMSETs.
+.le
+.ls (cosdqpar = "") [pset]
+Data Quality bits to look for in COS IMSETs.
+.le
+.le
+.ls WFDQPAR
+.ls (dqfext = ".c1h") [string]
+Data Quality File name extension. Valid also for any GEIS file or OIF image.
+.le
+.ls (wfdqpar = "") [pset]
+Data Quality bits to look for in WFPC files.
+.le
+.le
+.ih
+EXAMPLES
+.ih
+BUGS
+Because of current limitations in handling INDEFs in C code, INDEF is not 
+used by this task to signal that something cannot be computed. Zero is used 
+instead, which makes the output listing a bit confusing, since genuine 
+zero-valued results cannot be distinguished from indefinite-valued results.
+.ih
+REFERENCES
+This task was written by I. Busko.
+.ih
+SEE ALSO
+gstatistics
+.endhelp

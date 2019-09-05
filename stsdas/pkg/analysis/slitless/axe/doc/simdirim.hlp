@@ -1,0 +1,108 @@
+.help simdirim Nov2007 axesim
+.ih
+NAME
+simdirim -- generate a simulated direct image
+.ih
+USAGE
+.nf
+simdirim incat config tpass_direct
+.fi
+.ih
+PARAMETERS
+.ls incat [string]
+Name of the model object table
+.le
+.ls config [string]
+Name of the aXe configuration file
+.le
+.ls tpass_direct [string]
+Total passband file for simulated direct image
+.le
+.ls (dirim_name) [string]
+Name of the simulated direct image
+.le
+.ls (model_spectra) [string]
+The model spectra file name
+.le
+.ls (model_images) [string]
+The model image file name
+.le
+.ls (nx) [int]
+Dimension of the simulated direct image in x
+.le
+.ls (ny) [int]
+Dimension of the simulated direct image in y
+.le
+.ls (exptime) [float]
+Exposure time for simulated direct image
+.le
+.ls (bck_flux=0.0) [float] or [string]
+Background flux rate or background image (both in [e/s])
+.le
+.ls (silent='yes') [boolean]
+Suppress low level standard output
+.le
+.ih
+DESCRIPTION
+The task "simdirim" generates a direct image containing all objects
+defined in the Model Object Table (MOT) "incat" (located in "$AXE_IMAGE_PATH").
+The objects are positioned at the values given in the MOT columns "X_IMAGE" and 
+"Y_IMAGE".
+
+In case that the MOT contains the column "MODSPEC" and "model_spectra" is specified,
+the spectral templates given in this Model Spectra file are used for simulating the objects
+
+In case that the MOT contains the column "MODIMAGE" and "model_images" is specified,
+the template images given in this Model Images file are used for defining the object
+shapes.
+
+For the transformation of the object flux to detector count rates the
+total passband defined in "tpass_direct" is used, assuming the HST collecting area.
+
+To deduce the image size, the aXe configuration file "config", located in
+"$AXE_CONFIG_PATH", is used.
+
+A direct image size different than the one deduced from the configuration
+file can be given. Also if "exptime" is set, noise is added to the output image
+using a simple model with Poisson noise (sources and background) and readout noise.
+The background can be given as flux rate or as a background image, and a default
+extraction can be performed directly after simulating the dispersed image.
+.ih
+FILE NAMING CONVENTION
+The direct image is either called "dirim_name" or:
+.nf
+<incat_trunc>.fits
+.fi
+with <incat_trunc>  the Model Object Table filename "incat", truncated after the last ".".
+The direct image file is written to "$AXE_OUTSIM_PATH".
+.ih
+EXAMPLES
+1) Simulate a direct images with the objects defined in "sim_stars.lis" and
+a slitless instrument defined in "WFC3_G280.conf" for the total passband
+"WFC3_F606W.lis".
+.nf
+    --> simdirim sim_stars.lis WFC3_G280.conf tpass_direct="WFC3_F606W.lis"
+.fi
+
+2) As in the previous example however use model spectra and templates images.
+Also add noise, according to an exposure time of 2000s.
+.nf
+    --> simdirim sim_stars.lis WFC3_G280.conf tpass_direct="WFC3_F606W.lis"
+                 model_spectra="halo_stars.fits" model_images="G280_PSFs.fits"
+                 exptime=2000.0
+.fi
+.ih
+TIME REQUIREMENTS
+The computation time for the simulation of a direct image usually needs just
+around one second per object listed in the MOT.
+.ih
+BUGS
+No known bugs.
+.ih
+REFERENCES
+For further information on this task and aXeSIM, please consult 
+the aXeSIM manual at "http://www.stecf.org/software/slitless_software/aXeSIM".
+.ih
+SEE ALSO
+simdata, simdispim
+.endhelp

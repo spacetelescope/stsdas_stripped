@@ -1,0 +1,240 @@
+.help fieldplot Aug93 stsdas.graphics.stplot
+.ih
+NAME
+fieldplot -- Plot vector field data.
+.ih
+USAGE
+fieldplot
+.ih
+DESCRIPTION
+This task draws a plot of a vector field with symbols representing the
+magnitude and direction of the vector at any number of positions in a
+two-dimensional field.  These plots are sometimes known as "hedgehogs."
+Symbols consist of a line whose length is proportional to the magnitude
+of the field at the specified direction.  Optionally, an arrow head may
+be drawn to indicate the direction and a marker may be drawn at each
+coordinate.
+
+.ls Data
+The 'indata' parameter specifies the source of the data.  Text data 
+formatted in columns is used for input.  The default, STDIN, indicates 
+the data are read from the standard input, and may therefore
+be entered interactively from the keyboard, redirected from a file, or
+piped from another task.  Alternately, the value of 'indata' may be a 
+file name that contains the data.
+
+Data consist of four values:  X position, Y position, magnitude, and
+direction.  Alternately, the vector may be specified by projecting the
+magnitude along the X and Y axes.  Comments, indicated by a hash mark
+("#") in the first column, and blank lines are ignored.  Any line
+containing fewer than four values is ignored.  Values beyond the
+fourth, on any line, are ignored.
+
+If the parameter `rtheta = true', the vectors are assumed to be
+specified by magnitude (r) and direction (theta).  The magnitude is
+assumed to be in the same units and scale as the X and Y coordinate
+data.  The direction angle is specified counterclockwise from the
+horizontal (positive X).  If the parameter `degrees = true', directions
+are assumed to be in degrees, otherwise, they are in radians.  If
+`rtheta = false', projected magnitudes are assumed to be in the same
+units and scale as the X and Y coordinate data.
+.le
+
+.ls Scaling
+The plot is scaled such that the extreme data coordinates in the input 
+data are scaled to the edges of the specified viewport (the plotting 
+area).  The viewport depends on whether axes are drawn and if 
+there is a margin between the data coordinates and the viewport 
+edges.  Note that in general, graphics devices are not square and the 
+scale of a given set of data will not match this aspect ratio. For 
+example, if your data range from 20 to 80 in the X direction and 30 
+to 60 in Y, this will still be scaled to fill any device viewport, 
+distorting the scale of the data (assuming the X and Y axes use the 
+same units).  You can always add coordinates to the input file to force 
+a certain scale.  For example, you might add a point at (0,0) and 
+(100,100) with zero magnitude to force the scale to range from 0 to 
+100 in both axes.  You may also change the viewport coordinates (in 
+the 'dvpar' pset) to adjust the size and location of the viewport on 
+the device.
+.le
+
+.ls Symbols
+The symbol size may be adjusted using the floating point task parameter
+`magscale'.  This parameter specifies a factor applied to the vector
+magnitudes in transforming them to the plot scale.  For example,
+`magscale = 2.0' would magnify the size of the arrows to twice the size
+of the normal plot scale.  The parameter `zeroplot' specifies what to
+do if the vector magnitude is zero.  If `zeroplot=yes', then at least a
+dot and the symbol marker will be drawn (if `psnmark' specifies a
+symbol).  If `zeroplot=no', then nothing will be drawn for any vector
+whose magnitude is zero.  However, the data coordinates still determine
+the overall plot scale.
+.le
+
+.ls Arrows
+If the boolean parameter `head=yes' then an arrow head will be 
+drawn on every marker.  The size of the heads drawn on the arrows 
+may be adjusted by the floating point task parameter `headsize', 
+which is specified in normalized device coordinates (NDC).  The head 
+will NOT be drawn if the magnitude of the vector is zero.
+.le
+
+.ls Markers
+A marker may be drawn
+at the tail of the vector (at the field coordinates).  The style of
+marker is specified by the parameter `psnmark'; marker size
+is specified by `marksize' in NDC.  The parameter `crdpsn' 
+specifies whether the arrows should be placed at the "head" of the 
+vector, at the "tail", or in its "center".
+.le
+
+.ls Axes
+Coordinate axes and labels will be drawn if `axes = yes'.  Otherwise, 
+only the symbols and markers will be drawn.  If the parameter 
+`margin=yes' the plot will be scaled so that there is extra space 
+between the edges of the display and the outermost symbols.  This 
+prevents symbols from being clipped (truncated) at the edges of the 
+plot.  Note that if the plot is to be overlaid on an image, you want to 
+set `axes=no' and `margin=no'.
+.le
+.ih
+PARAMETERS
+.ls input = "STDIN" [string]
+The source for the input data.  The default, "STDIN", indicates the 
+"standard input" which means that data may be typed in 
+interactively, redirected from a file, or piped from another task.  If 
+the value is anything other than "STDIN" it is interpreted as the 
+name of a text file containing the data.  See the "Data" section in the 
+"Description" for details.
+.le
+.ls (rtheta = no) [boolean]
+Are vectors specified as magnitude and direction?  The default, "no", 
+means that data are specified as projections of the vector along the X 
+and Y directions, respectively.
+.le
+.ls (degrees = yes) [boolean]
+Is direction data in degrees?  This is ignored if 'rtheta=no'.  The 
+default, "yes" indicates that the direction values are specified in 
+degrees.
+.le
+.ls (magscale = 1.0 [real, min = 0.0]
+Ratio of the size of the plotted arrows to the coordinate scale.  This 
+allows the symbols to be scaled arbitrarily relative to the plot scale 
+determined by the coordinates of the symbols.
+.le
+.ls (crdpsn = tail) [string, allowed values: tail | center | head]
+Position of the arrow with respect to the data coodinate.   
+.le
+.ls (head = no) [boolean]
+Draw an arrow head for each symbol?  The default is "no" in which 
+case no arrow head is drawn.  Note that an arrow head will NOT be 
+drawn if the vector magnitude is zero, regardless of the value of 
+`head' and `headsize'.
+.le
+.ls (headsize = 0.0075) [real, min = 0.0]
+Size of arrow heads in NDC.  If `head=yes' this specifies the relative 
+size of the arrow head.  It is specified in NDC coordinates, basically 
+some fraction of the plotting area.  Note that an arrow head will NOT 
+be drawn if the vector magnitude is zero, regardless of the value of 
+`head' and `headsize'.
+.le
+.ls (psnmark = INDEF) [integer]
+Code for a symbol plotted at each coordinate position.  The values 
+may be 
+summed for superimposed symbols:
+.nf
+
+	2	square box
+        4	plus
+	8	cross
+       16	diamond
+       32	horizontal line
+       64	vertical line
+      128	horizontal error bar
+      256	vertical error bar
+      512	circle
+
+.fi
+No marker is plotted if `psnmark = INDEF' or `psnmark = 0', or 
+'zeroplot=no' and the vector magnitude is zero. 
+.le
+.ls (marksize = 0.0075) [real, min = 0.0]
+Size of symbol markers in NDC (a fraction of the screen size).  If 
+'marksize=0', no symbols will be drawn.  See also 'psnmark'.
+.le
+.ls (zeroplot = yes) [boolean]
+Plot symbols if the vector magnitude is zero?
+
+If `zeroplot=yes', then at least a dot and the symbol marker will be 
+drawn (if `psnmark' specifies a symbol).  If `zeroplot=no', then 
+nothing will be drawn for any vector whose magnitude is zero.  
+However, the data coordinates still determine the overall plot scale.
+.le
+.ls (axes = yes) [boolean]
+Draw plot axes?  
+
+The default, "yes", will draw and label coordinate 
+axes.  This will also rescale the plot to make a margin allowing room 
+to draw the axes.  If you wish to overlay a plot registered with an 
+image, you should set `axes=no' and `margin=no'.
+.le
+.ls (margin = yes) [boolean]
+If `axes=no', then rescale the plot to leave a margin anyway?  
+
+If you wish 
+to overlay a plot registered with an image, you should set `axes=no' 
+and `margin=no'.
+.le
+.ls (title = "") [string]
+An optional title to draw at the top of the plot.
+.le
+.ls (dvpar = "") [pset]
+This pset parameter specifies device-related parameters (see below).
+.le
+.ls (dvpar.device = "stdgraph") [string]
+The graphics device name.  The default, "stdgraph" uses the CL 
+environment parameter `stdgraph' to find the device name.  For 
+example, if you are using a gterm window under SunView, you could 
+have set `stdgraph=gterm' or `device=gterm'.  To overlay graphics on 
+an image display, use an "imd" device, "imdr" for red, "imdg" for 
+green, etc.
+.le
+.ls (dvpar.append = no) [boolean]
+Append the graph to an existing plot?
+.le
+.ls (dvpar.left = 0) [real, min = 0, max = 1]
+The NDC coordinates of the left edge of the plot.
+.le
+.ls (dvpar.right = 0) [real, min = 0, max = 1]
+The NDC coordinates of the right edge of the plot.
+.le
+.ls (dvpar.bottom = 0) [real, min = 0, max = 1]
+The NDC coordinates of the bottom edge of the plot.
+.le
+.ls (dvpar.top = 0) [real, min = 0, max = 1]
+The NDC coordinates of the top edge of the plot.
+.le
+.ih
+EXAMPLES
+1. Draw arrows representing a vector field.  The data are in a file 
+named 'field.dat' and represent projections of the vectors:
+.nf
+
+ 20.4  72.9  73.3  47.3 
+ 52.5  36.9  6.85   41. 
+ 5.89  10.2  23.5  17.8 
+ 88.7  37.9  27.6  8.48 
+ 69.1  31.5  94.1  27.8 
+  25.  40.8  57.8  88.8 
+ 78.4 0.138   55.   52. 
+ 12.5   83.  39.8  67.7 
+ 17.5   48.  46.4  22.9 
+ 62.8  12.4   20.   50. 
+
+ st> fieldplot field.dat rtheta-
+.fi
+.ih
+BUGS
+.ih
+SEE ALSO
+.endhelp

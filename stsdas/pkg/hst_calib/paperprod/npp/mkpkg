@@ -1,0 +1,18 @@
+$checkout pp.a ../
+$update   pp.a
+$checkin  pp.a ../
+$exit
+
+pp.a:
+	npp_assoc.x	<tbset.h>
+	npp_acq.x	"npp.h"		<imhdr.h>
+	npp_exp.x	"npp.h"
+	npp_expsum.x	<imhdr.h>
+	npp_image.x	"npp.h"		<imhdr.h>
+	npp_mos.x	"npp.h"		<imhdr.h>
+	npp_obsum.x	"npp.h"	
+	npp_trlsum.x	"npp.h"		<tbset.h>
+	npp_calib.x	"npp.h"
+	npp_dithchop.x
+	t_dithchop.x
+	;

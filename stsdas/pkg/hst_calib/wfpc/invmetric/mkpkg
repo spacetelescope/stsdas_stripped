@@ -1,0 +1,13 @@
+# Update the invmetric application code in the wfpc package library
+# Author: HSU, 16-Jun-1995
+
+$checkout wfpc.a ../
+$update   wfpc.a
+$checkin  wfpc.a ../
+$exit
+
+wfpc.a:
+	t_invmetric.x 	<tbset.h>	<ctotok.h>	"invmetric.h"
+	invmetric_do.x	"invmetric.h"
+	wxy2rd.x	<math.h>	"invmetric.h"
+	;

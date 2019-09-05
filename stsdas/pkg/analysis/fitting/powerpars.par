@@ -1,0 +1,10 @@
+# Powerlaw function parameters.
+#
+index,r,h,INDEF,,,>initial guess for power law index
+ampl,r,h,INDEF,,,>initial guess for amplitude at reference x
+ref,r,h,INDEF,,,>reference x axis value
+vindex,b,h,yes,,,>vary index ?
+vampl,b,h,yes,,,>vary amplitude ?
+vref,b,h,no,,,>vary reference ?
+version,s,h,"10Feb90",,,>date of installation
+mode,s,h,al

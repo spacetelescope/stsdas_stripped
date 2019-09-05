@@ -1,0 +1,72 @@
+# Make the fos_pix2wav package
+#	to include fos_pix2wav
+#
+#
+# Special keywords recognized by IRAF mkpkg files:
+#
+#	mkpkg relink		update object library and link
+#	mkpkg linkonly		skip object library updates and just link
+#	mkpkg install		move executable to lib$
+#	mkpkg update		update object library, link, and move to lib$
+
+
+$call	relink
+$exit
+
+debug:
+        $set XFLAGS = "-fgq $(XFLAGS)"
+        $set LFLAGS = "-xz $(LFLAGS)"
+        $call update
+        $exit
+        ;
+
+update:
+	$call	relink
+	$call	install
+	;
+
+relink:
+	$checkout fos_pix2wav.a ../
+	$update   fos_pix2wav.a
+	$checkin  fos_pix2wav.a ../
+	$call	fos_pix2wav
+	;
+
+install:
+	$move xx_fos_pix2wav.e ../../bin/$x_fos_pix2wav.e
+	;
+
+fos_pix2wav:
+linkonly:
+        $omake  x_fos_pix2wav.x
+	
+        $link   x_fos_pix2wav.o ../fos_pix2wav.a ../poa_fos.a \
+                -liraf77 -lf77util -luttables -lstxtools -ltbtables \
+                -o xx_fos_pix2wav.e
+	;
+
+fos_pix2wav.a:
+	fos_pix2wav.x
+        yclacc.f
+	yclfos.f
+        yclinq.f
+	yclopn.f
+	yclprc.f
+	yclrd.f
+	yclwav.f
+	yconfg.f
+	yerror.x
+	yfname.f
+	ygtref.f
+	ymsput.f
+	yopd0h.f
+	yosize.f
+	ypflag.f
+	yrccs1.f
+	yrccs6.f
+	ywmnmx.f
+        ymoddisp.f
+	yclopnpix.f
+        wrtwavtab.f
+	yclopnpoa.f
+	;

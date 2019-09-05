@@ -1,0 +1,319 @@
+.help msstreakflat Oct96 stsdas.hst_calib.ctools
+.ih
+NAME
+msstreakflat -- Generate flat fields from streak exposures of the Earth.
+.ih
+USAGE
+msstreakflat infile outfile
+.ih
+DESCRIPTION
+This task is an "extended" version of the 'streakflat' task. It applies 
+the "streakflat" algorithm to NICMOS, WFPC and WFPC2 images. 
+The basic algorithm is the same used in the 'streakflat' task 
+that processes Earth flats taken with the WFPC. The following paragraphs 
+outline issues specific for this task; for a general overview of the 
+"streakflat" method, please refer to the 'streakflat' task help page.
+
+This task behaves in a similar way as the WFPC-only task, with the
+following improvements:
+.ls o
+It properly handles the extra data arrays associated with each NICMOS
+exposure: errors, integration times and number of samples.
+.le
+.ls o
+It provides more flexibility in the way Data Quality flag bits are handled.
+.le
+.ls o
+It imposes no limits on the maximum number of input files.
+.le
+
+When used with WFPC images, this task processes all 4 groups in one
+single pass. With NICMOS files, it reads only the EXTVER=1 IMSET of each 
+input streak file, ignoring any others. The output NICMOS file has a single 
+EXTVER=1 IMSET.
+
+The input file names must have extensions of ".fits" or ".fit" for NICMOS and
+".??h" for WFPC. The extension in each corresponding Data Quality File name
+for WFPC can be specified by task parameter 'dqfextn' in the `wfdqpar' pset.
+The output file name must have either ".fits" or ".fit" extension in the
+NICMOS case, or the standard ".r6h" extension in the WFPC case. The 
+corresponding output Data Quality File in this case will also carry the
+standard extension ".b6h".
+
+Image sections and group specifications in GEIS file names are not supported.
+
+Streak angles are derived from keywords in the associated support file 
+(SHP) of each input streak file. Support file names are  generated from 
+the streak input file names by replacing the "_XXX" suffix found in standard
+NICMOS file names by "_spt". If no "_XXX" suffix is found in the input file
+name, "_spt" is appended to it. NICMOS support file names must also have as
+extension either ".fits" or ".fit". In the WFPC case, the support file must 
+have the same name as the corresponding input earth flat file, with extension
+".shh".
+
+The following SHP keywords are used:
+
+.nf
+PA_V3		position angle of the V3 axis
+RA_V1		right ascension of the V1 axis
+DEC_V1		declination of the V1 axis
+VELOCSTX	X-component of the spacecraft velocity
+VELOCSTY	Y-component of the spacecraft velocity
+VELOCSTZ	Z-component of the spacecraft velocity
+.fi
+
+Before starting the algorithm, the input files are checked for consistency.
+The header keywords:
+
+.nf
+   INSTRUME, CAMERA, FILTER, OBSMODE in NICMOS files
+   INSTRUME, CAMERA, FILTER1, FILTER2 in WFPC files
+.fi
+
+are examined. The array sizes are also checked. The first valid file in 
+the list sets the keyword values which the remaining files will be checked 
+against. Mismatches will result in a warning message and skipping to the 
+next file in the input list.
+
+The Data Quality Flag of each input pixel is Boolean-ORed against a global 
+mask that is built from user-selected individual flag bits. In this way it
+is possible to filter out pixels with specific anomalies. Individual psets
+for each instrument are used to select the desired bits. The default action
+is to ignore pixels with any one of the Data Quality bits set.
+
+The Data Quality Flag of output pixels will be set to either zero or to
+a user-defined flag value, thus no detailed information from the input 
+pixel's flags is propagated into the output. This is actually a feature of 
+the "streakflat" algorithm itself.
+
+In NICMOS files, the input IMSET's error arrays are ignored. The output 
+error array is built from the individual (normalized) flatfield estimates 
+generated as a by-product from each input IMSET. The pixelwise standard 
+deviation across this flatfield set should be a good estimate of the
+_random_ flat error at each pixel. Thus the final error array is generated
+as the (pixelwise) square root of the sum of all the residuals (individual 
+estimate minus final flat) squared divided by the number of input files.
+
+The NICMOS samples arrays of each input file are added together to form 
+the output samples array. The same for the time arrays. These accumulations
+take into account only pixels that are not masked out by the combination 
+(Boolean OR) of their Data Quality Flag bits and the user-defined Data 
+Quality bits.
+
+The "streakflat" algorithm needs to keep track of temporary flat images, 
+one associated with each input streak image. These images may be kept on 
+disk as temporary files, or in memory, which increases efficiency. The
+task will determine which images are kept on disk and which in memory
+based on the 'memory' task parameter. The user can maximize throughput
+by setting this parameter to a value consistent with the amount of
+physical (not total) memory on the system. If set to a too small value, 
+images will be kept on disk and accessed only in small pieces, which
+generates a large amount of file open/close operations and maybe 
+across-network data transfers. If set to a too large value, many images 
+will be kept in memory but virtual memory paging will be used too often. 
+The goal thus is to minimize the amount of file open/close operations and 
+across-network data transfers but without a large penalty from memory paging
+(see the EXAMPLES section below).
+
+The task will run, however, even in very memory-tight conditions (at expense 
+of execution time). The temporary file names are built from the input image 
+names by replacing (or appending) the file name suffix with "_tmp". They are 
+deleted upon successful task completion.
+.ih
+PARAMETERS
+.ls input = "" [file name list/template]
+Input streak file name template. 
+.le
+.ls outfile = "" [file]
+Name of the output file (final flat field). It must have ".fits" or ".fit"
+extension in the NICMOS case, and ".r6h" in the WFPC case.
+.le
+.ls (nstreakpar = "") [pset]
+Pset with NICMOS-specific parameters.
+.le
+.ls (wstreakpar = "") [pset]
+Pset with WFPC-specific parameters.
+.le
+.ls (ngood = 2) [int, min = 1]
+Minimum number of valid points at each pixel required to calculate the flat 
+field.  If the number of valid points at a certain pixel is less than the 
+value of this parameter, the Data Quality Flag of the final flat field will 
+have a fill value at the corresponding pixel.
+.le
+.ls (memory = 20) [int, min=1]
+Available memory for holding data (in Mbytes). For optimal performance,
+this should be set to a value comparable (50 - 80 percent) to the total 
+amount of *physical* memory in the system.
+.le
+.ls (verbose = yes) [boolean]
+Print out detailed messages as the task progresses?
+.le
+.ih
+PSETS
+.ls NSTREAKPAR
+.ls (niter = 7) [int, min=1]
+Number of iterations to be used in the 1-D smoothing of the streaks.
+.le
+.ls widths = "250,190,125,80,50,30,15" [string]
+Half widths (in pixels) used in 1-D smoothing.
+.le
+.ls (badmask = 0) [int]
+Data Quality value to use in output bad pixels (zero selects a default value). 
+.le
+.ls (nicdqpar = "") [pset]
+Data Quality bits to look for in each input streak image.
+.le
+.le
+.ls WSTREAKPAR
+.ls (niter = 8) [int, min=1]
+Number of iterations to be used in the 1-D smoothing of the streaks.
+.le
+.ls widths = "800,600,400,250,150,90,50,30" [string]
+Half widths (in pixels) used in 1-D smoothing.
+.le
+.ls (badmask = INDEF) [int]
+Data Quality value to use in output bad pixels (INDEF selects a default value). 
+.le
+.ls (wfdqpar = "") [pset]
+Data Quality bits to look for in each input streak image. Also defines the
+input Data Quality File name extension.
+.le
+.le
+.ih
+EXAMPLES
+1. Produce a flat field based on all streak exposure files in the local 
+directory and use 3 iterations of half widths 200, 120, and 70.
+Redirect the output messages to the file 'flat.log' and run the task in the 
+background.
+
+.nf
+> nstreakpar.niter  = 3
+> nstreakpar.widths = "200,120,70"
+> msstreakflat *_flt.fit testflat.fit ver+ > flat.log &
+.fi
+
+2. Memory settings:
+
+2.1 Inadequate setting: process ten WFPC2 images with 20 Mb of RAM.
+
+.nf
+> msstreakflat *.c0h testflat.r6h
+Mask for input pixels (hexadecimal) = 06BF
+Output bad pixel flag = 32
+Number of iterations = 8
+Boxcar filter widths:  800 600 400 250 150 90 50 30
+Usable memory = 20 Mb
+***  ESTREAKFLAT version 1.2 starting at Thu 13:17:59 EDT 10-Oct-1996
+Checking input images...
+ data$u2a31504t.c0h
+ data$u2a31903t.c0h
+ data$u2a31k04t.c0h
+ data$u2a31s04t.c0h
+ data$u2a31z03t.c0h
+ data$u2a32004t.c0h
+ data$u2a32404t.c0h
+ data$u2a32703t.c0h
+ data$u2a32k03t.c0h
+ data$u2a32o03t.c0h
+Block size for median computation = 655 lines.
+Starting streakflat algorithm for group 1.
+  Streak angles:
+  data$u2a31504t.c0h     -2.315
+  data$u2a31903t.c0h    -78.973
+   ...
+   ...
+   ...
+   ...
+.fi
+The messages mean that *no* images are kept in memory, thus inputs and 
+temporaries have to be swapped in/out from files (maybe across the network) 
+and the median computation also has to be performed by swaping twice data 
+in/out from files, the first time 655 lines and the second time 
+800 - 655 = 145 lines (the median algorithm needs that data from all images 
+be in memory at the same time).
+
+2.2. Intermediate setting: process ten WFPC2 images with 40 Mb of RAM.
+
+.nf
+> msstreakflat *.c0h testflat.r6h memory=40
+Mask for input pixels (hexadecimal) = 06BF
+Output bad pixel flag = 32
+Number of iterations = 8
+Boxcar filter widths:  800 600 400 250 150 90 50 30
+Usable memory = 40 Mb
+***  ESTREAKFLAT version 1.2 starting at Thu 13:16:31 EDT 10-Oct-1996
+Checking input images...
+ data$u2a31504t.c0h
+ data$u2a31903t.c0h
+ data$u2a31k04t.c0h
+ data$u2a31s04t.c0h
+ data$u2a31z03t.c0h
+ data$u2a32004t.c0h
+ data$u2a32404t.c0h
+ data$u2a32703t.c0h
+ data$u2a32k03t.c0h
+ data$u2a32o03t.c0h
+6 images reside in memory.
+Block size for median computation = 800 lines.
+Starting streakflat algorithm for group 1.
+  Streak angles:
+  data$u2a31504t.c0h     -2.315
+  data$u2a31903t.c0h    -78.973
+   ...
+   ...
+   ...
+   ...
+.fi
+The messages now mean that 6 (out of 10) images are kept in memory
+(both input and temporary), thus decreasing the amount of file
+input/output. The "block size" is one full image in length (800 lines for 
+WFPC), which is the most efficient condition for the median algorithm.
+
+2.3. Best setting: process ten WFPC2 images with 60 Mb of RAM.
+
+.nf
+> msstreakflat *.c0h testflat.r6h memory=60
+Mask for input pixels (hexadecimal) = 06BF
+Output bad pixel flag = 32
+Number of iterations = 8
+Boxcar filter widths:  800 600 400 250 150 90 50 30
+Usable memory = 60 Mb
+***  ESTREAKFLAT version 1.2 starting at Thu 13:16:31 EDT 10-Oct-1996
+Checking input images...
+ data$u2a31504t.c0h
+ data$u2a31903t.c0h
+ data$u2a31k04t.c0h
+ data$u2a31s04t.c0h
+ data$u2a31z03t.c0h
+ data$u2a32004t.c0h
+ data$u2a32404t.c0h
+ data$u2a32703t.c0h
+ data$u2a32k03t.c0h
+ data$u2a32o03t.c0h
+10 images reside in memory.
+Block size for median computation = 800 lines.
+Starting streakflat algorithm for group 1.
+  Streak angles:
+  data$u2a31504t.c0h     -2.315
+  data$u2a31903t.c0h    -78.973
+   ...
+   ...
+   ...
+   ...
+.fi
+The messages now mean that all 10 images are kept in memory (both input 
+and temporary), thus no file input/output takes place except at the starting
+and ending of each GEIS group processing. Again the "block size" is one 
+full image in length.
+.ih
+REFERENCE
+.ih
+BUGS
+Current version will fail if DQ and/or ERR HDUs in input NICMOS IMSETs
+are compressed.
+.ih
+REFERENCES
+This task was written by I. Busko.
+.ih
+SEE ALSO
+.endhelp

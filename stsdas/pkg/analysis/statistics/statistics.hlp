@@ -1,0 +1,62 @@
+.help statistics Jul93 stsdas.analysis
+.ih
+DESCRIPTION
+
+The 'statistics' package is currently made up, almost exclusively, of tasks 
+from the "Astronomical Survival Analysis" programs written by E. Feigelson and 
+T. Isobe of Pennsylvania State University.  A Kolmogorov-Smirnoff test was 
+added, and extensions to the other tasks may be added.  The following tasks 
+were taken from the "Astronomical Survival Analysis" package:
+
+.nf
+    bhkmethod - Compute the generalized Kendall's tau correlation
+                coefficient.
+ buckleyjames - Compute the linear regression coefficients based on 
+                Kaplan-Meier residuals.
+    coxhazard - Compute the correlation probability by Cox's proportional 
+                hazard model.
+     emmethod - Compute linear regression for censored data assuming a 
+                normal distribution of residuals.
+   kmestimate - Compute the Kaplan-Meier estimator of a randomly censored 
+                distribution.
+   schmittbin - Compute regression coefficients for censored data by
+                Schmitt's method.
+     spearman - Compute the generalized Spearman's rho correlation 
+	        coefficient.
+     twosampt - See if two sets of censored data are from the same 
+                population.
+
+.fi
+Some of these tasks will use 
+significant amounts of CPU time for large data sets (e.g.,
+'schmittbin' or 'bhkmethod').
+
+In addition, the following help files are available:
+.nf
+
+    censor - Provides information on the use of the censoring indicator 
+             in survival analysis.
+  survival - Provides background and an overview of survival analysis.
+             (Taken from documentation distributed by Feigelson and Isobe
+             with the original software; see 'statistics$doc/asurv.doc'
+             for an online copy of the original document).
+
+
+.fi
+And finally the Kolmogorov test:
+.nf
+      kolmov - Kolmogorov-Smirnov test for goodness of fit.
+
+.fi
+All of these tasks allow users to supply data in either ASCII
+text files or STSDAS tables; the programs can discriminate between
+these files types.  The tasks will skip a data file if INDEF values
+are supplied, in tables or text.  Thus, these tasks will only produce
+valid results if definite values are supplied (i.e., a detection or an
+upper or lower limit).  There are tools available in the STSDAS
+'ttools' (tabletools) package to manipulate tables or extract relevant
+columns to text files for further analysis.
+
+Other tasks may be added to the 'statistics' package in future releases.
+
+.endhelp

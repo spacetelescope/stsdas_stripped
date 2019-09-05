@@ -1,0 +1,249 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   32 /                                                
+DATATYPE= 'INTEGER*4'          /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                    1 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           / number of segments containing fill             
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           / number of segments containing errors           
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           / time from the packet ancillary data            
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+                                                                                
+                 / GROUP PARAMETERS: OSS                                        
+                                                                                
+                 / HRS DATA DESCRIPTOR KEYWORDS                                 
+INSTRUME= 'HRS               ' / instrument in use                              
+ROOTNAME= 'n/a               ' / rootname of the observation set                
+FILETYPE= 'SHP               ' / file type                                      
+CTYPE1  = 'n/a               ' / units for first data axis                      
+DEFAULTS=                    F / default values used in reformatting these data 
+SCIDATA =                    F / science data present:T/F (actual not predicted)
+                                                                                
+                               / STATISTICAL KEYWORDS                           
+DATE    = 'n/a               ' / date this file was written (yyyy-mm-dd)        
+DCFOBSN =                 -999 / DCF observation number in SHP                  
+PROC_TYP= 'n/a               ' / level of reprocessing (NORMAL, MINOR, MAJOR)   
+                                                                                
+                               / TIME CONVERSION KEYWORDS                       
+CLKDRFTR=                -999. / spacecraft clock drift rate                    
+CLKRATE =                -999. / spacecraft clock rate                          
+SPCLINCN=                 -999 / spacecraft clock at UTC0                       
+UTCO1   =                 -999 / bytes 5-8 of UTC0                              
+UTCO2   =                 -999 / bytes 1-4 of UTC0                              
+UTC0    =                -999. / Coordinated Universal Time (Mod Julian Date)   
+                                                                                
+                 / CDBS KEYWORDS                                                
+ZACMODE1= 'n/a               ' / acquisition mode                               
+ZDEBTF  =                -999. / DEB front post amp. temperature                
+ZDEBTR  =                -999. / DEB rear post amp temperature                  
+ZDETT1  =                -999. / det. 1 temperature                             
+ZDETT2  =                -999. / det. 2 temperature                             
+ZDRT    =                -999. / digicon radiator tem                           
+ZDT11   =                -999. / det. 1 detector shield temperature #1          
+ZDT12   =                -999. / det. 2 detector shield temperature #1          
+ZET11   =                -999. / det. 1 enclosure temperature #1                
+ZET31   =                -999. / det. 1 enclosure temperature #3                
+ZFIAT   =                -999. / fixture interface A temperature                
+ZFIBT   =                -999. / fixture interface B temperature                
+ZFICT   =                -999. / fixture interface C temperature                
+ZHDC1   =                -999. / det. 1 horizontal deflection current           
+ZHDC2   =                -999. / det. 2 horizontal deflection current           
+ZHVPST1 =                -999. / det. 1 high voltage power supply temperature   
+ZHVPST2 =                -999. / det. 2 high voltage power supply temperature   
+ZMEBT1  =                -999. / main elec box 1 temperature                    
+ZMEBT2  =                -999. / main elec box 2 temperature                    
+ZOBBT   =                -999. / optical bench bulkhead temperature             
+ZOBT11  =                -999. / det. 1 optical bench temperature #1            
+ZPABT1  =                -999. / det. 1 preamp assembly box temperature         
+ZPABT2  =                -999. / det. 2 preamp assembly box temperature         
+ZPCC1   =                -999. / det. 1 photo cathode current                   
+ZPCC2   =                -999. / det. 2 photo cathode current                   
+ZPCV1   =                -999. / det. 1 photo cathode high voltage              
+ZPCV2   =                -999. / det. 2 photo cathode high voltage              
+ZRIUTA  =                -999. / RIU A internal temperature                     
+ZRIUTB  =                -999. / RIU B internal temperature                     
+ZSCT1   =                -999. / det. 1 spectral calibration lamp temperature   
+ZSCT2   =                -999. / det. 2 spectral calibration lamp temperature   
+ZTST11  =                -999. / det. 1 thermal shelf temperature #1            
+ZCST    =                -999. / carrousel stator temperature                   
+                                                                                
+                 / SUPPORT SCHEDULE: PROGRAMMATIC DATA                          
+PROGRMID= 'n/a               ' / program id (base 36)                           
+PR_INV_L= 'n/a               ' / last name of principal investigator            
+PR_INV_F= 'n/a               ' / first name of principal investigator           
+PR_INV_M= 'n/a               ' / middle initial of principal investigator       
+AFFILIAT= 'n/a               ' / proposal class (eg: GO, IDT, OS)               
+ACCPDATE= 'n/a               ' / proposal acceptance date (yyyyddd)             
+OBSET_ID= 'n/a               ' / observation set id                             
+CALIBRAT= 'n/a               ' / calibrate data flag                            
+OBSERVTN= 'n/a               ' / observation number (base 36)                   
+EXPACKET=                 -999 / expected number of source packets              
+PRODTYPE= 'n/a               ' / output product medium type                     
+OPFORMAT= 'n/a               ' / output product format specification            
+CALIBTYP= 'n/a               ' / calibration type : E, I or Blank               
+CDBSDATA= 'n/a               ' / cdbs notification flag: 'CAL' or 'FALSE'       
+                                                                                
+                 / SUPPORT SCHEDULE: FLAGS AND INDICATORS                       
+OBSMODE = 'n/a               ' / data mode                                      
+DETECTOR=                 -999 / detector in use (1-2)                          
+GRATING = 'n/a               ' / grating,echelle or mirror in use mode          
+RTAMATCH= 'n/a                ' /                                               
+                                                                                
+                 / SUPPORT SCHEDULE: DATA GROUP II DATA                         
+WRD11_14=                 -999 / word 11/14 (0-255)                             
+PSTRTIME= 'n/a               ' / predicted obs. start time (yyyy.ddd:hh:mm:ss)  
+PSTPTIME= 'n/a               ' / predicted obs. stop time (yyyy.ddd:hh:mm:ss)   
+APEROBJ = 'n/a               ' / si object aperture id                          
+APERSKY = 'n/a               ' / si sky aperture id                             
+APERTYPE= 'n/a               ' / aperture type (SICS, SIAS, SIDS)               
+RA_V1   =                -999. / right ascension of v1 axis of st (deg)         
+DEC_V1  =                -999. / declination of v1 axis of st (deg)             
+PA_V3                    -999. / position angle of v3 axis of st (deg)          
+APEROFFX                 -999. / x comp of object offset in aperture (arcsec)   
+APEROFFY                 -999. / y comp of object offset in aperture (arcsec)   
+ANGLESEP                 -999. / ang separation of target from ref obj (arcsec) 
+DGESTAR = 'n/a               ' / FGS ID(F1,F2,F3) concat. w/ dom. gd. star id   
+SGESTAR = 'n/a               ' / FGS ID(F1,F2,F3) concat. w/ subdom. gd. star id
+PA_APER                  -999. / position ang of aperture used with target (deg)
+PA_REF                   -999. / position ang of target from ref. object (deg)  
+SAAAVOID= 'n/a               ' / SAA model for SAA Avoidance (range 02-99)      
+TARAQMOD= 'n/a               ' / target acquisition mode (values 00, 01, 02, 03)
+POSTNSTX=                -999. / position of space telescope x axis (km)        
+POSTNSTY=                -999. / position of space telescope y axis (km)        
+POSTNSTZ=                -999. / position of space telescope z axis (km)        
+VELOCSTX=                -999. / vel of space telescope along x axis (km/sec)   
+VELOCSTY=                -999. / vel of space telescope along y axis (km/sec)   
+VELOCSTZ=                -999. / vel of space telescope along z axis (km/sec)   
+RA_SUN  =                -999. / right ascension of the sun (deg)               
+DEC_SUN =                -999. / declination of the sun (deg)                   
+RA_MOON =                -999. / right ascension of the moon (deg)              
+DEC_MOON=                -999. / declination of the moon (deg)                  
+VELABBRA                 -999. / aberration in position of the target           
+ANNPARRA                 -999. / par. shift in position, non-solar sys target   
+V2APERCE=                -999. / V2 offset of target from aper. center (arcsec) 
+V3APERCE=                -999. / V3 offset of target from aper. center (arcsec) 
+EQRADTRG                 -999. / equatorial radius of target (km)               
+FLATNTRG                 -999. / flattening of target                           
+NPDECTRG                 -999. / north pole declination of target (deg)         
+NPRATRG                  -999. / north pole right ascension of target (deg)     
+ROTRTTRG                 -999. / rotation rate of target                        
+LONGPMER                 -999. / longitude of prime meridian (deg)              
+EPLONGPM                 -999. / epoch of longitude of prime meridian (sec)     
+SURFLATD                 -999. / surface feature latitude (deg)                 
+SURFLONG                 -999. / surface feature longitude (deg)                
+SURFALTD                 -999. / surface feature altitude (km)                  
+MTFLAG  = 'n/a               ' / moving target flag; T if it is a moving target 
+S0INVMAG=                -999. / S0 inverse magnitude                           
+S0XDIR  =                -999. / S0 X direction                                 
+S0YDIR  =                -999. / S0 Y direction                                 
+S0ZDIR  =                -999. / S0 Z direction                                 
+TRK_TYPE= 'n/a               ' / track 48 or track 51 commanding used (T48, T51,
+T51_RATE                 -999. / rate of motion commanded (arcsecs/sec)         
+T51_ANGL                 -999. / position angle of motion of aperture (deg)     
+TARGDIST=                -999. / distance to target from Earth's center (km)    
+PAR_CORR= 'n/a               ' / parallax correction used (T or F)              
+RA_REF  =                -999. / right ascension of reference object (deg)      
+DEC_REF =                -999. / declination of reference object (deg)          
+                                                                                
+                 / ONBOARD EPHEMERIS MODEL PARAMETERS                           
+EPCHTIME=                -999. / epoch time of parameters (secs since 1/1/85)   
+SDMEANAN=                -999. / 2nd deriv coef for mean anomaly (revs/sec/sec) 
+SDMA3SQ =                -999. / 3 * (SDMEANAN**2) radians/second**2.           
+HSTHORB =                -999. / half the duration of the ST orbit (seconds)    
+CIRVELOC=                -999. / circular orbit linear velocity (meters/second) 
+COSINCLI=                -999. / cosine of inclination                          
+ECCENTRY=                -999. / eccentricity                                   
+ECCENTX2=                -999. / eccentricity times 2                           
+ECBDX4D3=                -999. / eccentricity cubed times 4/3                   
+ESQDX5D2=                -999. / eccentricity squared times 5/2                 
+ECBDX3  =                -999. / eccentricity cubed times 3                     
+FDMEANAN=                -999. / 1st derivative coef for mean anomly (revs/sec) 
+RCASCNRD=                -999. / rt chge right ascension ascend node (rads/sec) 
+RCASCNRV=                -999. / rt chge right ascension ascend node (revs/sec) 
+ARGPERIG=                -999. / argument of perigee (revolutions/second)       
+MEANANOM=                -999. / mean anomaly (radians)                         
+RCARGPER=                -999. / rate change of argument of perigee (revs/sec)  
+RASCASCN=                -999. / right ascension of ascending node (revolutions)
+SINEINCL=                -999. / sine of inclination                            
+SEMILREC=                -999. / semi-latus rectum (meters)                     
+TIMEFFEC=                -999. / time parameters took effect (secs since 1/1/85)
+OBSSTRTT=                -999. / predicted obs. start time (secs since 1/1/85)  
+                                                                                
+                 / PROPOSAL INFO: Instrument Configuration                      
+CONFIG  = 'n/a               ' / proposed instrument configuration              
+OPMODE  = 'n/a               ' / proposed operation mode                        
+SPEC_1  = 'n/a               ' / spectral element                               
+SPEC_2  = 'n/a               ' / spectral element                               
+SPEC_3  = 'n/a               ' / spectral element                               
+SPEC_4  = 'n/a               ' / spectral element                               
+APER_1  = 'n/a               ' / instrument aperture                            
+APER_2  = 'n/a               ' / instrument aperture                            
+APER_3  = 'n/a               ' / instrument aperture                            
+APER_4  = 'n/a               ' / instrument aperture                            
+                                                                                
+                 / PROPOSAL INFO: Target Description                            
+TAR_TYPE= 'n/a               ' / target type                                    
+TARDESCR= 'n/a               ' / target description                             
+TARGCAT = 'n/a               ' / target category                                
+ALIAS1  = 'n/a               ' / synonym for target name                        
+ALIAS2  = 'n/a               ' / synonym for target name                        
+                                                                                
+                 / PROPOSAL INFO: Flux Information                              
+MAG_V                    -999. / expected V Magnitude                           
+SURF_V                   -999. / expected V surface brightness                  
+MAG_B                    -999. / expected B Magnitude                           
+SURF_B                   -999. / expected B surface brightness                  
+MAG_U                    -999. / expected U Magnitude                           
+SURF_U                   -999. / expected U surface brightness                  
+MAG_R                    -999. / expected R Magnitude                           
+SURF_R                   -999. / expected R surface brightness                  
+COL_B_V                  -999. / expected B-V color                             
+COL_U_B                  -999. / expected U-B color                             
+COL_V_R                  -999. / expected V-R color                             
+E_B_V                    -999. / E(B-V)                                         
+EXTNCT_V                 -999. / extinction in V                                
+                                                                                
+                 / PROPOSAL INFO: Moving Target Information                     
+                                                                                
+                 / PROPOSAL INFO: Target Properties                             
+REDSHIFT=                -999. / expected redshift of target                    
+PARALLAX=                -999. / expected parallax of target                    
+MU_RA   =                -999. / expected RA proper motion                      
+MU_DEC  =                -999. / expected DEC proper motion                     
+MU_EPOCH= 'n/a               ' / epoch of the proper motion                     
+SP_TYPE = 'n/a               ' / spectral type                                  
+RAD_VEL =                -999. / radial velocity (km/sec)                       
+                                                                                
+                 / PROPOSAL INFO: Spatial Scan Info                             
+SCAN_TYP= 'n/a               ' / C:bostrophidon; D:'C'with dwell; N:unknown     
+SCAN_WID=                -999. / scan width (arcsec)                            
+ANG_SIDE=                -999. / angle between sides of parallelogram (deg)     
+DWELL_LN=                    0 / dwell points per line for scan pointing (1-99) 
+DWELL_TM=                -999. / wait time (duration) at each dwell point (sec) 
+SCAN_ANG=                -999. / position angle of scan line (deg)              
+SCAN_RAT=                -999. / commanded rate of the line scan (arcsec/sec)   
+NO_LINES=                    0 / number of lines per scan (1-99)                
+SCAN_LEN=                -999. / scan length (arcsec)                           
+SCAN_COR= 'n/a               ' / scan coordinate frame of ref: celestial,vehicle
+                                                                                
+                 / TARGET & PROPOSAL ID                                         
+TARGNAME= 'n/a               ' / proposer's target name                         
+RA_TARG =                -999. / right ascension of the target (deg)            
+DEC_TARG=                -999. / declination of the target (deg)                
+PEQUINOX= 'n/a               ' / proposed equinox of celestial coordinate system
+                                                                                
+PROPOSID=                 -999 / PEP proposal identifier                        
+PEP_EXPO= 'n/a               ' / PEP exposure identifier including sequence     
+LINENUM = 'n/a               ' / PEP proposal line number                       
+SEQLINE = 'n/a               ' / PEP line number of defined sequence            
+SEQNAME = 'n/a               ' / PEP define/use sequence name                   
+                                                                                
+END                                                                             

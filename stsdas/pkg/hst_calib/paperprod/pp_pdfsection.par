@@ -1,0 +1,6 @@
+igi_output, f, a, "", , ,	    Output igi script file name
+page, i, a, , , ,               Page number
+count, i, a, , , ,              Number of pages in section
+id, f, h, "", , ,               PropID or ObsID for section label
+
+mode, s, h, "al"

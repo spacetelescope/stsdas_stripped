@@ -1,0 +1,12 @@
+# Update the ils application code in the playpen package library.
+# Author: R. Williamson, 15-Aug-1991
+
+$checkout playpen.a ../
+$update   playpen.a
+$checkin  playpen.a ../
+$exit
+
+playpen.a:
+	ils.x 		<imhdr.h>
+	fourt.f
+        ;

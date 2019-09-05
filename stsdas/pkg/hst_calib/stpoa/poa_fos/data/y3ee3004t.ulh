@@ -1,0 +1,100 @@
+SIMPLE  =                    F /                                                
+BITPIX  =                   16 /                                                
+DATATYPE= 'UNSIGNED*2'         /                                                
+NAXIS   =                    1 /                                                
+NAXIS1  =                  965 /                                                
+GROUPS  =                    T /                                                
+GCOUNT  =                    1 /                                                
+PCOUNT  =                    3 /                                                
+PSIZE   =                  128 /                                                
+PTYPE1  = 'FILLCNT '           /number of segments containing fill              
+PDTYPE1 = 'INTEGER*4'          /                                                
+PSIZE1  =                   32 /                                                
+PTYPE2  = 'ERRCNT  '           /number of segments containing errors            
+PDTYPE2 = 'INTEGER*4'          /                                                
+PSIZE2  =                   32 /                                                
+PTYPE3  = 'PKTTIME '           /time from the packet ancillary data             
+PDTYPE3 = 'REAL*8  '           /                                                
+PSIZE3  =                   64 /                                                
+                                                                                
+        / GROUP PARAMETERS: OSS                                                 
+                                                                                
+        / FOS DATA DESCRIPTOR KEYWORDS                                          
+INSTRUME= 'FOS               ' / instrument in use                              
+ROOTNAME= 'Y3EE3004T         ' / rootname of the observation set                
+FILETYPE= 'UDL               ' / file type                                      
+CTYPE1  = 'UNITLESS          ' / units of first data axis                       
+                                                                                
+        / STATISTICAL KEYWORDS                                                  
+DATE    = '21/10/96          ' / date this file originated (dd/mm/yy)           
+                                                                                
+        / CDBS KEYWORDS                                                         
+Y1STCHNL=                    0 / first channel to be processed                  
+YAPERPO1=                52969 / same as first YAPERHOE|LOE                     
+YAQMD   =                   40 / acquisition mode                               
+YDATALIM=                  255 / high byte of acquisition limit                 
+YDEAD   =                64256 / accum close time                               
+YFFCPWR =                    0 / flat field cal lamp power                      
+YFGWAPO1=                   12 / same as first YFGWAPOS                         
+YINTEG  =                    2 / number of integrations/X-step                  
+YLINSFRM=                    1 / lines per frame                                
+YLIVE   =                31403 / accum open time                                
+YMCLEARS=                    1 / memory clears/data acquisition                 
+YMSLICES=                    1 / number of memory slices                        
+YNOISELM=                65535 / burst noise rejection limit                    
+YNUMCHNL=                    0 / number of channels to be processed             
+YOVRSCAN=                    5 / X-deflection overscan                          
+YPLRZPO1=                 4954 / same as first YPLZRHOE|LOE                     
+YPTRNS  =                    3 / patterns per readout                           
+YRANGE  =                   32 / y range                                        
+YREADCYC=                    1 / readouts/memory clear                          
+YWRDSLIN=                  965 / words per line                                 
+YXBASE  =                    0 / X-deflection base                              
+YXPITCH =                 1584 / X-deflection pitch between diode               
+YXSTEPS =                    4 / X-deflection sub-steps                         
+YYBASE  =                -1859 / Y-deflection base                              
+YYINDFHY=                    0 / do deflection hyst. at begin. of data acqn.    
+YYPATH  =                    1 / path identification                            
+YYPITCH =                 1846 / Y-deflection pitch                             
+YYSTEPS =                    1 / Y-deflection sub-steps                         
+                                                                                
+        / TARGET & PROPOSAL ID                                                  
+TARGNAME= 'WAVE              ' / proposer's target name                         
+RA_TARG =                  0.0 / right ascension of the target (deg) (J2000)    
+DEC_TARG=                  0.0 / declination of the target (deg) (J2000)        
+                                                                                
+PROPOSID=                06913 / PEP proposal identifier                        
+PEP_EXPO= '30-072            ' / PEP exposure identifier including sequence     
+LINENUM = '102.072           ' / PEP proposal line number                       
+SEQLINE = '                  ' / PEP line number of defined sequence            
+SEQNAME = '                  ' / PEP define/use sequence name                   
+                                                                                
+BACHFILE= 'yref$b3m1128my.r0h'                                                  
+FL1HFILE= 'yref$d2f1333iy.r1h'                                                  
+FL2HFILE= 'yref$d2f13338y.r1h'                                                  
+IV1HFILE= 'yref$d3u1352by.r2h'                                                  
+IV2HFILE= 'yref$d3u1352cy.r2h'                                                  
+AISHFILE= 'yref$i1k14320y.r8h'                                                  
+RETHFILE= 'yref$N/A'                                                            
+DDTHFILE= 'yref$d9h1244ay.r4h'                                                  
+DQ1HFILE= 'yref$b2f1308dy.r5h'                                                  
+DQ2HFILE= 'yref$b2f1308ky.r5h'                                                  
+PCPHFILE= 'yref$   '                                                            
+CCG2    = 'mtab$a3d1145ly.cmg'                                                  
+CCS0    = 'ytab$a3d1145dy.cy0'                                                  
+CCS1    = 'ytab$aaj0732ay.cy1'                                                  
+CCS2    = 'ytab$N/A'                                                            
+CCS3    = 'ytab$a3d1145gy.cy3'                                                  
+CCS4    = 'ytab$N/A'                                                            
+CCS5    = 'ytab$a3d1145jy.cy5'                                                  
+CCS6    = 'ytab$e5v11576y.cy6'                                                  
+CCS7    = 'ytab$ba910502y.cy7'                                                  
+CCS8    = 'ytab$ba31407ly.cy8'                                                  
+CCS9    = 'ytab$e3i09491y.cy9'                                                  
+CCSA    = 'ytab$fad1554cy.cya'                                                  
+CCSB    = 'ytab$i1n1816ey.cyb'                                                  
+CCSC    = 'ytab$i1n1816fy.cyc'                                                  
+CCSD    = 'ytab$i1n1816dy.cyd'                                                  
+SKY_CORR= 'OMIT    '                                                            
+MOD_CORR= 'OMIT    '                                                            
+END                                                                             

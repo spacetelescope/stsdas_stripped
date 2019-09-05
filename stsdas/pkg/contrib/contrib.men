@@ -1,0 +1,12 @@
+Menu for the package stsdas.contrib
+
+         acoadd - Image coaddition using Lucy Method with optional acceleration.
+	  plucy - Multiple channel photometric image restoration.
+       redshift - Tasks for determining redshifts and dispersions.
+       slitless - Extract a spectrum from a direct/GRISM image pair
+       spfitpkg - Tasks for fitting spectra with non-linear chi-square 
+		  minimization
+            vla - Spectral image reduction for VLA data.
+
+(Type "help contrib opt=sys" for more information about the contrib package).
+

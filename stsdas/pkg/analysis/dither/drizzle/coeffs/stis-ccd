@@ -1,0 +1,11 @@
+# STIS CCD cubic distortion coefficients from Eliot Malumuth (Hughes STX)
+# September 1997
+# Derived from on-orbit measurements of star fields
+# (STIS Instrument Handbook v4.0, 28 Jun 2000, Table 14.35)
+cubic
+
+0.0              1.0011324      -1.2427886e-04   -3.9052366e-07  -2.3388352e-07
+-2.7747067e-06  -5.8339901e-09   1.4677396e-09   -3.4363894e-09   6.8542388e-10
+
+0.0             -5.6351965e-05   1.0006398      1.4414957e-07   2.1911561e-06
+-1.5699432e-07   2.2058683e-10  -3.0218644e-09  8.2253175e-10  -3.1486902e-09

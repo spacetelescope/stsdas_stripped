@@ -1,0 +1,12 @@
+input, s, a, "", , ,			"Input table name"
+incol, s, a, "", , ,			"Input column name"
+outcol, s, a, "", , ,			"Output column name"
+qualifier, s, a, "", , ,		"Input format qualifier"
+outfmt, s, a, "", "date|jd|mjd|sms|dmf|eng", ,	"Output format"
+outtype, s, a, "s", "s|d|p", ,		"Output data type"
+
+dmy_style, s, h, "mdy", "|mdy|dmy|ymd|", , "day month year style"
+add1900, b, h, yes, , ,	"Add 1900 if input year < 100 ?"
+calendar, s, h, "ns", "|ns|os|", ,	"calendar style"
+
+mode, s, h, al

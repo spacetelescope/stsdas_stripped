@@ -1,0 +1,30 @@
+# Update the kmestm application code in the statistics package library
+# Author: BALL, 22-DEC-1987
+# Revised by BSIMON, 14-AUG-1992
+
+$checkout statistics.a ../
+$update   statistics.a
+$checkin  statistics.a ../
+$exit
+
+statistics.a:
+	aarray.f
+	arisk.f
+	checklist.x
+	dogehan.x
+	dolrank.x
+	dopeto.x
+	dopwlcxn.x
+	dowlcxn.x
+	gehan.f
+	lrank.f
+	peto.f
+	pwlcxn.f
+	stat.x
+	t_twost.x	<tbset.h>
+	tsdata.x	<tbset.h>
+	tskmest.x
+	tstitle.x	<tbset.h>
+	twost.x
+	wlcxn.f
+	;

@@ -1,0 +1,41 @@
+# Make the f77util package
+# Author: D.L.Ball, 2-DEC-1987
+# Modified: C.D.Biemesderfer, 29-JAN-1988
+
+$checkout libf77util.a ../
+$update   libf77util.a
+$checkin  libf77util.a ../
+$exit
+
+
+libf77util.a:
+
+	uuclkt.x
+	uuclgs.x	<iraf77.h>
+	uuctod.x	<iraf77.h> <ctype.h> <chars.h> <lexnum.h>
+	uuctoi.x	<iraf77.h> <ctype.h>
+	uuctor.x	<iraf77.h>
+	uudate.x
+	uudtoc.x	<iraf77.h> <ctype.h> <printf.h>
+	uuimcp.x	<iraf77.h> <imhdr.h> <imio.h> <syserr.h>
+	uucphb.x	<iraf77.h> <imhdr.h> <imio.h>
+	uuimfo.x	<iraf77.h> <mach.h> <ctype.h> <imio.h> <imhdr.h>
+	uuitoc.x	<iraf77.h> <mach.h> <ctype.h>
+	uufacc.x       	<iraf77.h> 
+	uulowc.x       		
+	uumnmx.x
+	uuopgr.x	"iraf$sys/imio/iki/stf/stf.h"
+	uuosfn.x	<iraf77.h> <fio.h>
+	uupxcp.x       	<imhdr.h> <iraf77.h> 
+	uuslen.x       		
+	uusmmx.x       	<imhdr.h> <iraf77.h> 
+	uutabo.x       		
+	uuty2i.x       	<iraf77.h> 
+	uuuand.x       		
+	uuunot.x       		
+	uuuppc.x       		
+	uuuuor.x       		
+	uuuxor.x       		
+
+	fvuuto.f       		# used by uutabo
+	;

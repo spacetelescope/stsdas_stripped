@@ -1,0 +1,5 @@
+niter,i,h,8,,,>Number of iterations
+widths,s,h,"800,600,400,250,150,90,50,30",,,>WFPC smoothing half-widths
+badmask,i,h,INDEF,,,>Output bad pixels' mask (INDEF selects default)
+wfdqpar,pset,h,"",,,>Active WFPC data quality bits (pset)
+mode,s,h,al

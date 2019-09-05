@@ -1,0 +1,27 @@
+Release Notes for V3.3 of Drizzle
+
+Richard Hook, ST-ECF
+Warren Hack, STScI
+September 2004
+
+This public release of the Drizzle software, Version 3.32, has been reorganized
+in order to simultaneously support installations under IRAF and Python, while
+including many bug fixes and upgrades from Version 2.92.  In addition, the new
+task 'wdrizzle' has been added to the package as well.
+
+####################
+#
+# Important Interface Change
+#
+####################
+This version of drizzle introduces two new parameters:
+    xgeoim, ygeoim
+These parameters allow the user to specify separate additional distortion
+correction images that provide non-linear corrections to any distortion model
+specified in the 'coeffs' file.  Although the default value for these will be
+blank and these are strictly optional, it is recommended that you 'unlearn
+drizzle' and check any script you may have to include the new parameters.
+
+This version also contains the matching tools: 
+    WDrizzle, WBlot, Blot, Traxy, Tranback, dr2geo, and Wcs2dr.
+

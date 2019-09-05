@@ -1,0 +1,25 @@
+NICMOS
+
+The NICMOS keywords consist of a list of filter names, grating or polarizer,
+and detectors. Both the filter name and camera number are required in the
+observation mode. The detector keyword tacq is equivalent to detector 2. The
+dn keyword is used to divide throughputs by the analog-to-digital converter
+(ADC) gain ratio, which transforms results from units of electrons to data
+numbers (DNs).
+
+Detectors: 1 2 3 tacq
+
+Filters for Camera 1: blank f090m f095n f097n f108n f110m f110w f113n f140w
+                      f145m f160w f164n f165m f166n f170m f187n f190n pol0s 
+                      pol120s pol240s
+
+Filters for Camera 2: blank f100w f160w f165m f171m f180m f187n f187w f190n
+                      f204m f205w f207m f212n f215n f216n f222m f237m pol0l 
+                      pol120l pol240l
+
+Filters for Camera 3: blank f108n f110w f113n f150w f160w f164n f166n f175w
+                      f187n f190n f196n f200n f212n f215n f222m f240m g096
+                      g141 g206
+
+ADC gain: dn
+

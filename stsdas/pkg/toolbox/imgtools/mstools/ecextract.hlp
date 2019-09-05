@@ -1,0 +1,61 @@
+.help ecextract Jun97 stsdas
+.ih
+NAME
+ecextract -- Select all extensions of one selected 'type' from a FITS file
+.ih
+USAGE
+ecextract filename
+.ih
+DESCRIPTION
+The 'ecextract' task is for simply selecting all extensions of a (1) selected
+type into a different file.  There will be a display of types available for
+selection before you have to provide your choice for selection.  You will be 
+able to see, in real-time, the construction of your output file. 
+
+.ih
+PARAMETERS
+.ls INPUT [string]
+A string listing the input FITS file from which you want to select a (1)
+certain type of data extension.
+
+.ls OUTPUT [string]
+This is a string which stores the name of the FITS file that is created.
+
+.ls EXTNAM [string]
+A string specifying the extension type you wanted to uniquely select from the
+input FITS file.  You must match one of the names that are listed as those
+present in it's entirety.  This match is case sensitive.
+
+.ls OOPS [boolean]
+This is a boolean expression test that is executed only when the output and 
+input filename strings are the same.  A warning is printed discussing the 
+ramifications of your potential action and inquiring if you would like to 
+proceed.  An answer of [y/n] or [yes/no will spell out your fate.
+
+.le
+.ih
+EXAMPLES
+The 'ecextract' task is an easy way of grouping all of the file extensions 
+you want into another FITS file and 'discarding' those you think you could 
+do without.
+
+fi> ecextract NICdata.fits NICSCI.fits SCI
+
+This command will create a FITS file of ONLY the SCI extensions from the 
+imset that a NICMOS observation provides.
+
+WARNING
+You are able to request the same output name as your input name
+and the task will comply with your request.  The danger is
+that your input file WILL be OVERWRITTEN!  You will lose 
+forever the contents of that input file as it is replaced
+with the output.  You may want to do this but you should just 
+be aware of the circumstance and reminded that you can choose
+a different filename for your output.
+
+
+.fi
+
+SEE ALSO
+ecdel
+.endhelp

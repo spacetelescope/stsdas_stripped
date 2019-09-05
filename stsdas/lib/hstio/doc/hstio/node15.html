@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> 
+SingleGroup and MultiGroup Structures
+</TITLE>
+<meta name="description" value=" 
+SingleGroup and MultiGroup Structures
+">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html175 HREF="node16.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html173 HREF="hstio.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html167 HREF="node14.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html176 HREF="node16.html"> Example Programs</A>
+<B>Up:</B> <A NAME=tex2html174 HREF="hstio.html">A Descritpion of the </A>
+<B> Previous:</B> <A NAME=tex2html168 HREF="node14.html"> 
+Append versus Overwrite </A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00080000000000000000> 
+SingleGroup and MultiGroup Structures
+</A></H1>
+<P>
+The SingleGroup and MultiGroup structures have been changed.  They
+are now:
+<P>
+<PRE>    219:    typedef struct {
+    220:            char *filename;
+    221:            int group_num;
+    222:            Hdr *globalhdr;
+    223:            SciHdrData sci;
+    224:            ErrHdrData err;
+    225:            DQHdrData dq;
+    226:    } SingleGroup;
+    227:    
+    228:    typedef struct {
+    229:            char *filename;
+    230:            int group_num;
+    231:            Hdr *globalhdr;
+    232:            SciHdrData sci;
+    233:            ErrHdrData err;
+    234:            DQHdrData dq;
+    235:            SmplHdrData smpl;
+    236:            IntgHdrData intg;
+    237:    } SingleNicmosGroup;</PRE>
+<P>
+This is much more convenient than the previous definition because it
+makes a multi-group merely an array of single groups.  However, this
+complicates the handling of the global header.  Fortunately, this
+complication is completely buried in the I/O routines, at least if you
+use the normal init-alloc-free routines.  Here's what those routines do. 
+The SingleGroup case is fairly easy to handle.  InitSingleGroup merely
+sets the pointer globalhdr to NULL, allocSingleGroup allocates it, and
+freeSingleGroup frees it.  For a multigroup, group[0] contains the space
+for the actually allocated filename and the global header.  The other
+groups in the multi-group merely point to the same allocated space. 
+This means that there is only one global header and one filename, so it
+doesn't matter which group you use to change things in the global header. 
+The freeMultiGroup routine is smart enough to free only group[0].
+Neither input nor output have to be changed; everything should work
+just as before.
+<P>
+In the test examples, output has been copied from input.  Handling
+output from scratch, i.  e.  generating it from completely new data,
+might take some explanation.  Here's a code fragment as an example.
+Notice that the individual groups within a MultiGroup do not have to
+have the same dimensionality.
+<P>
+<PRE>        SingleGroup sg;
+        MultiGroup mg;
+
+        initSingleGroup(&amp;sg);
+        initMultiGroup(&amp;mg);
+
+        allocSingleGroup(&amp;sg,128,128);
+        ... fill the global header ...
+        ... fill the data arrays ...
+        putSingleGroup(&quot;filename&quot;,1,&amp;sg,0);
+        freeSingleGroup(&amp;sg);
+
+        allocMultiGroup(&amp;mg,3);
+        allocSingleGroup(&amp;mg.group[0],128,128);
+        allocSingleGroup(&amp;mg.group[1],256,256);
+        allocSingleGroup(&amp;mg.group[2],512,512);
+
+        ... fill the global header ...
+        ... fill data group[0] ...
+        ... fill data group[1] ...
+        ... fill data group[2] ...
+
+        for (k = 0; k &lt; 3; ++k)
+            putMultiGroup(&quot;filename&quot;,(k + 1),&amp;mg,k,0);
+        freeMultiGroup(&amp;mg);</PRE>
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

@@ -1,0 +1,498 @@
+.help specalign Nov98 stsdas.hst_calib.ctools
+.ih 
+NAME
+specalign -- Combine shifted spectra.
+.ih 
+USAGE 
+specalign input output wavelength granularity 
+.ih
+DESCRIPTION
+The 'specalign' task creates an average flux spectrum by appropriately 
+combining a series of one-dimensional spectral arrays that are shifted relative
+to one another.  In addition, a granularity spectrum can be generated; the  
+granularity is the constant underlying response (or sensitivity) function of
+the detector photocathode that is not shifted with the individual spectral 
+arrays simply due to shifts of the spectral format on the detector.
+    
+The 'poffsets' task is used to determine the shifts (in pixel space) between 
+the individual input spectral arrays.  The computed shifts are constant 
+offsets only.  The shifts and associated information are stored in an 
+STSDAS table which is used as input to 'specalign'.
+    
+The 'dopoff' task can also be used to determine the shifts (in pixel
+space) in the  granularity for each spectral array that are a consequence  
+of the doppler compensation.  The output from the 'dopoff' task is written 
+to the STSDAS table previously created by the 'poffsets' task.
+    
+The 'specalign' task is typically used with Goddard High Resolution
+Spectrograph (GHRS) FP-SPLIT data.  In FP-SPLIT mode, the same spectrum  
+is observed several times at slightly shifted pixel positions.  The 
+shift is relative to a constant background, in this case, the 
+granularity.  This task can be used in its most fundamental mode
+(i.e., 'niter = 0') simply to produce an average spectrum from a series of 
+individual spectral arrays which may or may not be shifted with respect to 
+one another which could be obtained from a set of repeated observations.
+Alternatively, this task can combine the spectra in an iterative manner while 
+isolating and removing the granularity from the final combined spectrum.  
+Although this task was written for GHRS data, it is not, strictly speaking, 
+instrument-specific.  However, if the task is utilized in the iterative mode
+to compute a granularity, the "kernel_size" parameter is instrument-specific.
+
+If one is just interested in combining spectra which are not shifted
+with respect to one another, there exist other tasks, 'rcombine' and 
+'scombine' which may perform this function with preferable combination options.
+    
+ALGORITHM
+
+Setting 'niter = 0' causes the task to be invoked in its basic mode.
+The resultant spectrum is computed based upon shifting (according to 
+information provided by 'poffsets'), adding, and finally averaging the 
+individual spectral arrays to produce a combined spectrum.
+When 'niter' = 0, then it is not possible to compute the granularity spectrum.  Therefore, neither a granularity file nor the corresponding granularity 
+error file will be generated. 
+    
+When 'niter > 0', the task computes a granularity spectrum which is removed 
+from the final combined spectrum.  Computation and removal of the granularity 
+from the final averaged spectrum is a refinement of the original averaged 
+spectrum and is useful for weak exposures where the magnitude of the 
+granularity may be significant with respect to the magnitude of the spectral 
+features.  The algorithm which computes the granularity employs an iterative 
+technique that begins by estimating the final spectrum and granularity.  The 
+difference between the estimate and the actual data is calculated and summed 
+into the guess.  The difference between the guess and the data is found 
+as follows:
+    
+.nf
+   sindex = i + Soff[s]
+   gindex = i + Goff[s]
+   dX     = (Sdata[sindex,s] * Weight[sindex,s]) 
+                             - (Granularity[gindex] * Out[sindex])
+    
+   Granularity[gindex] = Granularity[gindex] 
+                                 + delta * r * dX * Swght[sindex]
+   Out[sindex]         = Out[sindex] + delta * dX * Gwght[gindex]
+    
+where   
+   s                   = Spectrum being processed
+   sindex              = Pixel index computed from spectrum shift
+   gindex              = Pixel index computed from granularity shift
+   Sdata[sindex,s]     = Resampled data for spectrum s at pixel sindex
+   Weight[sindex,s]    = Corresponding weights for the resampled data
+                         to accommodate partial pixels on the ends
+   Granularity[gindex] = Current value of granularity at pixel gindex
+   Out[sindex]         = Current value of the output at pixel sindex
+   Goff[s]             = Granularity offset for spectrum s
+   Soff[s]             = Output offset for spectrum s
+   r                   = Scale ratio between the Granularity and Out
+   delta               = Damping factor
+   Swght, Gwght        = Weighting functions, either 0 or 1
+.fi
+    
+The initial guess for the spectral or granularity output can either be 
+specified by the user or calculated by the program.  If the initial guess 
+for the output spectrum is calculated by the  program, the initial guess is 
+the average of the individual input spectra, shifted, and summed according 
+to the chosen interpolant (via the setting for the 'resamp_func' parameter).  
+If the initial guess for the output granularity is
+calculated by the program, the granularity is initially simply set to 1 for 
+all pixels.  
+
+For the 'resamp_func' parameter, it has been shown that the best interpolant 
+to use for any particular dataset will depend upon the magnitude of the 
+misalignment, the nature of the spectral data, and the requirements of the 
+user.  It is strongly suggested that the user experiment with the interpolants 
+to determine which one best suits their particular needs.  Setting 
+'resamp_func = none' will invoke the integral pixel shifting which is 
+compatible to the original version of this task.  Please see the NOTES section
+for more details.
+    
+If there are wavelengths associated with the input spectra, a wavelength 
+solution for the output spectrum is calculated.  The wavelength solution is 
+again the result (i.e., shift, add, and average) of all the input wavelength 
+solutions.  However, since this process may produce a set of wavelengths that 
+are no longer monotonic, a function (user selectable) can be fit to the
+wavelengths.
+    
+INPUT
+    
+The primary input is the table (created by 'poffsets') which has three required
+and four optional columns.  Each row represents one spectrum, its amount of 
+spectral shift, and optionally the granularity and wavelength.  Missing 
+optional columns will be ignored.
+    
+The three mandatory columns contain the name and group number of the file from 
+which data are retrieved and the shift of that data.  The file name is 
+specified by the 'file_col' parameter, group number by 'group_col', and shift 
+by 'shift_col'.  Shifts are calculated relative to a reference spectrum 
+as follows:
+    
+.nf
+     shift = position - reference
+    
+     where 
+           position  -- Pixel position of a feature in the spectrum
+           reference -- Pixel position of same feature in the
+                        reference spectrum
+    
+.fi
+You do not need a zero shift for any input files used by 'specalign'.  (See 
+the help for the 'poffsets' task for more information.)
+    
+The first three optional columns provide wavelength solution information for 
+the input data.  'specalign' combines wavelength solutions of individual 
+spectra using a "shift, add, and average" method.
+    
+The first optional column is identified by the 'wave_col' parameter and 
+contains the name of the source for the wavelength solution.  The source name 
+can be an image or table, or it can be the string "%%IMAGE_WCS%%", which 
+means that the wavelength solution is found in the World Coordinate System 
+(WCS) header parameters of the input files.
+    
+The second optional column specifies the group (from an image) or the column
+(from a table) containing the wavelength 
+data (used only if an image or table name is specified by 'wave_col').  The 
+second column is specified by the 'wgroup_col' parameter.
+    
+The third optional column is the amount of shift (in pixels) to be applied 
+to the 
+wavelength---it is specified by the 'wshift_col' parameter.  The shift is 
+determined in the same way as the spectral shift, namely:
+    
+.nf
+     offset = w_pos - ref_w_pos
+    
+     where      
+              w_pos     -- Position of wavelength in spectrum
+              ref_w_pos -- Position of same wavelength in reference
+                           wavelength solution
+.fi
+
+If the wavelength and spectral shifts are identical, set 'wshift_col' to 
+match 'shift_col'.
+
+The last optional column is specified by the 'goff_col' parameter; it 
+contains the shift (in pixel space) of the underlying granularity as computed 
+by the 'dopoff' task.  This task assumes that the underlying response function
+is fixed in diode space for all input data, but this 
+is not necessarily the case.  
+This task parameter is not normally needed, and it is a GHRS-specific issue.
+    
+Weighting functions can be used to mask out undesirable features, such as low 
+signal to noise ratio, that would be propagated by shifting and combining with
+other spectra.  Weighting functions should be specified using values of 1 for 
+areas to include and 0 for areas to exclude.  The weighting functions are only
+applied when 'niter > 0', and are only used to deweight undesirable features
+from further computations which would extend the influence of such features 
+during the iteration process.  The weight masks DO NOT remove the original 
+undesirable features from the composite spectrum.  The 'mkweight' task can be 
+used to create weight files.  The length of the weight file must match the 
+length of the output spectrum and granularity files. Typically, you would 
+run 'specalign' using default values, run 'mkweight' with the 'specalign' 
+output in order to generate the weight functions, and then re-run 'specalign'
+with the newly derived weight functions.
+    
+The iteration process is controlled by the 'niter', 'delta', 'kernel_size', 
+and 'kernel_order' parameters.  Normally, 10 iterations will reach 
+convergence unless the damping factor is decreased, in which case more 
+iterations may be required.  Large numbers of iterations are counterproductive,
+adding small deltas to the result and simply increasing the overall values 
+found.
+    
+The damping factor is specified by 'delta'.  Normally, a value of 0.8 is
+appropriate.
+    
+The 'kernel_size' and 'kernel_order' parameters define a Savitzky-Golay 
+smoothing filter.  Smoothing is applied to the calculated granularity after 
+each iteration. The kernel size will be determined by evaluating the 
+granularity (see GHRS-SPECIFIC DATA, below).  The kernel order will be 0 or 1 
+for the box car or moving window averaging filter.  For more information about 
+Savitzky-Golay filters, see the book "Numerical Recipes, 2nd Edition" by 
+Press et al.
+    
+The standard deviations are computed for the final combined spectrum and the 
+final granularity; these results are stored in the files specified by 
+'spec_err' and 'gran_err', respectively.  These standard deviations should only
+be considered a measure of the dispersion of the individual arrays with respect
+to the final output arrays; they are not based upon the errors associated with
+the constituent input data.  These 'error' estimates should be used with 
+caution.
+
+Task output is written to the files specified by parameters 'output', 
+'wavelength', 'granularity', 'spec_err', and 'gran_err'.  The combined spectrum
+will be in the file specified by 'output'.  The output spectrum length will be
+the length of the individual spectra plus the maximum positive shift plus the 
+absolute value of the most negative shift, rounded up to the next whole pixel 
+if any of the input shifts were non-integral:
+    
+.nf
+     len = len_input + max (0, max_shift) + min (0, min_shift)
+    
+     where
+         len       -- Output spectrum length -- this value has been 
+                      rounded up by 1 if any of the input shifts 
+                      were non-integral
+         len_input -- Length of any original input spectrum
+         max_shift -- Maximum shift
+         min_shift -- Minimum shift
+    
+.fi
+    
+GHRS-SPECIFIC DATA
+    
+Task parameters have default values appropriate for GHRS data (particularly 
+the smoothing kernel size).  Theoretically, the size of any feature in the 
+granularity should be no smaller than a diode.  Since most GHRS data is 
+substepped by a factor of 4, 4 pixels represent one diode.  Specifying a 
+filter size of 3 should smooth the granularity to the assumed size of 
+granularity features.
+    
+Another concern is the shifting in the granularity.  GHRS normally compensates
+for the Doppler shift caused by the Telescope's orbit.  This compensation 
+makes the diode array look different at different parts of the photocathode,  
+causing the granularity to shift. The 'dopoff' task is used to determine the 
+granularity shifts (in pixel space) and writes the results to the 'goff_col' 
+column in the table previously produced by the 'poffsets' task.
+   
+.ih 
+PARAMETERS
+.ls input [file name]
+Name of the table created by the 'poffsets' task containing the file names 
+and shifts.
+.le
+.ls output [file name]
+The combined spectrum is written to this file.
+.le
+.ls wavelength [file name]
+If this output file is specified, and if the wavelength information were 
+available, this is the file containing the wavelength solution.  If set to 
+"WCS", the wavelength solution will be written as MULTISPEC WCS header 
+parameters in the output spectrum.  The function used for the MULTISPEC 
+solution is specified by the 'function' and 'nterms' parameters.
+.le
+.ls granularity [file name]
+The file containing the resulting granularity.
+.le
+.ls (spec_err = "") [file name]
+The file that will contain the standard deviation of the output spectrum. 
+When 'niter' is greater than 0, the standard deviation represents the deviation
+from the mean after each iteration.  If 'niter = 0', it is the standard 
+deviation of the spectrum after the shift, add, and average process.  The 
+length will be the same as the output spectra ('output').
+.le
+.ls (gran_err = "") [file name]
+The file that will contain the standard deviation of the granularity.  The 
+length is the same as the granularity file (see 'granularity' above).
+.le
+.ls (resamp_func = "none") [string, allowed values: none | linear | spline3 
+| poly3 | poly5]
+        
+The function used as the interpolant for the shifting of the individual 
+spectral arrays before the co-adding and averaging in order to produce a mean 
+spectrum.  The 'none' option uses only integral pixel shifts to align the 
+spectrum; this option is compatible with the original version of the program.
+.le
+.ls (niter = 0) [integer]
+The number of iterations to perform.  If 'niter = 0', the result will simply 
+be the initial spectrum, either the one calculated by the shift, add, and 
+average process, or the initial guess specified by the 'spec_init'  parameter.
+Setting 'niter = 0' and specifying an initial guess for the combined spectrum 
+with 'spec_init' does not utilize any fundamental functionality of this task.
+.le
+.ls (delta = .8) [real, min = 0., max = 1.]
+The damping factor applied after each iteration to the algorithm.
+.le
+.ls (kernel_size = 3) [integer, min = 0]
+The size of the granularity Savitzky-Golay smoothing kernel.  If set to 0, no 
+smoothing takes place.
+.le
+.ls (kernel_order = 0) [integer, min = 0]
+Order of the Savitzky-Golay smoothing polynomial.  If set to 0 or 1, the 
+standard "box  car" or "moving  window" averaging smoothing will be used.
+.le
+.ls (function = "legendre") [string, allowed values: none | legendre | 
+chebyshev | spline3 | spline1] 
+
+The function used to fit to the wavelength solution after shifting, adding, 
+and averaging, to enforce a monotonically increasing or decreasing wavelength.
+This also specifies the function used when writing the wavelength solutions 
+to the MULTISPEC WCS header keywords of the output spectrum.
+.le
+.ls (nterms = 4) [integer, min = 0]
+The number of terms or spline pieces to use for the specified wavelength 
+function.
+.le
+.ls (spec_init = "") [file name]
+Name of the data file containing the initial guess at the output spectrum.  If 
+blank, the initial guess will be calculated by shifting, adding, and averaging 
+the input spectra.
+.le
+.ls (spec_weight = "") [file name]
+Name of the data file containing the weighting function used for the output 
+spectrum.  If not specified, uniform weights are used.  This weighting function
+is usually created by the 'mkweight' task.
+.le
+.ls (gran_init = "") [file name]
+Name of the data file containing the initial guess at the granularity.  If 
+blank, the initial guess is simply an array of all 1s.
+.le
+.ls (gran_weight = "") [file name]
+Name of the data file containing the weighting function used for the 
+granularity calculations.  If not specified, uniform weights are used.  This 
+weighting function is usually created by the 'mkweight' task.
+.le
+.ls (file_col = "file") [string]
+Name of the column in the input table containing the file names of the input 
+spectra.  This is a required column.
+.le
+.ls (group_col = "group") [string]
+Name of the column in the input table containing the group members of the 
+input spectra files.  This is a required column.
+.le
+.ls (shift_col = "shift") [string]
+Name of the column in the input table containing the shifts for the input 
+spectra.  This is a required column.
+.le
+.ls (goff_col = "goff") [string]
+Name of the column in the input table containing the granularity offsets for 
+the input spectra.  If not specified or not present, all granularity offsets 
+are assumed to be 0.
+.le
+.ls (wave_col = "wave") [string]
+Name of the column in the input table containing the file names which have the
+associated input spectra wavelength solutions.  If not specified or not 
+present, no wavelength calculations will be performed.
+.le
+.ls (wgroup_col = "wgroup") [string]
+Name of the column in the input table containing the groups to use from the 
+wavelength files.  If 'wave_col' exists, this column must exist.
+.le
+.ls (wshift_col = "wshift") [string]
+Name of the column in the input table containing the shifts in the wavelength 
+solutions.  May be the same as the column specified in parameter 'shift_col'.
+Must be present if 'wave_col' column exists.
+.le
+.ih
+EXAMPLES
+1. Combine the spectra from the FP-SPLIT observation 'z1x23456m' using all
+defaults.  According to the table "shift", the spectra resides in file 
+'z1x23456m.c1h' and the wavelengths are in 'z1x23456m.c0h'.  The output 
+spectrum is placed in file 'z1x23456m_out.c1h', wavelength in 
+'z1x23456m_out.c0h', and no granularity file is produced.
+    
+.nf
+            cl> poffsets z1x23456m shift
+            cl> specalign shift z1x23456m_out.c1h z1x23456m_out.c0h 
+.fi
+    
+1. Combine the spectra from the FP-SPLIT observation 'z1x23456m'.  Most defaults
+are used, so the spectra resides in file 'z1x23456m.c1h' and the wavelengths 
+are in 'z1x23456m.c0h'.  The output spectrum is placed in file 
+'z1x23456m_out.c1h', wavelength in 'z1x23456m_out.c0h', and the granularity 
+in 'z1x2346m_gran.hhh'.
+    
+.nf
+            cl> poffsets z1x23456m shift
+            cl> specalign shift z1x23456m_out.c1h z1x23456m_out.c0h \
+            z1x23456m_gran.hhh niter=10
+.fi
+    
+2. Repeat the first example, but also include the Doppler compensation shifts 
+of the granularity.  Note, that the file 'z1x23456m.ulh' must also be present.
+    
+.nf
+            cl> poffsets z1x23456m shift
+            cl> dopoff shift
+            cl> specalign shift z1x23456m_out.c1h z1x23456m_out.c0h \
+            z1x23456m_gran.hhh niter=10
+.fi
+    
+3. Repeat the first example, but instead of creating a separate wavelength 
+file, write the wavelength solution to the output header.  This will allow 
+tasks such as 'splot' to use the wavelength solution.
+ 
+.nf
+            cl> specalign shift z1x23456m_out.c1h WCS z1x23456m_gran.hhh \
+            niter=10
+.fi
+.ih    
+REVISIONS
+The default setting for the "niter" parameter has been set to "0" 
+as of November 1998.  Under these circumstances, the final combined spectrum
+will be computed as a average of the input spectral arrays and the 
+granularity will not be determined nor removed from the final output.
+.ih    
+SPECALIGN V2.0
+The code was modified to allow shifting of the individual spectral arrays 
+using the full precision of the spectral offsets as computed by 'poffsets'.  
+A small error was corrected in the portion of the algorithm which is invoked 
+when 'niter > 0.'  Due to the correction of this error, when comparing results 
+between the V1.0 and V2.0 of the algorithm, there can be differences of 
+approximately 1% in the worst case at the extreme wavelength ends of the data 
+where the fewest constituent points populate the combined spectrum and 
+granularity output.
+    
+.ih    
+NOTES
+The individual spectral arrays are co-added using equal weighting in that no 
+accommodation is made for different intensity levels or associated errors for 
+the individual spectral data arrays.
+    
+The best interpolant to use to perform the spectral shifting for any particular
+dataset will depend upon the magnitude of the misalignment, the nature of the 
+spectral data, and the requirements of the user.  The user is encouraged to 
+experiment with this option in order to achieve optimum results.
+    
+A featureless and flat (no gradients) region of actual spectrum was used as a 
+test dataset to evaluate one perspective of the effect of smoothing as a 
+function of the resampling technique chosen to perform the shifting of the 
+spectral arrays.  The region was shifted 0.5 pixels (representing the worst 
+case smoothing) using different interpolants.  The standard deviation was then 
+used as a means to measure the effect of smoothing on the point-to-point
+variations in the data.  Using the standard deviation of the unshifted data 
+as the reference, the amount of smoothing introduced by the interpolants was 
+ranked as follows, from least to worst: spline, fifth order polynomial, third 
+order polynomial, and linear.  Another test was performed using the extreme 
+example of a delta-function feature and a shift of 0.5 pixels.  Not 
+unexpectedly, all of the functional interpolants broadened the feature and 
+modified the peak flux.  For data with sharp gradients, the polynomials and 
+the spline tend to produce ringing with the spline being the worst offender.  
+Ringing is not an issue with the linear interpolation.  In addition, linear 
+interpolation conserves the total flux in the individually shifted arrays.  
+In general for broader spectral features, any of the interpolants will yield 
+good results.
+
+.ih
+CAUTIONS
+When using the iterative solution technique to combine spectra, convergence
+of the solution is NOT guaranteed.  Some solutions are particularly sensitive
+to initial conditions, or how often during the iterations the offset updates
+are applied.  Specifically, the iterative solution does not work well under the
+following circumstances: 1) the spectrum contains features which are at least 
+as broad as the nineteen pixel FP-SPLIT separations; 2) the spectrum contains 
+features separated by the FP-SPLIT offsets; and 3) regions of the spectrum
+are dominated by strong absorption over a width comparable to the full offset
+range.
+
+The lack of convergence will be manifested either by the 'specalign' task
+aborting with a floating point overflow error, or the final combined 
+spectrum will contain extremely sharp gradients in flux, similar to delta 
+functions.  In the event that the iterative technique is not applicable to 
+the data, 'specalign' should be used in its most fundamental mode which is 
+activated by setting 'niter = 0'.  In this instance, it is not possible to 
+determine a granularity spectrum.
+
+.ih    
+REFERENCES
+This task is a variation on the algorithm presented in:
+.ls
+Banuolo, W. and D.Gies, Tomographic Separation of Composite Spectra: The 
+Components of the O-Star Spectroscopic Binary AO Cassiopeiae, ApJ, 376, 
+266-271, 20 July 1991.
+.le
+.ih    
+HELP
+For assistance using this or any other tasks, please contact help@stsci.edu 
+or call the help desk at 410-338-1082.
+.ih
+SEE ALSO
+poffsets, dopoff, mkweight, onedspec, savgol, scombine, rcombine

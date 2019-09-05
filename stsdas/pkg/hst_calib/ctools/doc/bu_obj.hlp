@@ -1,0 +1,595 @@
+.help bu_obj Jan95 source
+.ih
+NAME
+bu_obj -- Unpack sub-word level information from integer array.
+.ih
+DESCRIPTION
+The Bit Unpack (BU) object handles retrieving, manipulating, and
+storing of values that come from non-canonical storage structures: i.e. 
+arrays containing data represented by single bits or a small number of
+bits which are packed into standard integer arrays.  Though this was
+the design goal, the actual algorithm implemented is actually much
+more general.
+
+.ls CONCEPT
+The basic goal is to find the value of an 'item'.  An 'item' is a
+piece of information in some way encoded into an integer array.  This
+item may just be an integer some offset into the array, a single bit
+located somewhere in the array, or some multiple set of bits contained
+within a single integer word, or spanning several words.  The original
+data which contains the encoded value is referred to as the "parent data".
+
+To determine the value of the item, it must be decoded, or "extracted"
+from the parent data.  By applying some 'extract' expression, the
+parent array is transformed, producing the value of the desired item.
+
+The item itself may contain encoded information, i.e. the "value" is not
+necessarily the numerical quantity that the item is equal to.  By
+using a 'format' expression, the value of the item can be (optionally)
+transformed into a yet more appropriate value.
+
+The entire process can be represented by the formulation:
+
+.nf
+	item value = format (extract (parent data))
+.fi
+
+Technically, there is no mathematical reason why two functions,
+'extract' and 'format', need be separate; they can be combined into a
+single function.  However, for the specific application developed
+here, to get values from a bit-packed array, there is a practical
+reason which is discussed below.
+.le
+.ls EXAMPLE PROBLEM
+The specific problem this object was created was to get items out of
+bit-packed arrays.  An example of such an array is in Hubble Space
+Telescope (HST) data from the Goddard High Resolution Spectrograph
+(GHRS).  One of the "images" which represents an observation from the
+GHRS is called the Unique Data Log (UDL).  This image is a bit-packed
+array containing commanding information used to operate the GHRS.
+Some of the words in the one-dimensional image array are filled with
+bit-flags indicating status of lamps, shutters, and operation steps.
+Other words simply contain integer values, while others contain a
+number of 2, 3, or 4 bit items packed into a single or multiple words.  It
+is necessary to extract these values to be examined by observers, or
+for programs to key off of.
+
+This is why there is a two-step process.  For use in calculations and
+programs, it is simply enough to extract the right bits and create an
+integer out of it.  However, for human examination, the fact that a
+bit flag is 0 or 1 is still fairly meaningless.  Hence, another
+function is needed, the 'format' expression, to take this numerical
+information and make it "more meaningful", i.e.  to transform 0 and 1
+to "off" and "on" or "open" and "closed".
+.le
+.ls EXPRESSION DEFINITION
+The expressions to extract and format items are specified in a
+"definition file".  This file is an IRAF Text DataBase as implemented
+in the code "dttext.x".  See the IRAF xtools$ directory for the
+source.
+
+The format of this definition file is a text file.  Each item is
+defined by a series of lines.  The format of each item definition is
+as follows:
+
+.nf
+	begin item_name
+	    extract  extract_expression
+	    format   format_expression
+	    units    units_description
+	    descrip  general_description
+.fi
+
+An item begins with a line that has "begin" followed by the name of
+the item.  An item name can be anything, as long as it is no more than
+19 characters (SZ_COLNAME from tables) long.  The following lines
+define the separate "fields" of the item definition.  They can appear
+in any order and do not all need to be defined.  Each line can be up
+to 1023 characters long (SZ_COMMAND).  The fields are as
+follows:
+.ls extract
+The extract expression is found by a line beginning with the word
+"extract" followed by an arbitrary expression used to extract the
+item's value from the parent data.
+.le
+.ls format
+The format expression is found by a line beginning with the word
+"format" followed by an arbitrary expression used to 'format' the
+item's value.
+.le
+.ls units
+The units field, defined by a line beginning with the word "units", is
+used when writing a BU object out to a table.  The value of the units
+field is placed in the column's "units" descriptor.  The length of the
+units field should be no more than 19 characters (SZ_COLUNITS).
+.le
+.ls descrip
+The descrip field, defined by a line beginning with the word
+"descrip", simply contains a description of the item.  Currently, the
+BU object makes no use of this field.
+.le
+.le
+.ls EXPRESSIONS
+The 'extract' and 'format' expressions are simple mathematical
+functions which define a formula for transforming values.  The
+expressions are evaluated by the IRAF 'evexpr' interface.  See the
+code evexpr.x in sys$fmtio for more information about this interface.
+
+The BU object defines two variables for use in the expression.  The
+first is 'd[i]'.  This variable has the value of the i'th element of
+the parent data array.  This is generally used in the 'extract'
+expression, but can be used in the 'format' expression.
+
+The second variable, 'v', can only be used in the 'format' expression.
+It contains the value of the item after it has been extracted.  See
+the example entries above for examples.
+
+Other items found in a definition file may also be used as variables
+in an expression.  When an item name appears in an expression, its
+value will be the result of that item's "extract" expression.  Care
+must be taken to avoid recursive or circular definitions.  The code
+will abort at around 20 recursions to avoid infinite loops caused by
+such definitions.
+
+There are also a number of additional functions provided to help make
+bit extraction a bit easiear.  See the help for the function
+"bu_functions" below for a more detailed description.  The functions
+are as follows:
+
+.nf
+	and	-- Bitwise-AND two arguments together
+	lin	-- Linear interpolations
+	shift	-- Bitwise-SHIFT a value
+	switch	-- Based on the value of the first argument, return
+	           one of the subsequent arguments.
+	word_find -- Based on the value of the first argument, return
+	           that word in the space/comma separated word list in
+	           the second argument.
+.fi	
+.le
+.ls BU OBJECT
+The memory structure which defines the BU object is found in
+"bu_obj.h".  Most of the memory is actually dedicated to handling the
+generic I/O routines.  The only major element is the BU_DB, which is
+the text database descriptor.
+.le
+.ih
+BUGS
+The interface provides routines to read from an image and output to a
+table.  There should at least be something to read from a table.  It
+would be nice to be able to "inverse" the expressions so an image
+could be re-created, but that's a PhD for another time.  In leu of
+that, there could be fields which do define an "inverse" function.
+
+Due to the use of the "arbitrary expression", the actual algorithm
+implemented is much more general than has been discussed.  Just
+need to find such problems to solve.
+.ih
+PROCEDURES
+Below summarizes the procedures defined for the BU object.
+
+Memory management routines are:
+
+.nf
+bu_alloc	-- Allocate the BU object.
+bu_free		-- Free the BU object.
+bu_grow		-- Enlarge internal arrays.
+.fi
+
+File I/O routines are:
+
+.nf
+bu_read_image	-- Fill an object from an image.
+bu_write_table	-- Save an object to a table.
+.fi
+
+Data manipulation routines are:
+
+.nf
+bu_extract	-- Extract a value from an array.
+bu_format	-- Format extracted values.
+.fi
+
+Diagnositc routines are:
+
+.nf
+bu_dump		-- Diagnostic dump of the contents of a BU object.
+.fi
+
+Internal and miscellaneous routines:
+
+.nf
+bu_copy_op	-- Copy an EVEXPR operand.
+bu_get_op	-- Get operand for an expression.
+bu_functions	-- Extra functions for expressions.
+bu_get_dim	-- Retrieve dimensions of a variable from expression.
+bu_set_items	-- Set which items will be retrieved from the list.
+bu_lin		-- Perform the linear interpolation.
+amovb		-- Copy a boolean array.
+bu_expr		-- Construct the expression to be evaluated.
+bu_field	-- Retrieve the value of a field from a record.
+bu_indef	-- Check for undefined values.
+.fi
+.ih
+INTERFACE
+Below are the individual descriptions of the interface routines.
+.ih
+bu_obj = bu_alloc (def_file, items)
+Allocate the bu object.  A definition file is passed to the routine
+which contains a text database defining how to extract a value from an
+array, and optionally, how to format the value to make it
+human-readable.  See the general description of the BU object for more
+information.
+.ls ARGUMENTS
+.ls def_file (char[ARB])
+The text database file containing the defintions of the bit fields.
+.le
+.ls items (char[ARB])
+A comma-separated list of patterns used to select which items from the
+definition file to populate when using the
+bu_read_image/bu_write_table routines.  If blank, all items are
+selected.  A regular expression pattern match is used.  See the
+function strmatch for more information.
+.le
+.le
+.ls RETURNS
+A pointer of type TY_STRUCT to the BU object.  This pointer is used by
+all other interface routines to access an object's information.  This
+object should be destroyed using "bu_free".
+.le
+.ih
+bu_free (o)
+Free the memory used by an BU object.  This effectively destroys the
+object.
+.ls ARGUMENTS
+.ls o (pointer)
+The BU object to destroy.  On return, obj is set to NULL.
+.le
+.le
+.ih
+bu_grow (o, size)
+Make sure that the internal arrays can hold enough information for
+'size' number of values.  Previous information is not lost if values
+have already been stored.
+.ls ARGUMENTS
+.ls o (pointer)
+The pointer to a BU object.
+.le
+.ls size (int)
+The number of values that internal data structures must be able to
+hold.
+.le
+.le
+.ih
+bu_dump (o)
+Print to standard output selected diagnostic information about the
+specified object.
+.ls ARGUMENTS
+.ls o (pointer)
+The pointer to a BU object.
+.le
+.le
+.ih
+bu_read_image (o, name, fmt)
+Populate a BU object from the specified image.  Values for each item
+specified in the text database will be read from the data stored in
+the image and added to the BU object.
+.ls ARGUMENTS
+.ls o (pointer)
+The pointer to a BU object.
+.le
+.ls name (char[ARB])
+The name of the image file to decode the binary information.
+.le
+.ls fmt (bool)
+If TRUE, then the 'format' expression will also be invoked, formatting
+the values.  If FALSE, the values are simply extracted.
+.le
+.le
+.ih
+value = bu_extract (o, data, n, item)
+Extract a value from an array.  The specified 'item' is extracted from
+the array 'data', using the extraction method defined for that
+particular item.
+.ls ARGUMENTS
+.ls o (pointer)
+The pointer to a BU object.
+.le
+.ls data (int[n])
+The array containing the undecode raw information from which to
+extract the specified item.
+.le
+.ls n (int)
+Size of the input data array.  Used for consistency checking.
+.le
+.ls item (char[ARB])
+The item to retrieve.  See the general discussion for more
+information.
+.le
+.le
+.ls RETURNS
+An OPERAND structure containing the extracted value.  See the evexpr
+source for more information.
+.le
+.ih
+bu_write_table (o, name, mode, template)
+Save a BU object in a table.  Each item in the object becomes a column
+in the table.  If a 'units' field is specified for an item, the
+column's "units" will be set to this value.  The mode specifies how
+the table should be opened and template is a pointer to another table
+descriptor.  See the routine 'tbtopn' for more information.
+.ls ARGUMENTS
+.ls o (pointer)
+The pointer to a BU object.
+.le
+.ls name (char[ARB])
+The name of the table to write the information to.
+.le
+.ls mode (int)
+Mode to open the table.  See the routine tbtopn for more information.
+.le
+.ls template (pointer)
+Pointer to another table descriptor used to open the current table.
+This is normally NULL.  See the routine tbtopn for more information.
+.le
+.le
+.ih
+bu_get_op (operand, op)
+Auxilliary procedure used by the IRAF 'evexpr' interface to retrieves
+variable values found while parsing an expression.  See the help for
+evexpr under sys$fmtio for more information about the IRAF 'evexpr'
+interface.
+
+Currently, there are only two variables allowed by a BU expression.
+The variables are:
+.ls d[x]
+This variable represents the one-dimensional data array containing the
+raw, uncoverted bit stream to extract the required information from.
+'x' must resolve into a valid index into the array.  This is used
+primarily by the 'extract' expression.
+.le
+.ls v
+Used by the 'format' expression, this variable represents the value of
+the item being formatted as returned by the 'extract' expression.
+.le
+.ls ARGUMENTS
+.ls operand (char[ARB])
+The name of the variable whose value is required by an expression.
+.le
+.ls op (pointer)
+On output, this contains the pointer to the OP object, used by
+evexpr, which contains the value of the requested variable.
+.le
+.le
+.ih
+bu_functions (name, args, nargs, op)
+Auxilliary procedure used by the IRAF 'evexpr' interface to retrieve
+user-defined function values found while parsing an expression.  See
+the help for the IRAF 'evexpr' interface under sys$fmtio for more
+information.
+
+The following functions, in addition to the default functions defined
+by 'evexpr', are defined:
+.ls and (x, y)
+Bit-wise AND the two arguments.  The arguments must be integers.  The
+AND is implemented using the FORTRAN standard library IAND call to
+actually evaluate the function.
+.le
+.ls lin (x, pairs)
+Linear interpolation between values.  The first argument is the "x"
+value for which a "y" will be interpolated.  The bounds of the
+interpolation are defined in the 'pairs' argument.  The argument is
+specified as a string of values, either space or comma separated.  The
+values are taken as pairs, i.e. the first value is the "x" value and
+the second value is the "y" value.  At least two pairs must be
+defined.  One can define as many pairs as one likes, within the limits
+of the database string length.
+
+For example, to find the "y" value corresponding to the "x" value of
+2.5 between the pairs "-100 -43.34", "0 82.3", and "100 100", the
+function would be defined as:
+
+.nf
+    lin (2.5, "-100 -43.34 0 82.3 100 100")
+.fi
+.le
+.ls shift (x, y)
+Bit-wise SHIFT the first argument by the number of bits specified by
+the second argument.  This function is implemented using the FORTRAN
+standard library ISHFT call to actually evaluate the function.  Both
+arguments must be integers.  If the second argument is positive, a
+left-bit shift is performed; if negative, a right-bit shift is
+performed.
+.le
+.ls switch (key,v0,v1,...,v14)
+Depending on the value of 'key', switch returns the values of 'v0'
+through 'v14'.  'key' must be be an integer between 0 and 14.  The
+'key'th argument is then returned.  There must be at least one value
+to return, but one does not have to specify all 15 possible return
+values, only the one that are actually necessary.  The types of the
+return arguments can be anything and they don't necessarily have to be
+the same as the other arguments.  For example:
+
+.nf
+        switch (v,"off","on")
+.fi
+
+If 'v' is 0, then switch will return the string "off".  If 'v' is 1,
+then "on" will be returned.  If 'v' is outside the possible range, an
+error will be generated.
+.le
+.ls word_find (key,string)
+This function returns the field from 'string' specified by 'key'.
+'string' is a space or comma separated list of words.  'key' indexes
+into the list, starting from 0.  For example:
+
+.nf
+        word_find (key, "off,on")
+.fi
+
+If 'key' is 0, then "off" will be returned.  If 'key' is 1, then "on"
+will be returned.  The length of the string is arbitrary (though note
+the limits imposed by the text database format).
+.le
+.ls ARGUMENTS
+.ls name (char[ARB])
+The name of the function to execute.
+.le
+.ls args (pointer[nargs])
+An array of pointers to OP objects which contain the values of the
+arguments used in the current call to the specified function.
+.le
+.ls nargs (int)
+The number of arguments used for the function.
+.le
+.ls op (pointer)
+On return, this holds a pointer to an OP object which contains the
+value of the function.
+.le
+.ih
+bu_get_dim (strval, dim, ndim)
+Internal routine: Intpret a string of the form "[x,y,...z]" and
+populate the array dim with the numerical values of each dimension.
+The string must contain at least one value.
+.ls ARGUMENTS
+.ls strval (char[ARB])
+The string to get the dimension indices from.  Must of the form
+"[x,y,....z]".
+.le
+.ls dim (int[MAX_DIM])
+On output, this array contains the values of the dimensions found in
+the input string.
+.le
+.ls ndim (int)
+On output, the number of dimensions found.
+.le
+.le
+.ih
+value = bu_format (o, item, data, n, value)
+This formats the value according to the 'format' expression of the
+specified item.  The formatted value is returned.
+.ls ARGUMENTS
+.ls o (pointer)
+The BU object.
+.le
+.ls item (char[ARB])
+The item defining the 'format' expression.
+.le
+.ls data (int[n])
+The parent data array.
+.le
+.ls n (int)
+The size of the parent data array.
+.le
+.ls value (pointer)
+An OPERAND containing the value to be transformed.
+.le
+.le
+.ls RETURNS
+A pointer to an OPERAND containing the transformed value.
+.le
+.ih
+bu_copy_op (op1, op2)
+Copy OP1 to OP2.  NOTE: THIS WILL BREAK IF THE EVEXPR OPERAND
+STRUCTURE EVER CHANGES.  This is needed because, unfortunately, the
+iraf system does not provide this functionality.
+.ls op1 (pointer)
+Source operand
+.le
+.ls op2 (pointer)
+Destination operand.
+.le
+.ih
+bu_set_items (o, pat)
+Find all items matching the pattern list.
+.ls o (pointer)
+The BU object.
+.le
+.ls pat (char[ARB])
+A comman/space separated list of patterns which determine which items
+from the definition file should be used in the I/O routines.
+.le
+.ih
+value = bu_lin (x, pairs)
+Perform linear interpolation, i.e find the Y value for the specified
+x using the specified pairs as interpolation points.  This routine
+will also extrapolate if x falls outside of the domain specified by
+the pairs.
+.ls ARGUMENTS
+.ls x (real)
+The x value for which to interpolate a y.
+.le
+.ls pairs (char[ARB])
+The points which define the interpolation domain.  This is a
+space/comma separated list of numbers which are taken as pairs:
+
+.nf
+        "x y x y x y ..."
+.fi
+.le
+.le
+.ls RETURNS
+A real which is the interpolated y value.
+.le
+.ih
+expression =  bu_expr (db, item, field)
+Retrieve the expression from the specified field of the item from the
+text database.  This routine will search for any item names present in
+the field and will recursivly replace the item name with the value of
+its "extract" field.  The level of recursion is 20 at which point it
+is assumed a recursive or circular definition has been found.
+.ls ARGUMENTS
+.ls db (pointer)
+The text databse descriptor.
+.le
+.ls item (char[ARB])
+The item for which to the the expression.
+.le
+.ls field (char[ARB])
+The field from the record to retrieve the expression.
+.le
+.le
+.ls RETURNS
+A pointer to the string containing the expression to evaluate for the
+specified field, with all items appearing in the expression expanded
+into their corresponding "extract" expressions.
+.le
+.ih
+bu_field (db, rec, field, value, size)
+Retrieve the value of the field from the record from the text
+database.
+.ls ARGUMENTS
+.ls db (pointer)
+The text database descriptor
+.le
+.ls rec (char[ARB])
+The record from which to retrieve the field.
+.le
+.ls field (char[ARB])
+The field to get the value from.
+.le
+.ls value (char[size])
+The value of the field.
+.le
+.ls size (int)
+The maximum size of the value string.
+.le
+.le
+.ih
+boolean = bu_indef (v)
+Return 'true' if the value is undefined.
+.ls ARGUMENTS
+.ls v (pointer)
+An EVEXPR operand
+.le
+.le
+.ls RETURNS
+'true' if the value is undefined, otherwise 'false'.
+.le
+.ih
+EXAMPLES
+For examples of the definition file, see the help for the task "eng2tab".
+For coding examples, the source for the BU object is below.  The task
+"eng2tab" is an application-level example.
+.endhelp
+

@@ -1,0 +1,223 @@
+.help doppinfo Jul2003 stis
+.nj
+.ih
+NAME
+doppinfo -- Compute Doppler shift information from HST orbital elements.
+.ih
+USAGE
+doppinfo input
+.ih
+DESCRIPTION
+This task computes Doppler shift information
+for each imset of a dataset.
+Keywords will be read from
+the science file and from the support file.
+The Doppler shift information is printed to the standard output by default,
+but this can be turned off by setting 'verbose' to no.
+Three task parameters will be updated by 'doppinfo';
+these allow the user to compute the Doppler shift
+in high-res pixels or km/s at any time close to the time of the exposure.
+
+The printed information will be in one of two formats,
+depending on the value of 'increment'.
+If 'increment' is zero,
+the average and extreme values of the Doppler shift
+during the exposure will be printed.
+If 'increment' is greater than zero,
+the actual Doppler shift and radial velocity will be printed
+at the beginning of the exposure
+and at every 'increment' seconds thereafter
+until the end of the exposure.
+Both the printed value of the Doppler shift and the 'doppmag' parameter
+will be in high-res pixels.
+
+Most of the Doppler shift information
+is computed directly from the orbital elements of HST,
+as given in the support file primary header.
+Some information, however,
+is computed based on the approximation of a circular orbit.
+This approximation is used for
+the average Doppler shift during the exposure
+(printed if 'increment' is zero)
+and for the task parameters 'doppzero', 'doppmag' and 'radvel'
+that are updated by 'doppinfo'.
+These parameters are applied as terms in a sine function,
+which inherently involves a circular-orbit approximation.
+
+The parameters for the circular orbit are determined as follows.
+The HST orbital elements are gotten from
+the primary header of the support file.
+The target position is taken from the keywords RA_TARG and DEC_TARG
+in the science file primary header.
+The velocity of HST is computed from the orbital elements
+at 64 equally spaced times throughout an orbit,
+centered on the midpoint of the exposure, (EXPSTART + EXPEND) / 2,
+and the component of this velocity
+in the direction away from the target (i.e. the radial velocity) is taken.
+A sine function is fit to these radial velocities;
+the amplitude is 'radvel',
+and the amplitude and phase are used to compute 'doppmag' and 'doppzero'.
+.ih
+PARAMETERS
+.ls input [file name template]
+A list of STIS science files (e.g. <rootname>_raw.fits).
+The FITS extension (e.g. "[0]" or "[sci,1]")
+should not be included in the name.
+Info for all imsets will be computed;
+the number of imsets in the science file is assumed to be NEXTEND / 3.
+The Doppler shift will be printed in unbinned or high-res pixels,
+even if the input data are binned CCD data or low-res MAMA data.
+'input' may be any STIS science image type; however,
+table formats (_tag, _x1d, _sx1) are currently not recognized.
+.le
+.ls (increment = 0.) [real]
+If 'increment' is greater than 0.,
+the Doppler shift in pixels and radial velocity in km/s
+will be printed at intervals of this many seconds throughout the exposure.
+
+If 'increment' is 0., the default,
+then the time (MJD) and the values of the Doppler shift and radial velocity
+at the midpoint of the exposure will be printed,
+along with the average values and the minimum and maximum values.
+.le
+.ls (spt) [file name template]
+A list of support files (e.g. <rootname>_spt.fits).
+The FITS extension "[0]" should not be included in the name.
+
+If 'spt' is null,
+the support file name will be determined from the input name (see below).
+If 'spt' contains one file name,
+that support file will be used for all files in the 'input' list.
+Otherwise, the number of names
+in the 'input' and 'spt' lists must be the same.
+
+The default value of 'spt' is null,
+in which case 'doppinfo' will construct the support file name from 'input'.
+This will work if the files
+have the original names that were assigned by the pipeline.
+That is, if 'spt' is null,
+and if 'input' is of the form rootname_suffix.fits,
+where suffix is "raw", "flt", "crj", "x2d", "sx2" or "sfl",
+then the task will use <rootname>_spt.fits as the support file name.
+(<rootname> does not actually have to be the ROOTNAME,
+as long as it's the same for the input and support files.)
+
+As a sanity check,
+the ROOTNAME keyword will be gotten
+from both the input and support primary headers.
+If the rootname values differ,
+a warning will be printed.
+This is not a fatal error,
+but it could imply that
+the support file the task is using
+does not actually correspond to the input science file.
+On the other hand,
+you may be deliberately using
+the same support file for many science files,
+which is OK if the science files were taken close enough to the same time
+that the orbital elements are nearly the same,
+in which case it is OK to ignore the warning message.
+.le
+.ls (verbose = yes) [boolean]
+The default is to print information to the standard output,
+and also to update task parameters 'doppzero', 'doppmag', and 'radvel'.
+If 'verbose' is no,
+the parameters will still be updated,
+but nothing will be printed.
+This may be useful in cl scripts,
+in order to use the parameters that 'doppinfo' computes.
+.le
+.ls (doppzero) [real]
+This is an output parameter, i.e. it is set by the task.
+'doppzero' is the time (Modified Julian Date) when the Doppler shift is zero.
+There are two such times per orbit,
+and the particular one assigned to 'doppzero' is
+when the radial velocity is increasing,
+i.e. when HST is closer to the target.
+The value is computed based on the approximation of a circular HST orbit.
+See the description for 'doppmag'.
+.le
+.ls (doppmag) [real]
+This is an output parameter.
+'doppmag' is the magnitude of the Doppler shift in high-res pixels
+(or unbinned pixels for the CCD),
+computed based on the approximation of a circular HST orbit.
+That is, 'doppmag' is the amplitude of a sine function:
+
+.nf
+    Doppler shift = doppmag * sin (2*pi * (time-doppzero) / period)
+.fi
+
+The sign convention used by 'doppinfo'
+is that the Doppler shift is positive
+when the photon is detected at a larger pixel number,
+i.e. at a longer wavelength.
+The conversion from 'radvel' in km/s
+to 'doppmag' in high-res pixels is as follows:
+
+.nf
+    doppmag = (radvel / speed_of_light) * (wavelength / pixel_spacing)
+.fi
+  where
+.nf
+    wavelength = CENWAVE
+    pixel_spacing = CD1_1 * LTM1_1 / highres_factor
+    highres_factor = 2 for the MAMA detectors, 1 for the CCD
+.fi
+.le
+.ls (radvel) [real]
+This is an output parameter.
+'radvel' is the same as 'doppmag' except for units;
+'radvel' is in km/second.
+
+.nf
+    radial velocity = radvel * sin (2*pi * (time-doppzero) / period)
+.fi
+.le
+.ih
+EXAMPLES
+1.  Compute DOPPZERO and DOPPMAG for o5el01010_raw.fits,
+then replace the value of DOPPZERO in the header with the computed value.
+
+.nf
+    st> doppinfo o5el01010_raw.fits
+    st> hedit o5el01010_raw.fits[sci,1,noinherit] doppzero \
+    (doppinfo.doppzero) update=yes
+.fi
+
+2.  Print Doppler information for all raw files in the default directory.
+
+.nf
+    st> doppinfo *_raw.fits
+.fi
+
+3.  Print Doppler information with increment=0 and 200
+to illustrate the different output.
+
+.nf
+st> doppinfo o57e01010_raw.fits
+# midpoint   midpoint Doppler  average Doppler  minimum Doppler  maximum Doppler
+#   MJD        pixels   km/s    pixels   km/s    pixels   km/s    pixels   km/s
+51220.327742    -0.01 -0.592     -0.01 -0.570     -0.06 -3.529      0.04  2.509  o57e01010_raw.fits[sci,1]
+.fi
+
+.nf
+st> doppinfo o57e01010_raw.fits incr=200
+# time (MJD)   shift   radvel  o57e01010_raw.fits[sci,1]
+51220.321955   -0.06   -3.529
+51220.324270   -0.04   -2.432
+51220.326585   -0.02   -1.222
+51220.328900    0.00    0.045
+51220.331214    0.02    1.308
+51220.333529    0.04    2.509
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge,
+based on Steve Hulbert's code for computing
+HST position and velocity from the orbital elements.
+.ih
+SEE ALSO
+.endhelp

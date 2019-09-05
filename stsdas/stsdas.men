@@ -1,0 +1,14 @@
+Space Telescope Science Data Analysis Software Package
+
+  analysis + Data analysis packages.
+   apropos - List all the tasks related with a given subject.
+   contrib + User-contributed software.
+  describe - Display a description of the named task(s) or package(s).
+  examples - Print online examples of how to use the named task(s). 
+    fitsio + FITS input/output for Space Telescope data (images and tables).
+  graphics + Graphics and image display packages.
+ hst_calib + HST Science Instrument calibration packages.
+   playpen + Miscellaneous experimental tasks.
+  problems - Submit an STSDAS software problem report to STScI.
+ sobsolete + Package of tasks that have been retired.
+   toolbox + General tools packages.

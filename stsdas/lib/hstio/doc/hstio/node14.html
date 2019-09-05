@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3O//DTD W3 HTML 2.0//EN">
+<!- Converted with LaTeX2HTML 0.6.4 (Tues Aug 30 1994) by Nikos Drakos (nikos@cbl.leeds.ac.uk), CBLU, University of Leeds ->
+<P>
+<HEAD>
+<TITLE> 
+Append versus Overwrite in high-level functions
+</TITLE>
+<meta name="description" value=" 
+Append versus Overwrite in high-level functions
+">
+<meta name="keywords" value="hstio">
+<meta name="resource-type" value="document">
+<meta name="distribution" value="global">
+</HEAD>
+<BODY><P>
+ <BR> <HR><A NAME=tex2html165 HREF="node15.html"><IMG ALIGN=BOTTOM ALT="next" SRC="http://www.stsci.edu/icons//next_motif.gif"></A> <A NAME=tex2html163 HREF="hstio.html"><IMG ALIGN=BOTTOM ALT="up" SRC="http://www.stsci.edu/icons//up_motif.gif"></A> <A NAME=tex2html157 HREF="node13.html"><IMG ALIGN=BOTTOM ALT="previous" SRC="http://www.stsci.edu/icons//previous_motif.gif"></A>   <BR>
+<B> Next:</B> <A NAME=tex2html166 HREF="node15.html"> 
+SingleGroup and MultiGroup </A>
+<B>Up:</B> <A NAME=tex2html164 HREF="hstio.html">A Descritpion of the </A>
+<B> Previous:</B> <A NAME=tex2html158 HREF="node13.html"> 
+OpenUpdateImage
+</A>
+<BR> <HR> <P>
+<H1><A NAME=SECTION00070000000000000000> 
+Append versus Overwrite in high-level functions
+</A></H1>
+<P>
+In general, for all high-level I/O functions, if the option parameter
+is 0, whatever HDUs are involved are either written to a newly created
+file or appended to the end of an existing file.  In other words, no
+existing data is destroyed.  However, if the option parameter is
+Overwrite, whatever HDUs are involved overwrite HDU number extver.
+<P>
+For putSingleGroup:<BR>
+	if option is 0, extver is ignored<BR>
+		if the file does NOT exist<BR>
+			the global header is written and<BR>
+			the single group is written<BR>
+		else if the file DOES exist<BR>
+			the single group is appended<BR>
+		endif<BR>
+	else if option is Overwrite<BR>
+		the file MUST exist<BR>
+		the single group overwrites HDU number extver<BR>
+	endif
+<P>
+For putSingleGroupHdr:<BR>
+	if option is 0<BR>
+		the file must NOT exist<BR>
+		the primary HDU is written<BR>
+	else if option is Overwrite<BR>
+		the file MUST exist<BR>
+		the primary HDU is overwritten<BR>
+	endif
+<P>
+<BR> <HR>
+<P><ADDRESS>
+<I> Sdas Group <BR>
+Wed Aug 21 10:27:26 EDT 1996</I>
+</ADDRESS>
+</BODY>

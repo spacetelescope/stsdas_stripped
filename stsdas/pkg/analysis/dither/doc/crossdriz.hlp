@@ -1,0 +1,170 @@
+.help crossdriz Apr97 stsdas.analysis.dither
+.ih
+NAME
+crossdriz -- Builds a set of cross-correlation images from one
+single-group image and one single-group reference image, and an 
+optional set of rotation angles.
+.ih
+USAGE
+crossdriz  image refimage rootname
+.ih
+PARAMETERS
+.ls image [file list/template]
+File list/template with input image names. Only single-group images are 
+supported.
+.le
+.ls refimage [file name]
+Input single-group reference image.
+.le
+.ls rootname [file list]
+File list with the base names for the output cross-correlation images. 
+Each base name is paired with the corresponding image in the input list, 
+and generates a family of cross-correlation images, one for each rotation 
+angle. Each of these images will have its name built by appending "_NN" to 
+the corresponding base name, where NN is a two digit sequential counter 
+(01, 02, 03,...). If only one rotation angle is specified, no suffixes are 
+appended to the base names.
+.le
+.ls (dinp = yes) [boolean]
+Drizzle input image(s) ? When set to "yes", the task will take care
+of drizzling all input images but only if needed, that is, only if
+geometrical correction / resizing / rotation is taking place. If set to 
+"no", drizzling of input images is disabled and the task will issue a
+warning if geometrical correction / resizing / rotation operations are 
+also being asked for, but will proceed anyway.
+.le
+.ls (dref = yes) [boolean]
+Drizzle reference image ? When set to "yes", the task will take care
+of drizzling the reference image only if needed, that is, only if
+geometrical correction and/or resizing is taking place. If set to "no",
+drizzling of the reference image is disabled and the task will issue a
+warning if geometrical correction and/or resizing operations are also
+being asked for, but will proceed anyway.
+.le
+.ls (margin = 50) [int, min=0]
+To avoid using the image edges, which in WFPC2 images are often quite noisy,
+the cross-correlation can be computed from a
+subsection of the input and reference images. The task uses a 
+subsection which is the original image stripped down of this margin size.
+The cross-correlation images will have their size smaller than the input
+images, by the same amount.
+.le
+.ls (tapersz = 50) [int, min=1]
+Size of cosine bell tapering window used in the (already sectioned) image.
+.le
+.ls (mintheta = 0.) [real]
+Starting rotation angle for the cross-correlation image sequence (in degrees).
+.le
+.ls (maxtheta = 0.) [real]
+Ending rotation angle. If set to the same value in 'mintheta', only one
+cross-correlation, corresponding to that specific rotation angle, will be
+generated.
+.le
+.ls (stptheta = 0.1) [real]
+Rotation angle step.
+.le
+.ls (coeffs = "header") [string]
+File with geometrical correction coefficients. If set to "header", the
+Trauger coefficients for the proper WFPC chip will be used.
+An empty string ("") implies that no geometrical correction will take place.
+.le
+.ls (lambda = 555.0) [real]
+Effective wavelength (nm). Used only by Trauger coefficients.
+.le
+.ls (xout = INDEF, yout = INDEF) [real]
+Drizzled image size. If set to INDEF, the original size is kept.
+.le
+.ls (pad = no) [boolean]
+Pad images with zeros to prevent wraparound effects ? If selected, this will
+increase the amount of memory and execution time use by the task.
+.le
+.ls (tempdir = "tmp$") [path name]
+Path to directory where temporary images and tables are kept.
+.le
+.ls (verbose = yes) [boolean]
+Print log of what is beign done ?
+.le
+.ih
+DESCRIPTION
+The position of the peak of the cross-correlation of two images directly
+provides the relative shift between the two images.  However, due to
+the geometric distortion of the WFPC2 cameras, and possible rotation
+between images, simple cross-correlation frequently will not provide
+an optimal (or even correct) estimate of the offset between two HST
+images.  This task uses the 'drizzle' program to remove the geometric
+distortion of the images, and to rotate the input image to various
+test rotation angles, if the user suspects a difference in orientation
+between the input and reference images. 
+This task also takes care of the image preparation necessary to minimize
+edge effects in the final cross-correlation image.
+
+The steps involved are:
+.ls o
+Drizzle the reference image.
+.le 
+.ls o
+Extract a section of it (to get rid of corrupted edges) and taper the
+result using a cosine bell function (to reduce edge effects).
+.le
+.ls o
+For each selected rotation angle, repeat the steps above for the input
+image, and cross-correlate the result with the processed reference image,
+resulting in a cross-correlation "image".
+.le
+
+The resulting cross-correlation images have the test rotation angle
+added to their header using the keyword "ROTANGLE". 
+This keyword is used by task "rotfind".
+
+The task can process image lists as well as single images. The input
+image list and output cross-correlation image rootname list must be paired
+one-to-one in this case. Only one reference image will be used, thus
+all cross-correlations will refer to this single image.
+
+'Crossdriz' only works on single group images (though the 'drizzle' task
+will automatically use the correct geometric distortion in cases where
+the image has been extracted from a multi-group WFPC2 image).  In order
+to cross-correlate multi-group WFPC2 images users should employ the
+'offset' task, which calls 'crossdriz'.   Offset, however, does not
+perform rotation. 
+
+In cases where the relative shift between images is only a few pixels and
+no rotation is suspected between images, users may wish to turn off the
+drizzle option in order to significantly speed-up the running of 'crossdriz'.  
+.ih
+EXAMPLES
+
+.nf
+di> crossdriz image2,image3,image4 image1 im2x1,im3x1,im4x1 dinp=no dref=no
+.fi
+
+cross-correlates the images in the first list with image1, and puts
+the output in the last list.   The images would not be drizzled before
+cross-correlation.
+
+.nf
+di> crossdriz image2 image1 im1x2 minthet=1.4 maxthet=1.6 stpthet=0.05
+.fi
+
+The above would produce five cross-correlation images, corresponding to
+test rotation angles of 1.4, 1.45, 1.5, 1.55, and 1.6 degrees.  The output
+images could be given to  'rotfind' for determination of the best-fit
+rotation angle.
+.ih
+BUGS
+The 'drizzle' task parameters are temporarily modified by this task,
+and are reset to the original values at the end of the task.  If
+'crossdriz' crashes, this last step may not be performed, and the
+'drizzle' parameters may left modified.
+.ih
+REFERENCES
+This task was written by I.Busko in collaboration with Andy Fruchter.
+More information can be found in  A. S. Fruchter, R. N. Hook, I. C. Busko,  and M. Mutchler,
+1997, "A  Package for the Reduction of Dithered Undersampled Images", in "The
+1997 HST Calibration Workshop", S. Casertano et al.,
+ed. (Baltimore: Space Telescope Science Institute), in press.
+See http://www.stsci.edu/meetings/cal97.
+.ih
+SEE ALSO
+drizzle
+.endhelp

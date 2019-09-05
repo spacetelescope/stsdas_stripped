@@ -1,0 +1,16 @@
+ 
+IMPOL - HST Imaging Polarimetry Reduction Package
+	Jeremy Walsh, ST-ECF (jwalsh@eso.org)
+        Version 2.0, November 2000, including ACS support.
+
+hstpolima    - Reduce linear polarization data for HST instruments
+hstpolpoints - Reduce linear polarization data for HST instruments for a 
+	       set of circular apertures
+hstpolsim    - Produce simulated polarization input data frames for HST 
+	       instruments
+polimodel    - Produce model linear polarization and position angle images 
+	       given a total signal image
+polimplot    - Plot a polarization vector map with flexible control over 
+	       vectors and labelling
+
+

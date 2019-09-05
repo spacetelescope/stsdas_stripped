@@ -1,0 +1,10 @@
+#
+# Example mkpkg file for native IRAF C task, n_openimage.
+#
+$set XFLAGS = "-Inolibc '-Istsdaslib$cvos/irafstdio' -p stsdas $(XFLAGS)"
+$omake n_openimage.c
+
+$set LFLAGS = "-H -z -p stsdas $(LFLAGS)"
+
+$link n_openimage.o -lcvos -lc -o n_openimage
+$exit

@@ -1,0 +1,11 @@
+# Update the listarea application code in the imgtools package library
+# Author: GIARETTA, 8-FEB-1988
+
+$checkout imgtools.a ../
+$update   imgtools.a
+$checkin  imgtools.a ../
+$exit
+
+imgtools.a:
+	listarea.x     		<ctype.h> <imhdr.h> <imio.h> <foc.h> 
+	;

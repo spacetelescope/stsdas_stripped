@@ -1,0 +1,13 @@
+input,f,a," ",,,"Input target acquisition image" 
+table,f,a,"apertab",,,"Output aperture table"
+tabstat,s,h,"write","write|append",,"Output table status (append or write)"
+pixels,b,h,no,,,"Computations in pixel or diode/ybase space?"
+yfirst,r,h,0.0,,,"Starting y-position of region to use"
+ylast,r,h,0.0,,,"Ending y-position of region to use"
+ymiddle,r,h,0.0,,,"Middle y-position for paired apertures"
+d1,r,h,0.0,,,"First diode/pixel of region to use"
+d2,r,h,512.0,,,"Last diode/pixel to use"
+aperpos,s,h,"both","upper|lower|both",,"Aperture to process for paired aperture"
+twidthx,r,h,INDEF,1,49,"Cross correlation template width in x"
+twidthy,r,h,INDEF,1,99,"Cross correlation template width in y"
+mode,s,h,a

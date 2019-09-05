@@ -1,0 +1,234 @@
+CECCCM-******************************************* OBSERVER COMMENTS FILE *****************************************************
+CECCBN-*************************************************************************************************************************
+          OSS quality/utility report - Faint Object Spectrograph (FOS)
+
+     Observation:    Object name:        Proposal ID:    Executed (UT):
+     Y0UE0103B       OX169               1192            007/02:08:40
+
+                         FOS Specific Information
+                         ------------------------
+
+                                Expected                Received
+
+        Science Data Mode:      RAPID                   RAPID
+        PCS Mode:               COARSE TRACK            COARSE TRACK
+
+                              File Information
+                              ----------------
+
+          D0D   D0H   D1D   D1H   SHD   SHH   ULD   ULH   X0D   X0H   X1D   X1H
+ Expected: Y     Y     N     N     Y     Y     Y     Y     N     N     N     N
+ Received: Y     Y     N     N     Y     Y     Y     Y     N     N     N     N
+  Grp Cnt: 58           0           2           1          0            0
+
+                              Data Information
+                              ----------------
+
+              Group count:                         58
+              Points per group:                    2064
+              Grating:                             G130HB
+              Channels:                            512
+              Exposure time:                       2048.811
+
+       --------------------------------------------------------------
+       | Group |  Data   | Defects/    | Extremum | Continuum |S/N  |
+       |   #   | Dropout | Anomalies * |  Signal  |   Signal  |Est. |
+       --------------------------------------------------------------
+       |   1-58|    N    |     N       |  463     |   ~20     | good|
+       --------------------------------------------------------------
+      * explain in comments
+
+ Comments: This is a long rapid mode spectrum of the QSO OX 169.  The strongest
+ emission feature is geocoronal Lyman alpha, and several quasar lines are very
+ obvious as well.  Overall a very nice spectrum, with some interesting
+ assymetry to the line profiles.
+
+******************* End of data quality evaluation report *******************
+DPPBAN-***************************************************** TRAILER FILE *****************************************************
+DPPSTA--------------------------------------------- DATA PARTITIONING STARTED ---------------------------------------------
+DPPSTR-DATA PARTITIONING STARTED: 7-JAN-92 21:03:31 .
+DPPOBS-Observation Identification: Program Number 0UE , Observation Set Number 01 , Observation Number 03
+DPPCAT-Msg Artifacts Catalog: DCF Msg 3 contained data for Info Set File with Root Name of Y0UE0103T
+DPPIST-Missing pkts processing is complete, processed 232 science pkts, detected 0 as missing
+DPVWM1-Weighted Quality Measure of 0 was calc for errors reported in Quality & Acctg Capsule entries for Info Set
+DPPNPR- 6 packets expected, 235 packets received ( 2 SHPs, 1 UDLs, 0 Bad pkts) for Info Set Y0UE0103T
+DPPEND-DATA PARTITIONING ENDED: 7-JAN-92 21:04:40 .
+DPPFIN--------------------------------------------- DATA PARTITIONING COMPLETED -------------------------------------------
+CPE0ST-------------------------------------------- DATA EDITING STARTED -----------------------------------------------------
+CPESTR-DATA EDITING STARTED 7-JAN-92 21:05:20 FOR Y0UE0103T.
+DPE4PC- 0 fill source packets were inserted by PODPS.
+DPE4DC-In Y0UE0103T, 0 source packets were found that contain fill data inserted by the ST DCF.
+DPERSC-CP34SE: ...and 0 packets were found to have segments without Reed Solomon corrections
+CPEEND-DATA EDITING ENDED 7-JAN-92 21:05:21 FOR Y0UE0103T.
+CPE0EN--------------------------------------------- DATA EDITING COMPLETED -----------------------------------------------------
+CPG0VS--------------------------------------------- DATA EVALUATION STARTED -----------------------------------------------
+DPVSTR-DATA EVALUATION STARTED 7-JAN-92 21:08:40 FOR Y0UE0103T.
+DPVF01-Flag & Indic Mismatch for FCHNL . Error Weight set to 1.
+DPVF03- Predicted value is 210; actual value is 0.
+DPVF01-Flag & Indic Mismatch for NCHNLS . Error Weight set to 1.
+DPVF03- Predicted value is 0; actual value is 512.
+DPVWM2-Weighted Quality Measure of 2 was calc for discrepancies between predicted & actual Flags & Indicators for Info Set
+DPVOKK-Info Set quality was OK as Weighted Quality Measure of 2 did not exceed Quality Threshold of 9
+DPVEND-DATA EVALUATION ENDED 7-JAN-92 21:08:45 FOR Y0UE0103T.
+CPG0VE--------------------------------------------- DATA EVALUATION COMPLETED ---------------------------------------------
+CGAI00-
+CGAI03---------------------------------FAINT OBJECT SPECTROGRAPH GENERIC CONVERSION BEGINNING-----------------------------------
+CGAI00-
+CGAT01-Routine CGSFOS, version 0, will perform generic conversion
+CGAT02-GENERIC CONVERSION BEGINNING: processing information set Y0UE0103T
+CGAT03-CGSFOS START: 7-JAN-92, 21:08:45
+CGAW06-No error values detected in flags and indicators
+CGAI06-SHP generic conversion has completed successfully
+CGAI07-UDL generic conversion has completed successfully
+CGAC01-Mismatch between FOS predicted and actual flags and indicators
+CGAC02-Generated new FOS reference file catalog : CCC:[SIS.FOS]Y0UE0103T.CTX
+CGAI08-SCI generic conversion has completed successfully
+CGAI22-DQM generic conversion has completed successfully
+CGAT04-GENERIC CONVERSION TERMINATING: successful completion
+CGAT09-CGSFOS END: 7-JAN-92, 21:10:56
+CPG0EN--------------------------------------------- GENERIC CONVERSION COMPLETED -----------------------------------------------
+CCAI00-
+CCAI03-------------------------------------FAINT OBJECT SPECTROGRAPH CALIBRATION BEGINNING--------------------------------------
+CGAI00-
+CCAI07-CALIBRATION BEGINNING: processing information set Y0UE0103T
+CCAI11-CCSFOS START: 7-JAN-92, 21:10:59
+CCAIRI- *** CALFOS - Version 1.2.3.1 ***
+CCAIRI- Y0UE0103T Begin CALFOS for input file rootname: ycal:y0ue0103t
+CCAIRI- Y0UE0103T output file rootname: ycal:y0ue0103t
+CCAIRI- Y0UE0103T Data quality initialization done using yref$b2f1306ry.r5h
+CCAIRI- Y0UE0103T Conversion to count rates using ULH disabled diode table
+CCAIRI- Y0UE0103T GIMP corrections calculated from model
+CCAIRI- Y0UE0103T GIMP x scale factor = 0.74000001E+00
+CCAIRI- Y0UE0103T GIMP y scale factor = 0.47200001E+02
+CCAIRI- Y0UE0103T WARNING: GIMP y offsets computed but not applied
+CCAIRI- Y0UE0103T Deadtime coefficients
+CCAIRI- Y0UE0103T Q0= 0.96200001E-05 Q1= 0.18260000E-09 F= 52000.
+CCAIRI- Y0UE0103T Saturation limit = 57000. observed counts/second
+CCAIRI- Y0UE0103T Background taken from reference file yref$b3m1128my.r0h
+CCAIRI- Y0UE0103T Reference background scaled using ytab$ba31407ly.cy8
+CCAIRI- ERROR (502, " SYSTEM-F-FLTDIV, arithmetic trap, floating/decimal divide by zero at PC=0012B7EF, PSL=03C0000C "
+CCAIRE- Severe IRAF error; processing stopped.
+DEINTB-TRACE for message CCAIRE = CGAERR CCACIR CCACTL CCSFOS
+CCAI10-CALIBRATION END: 7-JAN-92, 21:11:53
+CPE0ST-------------------------------------------- DATA EDITING STARTED -----------------------------------------------------
+CPESTR-DATA EDITING STARTED 10-JAN-92 02:31:09 FOR Y0UE0103T.
+DPE4PC- 0 fill source packets were inserted by PODPS.
+DPE4DC-In Y0UE0103T, 0 source packets were found that contain fill data inserted by the ST DCF.
+DPERSC-CP34SE: ...and 0 packets were found to have segments without Reed Solomon corrections
+CPEEND-DATA EDITING ENDED 10-JAN-92 02:31:09 FOR Y0UE0103T.
+CPE0EN--------------------------------------------- DATA EDITING COMPLETED -----------------------------------------------------
+CPG0VS--------------------------------------------- DATA EVALUATION STARTED -----------------------------------------------
+DPVSTR-DATA EVALUATION STARTED 10-JAN-92 02:32:31 FOR Y0UE0103T.
+DPVF01-Flag & Indic Mismatch for FCHNL . Error Weight set to 1.
+DPVF03- Predicted value is 210; actual value is 0.
+DPVF01-Flag & Indic Mismatch for NCHNLS . Error Weight set to 1.
+DPVF03- Predicted value is 0; actual value is 512.
+DPVWM2-Weighted Quality Measure of 2 was calc for discrepancies between predicted & actual Flags & Indicators for Info Set
+DPVOKK-Info Set quality was OK as Weighted Quality Measure of 2 did not exceed Quality Threshold of 9
+DPVEND-DATA EVALUATION ENDED 10-JAN-92 02:32:35 FOR Y0UE0103T.
+CPG0VE--------------------------------------------- DATA EVALUATION COMPLETED ---------------------------------------------
+CGAI00-
+CGAI03---------------------------------FAINT OBJECT SPECTROGRAPH GENERIC CONVERSION BEGINNING-----------------------------------
+CGAI00-
+CGAT01-Routine CGSFOS, version 0, will perform generic conversion
+CGAT02-GENERIC CONVERSION BEGINNING: processing information set Y0UE0103T
+CGAT03-CGSFOS START: 10-JAN-92, 02:32:36
+CGAW06-No error values detected in flags and indicators
+CGAI06-SHP generic conversion has completed successfully
+CGAI07-UDL generic conversion has completed successfully
+CGAC01-Mismatch between FOS predicted and actual flags and indicators
+CGAC02-Generated new FOS reference file catalog : CCC:[SIS.FOS]Y0UE0103T.CTX
+CGAI08-SCI generic conversion has completed successfully
+CGAI22-DQM generic conversion has completed successfully
+CGAT04-GENERIC CONVERSION TERMINATING: successful completion
+CGAT09-CGSFOS END: 10-JAN-92, 02:34:47
+CPG0EN--------------------------------------------- GENERIC CONVERSION COMPLETED -----------------------------------------------
+CPE0ST-------------------------------------------- DATA EDITING STARTED -----------------------------------------------------
+CPESTR-DATA EDITING STARTED 27-OCT-92 13:48:56 FOR Y0UE0103T.
+DPE4PC- 0 fill source packets were inserted by PODPS.
+DPE4DC-In Y0UE0103T, 0 source packets were found that contain fill data inserted by the ST DCF.
+DPERSC-CP34SE: ...and 0 packets were found to have segments without Reed Solomon corrections
+CPEEND-DATA EDITING ENDED 27-OCT-92 13:48:56 FOR Y0UE0103T.
+CPE0EN--------------------------------------------- DATA EDITING COMPLETED -----------------------------------------------------
+CPE0ST-------------------------------------------- DATA EDITING STARTED -----------------------------------------------------
+CPESTR-DATA EDITING STARTED 27-OCT-92 14:32:43 FOR Y0UE0103T.
+DPE4PC- 0 fill source packets were inserted by PODPS.
+DPE4DC-In Y0UE0103T, 0 source packets were found that contain fill data inserted by the ST DCF.
+DPERSC-CP34SE: ...and 0 packets were found to have segments without Reed Solomon corrections
+CPEEND-DATA EDITING ENDED 27-OCT-92 14:32:43 FOR Y0UE0103T.
+CPE0EN--------------------------------------------- DATA EDITING COMPLETED -----------------------------------------------------
+CPG0VS--------------------------------------------- DATA EVALUATION STARTED -----------------------------------------------
+DPVSTR-DATA EVALUATION STARTED 27-OCT-92 14:35:49 FOR Y0UE0103T.
+DPVEND-DATA EVALUATION ENDED 27-OCT-92 14:35:52 FOR Y0UE0103T.
+DPVF01-Flag & Indic Mismatch for SS_FCHNL. Error Weight set to 1.
+DPVF03- Predicted value is 210; actual value is 0.
+DPVF01-Flag & Indic Mismatch for SS_NCHNL. Error Weight set to 1.
+DPVF03- Predicted value is 0; actual value is 512.
+DPVWM2-Weighted Quality Measure of 2 was calc for discrepancies between predicted & actual Flags & Indicators for Info Set
+DPVOKK-Info Set quality was OK as Weighted Quality Measure of 2 did not exceed Quality Threshold of 9
+CPG0VE--------------------------------------------- DATA EVALUATION COMPLETED ---------------------------------------------
+CGAI00-
+CGAI03---------------------------------FAINT OBJECT SPECTROGRAPH GENERIC CONVERSION BEGINNING-----------------------------------
+CGAI00-
+CGAT01-Routine CGSFOS, version 0, will perform generic conversion
+CGAT02-GENERIC CONVERSION BEGINNING: processing information set Y0UE0103T
+CGAT03-CGSFOS START: 27-OCT-92, 14:35:52
+CGAW06-No error values detected in flags and indicators
+CGAI06-SHP generic conversion has completed successfully
+CGAI07-UDL generic conversion has completed successfully
+CGAC01-Mismatch between FOS predicted and actual flags and indicators
+CGAC02-Generated new FOS reference file catalog : CCC:[SIS.FOS]Y0UE0103T.CTX
+CGAI08-SCI generic conversion has completed successfully
+CGAI22-DQM generic conversion has completed successfully
+CGAT04-GENERIC CONVERSION TERMINATING: successful completion
+CGAT09-CGSFOS END: 27-OCT-92, 14:37:54
+CPG0EN--------------------------------------------- GENERIC CONVERSION COMPLETED -----------------------------------------------
+CCAI00-
+CCAI03-------------------------------------FAINT OBJECT SPECTROGRAPH CALIBRATION BEGINNING--------------------------------------
+CGAI00-
+CCAI07-CALIBRATION BEGINNING: processing information set Y0UE0103T
+CCAI11-CCSFOS START: 27-OCT-92, 14:39:50
+CCAIRI- *** CALFOS - Version 1.2.3.1.6 ***
+CCAIRI- Y0UE0103T Begin CALFOS for input file rootname: ycal:y0ue0103t
+CCAIRI- Y0UE0103T output file rootname: ycal:y0ue0103t
+CCAIRI- Y0UE0103T Data quality initialization done using yref$b2f1306ry.r5h
+CCAIRI- Y0UE0103T Conversion to count rates using DDTFIL yref$c6q16020y.r4h
+CCAIRI- Y0UE0103T GIMP corrections calculated from model
+CCAIRI- Y0UE0103T GIMP x scale factor = 0.74000001E+00
+CCAIRI- Y0UE0103T GIMP y scale factor = 0.47200001E+02
+CCAIRI- Y0UE0103T WARNING: GIMP y offsets computed but not applied
+CCAIRI- Y0UE0103T Deadtime coefficients
+CCAIRI- Y0UE0103T Q0= 0.96200001E-05 Q1= 0.18260000E-09 F= 52000.
+CCAIRI- Y0UE0103T Saturation limit = 57000. observed counts/second
+CCAIRI- Y0UE0103T Background taken from reference file yref$b3m1128my.r0h
+CCAIRI- Y0UE0103T Reference background scaled using ytab$ba31407ly.cy8
+CCAIRI- Y0UE0103T Spectra flat fielded with file(s) yref$baf13107y.r1h
+CCAIRI- Y0UE0103T Wavelength coefficients:
+CCAIRI- Y0UE0103T COEF_0 = 1087.229770686589
+CCAIRI- Y0UE0103T COEF_1 = 1.002462009396993
+CCAIRI- Y0UE0103T COEF_2 = 0.3526645769470571E-04
+CCAIRI- Y0UE0103T COEF_3 = -0.5914021847171517E-07
+CCAIRI- Y0UE0103T Conversion to abs. flux units using yref$c3u1342iy.r2h
+CCAIRI- Y0UE0103T Special mode processing for RAPID-READOUT
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 1
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 2
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 3
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 4
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 5
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 6
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 7
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 8
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 9
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 10
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 11
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 12
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 13
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 14
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 15
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 16
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 17
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 18
+CCAIRI- Y0UE0103T WARNING: fill data in object, frame 19
+CCAIRI- Y0UE0103T WARNING: No longer notifying you of fill data
+CCAIRI- Y0UE0103T Reduction completed for input file ycal:y0ue0103t
+CCAI10-CALIBRATION END: 27-OCT-92, 14:41:16

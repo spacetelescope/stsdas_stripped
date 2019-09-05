@@ -1,0 +1,9 @@
+# Task parameters for the KMESTM task
+
+input,s,a,,,,"> Input file(s)"
+binstart,r,h,INDEF,,,"> Starting value of first bin"
+binsize,r,h,INDEF,0.,,"> Width of the bin"
+nbin,i,h,10,1,,"> Number of  bins"
+diff,b,h,no,,,"> Compute differential estimator?"
+verbose,b,h,no,,,"> Full printout desired?"
+mode,s,h,"al",,,

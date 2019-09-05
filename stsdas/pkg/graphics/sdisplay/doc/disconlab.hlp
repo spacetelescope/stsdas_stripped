@@ -1,0 +1,219 @@
+.help disconlab May94 stsdas.graphics.sdisplay
+.ih
+NAME
+disconlab -- Display an image with contours and coordinate 
+labels.
+.ih
+USAGE
+disconlab image
+.ih
+DESCRIPTION
+This task combines image display functions with the ability to overlay
+a registered contour map, a celestial coordinate grid (with
+labels), and a map of the HST focal plan---any of these three elements
+may be included or excluded for a particular image.
+
+By default, the displayed image is used for the other plotting
+options, contouring, labelling, and aperture location.  However,
+different images may be specified for any of the individual plotting
+options. 
+
+The following tasks are used by disconlab:
+
+.nf
+	display
+	newcont
+	siaper
+	wcslab
+.fi
+
+For all tasks, the only parameters used by disconlab are the
+input/image parameters and graphics device parameters.  All other
+parameters are left at their default value.  To modify the behavior of
+any of the above tasks in disconlab, first change the tasks parameters
+using 'epar', then run disconlab.
+
+The image that is used to calculate the coordinate grid must contain
+the appropriate header parameters describing the transformation between
+pixel coordinates of the image and celestial coordinates, whether or
+not the coordinate and displayed images are the same.  Note also that
+'disconlab' assumes that the displayed image is in registration with
+the contour and coordinate images---if they are different images.
+
+This task calls the 'display' task with the option 'fill=yes', which
+resamples the image to fill the specified portion of the frame buffer.
+
+WARNING -- There are two versions of the wcslab task, one in the STSDAS
+graphics.stplot package and the other in the IRAF images.tv package.
+Unfortunately, the parameter sets are not interchangeable.  Make sure
+the stsdas.graphics.stplot package is loaded last before running
+disconlab.
+.ih
+PARAMETERS
+.ls image [file name]
+The image to display.  By default, this image is also used 
+for computing
+contours and the coordinate labels, but different images
+may be used.
+.le
+.ls (disp = yes) [boolean]
+Display the image?  
+
+If set to "yes", then call the 
+'display' task.  Note that the only
+parameters to the 'display' task that are changed are 
+'image', 'frame', and
+'fill'.  All others use current values.
+.le
+.ls (frame = 1) [integer]
+Frame number to be displayed.
+.le
+.ls (cont = yes) [boolean]
+Draw contours?  
+
+If set to "yes", contours will be overlaid 
+using the color set by the 'contcol' paramter.  By default, 
+contours will be computing using the displayed image, 
+although a different image can be specified using the 
+'cimage' parameter.
+.le
+.ls (cimage) [file name]
+The image to use for computing contours.  If this is the 
+null string,
+then use the image parameter.  Note that this image is 
+assumed to be the
+same size and registered with image.
+.le
+.ls (contcol = "red") [string, allowed values: red |
+green | blue | yellow | white]
+
+The color of the plotted contours.  
+.le
+.ls (label = yes) [boolean]
+Draw coordinate labels?  
+
+If 'label=yes', coordinate labels 
+will be drawn over the displayed image.  If the 'limage' 
+parameter specifies an image, use the
+coordinate transformation in that image.  Otherwise, use 
+the displayed
+image.  Note that the image must contain the appropriate 
+header
+parameters describing the transformation between pixel 
+coordinates of
+the image and celestial coordinates.  Note also that 
+'disconlab' assumes
+that the displayed image is in registration with the 
+coordinate image,
+if they are different images.
+.le
+.ls (limage) [file name]
+The image to use for coordinate labels.  
+
+If this is the 
+null string,
+then use the displayed image.  Note that this image is 
+assumed to be the
+same size and registered with the displayed image.
+.le
+.ls (lablcol = "blue") [string, allowed values: red |
+green | blue | yellow | white]
+
+The color of the coordinate labels.
+.le
+.ls (doapers = no) [boolean]
+Draw a map of the HST focal plane on the image.
+.le
+.ls (apers = "*") [string]
+Which apertures to draw.  See help for the task 'siaper' for more
+information.
+.le
+.ls (aimage = "") [file]
+Image to use to get coordinate/scaling information to draw the
+appropriately sized HST focal plane.  If blank, the image specified
+by the 'image' parameter is used.
+.le
+.ls (apercol = "yellow") [string]
+Color to draw the HST focal plane.
+.le
+.ls (center = "ota") [string]
+Which aperture is to appear at the specified 'ra' and 'dec' (specified
+below).  For more information, see the help for the task 'siaper'.
+.le
+.ls (ra = "") [string]
+The right ascension where the aperture specified in the parameter
+'center' should appear. For more information, see the help for the
+task 'siaper'.
+.le
+.ls (dec = "") [string]
+The declination where the aperture specified in the parameter 'center'
+should apper. For more information, see the help for the task
+'siaper'. 
+.le
+.ls (roll = 0.) [real]
+The roll angle of the focal plane. For more information, see the help
+for the task 'siaper'. 
+.le
+.ls (left = 0.1) [real, min = 0, max = 1]
+The left edge of the viewport.  
+
+This is the left edge of 
+the image will
+be at this fraction of the total display from the left edge 
+of the
+buffer.  The default (0.1) provides a 10% margin between 
+the edge of the
+displayed image and the edge of the frame buffer.
+.le
+.ls (right = 0.9) [real, min = 0, max = 1]
+Right edge of the viewport.  
+
+This is the right edge of 
+the image will
+be at this fraction of the total display from the right 
+edge of the
+buffer.  The default (0.1) provides a 10% margin between 
+the edge of the
+displayed image and the edge of the frame buffer.
+.le
+.ls (bottom = 0.1) [real, min = 0, max = 1]
+Bottom edge of the viewport.  
+
+This is the bottom edge 
+of the image will
+be at this fraction of the total display from the bottom 
+edge of the
+buffer.  The default (0.1) provides a 10% margin between 
+the edge of the
+displayed image and the edge of the frame buffer.
+.le
+.ls (top = 0.9) [real, min = 0, max = 1]
+Top edge of the viewport.  
+
+This is the top edge of the 
+image will
+be at this fraction of the total display from the top edge 
+of the
+buffer.  The default (0.1) provides a 10% margin between 
+the edge of the
+displayed image and the edge of the frame buffer.
+.le
+.ih
+EXAMPLES
+1. Display the image 'optical', overlaid with contours of 
+the image 'radio',
+labeled with the coordinates of the displayed image:
+.nf
+
+pl> disconlab optical contim=radio, contcol=green, /
+>>> lablcol=yellow
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+STSDAS Contact: Jonathan Eisenhamer
+.ih
+SEE ALSO
+display, newcont, wcslab, siaper
+.endhelp

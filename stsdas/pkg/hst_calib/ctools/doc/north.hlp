@@ -1,0 +1,385 @@
+.help north Feb94 stsdas.hst_calib.ctools
+.nj
+.ih
+NAME
+north -- Get the position angle of an image.
+.ih
+USAGE
+north input
+.ih
+DESCRIPTION
+This task reads keywords from image headers and determines
+the position angle of the image.
+The position angle is the angle from north through east to the image Y axis.
+The image X axis is the sample direction,
+while the Y axis is the line direction.
+For example, for an image with the same parity as the sky,
+if the image is displayed with the first pixel at the lower left corner,
+the first image axis (X) increasing toward the right,
+and the second image axis (Y) increasing upward,
+then a position angle of +30 degrees means
+the north direction is toward one o'clock.
+
+Several different keywords may be used,
+so several values for the angle can be computed,
+which serves as a consistency check.
+The angles may be printed to the standard output,
+and the angles will also be written to task parameters.
+If the input list includes more than one image name,
+the task parameters will represent the last image in the list.
+Printing is suppressed by setting 'verbosity' to zero,
+so that a script can take the position angle from a parameter.
+All angles are in degrees from zero to 360.
+
+Note that CROTA1 is not used at all.
+You can use 'hedit' if you want the value of CROTA1,
+and then it's up to you to interpret it.
+
+This task was written primarily for FOC images.
+For non-FOC images, the task operates as follows.
+Only the science image is opened,
+not the standard header packet (see below).
+The position angle is determined from only two sources,
+the header keyword ORIENTAT and the CD matrix.
+The CD matrix gives two values for the position angle.
+Of course, these are also used for FOC images,
+but for non-FOC images no corrections are applied to these values.
+
+NOTE:  The rest of the DESCRIPTION section is relevant only for FOC images.
+
+This task should be trivial;
+it should get the value of ORIENTAT and print it.
+During the first two years after launch, however,
+much testing and debugging was needed to
+ensure that the coordinate parameters contain reasonable values.
+Now that the early data have been reprocessed,
+the position and orientation information should be reasonably accurate.
+For data calibrated during the first couple of years following launch,
+however, various corrections must be applied
+to the coordinate parameters to obtain the correct orientation.
+Warren Hack made a detailed study of FOC data,
+comparing keyword values, SMS roll angles, and astrometric positions,
+to determine exactly how the keywords were computed at different times
+and how they need to be corrected.
+This task is based on his findings.
+(See the Instrument Science Report FOC-052 for details.)
+This task also serves as a consistency check
+to look for discrepant keyword values.
+
+The task looks for two images in the same directory,
+a science image and a standard header packet (SHP).
+See 'input' for more information.
+For the SHP file, this task only needs the header;
+if the data file ("shd") is missing but the header is present,
+you will get a harmless message of the following form:
+
+.nf
+	Warning: Cannot open pixfile to read GPB (<rootname>.shh)
+.fi
+
+The information printed to the standard output may include
+the image name, various values of the position angle,
+an indication of which images (science, SHP, or both) were found and opened,
+and the parity of the image.
+The 'verbosity' parameter controls how much of this is actually printed.
+With 'verbosity = 4',
+the task also prints the values of the offsets and corrections
+which were added to each header keyword to obtain the position angle,
+and it tells you which header keywords were not found.
+Both a science image and SHP are needed to get all the keywords
+(see below) that can be used by this task.
+
+The corrections that can be applied are as follows.
+.ls
+The angle theta specifies the orientation of the aperture
+with respect to the V2-V3 coordinate system.
+.le
+.ls
+Theta is the angle from the sample direction to the V2 direction (-U2),
+measured counterclockwise as projected onto the sky.
+.le
+.ls
+Approximate values are 34 for f/96 and 159 for f/48.
+Note that the image X axis and the sample direction are in opposite
+directions in recent images.
+.le
+.ls
+The angle delta_pa is the difference in the position angle of the aperture
+compared to what the position angle would be
+if the aperture were parallel transported
+along a great-circle arc to the V1 axis.
+The sign is such that delta_pa is added to the position angle at V1
+to get the position angle at the aperture.
+.le
+.ls
+This offset is zero at the equator
+but becomes significant near the poles.
+.le
+
+Most comments that give offsets and corrections have
+the following format (for brevity):  pa_v3 += 0.32, which means
+that 0.32 degree was added to pa_v3.
+"pa_v3" refers initially to the value of the header keyword PA_V3,
+but after applying an offset or correction (or both), if necessary,
+it refers to the value of position angle thus computed from PA_V3.
+Here is a list of all such comments and what they mean.
+
+.nf
+    dezoom CD           The science image is still in zoom format, so the
+                        first column of the CD matrix has been doubled.
+    |CD| = 0            The CD matrix is singular.
+    pa_v3 += <value>    Delta_pa has been added to pa_v3.
+    pa_v3 -= <value>    Theta has been subtracted from pa_v3.
+    pa_v3 += 180        180 degrees has been added to pa_v3 because
+                        COSTAR was used for the observation.
+    pa_aper -= 90       90 degrees has been subtracted from pa_aper
+                        because the image was taken in zoom format.
+    orientat += <value> Either delta_pa or theta has been added
+                        to orientat.
+    CD += <value>       Delta_pa has been added to cd_one & cd_two.
+.fi
+
+The position angle is obtained from four sources:
+the keywords PA_APER and PA_V3 (formerly PANGAPER and PSANGLV3) in the SHP,
+and ORIENTAT and the CD matrix in the science image.
+The CD matrix gives two values for the position angle.
+Keywords which may be needed for correcting these are as follows.
+DATE from the science image or SHP
+is the date that the files were processed by RSDP.
+This is needed so the task can determine what corrections to apply.
+PXFORMT and PXLCORR are gotten from the science image because
+for ZOOM mode images, 90 degrees must be subtracted from PA_APER,
+and the CD matrix must be "dezoomed" if it hasn't been.
+There are actually three zoom modes for which
+we would not subtract 90 degrees from PA_APER;
+these are X96ZREC, X48ZREC, and X48ZRECS.
+In order to check for these, the task gets APEROBJ from the SHP.
+OPTCRLY from the science image or SHP is needed because
+theta is different for the two relays.
+CRVAL1 & CRVAL2 from the science image and RA_V1 & DEC_V1 from the SHP
+(the right ascension and declination at the aperture
+and at the V1 axis respectively) are needed to compute delta_pa.
+If any of these keywords is missing,
+the task may not be able to apply all offsets and corrections
+that are needed, so the printed results may not be the best possible.
+You can set 'verbosity=4' to check for missing keywords.
+
+Between January 25, 1991, and July 27, 1992,
+the geometric correction modified ORIENTAT and the CD matrix.
+For images calibrated during that time,
+it is likely that the values in the raw image ("d0h")
+more accurately reflect the true value of position angle.
+.ih
+PARAMETERS
+.ls input = "" [file name template]
+The names of the images.
+
+If no extension is given, the default extension is "d0h".
+If no image is found with the given name and extension "d0h",
+the task then tries to open an image
+with the usual extensions, "imh" or "hhh".
+Of course, the extension may be specified explicitly.
+
+For FOC images, the task looks for two images in the same directory,
+a science image and a standard header packet (SHP).
+These images have the same root name but different extensions.
+The extension for the SHP must be "shh".
+While 'input' will normally be the name of the science image header,
+you can give the name of the SHP instead.
+In that case, the task looks for the science image
+as described above for the case of no extension given.
+.le
+.ls (verbosity = 2) [integer, min=0, max=4]
+This parameter controls how much information
+is printed to the standard output.
+For non-FOC images, setting 'verbosity' greater than two is not useful.
+.nf
+0 - No output, but results are saved in task parameters.
+1 - Displays science image name and position angle, but prints
+    a warning if the range of computed angles is larger than
+    one degree.
+2 - Displays image name, the value of orientat, the two angles
+    derived from the CD matrix, and the parity.  This is the
+    default.
+3 - Displays all of the angles plus the images used and the parity.
+4 - Displays the same information as 3, but also prints additional
+    lines that include corrections made to each angle and the
+    names of header keywords that could not be found. This is
+    useful when you suspect that not all of the corrections
+    or offsets were applied.
+.fi
+.le
+.ls (science) [string]
+This is a task output parameter.
+
+This gives the name of the science image header, including extension.
+If the SHP file was found but the science image was not,
+then this will be the name of the SHP header.
+.le
+.ls (angle) [real]
+This is a task output parameter.
+
+'angle' is the "best" value for the position angle of the image.
+
+For non-FOC images 'angle' will be the value of ORIENTAT
+if that keyword was found.  If ORIENTAT was not found,
+'angle' will be the average of the two values gotten from the CD matrix.
+
+For FOC images,
+'angle' will be taken from the value of PA_V3 (formerly called PSANGLV3)
+if this is available and can be corrected for the orientation
+of the aperture as well as the offset of the aperture from V1.
+The next best choice is the value of PA_APER (formerly called PANGAPER).
+Both of these require the SHP.
+After these we take in order ORIENTAT,
+the average of the two angles 'cd_one' & 'cd_two'
+computed from the CD matrix,
+and finally the value of PA_V3
+if we can correct for the orientation of the aperture.
+.le
+.ls (range) [real]
+This is a task output parameter.
+
+The range is the maximum minus the minimum
+of all values of position angle.
+This is intended mostly as a flag to indicate
+that one or more values are discrepant,
+rather than as an estimate of the uncertainty.
+.le
+.ls (pa_aper) [real]
+This is a task output parameter.
+This is irrelevant for non-FOC images.
+
+The keyword PA_APER (formerly called PANGAPER) in the SHP header
+gives the position angle of the aperture directly,
+except that 90 degrees must be subtracted if the image was taken in zoom mode.
+Other than subtracting 90 degrees,
+the value of 'pa_aper' is taken without change from the SHP header.
+.le
+.ls (orientat) [real]
+This is a task output parameter.
+
+The science header keyword ORIENTAT
+(actually in the group parameter block)
+should be the position angle of the aperture.
+In the past,
+the values have been off by small or sometimes large amounts,
+so corrections must be applied.
+For data processed before January 25, 1991,
+the value of theta (the orientation of the aperture)
+must be added to ORIENTAT.
+Between 1/25/91 and 5/27/92,
+ORIENTAT was the position angle at the V1 axis
+instead of the position angle at the aperture,
+so the offset 'delta_pa' must be added as a correction.
+
+For data processed after May 27, 1992, ORIENTAT is believed to be correct.
+.le
+.ls (cd_one) [real]
+This is a task output parameter.
+
+From the CD matrix (in the science image) one can compute
+the vectors in the north and east directions in the image.
+Each of these vectors gives a value for the position angle,
+which we are calling 'cd_one' (based on the north vector)
+and 'cd_two' (based on the east vector).
+They should be the same,
+but in practice they may differ by several degrees.
+.le
+.ls (cd_two) [real]
+This is a task output parameter.
+See the description of 'cd_one'.
+.le
+.ls (pa_v3) [real]
+This is a task output parameter.
+This is irrelevant for non-FOC images.
+
+The keyword PA_V3 (formerly called PSANGLEV3) in the SHP header
+accurately gives the position angle of the V3 axis
+at the location of the V1 axis.
+To obtain the position angle of the aperture from PA_V3,
+we must subtract theta,
+the orientation of the aperture with respect to the V2-V3 coordinates.
+We must also include an offset
+due to the displacement 'delta_pa' between the aperture and V1.
+While this offset is usually small,
+it can approach 180 degrees near the north or south pole.
+To get theta we need the date the file was reduced
+and whether we have the f/48 or f/96 relay;
+these are given by keywords DATE and OPTCRLY respectively.
+If either of these is missing
+the reported value of 'pa_v3' will be closer to (and possibly the same as)
+the value of PA_V3 from the SHP header,
+i.e., it will differ by many degrees from the actual position angle.
+To get 'delta_pa' we need the right ascension and declination
+at the aperture and at the V1 axis.
+The former is taken from CRVAL1 & CRVAL2 in the science image,
+and the latter is from RA_V1 & DEC_V1
+(formerly called RTASCNV1 & DECLNV1) in the SHP.
+.le
+.ls (files) [string]
+This is a task output parameter.
+This is irrelevant for non-FOC images.
+
+The value will be "sci", "shp", or "sci,shp",
+depending on which files were found and opened.
+This lets you know at a glance which files were used.
+If 'files' is not "sci,shp" you should consider
+rerunning the task with 'verbosity=4'
+to see what corrections were applied
+and what keywords were looked for but not found.
+.le
+.ls (parity) [string]
+This is a task output parameter.
+
+The 'parity' will be "normal", "reversed", "unknown", or "|CD| = 0".
+Normal parity means the same parity as the sky,
+if the image is displayed with the first pixel at the lower left,
+and the first axis increasing to the right.
+Reversed parity is the mirror image of normal.
+The parity is determined from the sign of the determinant of the CD matrix,
+so if the CD matrix is not found in the science header,
+the parity will be "unknown".
+The determinant is negative for an image with normal parity.
+
+"|CD| = 0" means that the CD matrix keywords
+were found in the science header, but the matrix is singular.
+.le
+.ih
+EXAMPLES
+1.  Get the position angle of "x0dw0103t.d0h" based on keywords
+found in that image and in "x0dw0103t.shh".
+
+.nf
+fo> north x0dw0103t.d0h
+.fi
+
+2.  Get the position angles of all raw images in the default directory,
+displaying all measures of the angle but not the details about the corrections
+that were applied to the keywords.  Both the "d0h" and "shh" images are used.
+
+.nf
+fo> north *.d0h verbosity=3
+.fi
+
+3.  Get the position angles of all fully corrected images
+in the default directory.  Both the "c1h" and "shh" images are used.
+The values for 'pa_aper' and 'pa_v3' should be the same as in the previous
+example,
+but the values for 'orientat', 'cd_one', and 'cd_two' may be different.
+
+.nf
+fo> north *.c1h verb=3
+.fi
+.ih
+BUGS
+.ih
+REFERENCES
+This task was written by Phil Hodge
+based on the Instrument Science Report FOC-052, by Warren Hack.
+.ih
+SEE ALSO
+
+Type "help ctools option=sys" for a higher-level description of
+the 'ctools' package.
+.endhelp

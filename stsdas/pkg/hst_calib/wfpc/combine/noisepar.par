@@ -1,0 +1,3 @@
+readnoise,r,h,13.,,,Value of read-noise from noise model
+gain,r,h,7.5,,,Inverse detector gain in electrons/DN
+grainnoise,r,h,0.,,,Multiplicative term in noise model

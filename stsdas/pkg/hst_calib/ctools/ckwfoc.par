@@ -1,0 +1,21 @@
+graphtab,s,h,"crcomp$hstgraph_*.tab",,,"the HST graph table"
+comptab,s,h,"crcomp$hstcomp_*.tab",,,"the HST components table"
+unitab,s,h,"",,,"table of UNI file names"
+bachfile,s,h,"",,,"background reference image"
+itfhfile,s,h,"",,,"format-dependent reference image"
+geohfile,s,h,"",,,"geometric reference image"
+unihfile,s,h,"",,,"uniform de reference image"
+sdehfile,s,h,"",,,"spectrographic de reference image"
+
+baccorr,s,h,"omit","| |perform|omit|complete|",,"background subtraction"
+itfcorr,s,h,"omit","| |perform|omit|complete|",,"format-dependent correction"
+pxlcorr,s,h," ","| |perform|omit|complete|",,"split zoom-format pixels"
+wavcorr,s,h," ","| |perform|omit|complete|",,"compute photmetric parameters"
+geocorr,s,h," ","| |perform|omit|complete|",,"geometric correction"
+unicorr,s,h," ","| |perform|omit|complete|",,"uniform de correction"
+sdecorr,s,h," ","| |perform|omit|complete|",,"spectrographic de correction"
+geodefv,s,h,"",,,"geo fill value for areas outside image"
+
+instrument,s,h,"foc","|foc|",,"Instrument represented by this pset"
+
+Version,s,h,"14Apr93",,,"Date of Installation"

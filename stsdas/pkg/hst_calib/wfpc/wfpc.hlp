@@ -1,0 +1,67 @@
+.help wfpc Aug03 stsdas.hst_calib.wfpc
+.ih
+NAME
+wfpc -- Calibration tasks for WF/PC and WFPC2 observations.
+.ih
+INTRODUCTION
+The 'hst_calib.wfpc' package contains the "pipeline"
+calibration code (i.e., the 'calwfp' and 'calwp2' 
+tasks), as well as routines that are used to produce calibration 
+reference files required by the pipeline, routines to analyze the health and 
+performance of the instruments, and other utility tasks that 
+are specific to WF/PC and WFPC2 data.
+.ih
+FILE FORMATS
+The tasks in the wfpc package after STSDAS release 3.1 can deal with extension 
+FITS files as well as GEIS files.
+
+The GEIS format has been the default working data format for WF/PC and WFPC2.  
+Tasks in the wfpc package before STSDAS release 3.1 only operate on this 
+format.  Since GEIS is a platform dependent format, it is necessary to convert 
+it, by using the stwfits task, to FITS format for archiving.  When users 
+retrieve WFPC2 or WF/PC files from the STScI archive, it is this FITS format 
+(sometimes referred to as "waiver" FITS) they will get.  The users then use 
+the task strfits to convert it back to GEIS format. 
+
+Because of the limitation of early FITS standard, the "waiver" FITS format 
+for WFPC2 (and WF/PC) is structured in an awkward manner:  the four 800x800 
+images are stacked together as a 3-D image, i.e. an 800x800x4 image, and is 
+stored at the primary header-data unit (HDU).  The group parameters of the 
+4 groups are stored, as a table, in the first extension HDU of this waiver 
+FITS file.  Because of this structure, it is difficult for data analysis 
+software to deal with it directly and it is only for the purpose of archiving.
+
+Enhancement of the FITS standard later in the 1990's makes it possible to 
+store WFPC2 data in a FITS format which is both platform independent 
+(therefore suitable for archiving) and easy direct access for analysis 
+software tools.  In this structure (sometimes referred to as "extension" 
+FITS), the common header keywords are stored in the primary HDU which has 
+empty data part.  Each of the 4 WFPC2 images is stored in each of the 4 
+extension HDU's.  The extension HDU's header holds keywords of detector 
+specific information (such as those in the group parameters of the 
+corresponding GEIS file).
+
+This "extension" FITS format is used for newer HST instruments such as NICMOS, 
+STIS, and ACS.  Although for WFPC2 the file extracted from the archive will 
+continue to be waiver FITS, some users may find converting to extension FITS 
+desirable for local storage, data analysis, and data exchange between different 
+platforms.  Unfortunately, there is no tool right now to directly convert 
+waiver FITS to extension FITS.  There does exist a tool (distributed with 
+pyraf) called readgeis to convert from the GEIS format to extension FITS.  
+As before, strfits/strwfits can be used to convert from/to waiver FITS to/from 
+GEIS format.
+
+Tasks in wfpc package since STSDAS release 3.1 can operate on extension FITS, 
+as well as GEIS files, and therefore provide more motivation for users to 
+use the extension FITS format both for data analysis and storage.  
+
+It should be cautioned that for a wfpc task requiring both input and output 
+files, their formats should be consistent, i. e. if the input is extension 
+FITS file(s), then the output file should also be specified as (extension) 
+FITS, not GEIS file.
+.ih
+SEE ALSO
+strfits, stwfits, calwfp, calwp2, readgeis
+
+For additional information about GEIS files, type "help geis".  
+.endhelp

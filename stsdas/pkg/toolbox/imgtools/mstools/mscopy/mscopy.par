@@ -1,0 +1,7 @@
+input,s,a,"",,,"input files"
+output,s,a,"",,,"output files"
+imsets,s,h,"-",,,"image sets to copy"
+extnames,s,h,"SCI,ERR,DQ,SAMP,TIME",,,"list of EXTNAME values for an imset"
+verbose,b,h,yes,,,"print file names?"
+Version,s,h,"14Mar2007",,,"date of installation"
+mode,s,h,"al"

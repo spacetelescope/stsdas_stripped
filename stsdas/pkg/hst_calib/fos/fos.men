@@ -1,0 +1,24 @@
+Menu for the package stsdas.hst_calib.fos
+
+    addnewkeys - Add new CALFOS keywords to FOS headers.
+      aperlocy - Analyze a target acquisition image.
+       apscale - Scale aperture parameters.
+         bspec - Compute FOS scattered light spectrum using FFTs.
+        calfos - Pipeline calibration for FOS.
+     countspec - Calculate FOS countrate spectrum from flux spectrum.
+       deaccum - Unstack ACCUM mode data into separate readouts.
+    fitoffsety - Correct dispersion coeff. for wavelength offsets.
+      foswcorr - Correct calibrated wavelengths (BLUE) for systematic shifts.
+       gimpcor - Show magnitude of the calfos gimp correction.
+        grspec - Make stacked plots of multigroup images.
+    spec_polar - Tasks for reducing and analyzing FOS polarimetry observations.
+        unwrap - Remove the 'wrap' from data that has exceeded the internal
+		 counter.
+    waveoffset - Compute wavelength offset between two spectra.
+    yd2p, yp2d - Convert between diode <--> pixel positions.
+    yddintplot - Interactively examine dead diode locations.
+         ymkmu - Place wavelength information into headers.
+        ypeakup - Analyse ACQ/PEAK observations.
+        yratio - Take ratios between ACCUM observation bins.
+
+(Type "help fos opt=sys" for more information about the fos package).
